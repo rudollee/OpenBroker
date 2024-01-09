@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OpenBroker
+namespace OpenBroker;
+
+public interface IConnection
 {
-    public interface IConnection
-    {
-    }
 }

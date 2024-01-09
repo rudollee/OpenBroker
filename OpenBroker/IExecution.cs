@@ -1,7 +1,6 @@
-﻿namespace OpenBroker
-{
-    public interface IExecution
-    {
+﻿namespace OpenBroker;
 
-    }
+public interface IExecution
+{
+
 }
