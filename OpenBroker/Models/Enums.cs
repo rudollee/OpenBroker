@@ -6,6 +6,21 @@ using System.Threading.Tasks;
 
 namespace OpenBroker.Models;
 
+public enum Status
+{
+    SUCCESS = 200,
+
+    UNAUTHORIZED = 401,
+
+    FORBIDDEN = 403,
+
+    TIMEOUT = 408,
+
+    TOOMANYREQUESTS = 429,
+
+    INTERNALSERVERERROR = 500,
+}
+
 public enum OrderMode
 {
     Long = 11,
