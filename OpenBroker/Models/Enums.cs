@@ -10,6 +10,8 @@ public enum Status
 {
     SUCCESS = 200,
 
+    NODATA = 204,
+
     UNAUTHORIZED = 401,
 
     FORBIDDEN = 403,
@@ -19,6 +21,10 @@ public enum Status
     TOOMANYREQUESTS = 429,
 
     INTERNALSERVERERROR = 500,
+
+    NOT_IMPLEMENTED = 501,
+
+    SERVICE_UNAVAILABLE = 503,
 }
 
 public enum OrderMode
