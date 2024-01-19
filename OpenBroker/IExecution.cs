@@ -37,21 +37,21 @@ public interface IExecution
     /// </summary>
     /// <param name="order"></param>
     /// <returns></returns>
-    ResponseMessage RequestOrderable(Order order);
+    Task<ResponseMessage> RequestOrderableAsync(Order order);
 
     /// <summary>
     /// 주문
     /// </summary>
     /// <param name="order"></param>
     /// <returns></returns>
-    ResponseMessage AddOrder(Order order);
+    Task<ResponseMessage> AddOrderAsync(Order order);
 
     /// <summary>
     /// 주문 수정
     /// </summary>
     /// <param name="order"></param>
     /// <returns></returns>
-    ResponseMessage UpdateOrder(Order order);
+    Task<ResponseMessage> UpdateOrderAsync(Order order);
 
     /// <summary>
     /// 주문 취소
@@ -60,14 +60,14 @@ public interface IExecution
     /// <param name="oid">원주문번호</param>
     /// <param name="volume">취소 수량</param>
     /// <returns></returns>
-    ResponseMessage CancelOrder(string symbol, long oid, long volume);
+    Task<ResponseMessage> CancelOrderAsync(string symbol, long oid, long volume);
 
     /// <summary>
     /// 체결내역 - 당일
     /// </summary>
     /// <param name="status"></param>
     /// <returns></returns>
-    ResponseResults<Contract> RequestContracts(ContractStatus status = ContractStatus.ExecutedOnly, Exchange exchange = Exchange.KRX);
+    Task<ResponseResults<Contract>> RequestContractsAsync(ContractStatus status = ContractStatus.ExecutedOnly, Exchange exchange = Exchange.KRX);
 
     /// <summary>
     /// 체결내역 - 기간별
@@ -77,21 +77,21 @@ public interface IExecution
     /// <param name="status"></param>
     /// <param name="exchange"></param>
     /// <returns></returns>
-    ResponseResults<Contract> RequestContracts(DateTime dateBegun, DateTime dateFin, ContractStatus status = ContractStatus.ExecutedOnly, Exchange exchange = Exchange.KRX);
+    Task<ResponseResults<Contract>> RequestContractsAsync(DateTime dateBegun, DateTime dateFin, ContractStatus status = ContractStatus.ExecutedOnly, Exchange exchange = Exchange.KRX);
 
     /// <summary>
     /// 예탁금 및 Positions
     /// </summary>
     /// <param name="date"></param>
     /// <returns></returns>
-    ResponseResult<Balance> RequestBalances(DateTime? date = null);
+    Task<ResponseResult<Balance>> RequestBalancesAsync(DateTime? date = null);
 
     /// <summary>
     /// 미결제 약정 현황
     /// </summary>
     /// <param name="date"></param>
     /// <returns></returns>
-    ResponseResults<Position> RequestPositions(DateTime? date = null);
+    Task<ResponseResults<Position>> RequestPositionsAsync(DateTime? date = null);
 
     /// <summary>
     /// 손익내역
@@ -99,5 +99,5 @@ public interface IExecution
     /// <param name="dateBegin"></param>
     /// <param name="dateFin"></param>
     /// <returns></returns>
-    ResponseResults<Earning> RequestEarning(DateTime dateBegin, DateTime dateFin, Exchange exchange = Exchange.KRX);
+    Task<ResponseResults<Earning>> RequestEarningAsync(DateTime dateBegin, DateTime dateFin, Exchange exchange = Exchange.KRX);
 }
