@@ -67,7 +67,7 @@ public interface IExecution
     /// </summary>
     /// <param name="status"></param>
     /// <returns></returns>
-    Task<ResponseResults<Contract>> RequestContractsAsync(ContractStatus status = ContractStatus.ExecutedOnly, Exchange exchange = Exchange.KRX);
+    Task<ResponseResults<Contract>> RequestContractsAsync(ContractStatus status = ContractStatus.ExecutedOnly);
 
     /// <summary>
     /// 체결내역 - 기간별
@@ -77,7 +77,7 @@ public interface IExecution
     /// <param name="status"></param>
     /// <param name="exchange"></param>
     /// <returns></returns>
-    Task<ResponseResults<Contract>> RequestContractsAsync(DateTime dateBegun, DateTime dateFin, ContractStatus status = ContractStatus.ExecutedOnly, Exchange exchange = Exchange.KRX);
+    Task<ResponseResults<Contract>> RequestContractsAsync(DateTime dateBegun, DateTime dateFin, ContractStatus status = ContractStatus.ExecutedOnly);
 
     /// <summary>
     /// 예탁금 및 Positions

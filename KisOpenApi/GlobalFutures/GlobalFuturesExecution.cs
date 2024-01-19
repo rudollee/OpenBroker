@@ -1,10 +1,8 @@
-﻿using OpenBroker;
+﻿using KisOpenApi.Models;
+using OpenBroker;
+using OpenBroker.Extensions;
 using OpenBroker.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using RestSharp;
 
 namespace KisOpenApi;
 public partial class KisGlobalFutures : ConnectionBase, IExecution
@@ -37,20 +35,148 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 		throw new NotImplementedException();
 	}
 
-	public Task<ResponseResults<Contract>> RequestContractsAsync(ContractStatus status = ContractStatus.ExecutedOnly, Exchange exchange = Exchange.KRX)
+	public async Task<ResponseResults<Contract>> RequestContractsAsync(ContractStatus status = ContractStatus.ExecutedOnly)
 	{
-		throw new NotImplementedException();
+		return new ResponseResults<Contract>
+		{
+			StatusCode = Status.NOT_IMPLEMENTED,
+			List = new List<Contract>(),
+		};
 	}
 
-	public Task<ResponseResults<Contract>> RequestContractsAsync(DateTime dateBegun, DateTime dateFin, ContractStatus status = ContractStatus.ExecutedOnly, Exchange exchange = Exchange.KRX)
+	#region 일별 체결내역 : OTFM3122R
+	public async Task<ResponseResults<Contract>> RequestContractsAsync(DateTime dateBegun, DateTime dateFin, ContractStatus status = ContractStatus.ExecutedOnly)
 	{
-		throw new NotImplementedException();
-	}
+		var queryParameters = GenerateQueryParameters(new
+		{
+			STRT_DT = dateBegun.ToString("yyyyMMdd"),
+			END_DT = dateFin.ToString("yyyyMMdd"),
+			FUOP_DVSN_CD = "00",
+			FM_PDGR_CD = "",
+			CRCY_CD = "%%%",
+			FM_ITEM_FTNG_YN = "N",
+			SLL_BUY_DVSN_CD = "%%",
+			CTX_AREA_FK200 = "",
+			CTX_AREA_NK200 = ""
+		});
 
-	public Task<ResponseResult<Balance>> RequestBalancesAsync(DateTime? date = null)
-	{
-		throw new NotImplementedException();
+		var client = new RestClient($"{host}/uapi/overseas-futureoption/v1/trading/inquire-daily-ccld");
+		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(OTFM3122R)));
+
+		foreach (var parameters in queryParameters)
+		{
+			request.AddQueryParameter(parameters.Key, parameters.Value?.ToString());
+		}
+
+		try
+		{
+			var response = await client.GetAsync<OTFM3122R>(request);
+
+			if (response is null) return new ResponseResults<Contract>
+			{
+				StatusCode = Status.INTERNALSERVERERROR,
+				List = new List<Contract>()
+			};
+
+			if (response.output1.Count == 0) return new ResponseResults<Contract>
+			{
+				StatusCode = Status.NODATA,
+				List = new List<Contract>()
+			};
+
+			var contracts = new List<Contract>();
+			response.output1.ForEach(f =>
+			{
+				contracts.Add(new Contract
+				{
+					BrokerCo = "KI",
+					ExchangeCode = Exchange.CME,
+					CID = f.CID,
+					OID = f.OID,
+					DateBiz = f.DateBizTxt8.ToDate(),
+					Price = f.Price,
+					Volume = f.Volume,
+					Symbol = f.Symbol,
+					TimeContracted = f.ccld_dtl_dtime.ToDateTime(),
+					IsLong = f.DirectionCode == "02", //
+					Mode = f.DirectionCode == "02" ? OrderMode.Long : OrderMode.Short,
+				});
+			});
+
+			return new ResponseResults<Contract>
+			{
+				List = contracts,
+			};
+
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResults<Contract>
+			{
+				List = new List<Contract>(),
+				StatusCode = Status.INTERNALSERVERERROR,
+				Message = ex.Message,
+			};
+		}
 	}
+	#endregion
+
+	#region 예수금현황 : OTFM1411R
+	public async Task<ResponseResult<Balance>> RequestBalancesAsync(DateTime? date = null)
+	{
+		var client = new RestClient($"{host}/uapi/overseas-futureoption/v1/trading/inquire-deposit");
+		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(OTFM1411R)));
+
+		var body = GenerateQueryParameters(new
+		{
+			CRCY_CD = "TUS",
+			INQR_DT = (date is null ? DateTime.Now : date)?.ToString("yyyyMMdd")
+		});
+
+		foreach (var parameter in body)
+		{
+			request.AddQueryParameter(parameter.Key, parameter.Value);
+		}
+
+		try
+		{
+			var response = await client.GetAsync<OTFM1411R>(request);
+
+			if (response is null) return new ResponseResult<Balance>
+			{
+				StatusCode = Status.INTERNALSERVERERROR,
+				Data = new Balance()
+			};
+
+			var balance = new Balance
+			{
+				BrokerCode = "KI",
+				AccountNumber = response.output.Account,
+				CurBased = Enum.Parse<Currency>(response.output.crcy_cd),
+				DepositEst = response.output.fm_opt_icld_asst_evlu_amt,
+				DepositConverted = response.output.fm_tot_asst_evlu_amt,
+				CashAvailable = response.output.fm_ord_psbl_amt,
+				Margin = response.output.fm_mntn_mgn_amt,
+				MarginInitial = response.output.fm_brkg_mgn_amt,
+			};
+
+			return new ResponseResult<Balance>
+			{
+				StatusCode = Status.SUCCESS,
+				Data = balance
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResult<Balance>
+			{
+				StatusCode = Status.INTERNALSERVERERROR,
+				Data = new Balance(),
+				Message = ex.Message
+			};
+		}
+	} 
+	#endregion
 
 	public Task<ResponseResults<Position>> RequestPositionsAsync(DateTime? date = null)
 	{
