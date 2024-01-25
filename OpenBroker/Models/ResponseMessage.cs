@@ -25,10 +25,23 @@ public class ResponseMessage
 
 public class ResponseResult<T> : ResponseMessage where T : class
 {
-    public required T Data { get; set; }
+    public T? Info { get; set; }
 }
 
 public class ResponseResults<T> : ResponseMessage where T : class
 {
-    public required List<T> List { get; set; }
+    public required IEnumerable<T> List { get; set; }
+}
+
+public class ResponseResultsWithPaging<T> : ResponseMessage where T : class
+{
+	public IEnumerable<T> List { get; set; } = new List<T>();
+
+	public int Total { get; set; } = 0;
+
+	public int PageSize { get; set; } = 10;
+
+	public int Page { get; set; } = 1;
+
+	public IEnumerable<string>? RefData { get; set; }
 }

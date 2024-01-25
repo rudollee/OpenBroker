@@ -145,7 +145,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 			if (response is null) return new ResponseResult<Balance>
 			{
 				StatusCode = Status.INTERNALSERVERERROR,
-				Data = new Balance()
+				Info = new Balance()
 			};
 
 			var balance = new Balance
@@ -163,7 +163,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 			return new ResponseResult<Balance>
 			{
 				StatusCode = Status.SUCCESS,
-				Data = balance
+				Info = balance
 			};
 		}
 		catch (Exception ex)
@@ -171,7 +171,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 			return new ResponseResult<Balance>
 			{
 				StatusCode = Status.INTERNALSERVERERROR,
-				Data = new Balance(),
+				Info = new Balance(),
 				Message = ex.Message
 			};
 		}
