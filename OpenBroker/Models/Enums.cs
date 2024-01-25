@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,9 +13,15 @@ public enum Status
 
     NODATA = 204,
 
-    UNAUTHORIZED = 401,
+	[Description("partially success")]
+	PARTIALLY_SUCCESS = 206,
 
-    FORBIDDEN = 403,
+	BAD_REQUEST = 400,
+
+	[Description("Unauthorized")]
+	UNAUTHORIZED = 401,
+
+	FORBIDDEN = 403,
 
     TIMEOUT = 408,
 
@@ -25,6 +32,12 @@ public enum Status
     NOT_IMPLEMENTED = 501,
 
     SERVICE_UNAVAILABLE = 503,
+
+	[Description("Repository Error")]
+	ERROR_REPOSITORY = 588,
+
+	[Description("open api Error")]
+	ERROR_OPEN_API = 589,
 }
 
 public enum OrderMode
