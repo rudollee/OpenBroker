@@ -105,7 +105,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
                 : new AccessTokenResponse
                 {
                     AccessToken = accessToken,
-                    DateExpiredString = DateTime.Now.AddHours(10).ToString("yyyyMMdd")
+                    DateExpiredString = DateTime.Now.AddHours(15).ToString("yyyy-MM-dd HH:mm:ss")
                 };
 
             _connection = new ConnectionInfo
