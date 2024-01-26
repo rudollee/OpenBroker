@@ -66,10 +66,10 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
     {
         var body = new
         {
-            appkey,
-            appsecret,
-            token
-        };
+			grant_type,
+			appkey,
+			appsecret
+		};
 
         try
         {
@@ -108,15 +108,14 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
                     DateExpiredString = DateTime.Now.AddHours(10).ToString("yyyyMMdd")
                 };
 
-            var approvalKey = await RequestApprovalKeyAsync(appkey, appsecret, tokenInfo.AccessToken);
             _connection = new ConnectionInfo
             {
                 AccessToken = tokenInfo.AccessToken,
                 AccessTokenExpired = tokenInfo.DateExpired,
                 AppKey = appkey,
                 SecretKey = appsecret,
-                WebsocketCode = approvalKey
-            };
+                WebsocketCode = await RequestApprovalKeyAsync(appkey, appsecret, tokenInfo.AccessToken)
+			};
 
             return new ResponseResult<ConnectionInfo> 
             { 
