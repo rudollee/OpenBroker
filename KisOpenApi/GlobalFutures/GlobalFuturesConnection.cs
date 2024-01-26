@@ -115,7 +115,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
                 AccessTokenExpired = tokenInfo.DateExpired,
                 AppKey = appkey,
                 SecretKey = appsecret,
-                WebsocketToken = approvalKey
+                WebsocketCode = approvalKey
             };
 
             return new ResponseResult<ConnectionInfo> 

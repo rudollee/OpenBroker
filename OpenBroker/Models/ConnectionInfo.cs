@@ -30,6 +30,6 @@ public class ConnectionInfo
     /// <summary>
     /// Access Token : for Websocket(optional)
     /// </summary>
-    public string WebsocketToken { get; set; } = string.Empty;
+    public string WebsocketCode { get; set; } = string.Empty;
 
 }
