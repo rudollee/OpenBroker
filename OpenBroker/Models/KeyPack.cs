@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace OpenBroker.Models;
-public class ConnectionInfo
+public class KeyPack
 {
     /// <summary>
     /// appkey

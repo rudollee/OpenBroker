@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 namespace KisOpenApi;
 public partial class KisGlobalFutures : ConnectionBase, IConnection
 {
-    public ConnectionInfo ConnectionInfo { get => _connection; }
-    private ConnectionInfo _connection;
+    public KeyPack KeyInfo { get => _keyInfo; }
+    private KeyPack _keyInfo;
 
     public bool IsConnected => throw new NotImplementedException();
 
@@ -90,9 +90,9 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
         }
     }
 
-    public async Task<ResponseResult<ConnectionInfo>> ConnectAsync(string appkey, string appsecret, string accessToken = "")
+    public async Task<ResponseResult<KeyPack>> ConnectAsync(KeyPack keyPack)
     {
-        if (string.IsNullOrWhiteSpace(appkey) || string.IsNullOrWhiteSpace(appsecret)) return new ResponseResult<ConnectionInfo>
+        if (string.IsNullOrWhiteSpace(keyPack.AppKey) || string.IsNullOrWhiteSpace(keyPack.SecretKey)) return new ResponseResult<KeyPack>
         {
             StatusCode = Status.UNAUTHORIZED,
             Message = "appkey or secret key is empty"
@@ -100,32 +100,32 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 
         try
         {
-            var tokenInfo = string.IsNullOrEmpty(accessToken)
-                ? await RequestAccessTokenAsync(appkey, appsecret)
+            var tokenInfo = string.IsNullOrEmpty(keyPack.AccessToken)
+                ? await RequestAccessTokenAsync(keyPack.AppKey, keyPack.SecretKey)
                 : new AccessTokenResponse
                 {
-                    AccessToken = accessToken,
+                    AccessToken = keyPack.AccessToken,
                     DateExpiredString = DateTime.Now.AddHours(15).ToString("yyyy-MM-dd HH:mm:ss")
                 };
 
-            _connection = new ConnectionInfo
+            _keyInfo = new KeyPack
             {
                 AccessToken = tokenInfo.AccessToken,
                 AccessTokenExpired = tokenInfo.DateExpired,
-                AppKey = appkey,
-                SecretKey = appsecret,
-                WebsocketCode = await RequestApprovalKeyAsync(appkey, appsecret, tokenInfo.AccessToken)
+                AppKey = keyPack.AppKey,
+                SecretKey = keyPack.SecretKey,
+                WebsocketCode = await RequestApprovalKeyAsync(keyPack.AppKey, keyPack.SecretKey, tokenInfo.AccessToken)
 			};
 
-            return new ResponseResult<ConnectionInfo> 
+            return new ResponseResult<KeyPack> 
             { 
                 StatusCode = Status.SUCCESS,
-                Info = _connection
+                Info = _keyInfo
             };
         }
         catch (Exception ex)
         {
-            return new ResponseResult<ConnectionInfo> 
+            return new ResponseResult<KeyPack> 
             { 
                 StatusCode = Status.INTERNALSERVERERROR,
                 Message = ex.Message
@@ -138,6 +138,6 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
         throw new NotImplementedException();
     }
 
-    public async Task SetAccountInfoAsync(Account accountInfo) => throw new NotImplementedException();
-
+	public void SetKeyPack(KeyPack keyInfo) => _keyInfo = keyInfo;
+	public void SetAccountInfo(Account accountInfo) => _accountInfo = accountInfo;
 }

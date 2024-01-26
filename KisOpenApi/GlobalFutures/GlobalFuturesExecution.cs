@@ -3,12 +3,13 @@ using OpenBroker;
 using OpenBroker.Extensions;
 using OpenBroker.Models;
 using RestSharp;
+using OpenBroker.Extensions;
 
 namespace KisOpenApi;
 public partial class KisGlobalFutures : ConnectionBase, IExecution
 {
-    public Account AccountInfo { get => _account; }
-    private Account _account;
+    public Account AccountInfo { get => _accountInfo; }
+    private Account _accountInfo;
 
     public EventHandler<IList<Contract>> Contracted { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public EventHandler<IList<Order>> Executed { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
@@ -35,16 +36,17 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 		throw new NotImplementedException();
 	}
 
+	#region 일별 체결내역 : OTFM3122R
 	public async Task<ResponseResults<Contract>> RequestContractsAsync(ContractStatus status = ContractStatus.ExecutedOnly)
 	{
-		return new ResponseResults<Contract>
-		{
-			StatusCode = Status.NOT_IMPLEMENTED,
-			List = new List<Contract>(),
-		};
+		var date = DateTime.Now.ToNewYorkTime();
+
+		return await RequestContractsAsync(date, date, ContractStatus.ExecutedOnly);
 	}
 
-	#region 일별 체결내역 : OTFM3122R
+	public async Task<ResponseResults<Contract>> RequestContractsAsync(DateTime dateBegun, ContractStatus status = ContractStatus.ExecutedOnly) =>
+		await RequestContractsAsync(dateBegun, dateBegun, ContractStatus.ExecutedOnly);
+
 	public async Task<ResponseResults<Contract>> RequestContractsAsync(DateTime dateBegun, DateTime dateFin, ContractStatus status = ContractStatus.ExecutedOnly)
 	{
 		var queryParameters = GenerateQueryParameters(new
@@ -247,9 +249,9 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 		return new Dictionary<string, string>
 				{
 					{ "content-type", "application/json" },
-					{ "authorization", $"Bearer {_connection.AccessToken}"},
-					{ "appkey", _connection.AppKey },
-					{ "appsecret", _connection.SecretKey},
+					{ "authorization", $"Bearer {_keyInfo.AccessToken}"},
+					{ "appkey", _keyInfo.AppKey },
+					{ "appsecret", _keyInfo.SecretKey},
 					{ "tr_id", tr},
 					{ "custtype", "P" }
 				};

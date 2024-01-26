@@ -15,7 +15,12 @@ public interface IConnection
     /// <summary>
     /// 접속 정보
     /// </summary>
-    ConnectionInfo ConnectionInfo { get; }
+    KeyPack KeyInfo { get; }
+
+    /// <summary>
+    /// 계좌 정보
+    /// </summary>
+    Account AccountInfo { get; }
 
     /// <summary>
     /// 접속 상태
@@ -23,20 +28,25 @@ public interface IConnection
     bool IsConnected { get; }
 
     /// <summary>
+    /// 접속 Key 강제 설정
+    /// </summary>
+    /// <param name="keyInfo"></param>
+    /// <returns></returns>
+    void SetKeyPack(KeyPack keyInfo);
+
+    /// <summary>
     /// 계좌 정보 설정
     /// </summary>
-    /// <param name="accountInfo"></param>
+    /// <param name="connectionInfo"></param>
     /// <returns></returns>
-    Task SetAccountInfoAsync(Account accountInfo);
+    void SetAccountInfo(Account accountInfo);
 
 	/// <summary>
 	/// 연결하기
 	/// </summary>
-	/// <param name="appkey"></param>
-	/// <param name="secret"></param>
-	/// <param name="accessToken"></param>
+	/// <param name="keyPack"></param>
 	/// <returns></returns>
-	Task<ResponseResult<ConnectionInfo>> ConnectAsync(string appkey, string secret, string accessToken = "");
+	Task<ResponseResult<KeyPack>> ConnectAsync(KeyPack keyPack);
 
     /// <summary>
     /// 연길 끊기
