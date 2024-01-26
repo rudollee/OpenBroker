@@ -90,7 +90,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
         }
     }
 
-    public async Task<ResponseResult<ConnectionInfo>> Connect(string appkey, string appsecret, string accessToken = "")
+    public async Task<ResponseResult<ConnectionInfo>> ConnectAsync(string appkey, string appsecret, string accessToken = "")
     {
         if (string.IsNullOrWhiteSpace(appkey) || string.IsNullOrWhiteSpace(appsecret)) return new ResponseResult<ConnectionInfo>
         {
@@ -134,11 +134,11 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
         }
     }
 
-    public async Task<ResponseMessage> Disconnect()
+    public async Task<ResponseMessage> DisconnectAsync()
     {
         throw new NotImplementedException();
     }
 
-    public async Task SetAccountInfo(Account accountInfo) => throw new NotImplementedException();
+    public async Task SetAccountInfoAsync(Account accountInfo) => throw new NotImplementedException();
 
 }

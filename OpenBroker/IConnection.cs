@@ -27,7 +27,7 @@ public interface IConnection
     /// </summary>
     /// <param name="accountInfo"></param>
     /// <returns></returns>
-    Task SetAccountInfo(Account accountInfo);
+    Task SetAccountInfoAsync(Account accountInfo);
 
 	/// <summary>
 	/// 연결하기
@@ -36,11 +36,11 @@ public interface IConnection
 	/// <param name="secret"></param>
 	/// <param name="accessToken"></param>
 	/// <returns></returns>
-	Task<ResponseResult<ConnectionInfo>> Connect(string appkey, string secret, string accessToken = "");
+	Task<ResponseResult<ConnectionInfo>> ConnectAsync(string appkey, string secret, string accessToken = "");
 
     /// <summary>
     /// 연길 끊기
     /// </summary>
     /// <returns></returns>
-    Task<ResponseMessage> Disconnect();
+    Task<ResponseMessage> DisconnectAsync();
 }
