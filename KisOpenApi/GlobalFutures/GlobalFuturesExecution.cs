@@ -49,6 +49,14 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 
 	public async Task<ResponseResults<Contract>> RequestContractsAsync(DateTime dateBegun, DateTime dateFin, ContractStatus status = ContractStatus.ExecutedOnly)
 	{
+		if (string.IsNullOrEmpty(AccountInfo.AccountNumber)) return new ResponseResults<Contract>
+		{
+			Code = "ANUMBER",
+			List = new List<Contract>(),
+			Message = "no accountNumber",
+			Remark = dateBegun.ToString("yyyyMMdd")
+		};
+
 		var queryParameters = GenerateQueryParameters(new
 		{
 			STRT_DT = dateBegun.ToString("yyyyMMdd"),
@@ -83,7 +91,9 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 			if (response.output1.Count == 0) return new ResponseResults<Contract>
 			{
 				StatusCode = Status.NODATA,
-				List = new List<Contract>()
+				List = new List<Contract>(),
+				Message = $"{AccountInfo.AccountNumber}: {AccountInfo.AccountNumberSuffix}",
+				Remark = $"{queryParameters["STRT_DT"]} - {queryParameters["END_DT"]}"
 			};
 
 			var contracts = new List<Contract>();
@@ -200,8 +210,8 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
     {
         var basicParameters = new
         {
-            CANO = AccountInfo.AccountNumber,
-            ACNT_PRDT_CD = AccountInfo.AccountNumberSuffix,
+            CANO = AccountInfo.AccountNumber.Substring(0,8),
+            ACNT_PRDT_CD = AccountInfo.AccountNumber.Substring(8),
         };
 
         var parameters = basicParameters.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(basicParameters, null)?.ToString());
