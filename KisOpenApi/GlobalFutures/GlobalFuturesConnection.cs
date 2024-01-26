@@ -10,12 +10,18 @@ using System.Threading.Tasks;
 namespace KisOpenApi;
 public partial class KisGlobalFutures : ConnectionBase, IConnection
 {
-    public Connection ConnectionInfo { get => _connection; }
-    private Connection _connection;
+    public ConnectionInfo ConnectionInfo { get => _connection; }
+    private ConnectionInfo _connection;
 
     public bool IsConnected => throw new NotImplementedException();
 
-    private AccessTokenResponse RequestAccessToken(string appkey, string appsecret)
+    /// <summary>
+    /// Request Access Token using appkey & secret
+    /// </summary>
+    /// <param name="appkey"></param>
+    /// <param name="appsecret"></param>
+    /// <returns></returns>
+    private async Task<AccessTokenResponse> RequestAccessTokenAsync(string appkey, string appsecret)
     {
         var body = new
         {
@@ -33,7 +39,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
                     { "Content-Type", "application/json; charset=UTF-8" },
                 })
                 .AddJsonBody(body);
-            var response = client.Post<AccessTokenResponse>(request);
+            var response = await client.PostAsync<AccessTokenResponse>(request);
 
             return response ?? new AccessTokenResponse { AccessToken = "" };
         }
@@ -49,13 +55,20 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
         }
     }
 
-    private string RequestApprovalKey(string appkey, string appsecret)
+	/// <summary>
+	/// Request Websocket Code using appkey, secret & access token
+	/// </summary>
+	/// <param name="appkey"></param>
+	/// <param name="appsecret"></param>
+	/// <param name="token"></param>
+	/// <returns></returns>
+	private async Task<string> RequestApprovalKeyAsync(string appkey, string appsecret, string token)
     {
         var body = new
         {
-            grant_type,
             appkey,
-            appsecret
+            appsecret,
+            token
         };
 
         try
@@ -67,7 +80,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
                     { "Content-Type", "application/json; charset=UTF-8" },
                 })
                 .AddJsonBody(body);
-            var response = client.Post<ApprovalKeyResponse>(request);
+            var response = await client.PostAsync<ApprovalKeyResponse>(request);
 
             return response?.ApprovalKey ?? string.Empty;
         }
@@ -77,9 +90,9 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
         }
     }
 
-    public ResponseMessage Connect(string appkey, string appsecret)
+    public async Task<ResponseResult<ConnectionInfo>> Connect(string appkey, string appsecret, string accessToken = "")
     {
-        if (string.IsNullOrWhiteSpace(appkey) || string.IsNullOrWhiteSpace(appsecret)) return new ResponseMessage
+        if (string.IsNullOrWhiteSpace(appkey) || string.IsNullOrWhiteSpace(appsecret)) return new ResponseResult<ConnectionInfo>
         {
             StatusCode = Status.UNAUTHORIZED,
             Message = "appkey or secret key is empty"
@@ -87,10 +100,16 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 
         try
         {
-            var tokenInfo = RequestAccessToken(appkey, appsecret);
-            var approvalKey = RequestApprovalKey(appkey, appsecret);
+            var tokenInfo = string.IsNullOrEmpty(accessToken)
+                ? await RequestAccessTokenAsync(appkey, appsecret)
+                : new AccessTokenResponse
+                {
+                    AccessToken = accessToken,
+                    DateExpiredString = DateTime.Now.AddHours(10).ToString("yyyyMMdd")
+                };
 
-            _connection = new Connection
+            var approvalKey = await RequestApprovalKeyAsync(appkey, appsecret, tokenInfo.AccessToken);
+            _connection = new ConnectionInfo
             {
                 AccessToken = tokenInfo.AccessToken,
                 AccessTokenExpired = tokenInfo.DateExpired,
@@ -99,11 +118,15 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
                 WebsocketToken = approvalKey
             };
 
-            return new ResponseMessage { };
+            return new ResponseResult<ConnectionInfo> 
+            { 
+                StatusCode = Status.SUCCESS,
+                Info = _connection
+            };
         }
         catch (Exception ex)
         {
-            return new ResponseMessage 
+            return new ResponseResult<ConnectionInfo> 
             { 
                 StatusCode = Status.INTERNALSERVERERROR,
                 Message = ex.Message
@@ -111,13 +134,11 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
         }
     }
 
-    public ResponseMessage Disconnect()
+    public async Task<ResponseMessage> Disconnect()
     {
         throw new NotImplementedException();
     }
 
-    public ResponseMessage SetAccountInfo(Account accountInfo)
-    {
-        throw new NotImplementedException();
-    }
+    public async Task SetAccountInfo(Account accountInfo) => throw new NotImplementedException();
+
 }

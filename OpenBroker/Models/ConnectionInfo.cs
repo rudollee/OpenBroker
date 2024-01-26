@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace OpenBroker.Models;
-public class Connection
+public class ConnectionInfo
 {
     /// <summary>
     /// appkey
@@ -31,4 +31,5 @@ public class Connection
     /// Access Token : for Websocket(optional)
     /// </summary>
     public string WebsocketToken { get; set; } = string.Empty;
+
 }

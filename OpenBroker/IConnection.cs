@@ -15,7 +15,7 @@ public interface IConnection
     /// <summary>
     /// 접속 정보
     /// </summary>
-    public Connection ConnectionInfo { get; }
+    ConnectionInfo ConnectionInfo { get; }
 
     /// <summary>
     /// 접속 상태
@@ -27,19 +27,20 @@ public interface IConnection
     /// </summary>
     /// <param name="accountInfo"></param>
     /// <returns></returns>
-    ResponseMessage SetAccountInfo(Account accountInfo);
+    Task SetAccountInfo(Account accountInfo);
 
-    /// <summary>
-    /// 연결하기
-    /// </summary>
-    /// <param name="appkey"></param>
-    /// <param name="secret"></param>
-    /// <returns></returns>
-    ResponseMessage Connect(string appkey, string secret);
+	/// <summary>
+	/// 연결하기
+	/// </summary>
+	/// <param name="appkey"></param>
+	/// <param name="secret"></param>
+	/// <param name="accessToken"></param>
+	/// <returns></returns>
+	Task<ResponseResult<ConnectionInfo>> Connect(string appkey, string secret, string accessToken = "");
 
     /// <summary>
     /// 연길 끊기
     /// </summary>
     /// <returns></returns>
-    ResponseMessage Disconnect();
+    Task<ResponseMessage> Disconnect();
 }
