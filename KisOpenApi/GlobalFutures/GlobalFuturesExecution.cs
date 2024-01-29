@@ -41,11 +41,11 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 	{
 		var date = DateTime.Now.ToNewYorkTime();
 
-		return await RequestContractsAsync(date, date, ContractStatus.ExecutedOnly);
+		return await RequestContractsAsync(date, date, status);
 	}
 
 	public async Task<ResponseResults<Contract>> RequestContractsAsync(DateTime dateBegun, ContractStatus status = ContractStatus.ExecutedOnly) =>
-		await RequestContractsAsync(dateBegun, dateBegun, ContractStatus.ExecutedOnly);
+		await RequestContractsAsync(dateBegun, dateBegun, status);
 
 	public async Task<ResponseResults<Contract>> RequestContractsAsync(DateTime dateBegun, DateTime dateFin, ContractStatus status = ContractStatus.ExecutedOnly)
 	{
@@ -85,7 +85,9 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 			if (response is null) return new ResponseResults<Contract>
 			{
 				StatusCode = Status.INTERNALSERVERERROR,
-				List = new List<Contract>()
+				List = new List<Contract>(),
+				Message = "response is null",
+				Remark = dateBegun.ToString("yyyyMMdd")
 			};
 
 			if (response.output1.Count == 0) return new ResponseResults<Contract>
@@ -127,7 +129,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 			{
 				List = new List<Contract>(),
 				StatusCode = Status.INTERNALSERVERERROR,
-				Message = ex.Message,
+				Message = $"error catch: {ex.Message}",
 			};
 		}
 	}
