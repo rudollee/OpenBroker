@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace KisOpenApi;
-internal class AccessTokenResponse
+internal class AccessTokenResponse : ResponseCommon
 {
     [JsonPropertyName("access_token")]
     public string AccessToken { get; set; } = string.Empty;
@@ -28,17 +28,4 @@ internal class AccessTokenResponse
 
     [JsonPropertyName("expires_in")]
     public int Duration { get; set; }
-
-    /// <summary>
-    /// MSG Code
-    /// </summary>
-    [JsonPropertyName("msg_cd")]
-    public string Code { get; set; } = "200";
-
-    /// <summary>
-    /// Error Message
-    /// </summary>
-    [JsonPropertyName("msg1")]
-    public string Message { get; set; } = string.Empty;
-
 }

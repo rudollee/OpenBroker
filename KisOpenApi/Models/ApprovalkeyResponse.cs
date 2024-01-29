@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace KisOpenApi;
-internal class ApprovalKeyResponse
+internal class ApprovalKeyResponse : ResponseCommon
 {
     [JsonPropertyName("approval_key")]
     public string ApprovalKey { get; set; } = string.Empty;
