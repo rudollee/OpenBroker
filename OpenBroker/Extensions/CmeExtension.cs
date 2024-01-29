@@ -51,10 +51,8 @@ public static class CmeService
 		return date.Hour > hourForward ? date : date.AddHours(-date.Hour - 1);
 	}
 
-	public static string GetFiscalMonth(DateTime? dateNullable = null)
+	public static string ToFiscalMonth(this DateTime date)
 	{
-		var date = dateNullable == null ? DateTime.Now.ToNewYorkTime() : (DateTime)dateNullable;
-
 		return $"{date.Year - 2000}{(SymbolOfMonth)date.Month}";
 	}
 
