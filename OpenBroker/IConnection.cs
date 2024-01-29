@@ -41,12 +41,28 @@ public interface IConnection
     /// <returns></returns>
     void SetAccountInfo(Account accountInfo);
 
+    /// <summary>
+    /// WebsocketCode 요청
+    /// </summary>
+    /// <param name="appkey"></param>
+    /// <param name="secretkey"></param>
+    /// <returns></returns>
+    Task<ResponseResult<KeyPack>> RequestApprovalKeyAsync(string appkey, string secretkey);
+
+    /// <summary>
+    /// Access Token 요청
+    /// </summary>
+    /// <param name="appkey"></param>
+    /// <param name="appsecret"></param>
+    /// <returns></returns>
+    Task<ResponseResult<KeyPack>> RequestAccessTokenAsync(string appkey, string appsecret);
+
 	/// <summary>
 	/// 연결하기
 	/// </summary>
 	/// <param name="keyPack"></param>
 	/// <returns></returns>
-	Task<ResponseResult<KeyPack>> ConnectAsync(KeyPack keyPack);
+	//Task<ResponseResult<KeyPack>> ConnectAsync(KeyPack keyPack);
 
     /// <summary>
     /// 연길 끊기
