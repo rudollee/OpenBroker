@@ -21,10 +21,61 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 		throw new NotImplementedException();
 	}
 
-	public Task<ResponseMessage> AddOrderAsync(Order order)
+	#region 해외선물 주문 - OTFM3001U
+	public async Task<ResponseMessage> AddOrderAsync(Order order)
 	{
-		throw new NotImplementedException();
-	}
+		if (string.IsNullOrEmpty(AccountInfo.AccountNumber)) return new ResponseMessage
+		{
+			Code = "ANUMBER",
+			Message = "no account number",
+		};
+
+		var parameters = GenerateParameters(new
+		{
+			OVRS_FUTR_FX_PDNO = order.Symbol, // 해외선물FX상품번호
+			SLL_BUY_DVSN_CD = order.IsLong ? "02" : "01", // 매도매수구분코드: 01.매도; 02.매수
+			PRIC_DVSN_CD = "1",  // 가격구분코드: 1.지정, 2.시장, 3.STOP, 4S/L
+			FM_LIMIT_ORD_PRIC = order.PriceOrdered.ToString(),  // FMLIMIT주문가격: 지정가가 아닐 경우 빈칸
+			FM_STOP_ORD_PRIC = "",  // FMSTOP주문가격: 시장가, 지정가인 경우, 빈칸("") 입력
+			FM_ORD_QTY = order.VolumeOrdered.ToString(), // FM주문수량
+			CCLD_CNDT_CD = "6", // 체결조건코드: EOD/지정가.6, GTD.5, 시장가.2
+			CPLX_ORD_DVSN_CD = "0", // 복합주문구분코드
+			ECIS_RSVN_ORD_YN = "N", // 행사예약주문여부
+			FM_HDGE_ORD_SCRN_YN = "N" // FM_HEDGE주문화면여부
+		});
+
+		var client = new RestClient($"{host}/uapi/overseas-futureoption/v1/trading/order");
+		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(OTFM3001U))).AddBody(parameters);
+
+		try
+		{
+			var response = await client.PostAsync<OTFM3001U>(request);
+			if (response is null || response.Output is null || response.ResultCode != "0") return new ResponseMessage
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Code = response?.ResponseCode ?? "NULL",
+				Message = response?.ResponseMessage ?? "response is null",
+				Remark = order.Symbol
+			};
+
+			return new ResponseMessage
+			{
+				StatusCode = Status.SUCCESS,
+				Code = response.ResponseCode,
+				Message = response.ResponseMessage,
+				Remark = response.Output.OrderNumber
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseMessage
+			{
+				StatusCode = Status.INTERNALSERVERERROR,
+				Message = $"error catch: {ex.Message}"
+			};
+		}
+	} 
+	#endregion
 
 	public Task<ResponseMessage> UpdateOrderAsync(Order order)
 	{
@@ -57,7 +108,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 			Remark = dateBegun.ToString("yyyyMMdd")
 		};
 
-		var queryParameters = GenerateQueryParameters(new
+		var queryParameters = GenerateParameters(new
 		{
 			STRT_DT = dateBegun.ToString("yyyyMMdd"),
 			END_DT = dateFin.ToString("yyyyMMdd"),
@@ -141,7 +192,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 		var client = new RestClient($"{host}/uapi/overseas-futureoption/v1/trading/inquire-deposit");
 		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(OTFM1411R)));
 
-		var body = GenerateQueryParameters(new
+		var body = GenerateParameters(new
 		{
 			CRCY_CD = "TUS",
 			INQR_DT = (date is null ? DateTime.Now : date)?.ToString("yyyyMMdd")
@@ -208,7 +259,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 	/// </summary>
 	/// <param name="additionalOption"></param>
 	/// <returns></returns>
-	private Dictionary<string, string?> GenerateQueryParameters(Dictionary<string, string?> additionalOption)
+	private Dictionary<string, string?> GenerateParameters(Dictionary<string, string?> additionalOption)
     {
         var basicParameters = new
         {
@@ -230,8 +281,8 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 	/// </summary>
 	/// <param name="additionalOption"></param>
 	/// <returns></returns>
-	private Dictionary<string, string?> GenerateQueryParameters(object additionalOption) =>
-		GenerateQueryParameters(additionalOption.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(additionalOption, null)?.ToString()));
+	private Dictionary<string, string?> GenerateParameters(object additionalOption) =>
+		GenerateParameters(additionalOption.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(additionalOption, null)?.ToString()));
 
 	/// <summary>
 	/// Generate Headers

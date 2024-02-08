@@ -16,7 +16,7 @@ public class Order : Instrument
     /// <summary>
     /// 주문 금액
     /// </summary>
-		public decimal Aggregation { get; set; }
+	public decimal Aggregation { get; set; }
     public bool IsLong { get; set; }
     public DateTime TimeOrdered { get; set; }
 }
