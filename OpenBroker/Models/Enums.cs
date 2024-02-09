@@ -48,6 +48,23 @@ public enum OrderMode
     Cancel = 88
 }
 
+public enum OrderType
+{
+    AUTO = 0,
+    LIMIT = 1,
+    MARKET = 2,
+    STOP = 3,
+    STOPLIMIT = 4,
+}
+
+public enum OrderDuration
+{
+    AUTO = 0,
+    STOP = 2,
+    GTD = 5,
+    LIMIT = 6
+}
+
 public enum ContractStatus
 {
     None = 0,

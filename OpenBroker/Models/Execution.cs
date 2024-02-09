@@ -21,6 +21,16 @@ public class Order : Instrument
     public DateTime TimeOrdered { get; set; }
 }
 
+public class OrderCore
+{
+    public string Symbol { get; set; } = string.Empty;
+	public decimal VolumeOrdered { get; set; }
+	public decimal PriceOrdered { get; set; }
+	public bool IsLong { get; set; }
+    public OrderType OrderType { get; set; }
+    public OrderDuration OrderDuration { get; set; }
+}
+
 public class Contract : Order
 {
     public Exchange ExchangeCode { get; set; } = Exchange.CME;

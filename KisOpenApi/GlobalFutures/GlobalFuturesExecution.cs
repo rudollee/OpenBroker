@@ -21,8 +21,8 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 		throw new NotImplementedException();
 	}
 
-	#region 해외선물 주문 - OTFM3001U
-	public async Task<ResponseMessage> AddOrderAsync(Order order)
+	#region 해외선물 주문/정정/취소 - OTFM3001U/OTFM3002U/OTFM3003U
+	public async Task<ResponseMessage> AddOrderAsync(OrderCore order)
 	{
 		if (string.IsNullOrEmpty(AccountInfo.AccountNumber)) return new ResponseMessage
 		{
@@ -30,32 +30,74 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 			Message = "no account number",
 		};
 
+		if (order.OrderType == OrderType.AUTO)
+		{
+			order.OrderType = order.PriceOrdered > 0 ? OrderType.LIMIT : OrderType.MARKET;
+		}
+
+		if (order.OrderDuration == OrderDuration.AUTO)
+		{
+			order.OrderDuration = order.PriceOrdered > 0 ? OrderDuration.LIMIT : OrderDuration.STOP;
+		}
+
+		var needsStop = new OrderType[] { OrderType.STOP, OrderType.STOPLIMIT }.Contains(order.OrderType); 
+
 		var parameters = GenerateParameters(new
 		{
 			OVRS_FUTR_FX_PDNO = order.Symbol, // 해외선물FX상품번호
 			SLL_BUY_DVSN_CD = order.IsLong ? "02" : "01", // 매도매수구분코드: 01.매도; 02.매수
-			PRIC_DVSN_CD = "1",  // 가격구분코드: 1.지정, 2.시장, 3.STOP, 4S/L
-			FM_LIMIT_ORD_PRIC = order.PriceOrdered.ToString(),  // FMLIMIT주문가격: 지정가가 아닐 경우 빈칸
-			FM_STOP_ORD_PRIC = "",  // FMSTOP주문가격: 시장가, 지정가인 경우, 빈칸("") 입력
+			PRIC_DVSN_CD = ((int)order.OrderType).ToString(),  // 가격구분코드: 1.지정, 2.시장, 3.STOP, 4S/L
+			FM_LIMIT_ORD_PRIC = order.OrderType == OrderType.LIMIT ? order.PriceOrdered.ToString() : "",  // FMLIMIT주문가격: 지정가가 아닐 경우 빈칸
+			FM_STOP_ORD_PRIC = needsStop ? order.PriceOrdered.ToString() :"" ,  // FMSTOP주문가격: 시장가, 지정가인 경우, 빈칸("") 입력
 			FM_ORD_QTY = order.VolumeOrdered.ToString(), // FM주문수량
-			CCLD_CNDT_CD = "6", // 체결조건코드: EOD/지정가.6, GTD.5, 시장가.2
+			CCLD_CNDT_CD = ((int)order.OrderDuration).ToString(), // 체결조건코드: EOD/지정가.6, GTD.5, 시장가.2
 			CPLX_ORD_DVSN_CD = "0", // 복합주문구분코드
 			ECIS_RSVN_ORD_YN = "N", // 행사예약주문여부
 			FM_HDGE_ORD_SCRN_YN = "N" // FM_HEDGE주문화면여부
 		});
 
-		var client = new RestClient($"{host}/uapi/overseas-futureoption/v1/trading/order");
-		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(OTFM3001U))).AddBody(parameters);
+		return await RequestOrderAsync("OTFM3001U", parameters);
+	} 
+
+	public Task<ResponseMessage> UpdateOrderAsync(OrderCore order)
+	{
+		//TODO : OTFM3002U
+		throw new NotImplementedException();
+	}
+
+	public async Task<ResponseMessage> CancelOrderAsync(DateOnly bizDate, long oid, int volume)
+	{
+		if (oid == 0 || volume == 0) return new ResponseMessage
+		{
+			StatusCode = Status.BAD_REQUEST,
+			Code = "REFUSE",
+			Message = "one of parameter value is not correct.",
+		};
+
+		var parameters = GenerateParameters(new
+		{
+			ORGN_ORD_DT = bizDate.ToString("yyyyMMdd"),
+			ORGN_ODNO = oid.ToString().PadLeft(8, '0'),
+			FM_HDGE_ORD_SCRN_YN = "N",
+			FM_MKPR_CVSN_YN = "N"
+		});
+
+		return await RequestOrderAsync("OTFM3003U", parameters);
+	}
+
+	private async Task<ResponseMessage> RequestOrderAsync(string trId, object parameters)
+	{
+		var client = new RestClient($"{host}/uapi/overseas-futureoption/v1/trading/order{(trId == "OTFM3001U" ? "" : "-rvsecncl")}");
+		var request = new RestRequest().AddHeaders(GenerateHeaders(trId)).AddBody(parameters);
 
 		try
 		{
-			var response = await client.PostAsync<OTFM3001U>(request);
+			var response = await client.PostAsync<OTFM300XU>(request);
 			if (response is null || response.Output is null || response.ResultCode != "0") return new ResponseMessage
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Code = response?.ResponseCode ?? "NULL",
 				Message = response?.ResponseMessage ?? "response is null",
-				Remark = order.Symbol
 			};
 
 			return new ResponseMessage
@@ -63,7 +105,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 				StatusCode = Status.SUCCESS,
 				Code = response.ResponseCode,
 				Message = response.ResponseMessage,
-				Remark = response.Output.OrderNumber
+				Remark = $"{response.Output.OrderDate8}-{response.Output.OrderNumber}"
 			};
 		}
 		catch (Exception ex)
@@ -74,18 +116,8 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 				Message = $"error catch: {ex.Message}"
 			};
 		}
-	} 
+	}
 	#endregion
-
-	public Task<ResponseMessage> UpdateOrderAsync(Order order)
-	{
-		throw new NotImplementedException();
-	}
-
-	public Task<ResponseMessage> CancelOrderAsync(string symbol, long oid, long volume)
-	{
-		throw new NotImplementedException();
-	}
 
 	#region 일별 체결내역 : OTFM3122R
 	public async Task<ResponseResults<Contract>> RequestContractsAsync(ContractStatus status = ContractStatus.ExecutedOnly)

@@ -44,23 +44,23 @@ public interface IExecution
     /// </summary>
     /// <param name="order"></param>
     /// <returns></returns>
-    Task<ResponseMessage> AddOrderAsync(Order order);
+    Task<ResponseMessage> AddOrderAsync(OrderCore order);
 
     /// <summary>
     /// 주문 수정
     /// </summary>
     /// <param name="order"></param>
     /// <returns></returns>
-    Task<ResponseMessage> UpdateOrderAsync(Order order);
+    Task<ResponseMessage> UpdateOrderAsync(OrderCore order);
 
-    /// <summary>
-    /// 주문 취소
-    /// </summary>
-    /// <param name="symbol"></param>
-    /// <param name="oid">원주문번호</param>
-    /// <param name="volume">취소 수량</param>
-    /// <returns></returns>
-    Task<ResponseMessage> CancelOrderAsync(string symbol, long oid, long volume);
+	/// <summary>
+	/// 주문 취소
+	/// </summary>
+	/// <param name="bizDate">주문일자</param>
+	/// <param name="oid">원주문번호</param>
+	/// <param name="volume">취소 수량</param>
+	/// <returns></returns>
+	Task<ResponseMessage> CancelOrderAsync(DateOnly bizDate, long oid, int volume);
 
     /// <summary>
     /// 체결내역 - 당일

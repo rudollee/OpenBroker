@@ -6,22 +6,11 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace KisOpenApi.Models;
-internal class OrderRequest
-{
-}
-
-/// <summary>
-/// 해외선물옵션 - OTFM3001U
-/// </summary>
-internal class OTFM3001U : ExecutionBaseResponse
-{
-	public OTFM3001UOutput Output { get; set; } = new OTFM3001UOutput();
-}
 
 /// <summary>
 /// 해외선물옵션 - OTFM3001U Output
 /// </summary>
-internal class OTFM3001UOutput
+internal class OTFM300XUOutput
 {
 	/// <summary>
 	/// 주문일자
@@ -34,4 +23,12 @@ internal class OTFM3001UOutput
 	/// </summary>
 	[JsonPropertyName("ODNO")]
 	public string OrderNumber { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// 해외선물옵션 - 주문 공통
+/// </summary>
+internal class OTFM300XU : ExecutionBaseResponse
+{
+	public OTFM300XUOutput Output { get; set; } = new OTFM300XUOutput();
 }
