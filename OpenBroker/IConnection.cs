@@ -57,12 +57,11 @@ public interface IConnection
     /// <returns></returns>
     Task<ResponseResult<KeyPack>> RequestAccessTokenAsync(string appkey, string appsecret);
 
-	/// <summary>
-	/// 연결하기
-	/// </summary>
-	/// <param name="keyPack"></param>
-	/// <returns></returns>
-	//Task<ResponseResult<KeyPack>> ConnectAsync(KeyPack keyPack);
+    /// <summary>
+    /// Websocket 연결하기
+    /// </summary>
+    /// <returns></returns>
+    Task<ResponseCore> ConnectAsync();
 
     /// <summary>
     /// 연길 끊기

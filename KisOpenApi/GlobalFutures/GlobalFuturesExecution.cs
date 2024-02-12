@@ -12,7 +12,7 @@ namespace KisOpenApi;
 public partial class KisGlobalFutures : ConnectionBase, IExecution
 {
     public Account AccountInfo { get => _accountInfo; }
-    private Account _accountInfo;
+    private Account _accountInfo = new Account();
 
     public EventHandler<IList<Contract>> Contracted { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public EventHandler<IList<Order>> Executed { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
@@ -288,84 +288,9 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 		throw new NotImplementedException();
 	}
 
-	public async Task<ResponseCore> SubscribeOrder()
-	{
-		var factory = new Func<ClientWebSocket>(() =>
-		{
-			var client = new ClientWebSocket
-			{
-				Options =
-				{
-					KeepAliveInterval = TimeSpan.FromSeconds(5),
-				}
-			};
-
-			return client;
-		});
-
-		var url = new Uri("wss://www.bitmex.com/realtime");
-		using var client = new WebsocketClient(url, factory);
-		client.Name = "Bitmex";
-		client.ReconnectTimeout = TimeSpan.FromSeconds(30);
-		client.ErrorReconnectTimeout = TimeSpan.FromSeconds(30);
-		client.MessageReceived.Subscribe(message => SubscribeCallback(message));
-
-		
-		await client.Start();
-
-		//	client.ReconnectionHappened.Subscribe(info =>
-		//	{
-		//		Log.Information("Reconnection happened, type: {type}, url: {url}", info.Type, client.Url);
-		//	});
-
-		//using (IWebsocketClient client = new WebsocketClient(url, logger, factory))
-		//{
-		//	client.Name = "Bitmex";
-		//	client.ReconnectTimeout = TimeSpan.FromSeconds(30);
-		//	client.ErrorReconnectTimeout = TimeSpan.FromSeconds(30);
-		//	client.ReconnectionHappened.Subscribe(info =>
-		//	{
-		//		Log.Information("Reconnection happened, type: {type}, url: {url}", info.Type, client.Url);
-		//	});
-		//	client.DisconnectionHappened.Subscribe(info =>
-		//		Log.Warning("Disconnection happened, type: {type}", info.Type));
-
-		//	client.MessageReceived.Subscribe(msg =>
-		//	{
-		//		Log.Information("Message received: {message}", msg);
-		//	});
-
-		//	Log.Information("Starting...");
-		//	client.Start().Wait();
-		//	Log.Information("Started.");
-
-		//	Task.Run(() => StartSendingPing(client));
-		//	Task.Run(() => SwitchUrl(client));
-
-		//	ExitEvent.WaitOne();
-		//}
-
-
-		return new ResponseCore
-		{
-
-		};
-	}
-
-	private void SubscribeCallback(ResponseMessage message)
-	{
-		var response = new ResponseCore
-		{
-			Code = "200",
-			Message = message.Text
-		};
-
-		Message(this, response);
-	}
-
-	#region Generate QueryParameters
+	#region Generate Headers and Parameters
 	/// <summary>
-	/// Generate QueryParameters
+	/// Generate Parameters
 	/// </summary>
 	/// <param name="additionalOption"></param>
 	/// <returns></returns>

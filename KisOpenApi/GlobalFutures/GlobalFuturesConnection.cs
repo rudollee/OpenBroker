@@ -4,24 +4,28 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Websocket.Client;
 
 namespace KisOpenApi;
 public partial class KisGlobalFutures : ConnectionBase, IConnection
 {
     public KeyPack KeyInfo { get => _keyInfo; }
-    private KeyPack _keyInfo;
+    private KeyPack _keyInfo = new KeyPack();
 
     public bool IsConnected => throw new NotImplementedException();
+	private IWebsocketClient client;
 
-    /// <summary>
-    /// Request Access Token using appkey & secret
-    /// </summary>
-    /// <param name="appkey"></param>
-    /// <param name="appsecret"></param>
-    /// <returns></returns>
-    public async Task<ResponseResult<KeyPack>> RequestAccessTokenAsync(string appkey, string appsecret)
+	/// <summary>
+	/// Request Access Token using appkey & secret
+	/// </summary>
+	/// <param name="appkey"></param>
+	/// <param name="appsecret"></param>
+	/// <returns></returns>
+	public async Task<ResponseResult<KeyPack>> RequestAccessTokenAsync(string appkey, string appsecret)
     {
         var body = new
         {
@@ -135,66 +139,55 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
         }
     }
 
-   // public async Task<ResponseResult<KeyPack>> ConnectAsync(KeyPack keyPack)
-   // {
-   //     if (string.IsNullOrWhiteSpace(keyPack.AppKey) || string.IsNullOrWhiteSpace(keyPack.SecretKey)) return new ResponseResult<KeyPack>
-   //     {
-   //         StatusCode = Status.UNAUTHORIZED,
-   //         Message = "appkey or secret key is empty"
-   //     };
+    public async Task<ResponseCore> ConnectAsync()
+    {
+		using var client = new WebsocketClient(new Uri(hostSocket))
+		{
+			Name = "KIS",
+			ReconnectTimeout = TimeSpan.FromSeconds(30),
+			ErrorReconnectTimeout = TimeSpan.FromSeconds(30),
+		};
 
-   //     try
-   //     {
-   //         AccessTokenResponse tokenInfo = new AccessTokenResponse
-			//{
-			//	AccessToken = keyPack.AccessToken,
-			//	DateExpiredString = keyPack.AccessTokenExpired?.ToString("yyyy-MM-dd HH:mm:ss")
-			//};
+		client.MessageReceived.Subscribe(message => SubscribeCallback(message));
+		await client.Start();
 
-			//if (string.IsNullOrEmpty(keyPack.AccessToken) || DateTime.Now.AddHours(15) > keyPack.AccessTokenExpired )
-   //         {
-   //             tokenInfo = await RequestAccessTokenAsync(keyPack.AppKey, keyPack.SecretKey);
-   //         }
+		return new ResponseCore
+		{
+			StatusCode = Status.SUCCESS,
+			Message = "Connected"
+		};
+	}
 
-   //         if (tokenInfo is null || string.IsNullOrEmpty(tokenInfo.AccessToken)) return new ResponseResult<KeyPack>
-   //         {
-   //             StatusCode = Status.ERROR_OPEN_API,
-   //             Message = tokenInfo is null ? "tokenInfo is null" : tokenInfo.Message
-   //         };
+    /// <summary>
+    /// Websocket Callback
+    /// </summary>
+    /// <param name="message"></param>
+	private void SubscribeCallback(ResponseMessage message)
+	{
+		if (message is null) return;
+		if (message.MessageType == WebSocketMessageType.Text)
+		{
+			if (message.Text is null) return;
+			if (message.Text.IndexOf("PINGPONG") > -1) // to keep connection
+			{
+				var document = JsonDocument.Parse(message.Text);
+				var root = document.RootElement;
 
-   //         var websocketInfo = await RequestApprovalKeyAsync(keyPack.AppKey, keyPack.SecretKey);
+				client.Send(message.Text);
+			}
+			else
+			{
+                //TODO: real data
+				Console.WriteLine(message.Text);
+			}
+		}
+		else
+		{
 
-   //         var websocketCode = websocketInfo is null || websocketInfo.Info is null
-   //             ? ""
-   //             : websocketInfo.Info.WebsocketCode;
+		}
+	}
 
-			//_keyInfo = new KeyPack
-   //         {
-   //             AccessToken = tokenInfo.AccessToken,
-   //             AccessTokenExpired = tokenInfo.DateExpired,
-   //             AppKey = keyPack.AppKey,
-   //             SecretKey = keyPack.SecretKey,
-   //             WebsocketCode = websocketCode
-			//};
-
-   //         return new ResponseResult<KeyPack> 
-   //         { 
-   //             StatusCode = string.IsNullOrEmpty(_keyInfo.WebsocketCode) ? Status.PARTIALLY_SUCCESS : Status.SUCCESS,
-   //             Info = _keyInfo,
-   //             Message = string.IsNullOrEmpty(_keyInfo.WebsocketCode) ? websocketInfo?.Message ?? "": ""
-   //         };
-   //     }
-   //     catch (Exception ex)
-   //     {
-   //         return new ResponseResult<KeyPack> 
-   //         { 
-   //             StatusCode = Status.INTERNALSERVERERROR,
-   //             Message = $"catch error: {ex.Message}"
-   //         };
-   //     }
-   // }
-
-    public async Task<ResponseCore> DisconnectAsync()
+	public async Task<ResponseCore> DisconnectAsync()
     {
         throw new NotImplementedException();
     }
