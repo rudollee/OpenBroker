@@ -30,28 +30,28 @@ public interface IExecution
     /// <summary>
     /// 메시지
     /// </summary>
-    EventHandler<ResponseMessage> Message { get; set; }
+    EventHandler<ResponseCore> Message { get; set; }
 
     /// <summary>
     /// 주문가능금액
     /// </summary>
     /// <param name="order"></param>
     /// <returns></returns>
-    Task<ResponseMessage> RequestOrderableAsync(Order order);
+    Task<ResponseCore> RequestOrderableAsync(Order order);
 
     /// <summary>
     /// 주문
     /// </summary>
     /// <param name="order"></param>
     /// <returns></returns>
-    Task<ResponseMessage> AddOrderAsync(OrderCore order);
+    Task<ResponseCore> AddOrderAsync(OrderCore order);
 
     /// <summary>
     /// 주문 수정
     /// </summary>
     /// <param name="order"></param>
     /// <returns></returns>
-    Task<ResponseMessage> UpdateOrderAsync(OrderCore order);
+    Task<ResponseCore> UpdateOrderAsync(OrderCore order);
 
 	/// <summary>
 	/// 주문 취소
@@ -60,7 +60,7 @@ public interface IExecution
 	/// <param name="oid">원주문번호</param>
 	/// <param name="volume">취소 수량</param>
 	/// <returns></returns>
-	Task<ResponseMessage> CancelOrderAsync(DateOnly bizDate, long oid, int volume);
+	Task<ResponseCore> CancelOrderAsync(DateOnly bizDate, long oid, int volume);
 
     /// <summary>
     /// 체결내역 - 당일

@@ -194,7 +194,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
    //     }
    // }
 
-    public async Task<ResponseMessage> DisconnectAsync()
+    public async Task<ResponseCore> DisconnectAsync()
     {
         throw new NotImplementedException();
     }

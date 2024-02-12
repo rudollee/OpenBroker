@@ -1,6 +1,6 @@
 ﻿namespace OpenBroker.Models;
 
-public class ResponseMessage
+public class ResponseCore
 {
     /// <summary>
     /// 상태 코드
@@ -23,17 +23,17 @@ public class ResponseMessage
     public string Remark { get; set; } = string.Empty;
 }
 
-public class ResponseResult<T> : ResponseMessage where T : class
+public class ResponseResult<T> : ResponseCore where T : class
 {
     public T? Info { get; set; }
 }
 
-public class ResponseResults<T> : ResponseMessage where T : class
+public class ResponseResults<T> : ResponseCore where T : class
 {
     public required IEnumerable<T> List { get; set; }
 }
 
-public class ResponseResultsWithPaging<T> : ResponseMessage where T : class
+public class ResponseResultsWithPaging<T> : ResponseCore where T : class
 {
 	public IEnumerable<T> List { get; set; } = new List<T>();
 

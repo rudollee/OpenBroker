@@ -4,6 +4,9 @@ using OpenBroker.Extensions;
 using OpenBroker.Models;
 using RestSharp;
 using OpenBroker.Extensions;
+using System.Net.WebSockets;
+using Microsoft.Extensions.Logging;
+using Websocket.Client;
 
 namespace KisOpenApi;
 public partial class KisGlobalFutures : ConnectionBase, IExecution
@@ -14,17 +17,17 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
     public EventHandler<IList<Contract>> Contracted { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public EventHandler<IList<Order>> Executed { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public EventHandler<Balance> BalanceAggregated { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public EventHandler<ResponseMessage> Message { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+	public EventHandler<ResponseCore> Message { get; set; }
 
-	public Task<ResponseMessage> RequestOrderableAsync(Order order)
+	public Task<ResponseCore> RequestOrderableAsync(Order order)
 	{
 		throw new NotImplementedException();
 	}
 
 	#region 해외선물 주문/정정/취소 - OTFM3001U/OTFM3002U/OTFM3003U
-	public async Task<ResponseMessage> AddOrderAsync(OrderCore order)
+	public async Task<ResponseCore> AddOrderAsync(OrderCore order)
 	{
-		if (string.IsNullOrEmpty(AccountInfo.AccountNumber)) return new ResponseMessage
+		if (string.IsNullOrEmpty(AccountInfo.AccountNumber)) return new ResponseCore
 		{
 			Code = "ANUMBER",
 			Message = "no account number",
@@ -59,15 +62,15 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 		return await RequestOrderAsync("OTFM3001U", parameters);
 	} 
 
-	public Task<ResponseMessage> UpdateOrderAsync(OrderCore order)
+	public Task<ResponseCore> UpdateOrderAsync(OrderCore order)
 	{
 		//TODO : OTFM3002U
 		throw new NotImplementedException();
 	}
 
-	public async Task<ResponseMessage> CancelOrderAsync(DateOnly bizDate, long oid, int volume)
+	public async Task<ResponseCore> CancelOrderAsync(DateOnly bizDate, long oid, int volume)
 	{
-		if (oid == 0 || volume == 0) return new ResponseMessage
+		if (oid == 0 || volume == 0) return new ResponseCore
 		{
 			StatusCode = Status.BAD_REQUEST,
 			Code = "REFUSE",
@@ -85,7 +88,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 		return await RequestOrderAsync("OTFM3003U", parameters);
 	}
 
-	private async Task<ResponseMessage> RequestOrderAsync(string trId, object parameters)
+	private async Task<ResponseCore> RequestOrderAsync(string trId, object parameters)
 	{
 		var client = new RestClient($"{host}/uapi/overseas-futureoption/v1/trading/order{(trId == "OTFM3001U" ? "" : "-rvsecncl")}");
 		var request = new RestRequest().AddHeaders(GenerateHeaders(trId)).AddBody(parameters);
@@ -93,14 +96,14 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 		try
 		{
 			var response = await client.PostAsync<OTFM300XU>(request);
-			if (response is null || response.Output is null || response.ResultCode != "0") return new ResponseMessage
+			if (response is null || response.Output is null || response.ResultCode != "0") return new ResponseCore
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Code = response?.ResponseCode ?? "NULL",
 				Message = response?.ResponseMessage ?? "response is null",
 			};
 
-			return new ResponseMessage
+			return new ResponseCore
 			{
 				StatusCode = Status.SUCCESS,
 				Code = response.ResponseCode,
@@ -110,7 +113,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 		}
 		catch (Exception ex)
 		{
-			return new ResponseMessage
+			return new ResponseCore
 			{
 				StatusCode = Status.INTERNALSERVERERROR,
 				Message = $"error catch: {ex.Message}"
@@ -283,6 +286,81 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 	public Task<ResponseResults<Earning>> RequestEarningAsync(DateTime dateBegin, DateTime dateFin, Exchange exchange = Exchange.KRX)
 	{
 		throw new NotImplementedException();
+	}
+
+	public async Task<ResponseCore> SubscribeOrder()
+	{
+		var factory = new Func<ClientWebSocket>(() =>
+		{
+			var client = new ClientWebSocket
+			{
+				Options =
+				{
+					KeepAliveInterval = TimeSpan.FromSeconds(5),
+				}
+			};
+
+			return client;
+		});
+
+		var url = new Uri("wss://www.bitmex.com/realtime");
+		using var client = new WebsocketClient(url, factory);
+		client.Name = "Bitmex";
+		client.ReconnectTimeout = TimeSpan.FromSeconds(30);
+		client.ErrorReconnectTimeout = TimeSpan.FromSeconds(30);
+		client.MessageReceived.Subscribe(message => SubscribeCallback(message));
+
+		
+		await client.Start();
+
+		//	client.ReconnectionHappened.Subscribe(info =>
+		//	{
+		//		Log.Information("Reconnection happened, type: {type}, url: {url}", info.Type, client.Url);
+		//	});
+
+		//using (IWebsocketClient client = new WebsocketClient(url, logger, factory))
+		//{
+		//	client.Name = "Bitmex";
+		//	client.ReconnectTimeout = TimeSpan.FromSeconds(30);
+		//	client.ErrorReconnectTimeout = TimeSpan.FromSeconds(30);
+		//	client.ReconnectionHappened.Subscribe(info =>
+		//	{
+		//		Log.Information("Reconnection happened, type: {type}, url: {url}", info.Type, client.Url);
+		//	});
+		//	client.DisconnectionHappened.Subscribe(info =>
+		//		Log.Warning("Disconnection happened, type: {type}", info.Type));
+
+		//	client.MessageReceived.Subscribe(msg =>
+		//	{
+		//		Log.Information("Message received: {message}", msg);
+		//	});
+
+		//	Log.Information("Starting...");
+		//	client.Start().Wait();
+		//	Log.Information("Started.");
+
+		//	Task.Run(() => StartSendingPing(client));
+		//	Task.Run(() => SwitchUrl(client));
+
+		//	ExitEvent.WaitOne();
+		//}
+
+
+		return new ResponseCore
+		{
+
+		};
+	}
+
+	private void SubscribeCallback(ResponseMessage message)
+	{
+		var response = new ResponseCore
+		{
+			Code = "200",
+			Message = message.Text
+		};
+
+		Message(this, response);
 	}
 
 	#region Generate QueryParameters

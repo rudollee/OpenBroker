@@ -68,5 +68,5 @@ public interface IConnection
     /// 연길 끊기
     /// </summary>
     /// <returns></returns>
-    Task<ResponseMessage> DisconnectAsync();
+    Task<ResponseCore> DisconnectAsync();
 }
