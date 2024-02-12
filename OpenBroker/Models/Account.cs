@@ -5,26 +5,23 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace OpenBroker.Models;
+/// <summary>
+/// 증권사/거래소 계정 정보
+/// </summary>
 public class Account
 {
-    /// <summary>
-    /// AccounT Type
-    /// </summary>
-    public AccountType AccountTyp { get; set; }
+	/// <summary>
+	/// ID
+	/// </summary>
+	public string ID { get; set; } = string.Empty;
 
-    /// <summary>
-    /// 계좌번호
-    /// </summary>
-    public string AccountNumber { get; set; } = string.Empty;
+	/// <summary>
+	/// 비밀번호
+	/// </summary>
+	public string Password { get; set; } = string.Empty;
 
-    /// <summary>
-    /// 계좌번호 뒷자리 optional
-    /// </summary>
-    public string AccountNumberSuffix { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 계좌 비밀번호 optional
-    /// </summary>
-    public string AccountPassword { get; set; } = string.Empty;
-
+	/// <summary>
+	/// 공인인증서 비밀번호
+	/// </summary>
+	public string PasswordCert { get; set; } = string.Empty;
 }

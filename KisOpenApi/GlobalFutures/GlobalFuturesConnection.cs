@@ -141,7 +141,12 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 
     public async Task<ResponseCore> ConnectAsync()
     {
-		using var client = new WebsocketClient(new Uri(hostSocket))
+        var options = new Func<ClientWebSocket>(() => new ClientWebSocket
+        {
+            Options = { KeepAliveInterval = TimeSpan.Zero }
+        });
+
+		using var client = new WebsocketClient(new Uri(hostSocket), options)
 		{
 			Name = "KIS",
 			ReconnectTimeout = TimeSpan.FromSeconds(30),
@@ -193,5 +198,5 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
     }
 
 	public void SetKeyPack(KeyPack keyInfo) => _keyInfo = keyInfo;
-	public void SetAccountInfo(Account accountInfo) => _accountInfo = accountInfo;
+	public void SetAccountInfo(BankAccount accountInfo) => _accountInfo = accountInfo;
 }

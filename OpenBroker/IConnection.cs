@@ -20,7 +20,7 @@ public interface IConnection
     /// <summary>
     /// 계좌 정보
     /// </summary>
-    Account AccountInfo { get; }
+    BankAccount AccountInfo { get; }
 
     /// <summary>
     /// 접속 상태
@@ -39,7 +39,7 @@ public interface IConnection
     /// </summary>
     /// <param name="connectionInfo"></param>
     /// <returns></returns>
-    void SetAccountInfo(Account accountInfo);
+    void SetAccountInfo(BankAccount accountInfo);
 
     /// <summary>
     /// WebsocketCode 요청

@@ -11,8 +11,8 @@ using Websocket.Client;
 namespace KisOpenApi;
 public partial class KisGlobalFutures : ConnectionBase, IExecution
 {
-    public Account AccountInfo { get => _accountInfo; }
-    private Account _accountInfo = new Account();
+    public BankAccount AccountInfo { get => _accountInfo; }
+    private BankAccount _accountInfo = new BankAccount();
 
     public EventHandler<IList<Contract>> Contracted { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public EventHandler<IList<Order>> Executed { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
