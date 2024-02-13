@@ -10,7 +10,7 @@ public interface IExecution
     /// <summary>
     /// 계좌 번호 정보
     /// </summary>
-    public BankAccount AccountInfo { get; }
+    public BankAccount BankAccountInfo { get; }
 
     /// <summary>
     /// 체결 내역

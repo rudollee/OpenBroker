@@ -20,7 +20,7 @@ public interface IConnection
     /// <summary>
     /// 계좌 정보
     /// </summary>
-    BankAccount AccountInfo { get; }
+    BankAccount BankAccountInfo { get; }
 
     /// <summary>
     /// 접속 상태
