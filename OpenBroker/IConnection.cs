@@ -35,11 +35,17 @@ public interface IConnection
     void SetKeyPack(KeyPack keyInfo);
 
     /// <summary>
-    /// 계좌 정보 설정
+    /// 접속 정보 설정
     /// </summary>
-    /// <param name="connectionInfo"></param>
-    /// <returns></returns>
-    void SetAccountInfo(BankAccount accountInfo);
+    /// <param name="account"></param>
+    void SetAccount(Account account);
+
+	/// <summary>
+	/// 계좌 정보 설정
+	/// </summary>
+	/// <param name="bankAccount"></param>
+	/// <returns></returns>
+	void SetBankAccount(BankAccount bankAccount);
 
     /// <summary>
     /// WebsocketCode 요청

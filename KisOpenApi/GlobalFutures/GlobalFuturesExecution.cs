@@ -11,6 +11,8 @@ using Websocket.Client;
 namespace KisOpenApi;
 public partial class KisGlobalFutures : ConnectionBase, IExecution
 {
+	public Account AccountInfo { get => _accountInfo; }
+	private Account _accountInfo = new Account();
     public BankAccount BankAccountInfo { get => _bankAccountInfo; }
     private BankAccount _bankAccountInfo = new BankAccount();
 

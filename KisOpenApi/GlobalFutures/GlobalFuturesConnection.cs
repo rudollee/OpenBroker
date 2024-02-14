@@ -198,5 +198,6 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
     }
 
 	public void SetKeyPack(KeyPack keyInfo) => _keyInfo = keyInfo;
-	public void SetAccountInfo(BankAccount accountInfo) => _bankAccountInfo = accountInfo;
+    public void SetAccount(Account account) => _accountInfo = account;
+	public void SetBankAccount(BankAccount bankAccount) => _bankAccountInfo = bankAccount;
 }
