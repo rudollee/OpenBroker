@@ -13,12 +13,12 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 {
 	public Account AccountInfo { get => _accountInfo; }
 	private Account _accountInfo = new Account();
-    public BankAccount BankAccountInfo { get => _bankAccountInfo; }
-    private BankAccount _bankAccountInfo = new BankAccount();
+	public BankAccount BankAccountInfo { get => _bankAccountInfo; }
+	private BankAccount _bankAccountInfo = new BankAccount();
 
-    public EventHandler<IList<Contract>> Contracted { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public EventHandler<IList<Order>> Executed { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public EventHandler<Balance> BalanceAggregated { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+	public EventHandler<IList<Contract>> Contracted { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+	public EventHandler<IList<Order>> Executed { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+	public EventHandler<Balance> BalanceAggregated { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 	public EventHandler<ResponseCore> Message { get; set; }
 
 	public Task<ResponseCore> RequestOrderableAsync(Order order)
@@ -45,7 +45,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 			order.OrderDuration = order.PriceOrdered > 0 ? OrderDuration.LIMIT : OrderDuration.STOP;
 		}
 
-		var needsStop = new OrderType[] { OrderType.STOP, OrderType.STOPLIMIT }.Contains(order.OrderType); 
+		var needsStop = new OrderType[] { OrderType.STOP, OrderType.STOPLIMIT }.Contains(order.OrderType);
 
 		var parameters = GenerateParameters(new
 		{
@@ -53,7 +53,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 			SLL_BUY_DVSN_CD = order.IsLong ? "02" : "01", // 매도매수구분코드: 01.매도; 02.매수
 			PRIC_DVSN_CD = ((int)order.OrderType).ToString(),  // 가격구분코드: 1.지정, 2.시장, 3.STOP, 4S/L
 			FM_LIMIT_ORD_PRIC = order.OrderType == OrderType.LIMIT ? order.PriceOrdered.ToString() : "",  // FMLIMIT주문가격: 지정가가 아닐 경우 빈칸
-			FM_STOP_ORD_PRIC = needsStop ? order.PriceOrdered.ToString() :"" ,  // FMSTOP주문가격: 시장가, 지정가인 경우, 빈칸("") 입력
+			FM_STOP_ORD_PRIC = needsStop ? order.PriceOrdered.ToString() : "",  // FMSTOP주문가격: 시장가, 지정가인 경우, 빈칸("") 입력
 			FM_ORD_QTY = order.VolumeOrdered.ToString(), // FM주문수량
 			CCLD_CNDT_CD = ((int)order.OrderDuration).ToString(), // 체결조건코드: EOD/지정가.6, GTD.5, 시장가.2
 			CPLX_ORD_DVSN_CD = "0", // 복합주문구분코드
@@ -62,7 +62,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 		});
 
 		return await RequestOrderAsync("OTFM3001U", parameters);
-	} 
+	}
 
 	public Task<ResponseCore> UpdateOrderAsync(OrderCore order)
 	{
@@ -277,7 +277,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 				Message = ex.Message
 			};
 		}
-	} 
+	}
 	#endregion
 
 	public Task<ResponseResults<Position>> RequestPositionsAsync(DateTime? date = null)
@@ -297,21 +297,21 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 	/// <param name="additionalOption"></param>
 	/// <returns></returns>
 	private Dictionary<string, string?> GenerateParameters(Dictionary<string, string?> additionalOption)
-    {
-        var basicParameters = new
-        {
-            CANO = BankAccountInfo.AccountNumber.Substring(0,8),
-            ACNT_PRDT_CD = BankAccountInfo.AccountNumber.Substring(8),
-        };
+	{
+		var basicParameters = new
+		{
+			CANO = BankAccountInfo.AccountNumber.Substring(0, 8),
+			ACNT_PRDT_CD = BankAccountInfo.AccountNumber.Substring(8),
+		};
 
-        var parameters = basicParameters.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(basicParameters, null)?.ToString());
-        foreach (var parameter in additionalOption)
-        {
-            parameters.Add(parameter.Key, parameter.Value?.ToString());
-        }
+		var parameters = basicParameters.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(basicParameters, null)?.ToString());
+		foreach (var parameter in additionalOption)
+		{
+			parameters.Add(parameter.Key, parameter.Value?.ToString());
+		}
 
-        return parameters ?? new Dictionary<string, string?>();
-    }
+		return parameters ?? new Dictionary<string, string?>();
+	}
 
 	/// <summary>
 	/// Generate QueryParameters
@@ -347,15 +347,16 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 	private Dictionary<string, string> GenerateHeaders(string tr)
 	{
 		return new Dictionary<string, string>
-				{
-					{ "content-type", "application/json" },
-					{ "authorization", $"Bearer {_keyInfo.AccessToken}"},
-					{ "appkey", _keyInfo.AppKey },
-					{ "appsecret", _keyInfo.SecretKey},
-					{ "tr_id", tr},
-					{ "custtype", "P" }
-				};
+		{
+			{ "content-type", "application/json" },
+			{ "authorization", $"Bearer {_keyInfo.AccessToken}"},
+			{ "appkey", _keyInfo.AppKey },
+			{ "appsecret", _keyInfo.SecretKey},
+			{ "tr_id", tr},
+			{ "custtype", "P" }
+		};
 	}
+
 	/// <summary>
 	/// Generate Headers
 	/// </summary>
