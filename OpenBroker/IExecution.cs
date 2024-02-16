@@ -62,12 +62,26 @@ public interface IExecution
 	/// <returns></returns>
 	Task<ResponseCore> CancelOrderAsync(DateOnly bizDate, long oid, int volume);
 
-    /// <summary>
-    /// 체결내역 - 당일
-    /// </summary>
-    /// <param name="status"></param>
-    /// <returns></returns>
-    Task<ResponseResults<Contract>> RequestContractsAsync(ContractStatus status = ContractStatus.ExecutedOnly);
+	/// <summary>
+	/// 주문내역 - 당일
+	/// </summary>
+	/// <returns></returns>
+	Task<ResponseResults<Order>> RequestOrderAsync();
+
+	/// <summary>
+	/// 주문내역 - 기간별
+	/// </summary>
+	/// <param name="dateBegun"></param>
+	/// <param name="dateFin"></param>
+	/// <returns></returns>
+	Task<ResponseResultsWithPaging<Order>> RequestOrderAsync(DateOnly dateBegun, DateOnly dateFin, int page);
+
+	/// <summary>
+	/// 체결내역 - 당일
+	/// </summary>
+	/// <param name="status"></param>
+	/// <returns></returns>
+	Task<ResponseResults<Contract>> RequestContractsAsync(ContractStatus status = ContractStatus.ExecutedOnly);
 
     /// <summary>
     /// 체결내역 - 기간별

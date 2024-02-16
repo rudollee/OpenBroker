@@ -124,6 +124,10 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 	}
 	#endregion
 
+	public Task<ResponseResults<Order>> RequestOrderAsync() => throw new NotImplementedException();
+	
+	public Task<ResponseResultsWithPaging<Order>> RequestOrderAsync(DateOnly dateBegun, DateOnly dateFin, int page) => throw new NotImplementedException();
+
 	#region 일별 체결내역 : OTFM3122R
 	public async Task<ResponseResults<Contract>> RequestContractsAsync(ContractStatus status = ContractStatus.ExecutedOnly)
 	{
