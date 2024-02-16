@@ -124,8 +124,85 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 	}
 	#endregion
 
-	public Task<ResponseResults<Order>> RequestOrderAsync() => throw new NotImplementedException();
-	
+	public async Task<ResponseResults<Order>> RequestOrderAsync()
+	{
+		if (string.IsNullOrEmpty(BankAccountInfo.AccountNumber)) return new ResponseResults<Order>
+		{
+			Code = "ANUMBER",
+			List = new List<Order>(),
+			Message = "no accountNumber",
+		};
+
+		var queryParameters = GenerateParameters(new
+		{
+			CCLD_NCCS_DVSN = "01",
+			SLL_BUY_DVSN_CD = "%%",
+			FUOP_DVSN = "00",
+			CTX_AREA_FK200 = "",
+			CTX_AREA_NK200 = ""
+		});
+
+		var client = new RestClient($"{host}/uapi/overseas-futureoption/v1/trading/inquire-ccld");
+		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(OTFM3116R)));
+
+		foreach (var parameters in queryParameters)
+		{
+			request.AddQueryParameter(parameters.Key, parameters.Value?.ToString());
+		}
+
+		try
+		{
+			var response = await client.GetAsync<OTFM3116R>(request);
+
+			if (response is null) return new ResponseResults<Order>
+			{
+				StatusCode = Status.INTERNALSERVERERROR,
+				List = new List<Order>(),
+				Message = "response is null",
+			};
+
+			if (!response.Output.Any()) return new ResponseResults<Order>
+			{
+				StatusCode = Status.NODATA,
+				List = new List<Order>(),
+				Message = "no order",
+				Remark = $"{BankAccountInfo.AccountNumber}: {BankAccountInfo.AccountNumberSuffix}",
+			};
+
+			var orders = new List<Order>();
+			response.Output.ForEach(f =>
+			{
+				orders.Add(new Order
+				{
+					BrokerCo = "KI",
+					OID = f.OID,
+					DateBiz = f.ord_dt.ToDate(),
+					PriceOrdered = f.PriceOrdered,
+					VolumeOrdered = f.VolumeOrdered,
+					VolumeUpdatable = f.VolumeOrdered - f.VolumeContracted,
+					Symbol = f.Symbol,
+					TimeOrdered = f.erlm_dtl_dtime.ToDateTimeMicro(),
+					IsLong = f.sll_buy_dvsn_cd == "02", //
+					Mode = f.sll_buy_dvsn_cd == "02" ? OrderMode.Long : OrderMode.Short,
+				});
+			});
+
+			return new ResponseResults<Order>
+			{
+				List = orders,
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResults<Order>
+			{
+				List = new List<Order>(),
+				StatusCode = Status.INTERNALSERVERERROR,
+				Message = $"error catch: {ex.Message}",
+			};
+		}
+	}
+
 	public Task<ResponseResultsWithPaging<Order>> RequestOrderAsync(DateOnly dateBegun, DateOnly dateFin, int page) => throw new NotImplementedException();
 
 	#region 일별 체결내역 : OTFM3122R

@@ -56,4 +56,8 @@ public static class DateExtension
 
         return new DateTime(year, month, day).Add(new TimeSpan(hour, minute, second));
     }
+
+    public static DateTime ToDateTimeMicro(this string datetimeTxt863) =>
+        DateTime.ParseExact(datetimeTxt863, "yyyyMMddHHmmssfff", null);
+
 }
