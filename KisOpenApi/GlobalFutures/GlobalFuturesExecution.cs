@@ -16,9 +16,9 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 	public BankAccount BankAccountInfo { get => _bankAccountInfo; }
 	private BankAccount _bankAccountInfo = new BankAccount();
 
-	public EventHandler<IList<Contract>> Contracted { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-	public EventHandler<IList<Order>> Executed { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-	public EventHandler<Balance> BalanceAggregated { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+	public EventHandler<ResponseResult<Contract>> Contracted { get; set; }
+	public EventHandler<ResponseResult<Order>> Executed { get; set; }
+	public EventHandler<ResponseResult<Balance>> BalanceAggregated { get; set; }
 	public EventHandler<ResponseCore> Message { get; set; }
 
 	public Task<ResponseCore> RequestOrderableAsync(Order order)
@@ -70,7 +70,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 		throw new NotImplementedException();
 	}
 
-	public async Task<ResponseCore> CancelOrderAsync(DateOnly bizDate, long oid, int volume)
+	public async Task<ResponseCore> CancelOrdersAsync(DateOnly bizDate, long oid, int volume)
 	{
 		if (oid == 0 || volume == 0) return new ResponseCore
 		{
@@ -124,7 +124,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 	}
 	#endregion
 
-	public async Task<ResponseResults<Order>> RequestOrderAsync()
+	public async Task<ResponseResults<Order>> RequestOrdersAsync()
 	{
 		if (string.IsNullOrEmpty(BankAccountInfo.AccountNumber)) return new ResponseResults<Order>
 		{
@@ -370,6 +370,54 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 	{
 		throw new NotImplementedException();
 	}
+
+	#region 주문내역 구독 : HDFFF1C0
+	public async Task<ResponseCore> SubscribeOrderAsync(bool connecting = true)
+	{
+		try
+		{
+			var result = await Task.Run(() => client.Send(GenerateSubscriptionRequest(nameof(HDFFF1C0), "", connecting)));
+
+			return new ResponseCore
+			{
+				StatusCode = result ? Status.SUCCESS : Status.ERROR_OPEN_API,
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseCore
+			{
+				StatusCode = Status.INTERNALSERVERERROR,
+				Message = $"catch error : {ex.Message}",
+				Remark = $"from SubscribeOrderAsync connecting is {connecting}"
+			};
+		};
+	}
+	#endregion
+
+	#region 체결내역 구독 : HDFFF2C0
+	public async Task<ResponseCore> SubscribeContractAsync(bool connecting = true)
+	{
+		try
+		{
+			var result = await Task.Run(() => client.Send(GenerateSubscriptionRequest(nameof(HDFFF2C0), "", connecting)));
+
+			return new ResponseCore
+			{
+				StatusCode = result ? Status.SUCCESS : Status.ERROR_OPEN_API,
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseCore
+			{
+				StatusCode = Status.INTERNALSERVERERROR,
+				Message = $"catch error : {ex.Message}",
+				Remark = $"from SubscribeOrderAsync connecting is {connecting}"
+			};
+		};
+	} 
+	#endregion
 
 	#region Generate Headers and Parameters
 	/// <summary>

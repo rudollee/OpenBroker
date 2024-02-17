@@ -233,16 +233,16 @@ internal enum HDFFF1C0
 	/// <summary>정정취소구분코드</summary>
 	rvse_cncl_dvsn_cd = 7,
 
-	/// <summary>매도매수구분코드</summary>
+	/// <summary>매도매수구분코드: 01.매도, 02.매수</summary>
 	sll_buy_dvsn_cd = 8,
 
 	/// <summary>복합주문구분코드</summary>
 	cplx_ord_dvsn_cd = 9,
 
-	/// <summary>가격구분코드</summary>
+	/// <summary>가격구분코드: 1.Limit, 2.Market, 3.Stop(Stop가격시 시장가)</summary>
 	prce_tp = 10,
 
-	/// <summary>FM거래소접수구분코드</summary>
+	/// <summary>FM거래소접수구분코드: 01.접수전, 02.응답, 03.거부</summary>
 	fm_excg_rcit_dvsn_cd = 11,
 
 	/// <summary>주문수량</summary>

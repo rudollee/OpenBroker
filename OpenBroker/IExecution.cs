@@ -15,17 +15,17 @@ public interface IExecution
     /// <summary>
     /// 체결 내역
     /// </summary>
-    EventHandler<IList<Contract>> Contracted { get; set; }
+    EventHandler<ResponseResult<Contract>> Contracted { get; set; }
 
     /// <summary>
     /// 체결/미체결 내역
     /// </summary>
-    EventHandler<IList<Order>> Executed { get; set; }
+    EventHandler<ResponseResult<Order>> Executed { get; set; }
 
     /// <summary>
     /// 잔고
     /// </summary>
-    EventHandler<Balance> BalanceAggregated { get; set; }
+    EventHandler<ResponseResult<Balance>> BalanceAggregated { get; set; }
 
     /// <summary>
     /// 메시지
@@ -60,13 +60,13 @@ public interface IExecution
 	/// <param name="oid">원주문번호</param>
 	/// <param name="volume">취소 수량</param>
 	/// <returns></returns>
-	Task<ResponseCore> CancelOrderAsync(DateOnly bizDate, long oid, int volume);
+	Task<ResponseCore> CancelOrdersAsync(DateOnly bizDate, long oid, int volume);
 
 	/// <summary>
 	/// 주문내역 - 당일
 	/// </summary>
 	/// <returns></returns>
-	Task<ResponseResults<Order>> RequestOrderAsync();
+	Task<ResponseResults<Order>> RequestOrdersAsync();
 
 	/// <summary>
 	/// 주문내역 - 기간별
@@ -75,6 +75,13 @@ public interface IExecution
 	/// <param name="dateFin"></param>
 	/// <returns></returns>
 	Task<ResponseResultsWithPaging<Order>> RequestOrderAsync(DateOnly dateBegun, DateOnly dateFin, int page);
+
+	/// <summary>
+	/// 주문내역 통보 - realtime
+	/// </summary>
+	/// <param name="connecting"></param>
+	/// <returns></returns>
+	Task<ResponseCore> SubscribeOrderAsync(bool connecting = true);
 
 	/// <summary>
 	/// 체결내역 - 당일
@@ -92,6 +99,13 @@ public interface IExecution
     /// <param name="exchange"></param>
     /// <returns></returns>
     Task<ResponseResults<Contract>> RequestContractsAsync(DateTime dateBegun, DateTime dateFin, ContractStatus status = ContractStatus.ExecutedOnly);
+
+	/// <summary>
+	/// 체결내역 통보 - realtime
+	/// </summary>
+	/// <param name="connecting"></param>
+	/// <returns></returns>
+	Task<ResponseCore> SubscribeContractAsync(bool connecting = true);
 
     /// <summary>
     /// 예탁금 및 Positions
