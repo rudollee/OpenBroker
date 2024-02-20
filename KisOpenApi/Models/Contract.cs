@@ -113,22 +113,22 @@ internal class OTFM3122R : ExecutionBaseResponse
 		/// <summary>
 		/// FM총체결수량
 		/// </summary>
-		public string fm_tot_ccld_qty { get; set; }
+		public string fm_tot_ccld_qty { get; set; } = "0";
 
 		/// <summary>
 		/// FM총선물약정금액
 		/// </summary>
-		public string fm_tot_futr_agrm_amt { get; set; }
+		public string fm_tot_futr_agrm_amt { get; set; } = "0";
 
 		/// <summary>
 		/// FM총옵션약정금액
 		/// </summary>
-		public string fm_tot_opt_agrm_amt { get; set; }
+		public string fm_tot_opt_agrm_amt { get; set; } = "0";
 
 		/// <summary>
 		/// FM수수료합계
 		/// </summary>
-		public string fm_fee_smtl { get; set; }
+		public string fm_fee_smtl { get; set; } = "0";
 	}
 
 }

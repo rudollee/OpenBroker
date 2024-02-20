@@ -151,7 +151,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 	}
 	#endregion
 
-	#region Connect Websocket & subscribe Order/Contract
+	#region Connect/disconnect Websocket
 	/// <summary>
 	/// Connect Websocket & subscribe Order/Contract
 	/// </summary>
@@ -191,6 +191,18 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 				Remark = "during connect websocket"
 			};
 		}
+	}
+
+	public async Task<ResponseCore> DisconnectAsync()
+	{
+		await client.Stop(WebSocketCloseStatus.NormalClosure, "");
+		client.Dispose();
+		_connected = false;
+
+		return new ResponseCore
+		{
+			Message = "disconnected"
+		};
 	}
 	#endregion
 
@@ -380,10 +392,4 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 		}
 	}
 	#endregion
-
-	public async Task<ResponseCore> DisconnectAsync()
-	{
-		throw new NotImplementedException();
-	}
-
 }
