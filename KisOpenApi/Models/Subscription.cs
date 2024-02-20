@@ -20,7 +20,7 @@ internal class KisSubscriptionRequest(string socketKey, string id, string key, b
 	public KisHeader Header { get; set; } = new KisHeader(socketKey, connecting, customerCode);
 
 	[JsonPropertyName("body")]
-	public KisSubscriptionPair Body { get; set; } = new KisSubscriptionPair(id, key);
+	public KisSubscriptionRequestBody Body { get; set; } = new KisSubscriptionRequestBody(id, key);
 
 	public class KisHeader(string socketKey, bool connecting, CustomerCode customerCode)
 	{
@@ -35,6 +35,11 @@ internal class KisSubscriptionRequest(string socketKey, string id, string key, b
 
 		[JsonPropertyName("content-type")]
 		public string ContentType { get; set; } = "utf-8";
+	}
+
+	public class KisSubscriptionRequestBody(string id, string key)
+	{
+		public KisSubscriptionPair Input { get; set; } = new KisSubscriptionPair(id, key);
 	}
 }
 

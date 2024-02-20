@@ -60,7 +60,7 @@ public interface IExecution
 	/// <param name="oid">원주문번호</param>
 	/// <param name="volume">취소 수량</param>
 	/// <returns></returns>
-	Task<ResponseCore> CancelOrdersAsync(DateOnly bizDate, long oid, int volume);
+	Task<ResponseCore> CancelOrderAsync(DateOnly bizDate, long oid, int volume);
 
 	/// <summary>
 	/// 주문내역 - 당일

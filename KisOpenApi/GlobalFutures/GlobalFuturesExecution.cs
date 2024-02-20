@@ -70,7 +70,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 		throw new NotImplementedException();
 	}
 
-	public async Task<ResponseCore> CancelOrdersAsync(DateOnly bizDate, long oid, int volume)
+	public async Task<ResponseCore> CancelOrderAsync(DateOnly bizDate, long oid, int volume)
 	{
 		if (oid == 0 || volume == 0) return new ResponseCore
 		{
