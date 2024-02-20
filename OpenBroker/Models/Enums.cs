@@ -40,10 +40,17 @@ public enum Status
 	ERROR_OPEN_API = 589,
 }
 
+public enum OrderDirection
+{
+    NONE,
+    LONG,
+    SHORT
+}
+
 public enum OrderMode
 {
-    Long = 11,
-    Short = 10,
+    NONE,
+    Place = 10,
     Update = 20,
     Cancel = 88
 }

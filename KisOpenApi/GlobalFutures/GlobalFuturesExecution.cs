@@ -3,10 +3,6 @@ using OpenBroker;
 using OpenBroker.Extensions;
 using OpenBroker.Models;
 using RestSharp;
-using OpenBroker.Extensions;
-using System.Net.WebSockets;
-using Microsoft.Extensions.Logging;
-using Websocket.Client;
 
 namespace KisOpenApi;
 public partial class KisGlobalFutures : ConnectionBase, IExecution
@@ -16,10 +12,10 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 	public BankAccount BankAccountInfo { get => _bankAccountInfo; }
 	private BankAccount _bankAccountInfo = new BankAccount();
 
-	public EventHandler<ResponseResult<Contract>> Contracted { get; set; }
-	public EventHandler<ResponseResult<Order>> Executed { get; set; }
+	public required EventHandler<ResponseResult<Contract>> Contracted { get; set; }
+	public required EventHandler<ResponseResult<Order>> Executed { get; set; }
 	public EventHandler<ResponseResult<Balance>> BalanceAggregated { get; set; }
-	public EventHandler<ResponseCore> Message { get; set; }
+	public required EventHandler<ResponseCore> Message { get; set; }
 
 	public Task<ResponseCore> RequestOrderableAsync(Order order)
 	{
@@ -170,6 +166,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 			};
 
 			var orders = new List<Order>();
+			var remark = string.Empty;
 			response.Output.ForEach(f =>
 			{
 				orders.Add(new Order
@@ -183,13 +180,22 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 					Symbol = f.Symbol,
 					TimeOrdered = f.erlm_dtl_dtime.ToDateTimeMicro(),
 					IsLong = f.sll_buy_dvsn_cd == "02", //
-					Mode = f.sll_buy_dvsn_cd == "02" ? OrderMode.Long : OrderMode.Short,
+					Mode = f.rcit_dvsn_cd switch
+					{
+						"00" => OrderMode.Place,
+						"01" => OrderMode.Update,
+						"02" => OrderMode.Cancel,
+						_ => OrderMode.NONE
+					}
 				});
+
+				remark += f.rcit_dvsn_cd + "|";
 			});
 
 			return new ResponseResults<Order>
 			{
 				List = orders,
+				Remark = remark
 			};
 		}
 		catch (Exception ex)
@@ -282,7 +288,6 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 					Symbol = f.Symbol,
 					TimeContracted = f.ccld_dtl_dtime.ToDateTime(),
 					IsLong = f.DirectionCode == "02", //
-					Mode = f.DirectionCode == "02" ? OrderMode.Long : OrderMode.Short,
 				});
 			});
 
