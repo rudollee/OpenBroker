@@ -19,7 +19,9 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 	public KeyPack KeyInfo { get => _keyInfo; }
 	private KeyPack _keyInfo = new KeyPack();
 
-	public bool IsConnected => throw new NotImplementedException();
+	public bool IsConnected { get => _connected; }
+	private bool _connected = false;
+
 	private IWebsocketClient client;
 
 	private string _iv = string.Empty;
@@ -173,6 +175,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 			client.MessageReceived.Subscribe(message => SubscribeCallback(message));
 			await client.Start();
 
+			_connected = true;
 			return new ResponseCore
 			{
 				StatusCode = Status.SUCCESS,
