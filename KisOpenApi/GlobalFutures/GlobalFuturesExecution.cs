@@ -377,51 +377,13 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 	}
 
 	#region 주문내역 구독 : HDFFF1C0
-	public async Task<ResponseCore> SubscribeOrderAsync(bool connecting = true)
-	{
-		try
-		{
-			var result = await Task.Run(() => client.Send(GenerateSubscriptionRequest(nameof(HDFFF1C0), "", connecting)));
-
-			return new ResponseCore
-			{
-				StatusCode = result ? Status.SUCCESS : Status.ERROR_OPEN_API,
-			};
-		}
-		catch (Exception ex)
-		{
-			return new ResponseCore
-			{
-				StatusCode = Status.INTERNALSERVERERROR,
-				Message = $"catch error : {ex.Message}",
-				Remark = $"from SubscribeOrderAsync connecting is {connecting}"
-			};
-		};
-	}
+	public async Task<ResponseCore> SubscribeOrderAsync(bool connecting = true) =>
+		await Subscribe(nameof(HDFFF1C0), "", connecting);
 	#endregion
 
 	#region 체결내역 구독 : HDFFF2C0
-	public async Task<ResponseCore> SubscribeContractAsync(bool connecting = true)
-	{
-		try
-		{
-			var result = await Task.Run(() => client.Send(GenerateSubscriptionRequest(nameof(HDFFF2C0), "", connecting)));
-
-			return new ResponseCore
-			{
-				StatusCode = result ? Status.SUCCESS : Status.ERROR_OPEN_API,
-			};
-		}
-		catch (Exception ex)
-		{
-			return new ResponseCore
-			{
-				StatusCode = Status.INTERNALSERVERERROR,
-				Message = $"catch error : {ex.Message}",
-				Remark = $"from SubscribeOrderAsync connecting is {connecting}"
-			};
-		};
-	} 
+	public async Task<ResponseCore> SubscribeContractAsync(bool connecting = true) =>
+		await Subscribe(nameof(HDFFF2C0), "", connecting);
 	#endregion
 
 	#region Generate Headers and Parameters

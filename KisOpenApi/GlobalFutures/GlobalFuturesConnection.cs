@@ -204,6 +204,29 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 			Message = "disconnected"
 		};
 	}
+
+	public async Task<ResponseCore> Subscribe(string trCode, string key, bool connecting = true)
+	{
+		try
+		{
+			var result = await Task.Run(() => client.Send(GenerateSubscriptionRequest(trCode, key, connecting)));
+
+			return new ResponseCore
+			{
+				StatusCode = result ? Status.SUCCESS : Status.ERROR_OPEN_API,
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseCore
+			{
+				StatusCode = Status.INTERNALSERVERERROR,
+				Message = $"catch error : {ex.Message}",
+				Remark = $"from {System.Reflection.MethodBase.GetCurrentMethod()?.Name} connecting is {connecting}"
+			};
+		};
+
+	}
 	#endregion
 
 	#region Websocket Callback
@@ -345,12 +368,67 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 
 		var data = plainTxt.Split("^");
 		switch (data[1]) 
-		{ 
-			case nameof(HDFFF010): break;
-			case nameof(HDFFF020): break;
+		{
+			#region 실시간 호가 HDFFF010
+			case nameof(HDFFF010):
+				var bidList = new List<OrderBook>();
+				var askList = new List<OrderBook>();
+				var bidQuantityIndex = (int)HDFFF010.bid_qntt_1;
+				var bidPriceIndex = (int)HDFFF010.bid_price_1;
+				var askQuantityIndex = (int)HDFFF010.ask_qntt_1;
+				var askPriceIndex = (int)HDFFF010.ask_price_1;
+				for (int i = 0; i < 5; i++)
+				{
+					bidList.Add(new OrderBook
+					{
+						Seq = Convert.ToByte(i + 1),
+						Amount = Convert.ToDecimal(data[bidQuantityIndex + i * 6]),
+						Price = Convert.ToDecimal(data[bidPriceIndex + i * 6]),
+					});
+					askList.Add(new OrderBook
+					{
+						Seq = Convert.ToByte(i + 1),
+						Amount = Convert.ToDecimal(data[askQuantityIndex + i * 6]),
+						Price = Convert.ToDecimal(data[askPriceIndex + i * 6])
+					});
+				}
+				MarketDepthListed(this, new ResponseResult<MarketDepth>
+				{
+					Code = rawData[2],
+					Info = new MarketDepth
+					{
+						Ask = askList,
+						Bid = bidList,
+						AskAgg = new OrderBook { Seq = 0, Amount = askList.Sum(x => x.Amount) },
+						BidAgg = new OrderBook { Seq = 0, Amount = bidList.Sum(x => x.Amount) },
+						Symbol = data[(int)HDFFF010.series_cd],
+						TimeContract = (data[(int)HDFFF010.recv_date] + data[(int)HDFFF010.recv_time]).ToDateTimeMicro(),
+
+					},
+					Remark = plainTxt
+				});
+				break;
+			#endregion
+			#region 실시간 체결가 HDFFF020
+			case nameof(HDFFF020):
+				MarketContracted(this, new ResponseResult<MarketContract>
+				{
+					Code = rawData[2],
+					Info = new MarketContract
+					{
+						Symbol = data[(int)HDFFF020.series_cd],
+						V = Convert.ToDecimal(data[(int)HDFFF020.last_qntt]),
+						C = Convert.ToDecimal(data[(int)HDFFF020.last_price]),
+						TimeContract = (data[(int)HDFFF020.recv_date] + data[(int)HDFFF020.recv_time]).ToDateTime()
+					},
+					Remark = plainTxt
+				});
+				break;
+			#endregion
+			#region 실시간 주문 HDFFF1C0
 			case nameof(HDFFF1C0):
-				Executed(this, new ResponseResult<Order> 
-				{ 
+				Executed(this, new ResponseResult<Order>
+				{
 					StatusCode = Status.SUCCESS,
 					Code = rawData[2],
 					Info = new Order
@@ -368,6 +446,8 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 					Remark = plainTxt
 				});
 				break;
+			#endregion
+			#region 실시간 체결 HDFFF2C0
 			case nameof(HDFFF2C0):
 				Contracted(this, new ResponseResult<Contract>
 				{
@@ -387,8 +467,17 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 					},
 					Remark = plainTxt
 				});
+				break; 
+			#endregion
+			default:
+				Message(this, new ResponseCore
+				{
+					StatusCode = Status.ERROR_OPEN_API,
+					Code = rawData[2],
+					Message = "during parsing callback to swich",
+					Remark = plainTxt,
+				});
 				break;
-			default: break;
 		}
 	}
 	#endregion
