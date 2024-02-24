@@ -62,4 +62,11 @@ public static class CmeService
 
 		return DateTime.Parse($"{2000 + Convert.ToInt32(fiscalMonth.Substring(0, 2))}-{month}-02");
 	}
+
+	public static string ToSym(this string symbol)
+	{
+		if (symbol.Length < 5) return string.Empty;
+
+		return symbol.Substring(0, 2);
+	}
 }
