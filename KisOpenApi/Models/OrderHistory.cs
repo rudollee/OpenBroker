@@ -93,7 +93,7 @@ internal class OTFM3116R : ExecutionBaseResponse
 /// </summary>
 internal class OTFM3120R : ExecutionBaseResponse
 {
-	public OTFM3120ROutput Output { get; set; } = new OTFM3120ROutput();
+	public List<OTFM3120ROutput> Output { get; set; } = new();
 
 	/// <summary>
 	/// 해외선물옵션 일별 주문내역 Output

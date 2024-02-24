@@ -256,7 +256,97 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 		}
 	}
 
-	public Task<ResponseResultsWithPaging<Order>> RequestOrderAsync(DateOnly dateBegun, DateOnly dateFin, int page) => throw new NotImplementedException();
+	public async Task<ResponseResults<Order>> RequestOrdersAsync(DateOnly dateBegun, DateOnly dateFin)
+	{
+		if (string.IsNullOrEmpty(BankAccountInfo.AccountNumber)) return new ResponseResults<Order>
+		{
+			Code = "ANUMBER",
+			List = new List<Order>(),
+			Message = "no accountNumber",
+		};
+
+		var queryParameters = GenerateParameters(new
+		{
+			STRT_DT = dateBegun.ToString("yyyyMMdd"),
+			END_DT = dateFin.ToString("yyyyMMdd"),
+			FM_PDGR_CD = "",
+			CCLD_NCCS_DVSN = "01",
+			SLL_BUY_DVSN_CD = "%%",
+			FUOP_DVSN = "00",
+			CTX_AREA_FK200 = "",
+			CTX_AREA_NK200 = ""
+		});
+
+		var client = new RestClient($"{host}/uapi/overseas-futureoption/v1/trading/inquire-daily-order");
+		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(OTFM3120R)));
+
+		foreach (var parameters in queryParameters)
+		{
+			request.AddQueryParameter(parameters.Key, parameters.Value?.ToString());
+		}
+
+		try
+		{
+			var response = await client.GetAsync<OTFM3120R>(request);
+
+			if (response is null) return new ResponseResults<Order>
+			{
+				StatusCode = Status.INTERNALSERVERERROR,
+				List = new List<Order>(),
+				Message = "response is null",
+			};
+
+			if (!response.Output.Any()) return new ResponseResults<Order>
+			{
+				StatusCode = Status.NODATA,
+				List = new List<Order>(),
+				Message = "no order",
+				Remark = $"{BankAccountInfo.AccountNumber}: {BankAccountInfo.AccountNumberSuffix}",
+			};
+
+			var orders = new List<Order>();
+			var remark = string.Empty;
+			response.Output.ForEach(f =>
+			{
+				orders.Add(new Order
+				{
+					BrokerCo = "KI",
+					OID = f.OID,
+					DateBiz = f.ord_dt.ToDate(),
+					PriceOrdered = f.PriceOrdered,
+					VolumeOrdered = f.VolumeOrdered,
+					VolumeUpdatable = f.VolumeOrdered - f.VolumeContracted,
+					Symbol = f.Symbol,
+					TimeOrdered = f.OrderDateTime863.ToDateTimeMicro(),
+					IsLong = f.sll_buy_dvsn_cd == "02", //
+					Mode = f.rcit_dvsn_cd switch
+					{
+						"00" => OrderMode.Place,
+						"01" => OrderMode.Update,
+						"02" => OrderMode.Cancel,
+						_ => OrderMode.NONE
+					}
+				});
+
+				remark += f.rcit_dvsn_cd + "|";
+			});
+
+			return new ResponseResults<Order>
+			{
+				List = orders,
+				Remark = remark
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResults<Order>
+			{
+				List = new List<Order>(),
+				StatusCode = Status.INTERNALSERVERERROR,
+				Message = $"error catch: {ex.Message}",
+			};
+		}
+	}
 	#endregion
 
 	#region 일별 체결내역 : OTFM3122R

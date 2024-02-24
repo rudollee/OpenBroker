@@ -74,7 +74,7 @@ public interface IExecution
 	/// <param name="dateBegun"></param>
 	/// <param name="dateFin"></param>
 	/// <returns></returns>
-	Task<ResponseResultsWithPaging<Order>> RequestOrderAsync(DateOnly dateBegun, DateOnly dateFin, int page);
+	Task<ResponseResults<Order>> RequestOrdersAsync(DateOnly dateBegun, DateOnly dateFin);
 
 	/// <summary>
 	/// 주문내역 통보 - realtime
