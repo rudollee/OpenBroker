@@ -17,10 +17,56 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 	public EventHandler<ResponseResult<Balance>> BalanceAggregated { get; set; }
 	public required EventHandler<ResponseCore> Message { get; set; }
 
-	public Task<ResponseCore> RequestOrderableAsync(Order order)
+	#region 해외선물 주문가능조회 - OTFM3304R
+	public async Task<ResponseCore> RequestOrderableAsync(Order order)
 	{
-		throw new NotImplementedException();
+		if (string.IsNullOrEmpty(BankAccountInfo.AccountNumber)) return new ResponseCore
+		{
+			Code = "ANUMBER",
+			Message = "no accountNumber",
+		};
+
+		var parameters = GenerateParameters(new
+		{
+			OVRS_FUTR_FX_PDNO = order.Symbol,
+			SLL_BUY_DVSN_CD = order.IsLong ? "02" : "01",
+			FM_ORD_PRIC = "N",
+			ECIS_RSVN_ORD_YN = "N"
+		});
+
+		var client = new RestClient($"{host}/uapi/overseas-futureoption/v1/trading/inquire-psamount");
+		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(OTFM3116R)));
+
+		foreach (var parameter in parameters)
+		{
+			request.AddQueryParameter(parameter.Key, parameter.Value?.ToString());
+		}
+
+		try
+		{
+			var response = await client.GetAsync<OTFM3304R>(request);
+			if (response is null || response.Output is null) return new ResponseCore
+			{
+				StatusCode = Status.INTERNALSERVERERROR,
+				Message = "response is null",
+			};
+
+			return new ResponseCore
+			{
+				Message = $"{response.Output.fm_new_ord_psbl_qty}",
+				Remark = response.Output.Symbol
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseCore
+			{
+				StatusCode = Status.INTERNALSERVERERROR,
+				Message = $"error catch: {ex.Message}",
+			};
+		}
 	}
+	#endregion
 
 	#region 해외선물 주문/정정/취소 - OTFM3001U/OTFM3002U/OTFM3003U
 	public async Task<ResponseCore> AddOrderAsync(OrderCore order)
@@ -120,6 +166,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 	}
 	#endregion
 
+	#region OTFM3116R 당일주문내역조회 / OTFM3120R 일별주문내역조회
 	public async Task<ResponseResults<Order>> RequestOrdersAsync()
 	{
 		if (string.IsNullOrEmpty(BankAccountInfo.AccountNumber)) return new ResponseResults<Order>
@@ -210,6 +257,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 	}
 
 	public Task<ResponseResultsWithPaging<Order>> RequestOrderAsync(DateOnly dateBegun, DateOnly dateFin, int page) => throw new NotImplementedException();
+	#endregion
 
 	#region 일별 체결내역 : OTFM3122R
 	public async Task<ResponseResults<Contract>> RequestContractsAsync(ContractStatus status = ContractStatus.ExecutedOnly)
