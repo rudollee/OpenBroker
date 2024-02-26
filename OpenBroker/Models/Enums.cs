@@ -51,7 +51,9 @@ public enum OrderMode
 {
     NONE,
     Place = 10,
+    PlaceContracted = 11,
     Update = 20,
+    UpdateContracted = 21,
     Cancel = 88
 }
 

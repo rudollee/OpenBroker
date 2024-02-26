@@ -232,6 +232,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 						"00" => OrderMode.Place,
 						"01" => OrderMode.Update,
 						"02" => OrderMode.Cancel,
+						"03" => OrderMode.PlaceContracted,
 						_ => OrderMode.NONE
 					}
 				});
@@ -319,7 +320,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 					Symbol = f.Symbol,
 					TimeOrdered = f.OrderDateTime863.ToDateTimeMicro(),
 					IsLong = f.sll_buy_dvsn_cd == "02", //
-					Mode = f.rcit_dvsn_cd switch
+					Mode = f.rvse_cncl_dvsn_cd switch
 					{
 						"00" => OrderMode.Place,
 						"01" => OrderMode.Update,
@@ -328,7 +329,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 					}
 				});
 
-				remark += f.rcit_dvsn_cd + "|";
+				remark += f.rvse_cncl_dvsn_cd + "|";
 			});
 
 			return new ResponseResults<Order>
