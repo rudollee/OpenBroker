@@ -18,10 +18,10 @@ public partial class KisGlobalFutures : ConnectionBase, IMarket
 	public Task<ResponseResult<MarketContract>> RequestMarketContract(string symbol) => throw new NotImplementedException();
 
 	public async Task<ResponseCore> SubscribeMarketContract(string symbol, bool connecting = true) =>
-		await Subscribe(nameof(HDFFF010), symbol, connecting);
+		await Subscribe(nameof(HDFFF020), symbol, connecting);
 
 	public async Task<ResponseCore> SubscribeMarketDepth(string symbol, bool connecting = true) =>
-		await Subscribe(nameof(HDFFF020), symbol, connecting);
+		await Subscribe(nameof(HDFFF010), symbol, connecting);
 
 	public Task<ResponseCore> SubscribeNews(bool connecting = true) => throw new NotImplementedException();
 }
