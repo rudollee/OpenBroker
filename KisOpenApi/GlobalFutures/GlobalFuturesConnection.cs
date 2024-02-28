@@ -357,7 +357,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 		var plainTxt = rawData[0] == "0" ? rawData[3] : decrypt(rawData[3]);
 
 		var data = plainTxt.Split("^");
-		switch (data[1]) 
+		switch (rawData[1]) 
 		{
 			#region 실시간 호가 HDFFF010
 			case nameof(HDFFF010):
