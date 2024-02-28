@@ -58,6 +58,6 @@ public static class DateExtension
     }
 
     public static DateTime ToDateTimeMicro(this string datetimeTxt863) =>
-        DateTime.ParseExact(datetimeTxt863, "yyyyMMddHHmmssfff", null);
+        DateTime.ParseExact(datetimeTxt863.Substring(0,17), "yyyyMMddHHmmssfff", null);
 
 }
