@@ -47,13 +47,18 @@ public interface IConnection
 	/// <returns></returns>
 	void SetBankAccount(BankAccount bankAccount);
 
-    /// <summary>
-    /// WebsocketCode 요청
-    /// </summary>
-    /// <param name="appkey"></param>
-    /// <param name="secretkey"></param>
-    /// <returns></returns>
-    Task<ResponseResult<KeyPack>> RequestApprovalKeyAsync(string appkey, string secretkey);
+	/// <summary>
+	/// 메시지
+	/// </summary>
+	EventHandler<ResponseCore> Message { get; set; }
+
+	/// <summary>
+	/// WebsocketCode 요청
+	/// </summary>
+	/// <param name="appkey"></param>
+	/// <param name="secretkey"></param>
+	/// <returns></returns>
+	Task<ResponseResult<KeyPack>> RequestApprovalKeyAsync(string appkey, string secretkey);
 
     /// <summary>
     /// Access Token 요청

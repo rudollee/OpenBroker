@@ -28,11 +28,6 @@ public interface IExecution
     EventHandler<ResponseResult<Balance>> BalanceAggregated { get; set; }
 
     /// <summary>
-    /// 메시지
-    /// </summary>
-    EventHandler<ResponseCore> Message { get; set; }
-
-    /// <summary>
     /// 주문가능금액
     /// </summary>
     /// <param name="order"></param>

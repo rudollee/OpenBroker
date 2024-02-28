@@ -7,11 +7,6 @@ using RestSharp;
 namespace KisOpenApi;
 public partial class KisGlobalFutures : ConnectionBase, IExecution
 {
-	public Account AccountInfo { get => _accountInfo; }
-	private Account _accountInfo = new Account();
-	public BankAccount BankAccountInfo { get => _bankAccountInfo; }
-	private BankAccount _bankAccountInfo = new BankAccount();
-
 	public required EventHandler<ResponseResult<Contract>> Contracted { get; set; }
 	public required EventHandler<ResponseResult<Order>> Executed { get; set; }
 	public EventHandler<ResponseResult<Balance>> BalanceAggregated { get; set; }
@@ -584,9 +579,9 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 		return new Dictionary<string, string>
 		{
 			{ "content-type", "application/json" },
-			{ "authorization", $"Bearer {_keyInfo.AccessToken}"},
-			{ "appkey", _keyInfo.AppKey },
-			{ "appsecret", _keyInfo.SecretKey},
+			{ "authorization", $"Bearer {KeyInfo.AccessToken}"},
+			{ "appkey", KeyInfo.AppKey },
+			{ "appsecret", KeyInfo.SecretKey},
 			{ "tr_id", tr},
 			{ "custtype", "P" }
 		};

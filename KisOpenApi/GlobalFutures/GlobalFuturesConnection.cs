@@ -12,16 +12,6 @@ using OpenBroker.Extensions;
 namespace KisOpenApi;
 public partial class KisGlobalFutures : ConnectionBase, IConnection
 {
-	public void SetKeyPack(KeyPack keyInfo) => _keyInfo = keyInfo;
-	public void SetAccount(Account account) => _accountInfo = account;
-	public void SetBankAccount(BankAccount bankAccount) => _bankAccountInfo = bankAccount;
-
-	public KeyPack KeyInfo { get => _keyInfo; }
-	private KeyPack _keyInfo = new KeyPack();
-
-	public bool IsConnected { get => _connected; }
-	private bool _connected = false;
-
 	private IWebsocketClient client;
 
 	private string _iv = string.Empty;
@@ -175,7 +165,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 			client.MessageReceived.Subscribe(message => SubscribeCallback(message));
 			await client.Start();
 
-			_connected = true;
+			SetConnect();
 			return new ResponseCore
 			{
 				StatusCode = Status.SUCCESS,
@@ -197,7 +187,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 	{
 		await client.Stop(WebSocketCloseStatus.NormalClosure, "");
 		client.Dispose();
-		_connected = false;
+		SetConnect(false);
 
 		return new ResponseCore
 		{

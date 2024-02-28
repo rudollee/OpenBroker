@@ -10,21 +10,6 @@ using Websocket.Client;
 namespace KisOpenApi.KrxEquity;
 public partial class KisKrxEquity : ConnectionBase, IConnection
 {
-	public void SetKeyPack(KeyPack keyInfo) => _keyInfo = keyInfo;
-	public KeyPack KeyInfo { get => _keyInfo; }
-	private KeyPack _keyInfo = new KeyPack();
-
-	public void SetAccount(Account account) => _accountInfo = account;
-	public Account AccountInfo { get => _accountInfo; }
-	private Account _accountInfo = new Account();
-
-	public void SetBankAccount(BankAccount bankAccount) => _bankAccountInfo = bankAccount;
-	public BankAccount BankAccountInfo { get => _bankAccountInfo; }
-	private BankAccount _bankAccountInfo = new BankAccount();
-
-	public bool IsConnected { get => _connected; }
-	private bool _connected = false;
-
 	private IWebsocketClient client;
 
 	private string _iv = string.Empty;

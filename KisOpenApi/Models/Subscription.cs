@@ -50,8 +50,8 @@ internal class KisSubscriptionResponse
 
 	internal class KisBody
 	{
-		[JsonPropertyName("tr_id")]
-		public int ResultCode { get; set; } = -1;
+		[JsonPropertyName("rt_cd")]
+		public string ResultCode { get; set; } = "-1";
 
 		[JsonPropertyName("msg_cd")]
 		public string MessageCode { get; set; } = string.Empty;
