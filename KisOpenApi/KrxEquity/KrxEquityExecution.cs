@@ -12,7 +12,6 @@ public partial class KisKrxEquity : ConnectionBase, IExecution
 	public EventHandler<ResponseResult<Contract>> Contracted { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 	public EventHandler<ResponseResult<Order>> Executed { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 	public EventHandler<ResponseResult<Balance>> BalanceAggregated { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-	public EventHandler<ResponseCore> Message { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
 	public Task<ResponseCore> AddOrderAsync(OrderCore order) => throw new NotImplementedException();
 	public Task<ResponseCore> CancelOrderAsync(DateOnly bizDate, long oid, int volume) => throw new NotImplementedException();
