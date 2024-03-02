@@ -19,18 +19,10 @@ public partial class KisGlobalFutures : ConnectionBase, IMarket
 
 	public async Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol)
 	{
-		var client = new RestClient($"");
+		var client = new RestClient($"{host}/uapi/overseas-futureoption/v1/quotations/stock-detail");
 		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(HHDFC55010100)));
 
-		var body = GenerateParameters(new
-		{
-			SRS_CD = symbol
-		});
-
-		foreach ( var parameter in body)
-		{
-			request.AddQueryParameter(parameter.Key, parameter.Value);
-		}
+		request.AddQueryParameter("SRS_CD", symbol);
 
 		try
 		{
@@ -44,6 +36,7 @@ public partial class KisGlobalFutures : ConnectionBase, IMarket
 
 			var info = new Instrument
 			{
+				ExchangeCode = (Exchange)Enum.Parse(typeof(Exchange), response.Output1.exch_cd),
 				Symbol = symbol,
 				Sym = symbol.ToSym(),
 				Margin = Convert.ToDecimal(response.Output1.trst_mgn),
@@ -53,11 +46,17 @@ public partial class KisGlobalFutures : ConnectionBase, IMarket
 				TimeClosed = response.Output1.mrkt_close_time.ToTime(),
 				DateOpened = response.Output1.trd_fr_date.ToDate(),
 				DateExpired = response.Output1.expr_date.ToDate(),
+				Currency = (Currency)Enum.Parse(typeof(Currency), response.Output1.crc_cd),
+				NumeralSystem = Convert.ToInt32(response.Output1.disp_digit.Trim()),
+				Tradable = response.Output1.stat_tp == "1",
+				
+				
 			};
 
 			return new ResponseResult<Instrument>
 			{
 				Info = info,
+				Remark = $"clas_cd: {response.Output1.clas_cd}, crc_cd: {response.Output1.crc_cd}"
 			};
 		}
 		catch (Exception ex)
