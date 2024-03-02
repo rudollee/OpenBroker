@@ -84,40 +84,49 @@ public enum ContractStatus
 
 public enum Currency
 {
-    NA = -1,
+    NONE = 0,
 
+	USD = 100,
+	
     /// <summary>
-    /// TOT_USD
-    /// </summary>
-    TUS = 0,
+	/// TOT_USD
+	/// </summary>
+	TUS = 101,
 
-    /// <summary>
-    /// TOT_KRW
-    /// </summary>
-    TRK = 1,
-    USD,
-    KRW,
-    EUR,
-    JPY,
-    GBP,
-    HKD,
+	EUR = 200,
 
-    /// <summary>
-    /// Swiss Franc
-    /// </summary>
-    CHF,
+	/// <summary>
+	/// Swiss Franc
+	/// </summary>
+	CHF = 4100,
 
-    /// <summary>
-    /// Singapore Dollar
-    /// </summary>
-    SGD,
+	GBP = 4400,
+
+	/// <summary>
+	/// Singapore Dollar
+	/// </summary>
+	SGD = 6500,
+
+	JPY = 8100,
+	
+    KRW = 8200,
+
+	/// <summary>
+	/// TOT_KRW
+	/// </summary>
+	TRK = 8201,
+	
+    HKD = 85200,
+
+
 }
 
 public enum Exchange
 {
     KRX = 0,
     CME = 10,
-    EUREX = 20
+    EUREX = 20,
+    OSE = 30,
 }
 
 public enum MarketCode
