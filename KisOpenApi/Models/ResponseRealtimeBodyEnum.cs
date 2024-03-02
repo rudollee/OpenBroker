@@ -414,5 +414,416 @@ internal enum HDFFF2C0
 
 	/// <summary>선물옵션종목구분코드</summary>
 	fuop_item_dvsn_cd = 32,
-} 
+}
+#endregion
+
+#region 국내주식 실시간체결통보
+/// <summary>
+/// 국내주식 실시간체결통보
+/// </summary>
+internal enum H0STCNI0
+{
+	/// <summary>고객 ID</summary>
+	CUST_ID = 0,
+
+	/// <summary>계좌번호</summary>
+	ACNT_NO = 1,
+
+	/// <summary>주문번호</summary>
+	ODER_NO = 2,
+
+	/// <summary>원주문번호</summary>
+	OODER_NO = 3,
+
+	/// <summary>매도매수구분</summary>
+	SELN_BYOV_CLS = 4,
+
+	/// <summary>정정구분</summary>
+	RCTF_CLS = 5,
+
+	/// <summary>주문종류</summary>
+	ODER_KIND = 6,
+
+	/// <summary>주문조건</summary>
+	ODER_COND = 7,
+
+	/// <summary>주식 단축 종목코드</summary>
+	STCK_SHRN_ISCD = 8,
+
+	/// <summary>체결 수량</summary>
+	CNTG_QTY = 9,
+
+	/// <summary>체결단가</summary>
+	CNTG_UNPR = 10,
+
+	/// <summary>주식 체결 시간</summary>
+	STCK_CNTG_HOUR = 11,
+
+	/// <summary>거부여부</summary>
+	RFUS_YN = 12,
+
+	/// <summary>체결여부</summary>
+	CNTG_YN = 13,
+
+	/// <summary>접수여부</summary>
+	ACPT_YN = 14,
+
+	/// <summary>지점번호</summary>
+	BRNC_NO = 15,
+
+	/// <summary>주문수량</summary>
+	ODER_QTY = 16,
+
+	/// <summary>계좌명</summary>
+	ACNT_NAME = 17,
+
+	/// <summary>체결종목명</summary>
+	CNTG_ISNM = 18,
+
+	/// <summary>신용구분</summary>
+	CRDT_CLS = 19,
+
+	/// <summary>신용대출일자</summary>
+	CRDT_LOAN_DATE = 20,
+
+	/// <summary>체결종목명40</summary>
+	CNTG_ISNM40 = 21,
+
+	/// <summary>주문가격</summary>
+	ODER_PRC = 22,
+}
+#endregion
+
+#region 국내주식 실시간 호가
+/// <summary>
+/// 국내주식 실시간 호가
+/// </summary>
+internal enum H0STASP0
+{
+	/// <summary>유가증권 단축 종목코드</summary>
+	MKSC_SHRN_ISCD = 0,
+
+	/// <summary>영업 시간</summary>
+	BSOP_HOUR = 1,
+
+	/// <summary>시간 구분 코드</summary>
+	HOUR_CLS_CODE = 2,
+
+	/// <summary>매도호가1</summary>
+	ASKP1 = 3,
+
+	/// <summary>매도호가2</summary>
+	ASKP2 = 4,
+
+	/// <summary>매도호가3</summary>
+	ASKP3 = 5,
+
+	/// <summary>매도호가4</summary>
+	ASKP4 = 6,
+
+	/// <summary>매도호가5</summary>
+	ASKP5 = 7,
+
+	/// <summary>매도호가6</summary>
+	ASKP6 = 8,
+
+	/// <summary>매도호가7</summary>
+	ASKP7 = 9,
+
+	/// <summary>매도호가8</summary>
+	ASKP8 = 10,
+
+	/// <summary>매도호가9</summary>
+	ASKP9 = 11,
+
+	/// <summary>매도호가10</summary>
+	ASKP10 = 12,
+
+	/// <summary>매수호가1</summary>
+	BIDP1 = 13,
+
+	/// <summary>매수호가2</summary>
+	BIDP2 = 14,
+
+	/// <summary>매수호가3</summary>
+	BIDP3 = 15,
+
+	/// <summary>매수호가4</summary>
+	BIDP4 = 16,
+
+	/// <summary>매수호가5</summary>
+	BIDP5 = 17,
+
+	/// <summary>매수호가6</summary>
+	BIDP6 = 18,
+
+	/// <summary>매수호가7</summary>
+	BIDP7 = 19,
+
+	/// <summary>매수호가8</summary>
+	BIDP8 = 20,
+
+	/// <summary>매수호가9</summary>
+	BIDP9 = 21,
+
+	/// <summary>매수호가10</summary>
+	BIDP10 = 22,
+
+	/// <summary>매도호가 잔량1</summary>
+	ASKP_RSQN1 = 23,
+
+	/// <summary>매도호가 잔량2</summary>
+	ASKP_RSQN2 = 24,
+
+	/// <summary>매도호가 잔량3</summary>
+	ASKP_RSQN3 = 25,
+
+	/// <summary>매도호가 잔량4</summary>
+	ASKP_RSQN4 = 26,
+
+	/// <summary>매도호가 잔량5</summary>
+	ASKP_RSQN5 = 27,
+
+	/// <summary>매도호가 잔량6</summary>
+	ASKP_RSQN6 = 28,
+
+	/// <summary>매도호가 잔량7</summary>
+	ASKP_RSQN7 = 29,
+
+	/// <summary>매도호가 잔량8</summary>
+	ASKP_RSQN8 = 30,
+
+	/// <summary>매도호가 잔량9</summary>
+	ASKP_RSQN9 = 31,
+
+	/// <summary>매도호가 잔량10</summary>
+	ASKP_RSQN10 = 32,
+
+	/// <summary>매수호가 잔량1</summary>
+	BIDP_RSQN1 = 33,
+
+	/// <summary>매수호가 잔량2</summary>
+	BIDP_RSQN2 = 34,
+
+	/// <summary>매수호가 잔량3</summary>
+	BIDP_RSQN3 = 35,
+
+	/// <summary>매수호가 잔량4</summary>
+	BIDP_RSQN4 = 36,
+
+	/// <summary>매수호가 잔량5</summary>
+	BIDP_RSQN5 = 37,
+
+	/// <summary>매수호가 잔량6</summary>
+	BIDP_RSQN6 = 38,
+
+	/// <summary>매수호가 잔량7</summary>
+	BIDP_RSQN7 = 39,
+
+	/// <summary>매수호가 잔량8</summary>
+	BIDP_RSQN8 = 40,
+
+	/// <summary>매수호가 잔량9</summary>
+	BIDP_RSQN9 = 41,
+
+	/// <summary>매수호가 잔량10</summary>
+	BIDP_RSQN10 = 42,
+
+	/// <summary>총 매도호가 잔량</summary>
+	TOTAL_ASKP_RSQN = 43,
+
+	/// <summary>총 매수호가 잔량</summary>
+	TOTAL_BIDP_RSQN = 44,
+
+	/// <summary>시간외 총 매도호가 잔량</summary>
+	OVTM_TOTAL_ASKP_RSQN = 45,
+
+	/// <summary>시간외 총 매수호가 잔량</summary>
+	OVTM_TOTAL_BIDP_RSQN = 46,
+
+	/// <summary>예상 체결가</summary>
+	ANTC_CNPR = 47,
+
+	/// <summary>예상 체결량</summary>
+	ANTC_CNQN = 48,
+
+	/// <summary>예상 거래량</summary>
+	ANTC_VOL = 49,
+
+	/// <summary>예상 체결 대비</summary>
+	ANTC_CNTG_VRSS = 50,
+
+	/// <summary>예상 체결 대비 부호</summary>
+	ANTC_CNTG_VRSS_SIGN = 51,
+
+	/// <summary>예상 체결 전일 대비율</summary>
+	ANTC_CNTG_PRDY_CTRT = 52,
+
+	/// <summary>누적 거래량</summary>
+	ACML_VOL = 53,
+
+	/// <summary>총 매도호가 잔량 증감</summary>
+	TOTAL_ASKP_RSQN_ICDC = 54,
+
+	/// <summary>총 매수호가 잔량 증감</summary>
+	TOTAL_BIDP_RSQN_ICDC = 55,
+
+	/// <summary>시간외 총 매도호가 증감</summary>
+	OVTM_TOTAL_ASKP_ICDC = 56,
+
+	/// <summary>시간외 총 매수호가 증감</summary>
+	OVTM_TOTAL_BIDP_ICDC = 57,
+
+	/// <summary>주식 매매 구분 코드</summary>
+	STCK_DEAL_CLS_CODE = 58,
+}
+#endregion
+
+#region 국내주식 실시간 체결가
+/// <summary>
+/// 국내주식 실시간 체결가
+/// </summary>
+internal enum H0STCNT0
+{
+	/// <summary>종목코드</summary>
+	series_cd = 0,
+
+	/// <summary>유가증권 단축 종목코드</summary>
+	MKSC_SHRN_ISCD = 1,
+
+	/// <summary>주식 체결 시간</summary>
+	STCK_CNTG_HOUR = 2,
+
+	/// <summary>주식 현재가</summary>
+	STCK_PRPR = 3,
+
+	/// <summary>전일 대비 부호</summary>
+	PRDY_VRSS_SIGN = 4,
+
+	/// <summary>전일 대비</summary>
+	PRDY_VRSS = 5,
+
+	/// <summary>전일 대비율</summary>
+	PRDY_CTRT = 6,
+
+	/// <summary>가중 평균 주식 가격</summary>
+	WGHN_AVRG_STCK_PRC = 7,
+
+	/// <summary>주식 시가</summary>
+	STCK_OPRC = 8,
+
+	/// <summary>주식 최고가</summary>
+	STCK_HGPR = 9,
+
+	/// <summary>주식 최저가</summary>
+	STCK_LWPR = 10,
+
+	/// <summary>매도호가1</summary>
+	ASKP1 = 11,
+
+	/// <summary>매수호가1</summary>
+	BIDP1 = 12,
+
+	/// <summary>체결 거래량</summary>
+	CNTG_VOL = 13,
+
+	/// <summary>누적 거래량</summary>
+	ACML_VOL = 14,
+
+	/// <summary>누적 거래 대금</summary>
+	ACML_TR_PBMN = 15,
+
+	/// <summary>매도 체결 건수</summary>
+	SELN_CNTG_CSNU = 16,
+
+	/// <summary>매수 체결 건수</summary>
+	SHNU_CNTG_CSNU = 17,
+
+	/// <summary>순매수 체결 건수</summary>
+	NTBY_CNTG_CSNU = 18,
+
+	/// <summary>체결강도</summary>
+	CTTR = 19,
+
+	/// <summary>총 매도 수량</summary>
+	SELN_CNTG_SMTN = 20,
+
+	/// <summary>총 매수 수량</summary>
+	SHNU_CNTG_SMTN = 21,
+
+	/// <summary>체결구분</summary>
+	CCLD_DVSN = 22,
+
+	/// <summary>매수비율</summary>
+	SHNU_RATE = 23,
+
+	/// <summary>전일 거래량 대비 등락율</summary>
+	PRDY_VOL_VRSS_ACML_VOL_RATE = 24,
+
+	/// <summary>시가 시간</summary>
+	OPRC_HOUR = 25,
+
+	/// <summary>시가대비구분</summary>
+	OPRC_VRSS_PRPR_SIGN = 26,
+
+	/// <summary>시가대비</summary>
+	OPRC_VRSS_PRPR = 27,
+
+	/// <summary>최고가 시간</summary>
+	HGPR_HOUR = 28,
+
+	/// <summary>고가대비구분</summary>
+	HGPR_VRSS_PRPR_SIGN = 29,
+
+	/// <summary>고가대비</summary>
+	HGPR_VRSS_PRPR = 30,
+
+	/// <summary>최저가 시간</summary>
+	LWPR_HOUR = 31,
+
+	/// <summary>저가대비구분</summary>
+	LWPR_VRSS_PRPR_SIGN = 32,
+
+	/// <summary>저가대비</summary>
+	LWPR_VRSS_PRPR = 33,
+
+	/// <summary>영업 일자</summary>
+	BSOP_DATE = 34,
+
+	/// <summary>신 장운영 구분 코드</summary>
+	NEW_MKOP_CLS_CODE = 35,
+
+	/// <summary>거래정지 여부</summary>
+	TRHT_YN = 36,
+
+	/// <summary>매도호가 잔량1</summary>
+	ASKP_RSQN1 = 37,
+
+	/// <summary>매수호가 잔량1</summary>
+	BIDP_RSQN1 = 38,
+
+	/// <summary>총 매도호가 잔량</summary>
+	TOTAL_ASKP_RSQN = 39,
+
+	/// <summary>총 매수호가 잔량</summary>
+	TOTAL_BIDP_RSQN = 40,
+
+	/// <summary>거래량 회전율</summary>
+	VOL_TNRT = 41,
+
+	/// <summary>전일 동시간 누적 거래량</summary>
+	PRDY_SMNS_HOUR_ACML_VOL = 42,
+
+	/// <summary>전일 동시간 누적 거래량 비율</summary>
+	PRDY_SMNS_HOUR_ACML_VOL_RATE = 43,
+
+	/// <summary>시간 구분 코드</summary>
+	HOUR_CLS_CODE = 44,
+
+	/// <summary>임의종료구분코드</summary>
+	MRKT_TRTM_CLS_CODE = 45,
+
+	/// <summary>정적VI발동기준가</summary>
+	VI_STND_PRC = 46,
+}
 #endregion
