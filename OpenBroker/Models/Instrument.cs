@@ -37,7 +37,7 @@ public class InstrumentCore
     /// <summary>
     /// Precision
     /// </summary>
-    public int PRCSN { get; set; }
+    public int Precision { get; set; }
 
     /// <summary>
     /// Tradable
