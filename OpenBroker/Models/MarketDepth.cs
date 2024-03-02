@@ -26,7 +26,7 @@ public class OrderBook
 /// <summary>
 /// 시장 체결
 /// </summary>
-public class MarketContract : Instrument
+public class MarketContract : InstrumentCore
 {
     public DateTime TimeContract { get; set; }
     public decimal C { get; set; }

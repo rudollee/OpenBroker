@@ -1,6 +1,6 @@
 ﻿namespace OpenBroker.Models;
 
-public class Order : Instrument
+public class Order : InstrumentCore
 {
     public string BrokerCo { get; set; } = string.Empty;
     public OrderMode Mode { get; set; }
@@ -101,7 +101,7 @@ public class AssetCashable
     public decimal ExchangeRate { get; set; }
 }
 
-public class Position : Instrument
+public class Position : InstrumentCore
 {
     public decimal VolumeEntry { get; set; }
     public decimal PriceEntry { get; set; }
