@@ -14,60 +14,6 @@ using Websocket.Client;
 namespace KisOpenApi.KrxEquity;
 public partial class KisKrxEquity : ConnectionBase, IConnection
 {
-	#region Parse Callback Message
-	/// <summary>
-	/// Parse Callback Message
-	/// </summary>
-	/// <param name="callbackTxt"></param>
-	protected override void ParseCallbackMessage(string callbackTxt)
-	{
-		try
-		{
-			var messageInfo = JsonSerializer.Deserialize<KisSubscriptionResponse>(callbackTxt);
-			if (messageInfo is null || messageInfo.Header is null || messageInfo.Header.ID is null)
-			{
-				Message(this, new ResponseCore
-				{
-					Code = "JSON_PARSING_ERR",
-					Message = $"messageInfo is null",
-					Remark = "from ParseCallbackMessage during message deserializing"
-				});
-				return;
-			};
-
-			switch (messageInfo.Header.ID)
-			{
-				case "PINGPONG":
-					Client.Send(callbackTxt);
-					return;
-				case nameof(H0STCNI0):
-					_iv = messageInfo.Body.Output.IV;
-					_key = messageInfo.Body.Output.Key;
-					break;
-				default:
-					break;
-			}
-
-			Message(this, new ResponseCore
-			{
-				Code = $"{messageInfo.Body.ResultCode}.{messageInfo.Body.MessageCode}",
-				Message = messageInfo.Body.Message,
-				Remark = $"{messageInfo.Header.ID}: {messageInfo.Header.Key}"
-			});
-
-		}
-		catch (Exception ex)
-		{
-			Message(this, new ResponseCore
-			{
-				Code = "JSON_PARSING_ERR",
-				Message = $"catch err: ${ex.Message}",
-				Remark = "from ParseCallbackMessage"
-			});
-		}
-	}
-	#endregion
-
 	#region Parse Callback Response Data
 	/// <summary>
 	/// Parse Callback Response Data
