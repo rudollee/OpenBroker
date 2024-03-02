@@ -1,4 +1,5 @@
 ﻿using KisOpenApi.Models;
+using KisOpenApi.Models.GlobalFutures;
 using OpenBroker;
 using OpenBroker.Extensions;
 using OpenBroker.Models;
