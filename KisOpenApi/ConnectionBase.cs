@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using KisOpenApi.Models;
 using OpenBroker.Models;
 using RestSharp;
 using Websocket.Client;
@@ -33,6 +36,9 @@ public class ConnectionBase
 	public required EventHandler<ResponseCore> Message { get; set; }
 
 	protected IWebsocketClient Client;
+
+	protected string _iv = string.Empty;
+	protected string _key = string.Empty;
 
 	#region Request Access Token using appkey & secret
 	/// <summary>
@@ -158,5 +164,133 @@ public class ConnectionBase
 	}
 	#endregion
 
+	#region Connect/disconnect Websocket
+	/// <summary>
+	/// Connect Websocket & subscribe Order/Contract
+	/// </summary>
+	/// <returns></returns>
+	public async Task<ResponseCore> ConnectAsync()
+	{
+		try
+		{
+			var options = new Func<ClientWebSocket>(() => new ClientWebSocket
+			{
+				Options = { KeepAliveInterval = TimeSpan.Zero }
+			});
 
+			Client = new WebsocketClient(new Uri(hostSocket), options)
+			{
+				Name = "KIS",
+				ReconnectTimeout = TimeSpan.FromSeconds(30),
+				ErrorReconnectTimeout = TimeSpan.FromSeconds(30),
+			};
+
+			Client.MessageReceived.Subscribe(message => SubscribeCallback(message));
+			await Client.Start();
+
+			SetConnect();
+			return new ResponseCore
+			{
+				StatusCode = Status.SUCCESS,
+				Message = "Connected"
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseCore
+			{
+				StatusCode = Status.INTERNALSERVERERROR,
+				Message = ex.Message,
+				Remark = "during connect websocket"
+			};
+		}
+	}
+
+	public async Task<ResponseCore> DisconnectAsync()
+	{
+		await Client.Stop(WebSocketCloseStatus.NormalClosure, "");
+		Client.Dispose();
+		SetConnect(false);
+
+		return new ResponseCore
+		{
+			Message = "disconnected"
+		};
+	}
+	#endregion
+
+	#region Subscribe / Unsubscribe
+	public async Task<ResponseCore> Subscribe(string trCode, string key, bool connecting = true)
+	{
+		string GenerateSubscriptionRequest(string id, string key = "", bool connecting = true)
+		{
+			if (string.IsNullOrWhiteSpace(key)) key = AccountInfo.ID;
+
+			return JsonSerializer.Serialize(new KisSubscriptionRequest(KeyInfo.WebsocketCode, id, key, connecting));
+		}
+
+		try
+		{
+			var result = await Task.Run(() => Client.Send(GenerateSubscriptionRequest(trCode, key, connecting)));
+
+			return new ResponseCore
+			{
+				StatusCode = result ? Status.SUCCESS : Status.ERROR_OPEN_API,
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseCore
+			{
+				StatusCode = Status.INTERNALSERVERERROR,
+				Message = $"catch error : {ex.Message}",
+				Remark = $"from {System.Reflection.MethodBase.GetCurrentMethod()?.Name} connecting is {connecting}"
+			};
+		};
+	} 
+	#endregion
+
+	#region Websocket Callback
+	/// <summary>
+	/// Websocket Callback
+	/// </summary>
+	/// <param name="message"></param>
+	protected void SubscribeCallback(ResponseMessage message)
+	{
+		if (message is null || message.MessageType != WebSocketMessageType.Text)
+		{
+			Message(this, new ResponseCore
+			{
+				Code = "BINARY",
+				Message = "binary message type"
+			});
+			return;
+		}
+
+		if (message.Text is null)
+		{
+			Message(this, new ResponseCore
+			{
+				Code = "TEXTNULL",
+				Message = "message.Text is null"
+			});
+			return;
+		}
+
+		if (message.Text.StartsWith("{")) ParseCallbackMessage(message.Text);
+		else if (new string[] { "0", "1" }.Contains(message.Text.Substring(0, 1))) ParseCallbackResponse(message.Text);
+		else
+		{
+			Message(this, new ResponseCore
+			{
+				Code = "WEIRD_MESSAGE",
+				Message = "message format is weird",
+				Remark = message.Text
+			});
+		}
+	}
+
+	protected virtual void ParseCallbackMessage(string callbackTxt) { }
+	protected virtual void ParseCallbackResponse(string callbackTxt) { }
+	#endregion
 }

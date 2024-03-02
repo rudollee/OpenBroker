@@ -12,150 +12,12 @@ using OpenBroker.Extensions;
 namespace KisOpenApi;
 public partial class KisGlobalFutures : ConnectionBase, IConnection
 {
-	private string _iv = string.Empty;
-	private string _key = string.Empty;
-
-	#region Connect/disconnect Websocket
-	/// <summary>
-	/// Connect Websocket & subscribe Order/Contract
-	/// </summary>
-	/// <returns></returns>
-	public async Task<ResponseCore> ConnectAsync()
-	{
-		try
-		{
-			var options = new Func<ClientWebSocket>(() => new ClientWebSocket
-			{
-				Options = { KeepAliveInterval = TimeSpan.Zero }
-			});
-
-			Client = new WebsocketClient(new Uri(hostSocket), options)
-			{
-				Name = "KIS",
-				ReconnectTimeout = TimeSpan.FromSeconds(30),
-				ErrorReconnectTimeout = TimeSpan.FromSeconds(30),
-			};
-
-			Client.MessageReceived.Subscribe(message => SubscribeCallback(message));
-			await Client.Start();
-
-			SetConnect();
-			return new ResponseCore
-			{
-				StatusCode = Status.SUCCESS,
-				Message = "Connected"
-			};
-		}
-		catch (Exception ex)
-		{
-			return new ResponseCore
-			{
-				StatusCode = Status.INTERNALSERVERERROR,
-				Message = ex.Message,
-				Remark = "during connect websocket"
-			};
-		}
-	}
-
-	public async Task<ResponseCore> DisconnectAsync()
-	{
-		await Client.Stop(WebSocketCloseStatus.NormalClosure, "");
-		Client.Dispose();
-		SetConnect(false);
-
-		return new ResponseCore
-		{
-			Message = "disconnected"
-		};
-	}
-
-	public async Task<ResponseCore> Subscribe(string trCode, string key, bool connecting = true)
-	{
-		try
-		{
-			var result = await Task.Run(() => Client.Send(GenerateSubscriptionRequest(trCode, key, connecting)));
-
-			return new ResponseCore
-			{
-				StatusCode = result ? Status.SUCCESS : Status.ERROR_OPEN_API,
-			};
-		}
-		catch (Exception ex)
-		{
-			return new ResponseCore
-			{
-				StatusCode = Status.INTERNALSERVERERROR,
-				Message = $"catch error : {ex.Message}",
-				Remark = $"from {System.Reflection.MethodBase.GetCurrentMethod()?.Name} connecting is {connecting}"
-			};
-		};
-
-	}
-	#endregion
-
-	#region Websocket Callback
-	/// <summary>
-	/// Websocket Callback
-	/// </summary>
-	/// <param name="message"></param>
-	private void SubscribeCallback(ResponseMessage message)
-	{
-		if (message is null || message.MessageType != WebSocketMessageType.Text)
-		{
-			Message(this, new ResponseCore
-			{
-				Code = "BINARY",
-				Message = "binary message type"
-			});
-			return;
-		}
-
-		if (message.Text is null)
-		{
-			Message(this, new ResponseCore
-			{
-				Code = "TEXTNULL",
-				Message = "message.Text is null"
-			});
-			return;
-		}
-
-		if (message.Text.StartsWith("{")) ParseCallbackMessage(message.Text);
-		else if (new string[] { "0", "1" }.Contains(message.Text.Substring(0, 1))) ParseCallbackResponse(message.Text);
-		else
-		{
-			Message(this, new ResponseCore
-			{
-				Code = "WEIRD_MESSAGE",
-				Message = "message format is weird",
-				Remark = message.Text
-			});
-		}
-	}
-	#endregion
-
-	#region Generate request header & body for subscription
-	/// <summary>
-	/// Generate request header & body for subscription
-	/// </summary>
-	/// <param name="id">tr_id</param>
-	/// <param name="key">tr_key</param>
-	/// <param name="connecting">connecting / disconnecting</param>
-	/// <returns></returns>
-	private string GenerateSubscriptionRequest(string id, string key = "", bool connecting = true)
-	{
-		if (string.IsNullOrWhiteSpace(key)) key = AccountInfo.ID;
-
-		return JsonSerializer.Serialize(new KisSubscriptionRequest(KeyInfo.WebsocketCode, id, key, connecting));
-	}
-	#endregion
-
 	#region Parse Callback Message
 	/// <summary>
 	/// Parse Callback Message
 	/// </summary>
 	/// <param name="callbackTxt"></param>
-	private void ParseCallbackMessage(string callbackTxt)
+	protected override void ParseCallbackMessage(string callbackTxt)
 	{
 		try
 		{
@@ -212,7 +74,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 	/// Parse Callback Response Data
 	/// </summary>
 	/// <param name="callbackTxt"></param>
-	private void ParseCallbackResponse(string callbackTxt)
+	protected override void ParseCallbackResponse(string callbackTxt)
 	{
 		string decrypt(string stringEncrypted)
 		{
