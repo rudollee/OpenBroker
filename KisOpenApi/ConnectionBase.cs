@@ -353,4 +353,83 @@ public class ConnectionBase
 	/// <param name="callbackTxt"></param>
 	protected virtual void ParseCallbackResponse(string callbackTxt) { }
 	#endregion
+
+	#region Generate Parameters
+	/// <summary>
+	/// Generate Parameters
+	/// </summary>
+	/// <param name="additionalOption"></param>
+	/// <returns></returns>
+	protected Dictionary<string, string?> GenerateParameters(Dictionary<string, string?> additionalOption)
+	{
+		var basicParameters = new
+		{
+			CANO = BankAccountInfo.AccountNumber.Substring(0, 8),
+			ACNT_PRDT_CD = BankAccountInfo.AccountNumber.Substring(8),
+		};
+
+		var parameters = basicParameters.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(basicParameters, null)?.ToString());
+		foreach (var parameter in additionalOption)
+		{
+			parameters.Add(parameter.Key, parameter.Value?.ToString());
+		}
+
+		return parameters ?? new Dictionary<string, string?>();
+	}
+
+	/// <summary>
+	/// Generate QueryParameters
+	/// </summary>
+	/// <param name="additionalOption"></param>
+	/// <returns></returns>
+	protected Dictionary<string, string?> GenerateParameters(object additionalOption) =>
+		GenerateParameters(additionalOption.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(additionalOption, null)?.ToString()));
+	#endregion
+
+	#region Generate Headers
+	/// <summary>
+	/// Generate Headers
+	/// </summary>
+	/// <param name="tr"></param>
+	/// <param name="additionalOption"></param>
+	/// <returns></returns>
+	protected Dictionary<string, string> GenerateHeaders(string tr, Dictionary<string, string> additionalOption)
+	{
+		var headers = GenerateHeaders(tr);
+
+		foreach (var header in additionalOption)
+		{
+			headers.Add(header.Key, header.Value);
+		}
+
+		return headers;
+	}
+
+	/// <summary>
+	/// Generate Headers
+	/// </summary>
+	/// <param name="tr"></param>
+	/// <returns></returns>
+	protected Dictionary<string, string> GenerateHeaders(string tr)
+	{
+		return new Dictionary<string, string>
+		{
+			{ "content-type", "application/json" },
+			{ "authorization", $"Bearer {KeyInfo.AccessToken}"},
+			{ "appkey", KeyInfo.AppKey },
+			{ "appsecret", KeyInfo.SecretKey},
+			{ "tr_id", tr},
+			{ "custtype", "P" }
+		};
+	}
+
+	/// <summary>
+	/// Generate Headers
+	/// </summary>
+	/// <param name="tr"></param>
+	/// <param name="additionalOption"></param>
+	/// <returns></returns>
+	protected Dictionary<string, string> GenerateHeaders(string tr, object additionalOption) =>
+		GenerateHeaders(tr, additionalOption.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(additionalOption, null)?.ToString())); 
+	#endregion
 }
