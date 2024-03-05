@@ -224,10 +224,11 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 					IsLong = f.sll_buy_dvsn_cd == "02", //
 					Mode = f.rcit_dvsn_cd switch
 					{
-						"00" => OrderMode.Place,
-						"01" => OrderMode.Update,
-						"02" => OrderMode.Cancel,
-						"03" => OrderMode.PlaceContracted,
+						"00" => OrderMode.PLACE,
+						"01" => OrderMode.UPDATE,
+						"02" => OrderMode.CANCEL,
+						"03" => OrderMode.PLACE_LQ,
+						"04" => OrderMode.UPDATE_LQ,
 						_ => OrderMode.NONE
 					}
 				});
@@ -317,9 +318,11 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 					IsLong = f.sll_buy_dvsn_cd == "02", //
 					Mode = f.rvse_cncl_dvsn_cd switch
 					{
-						"00" => OrderMode.Place,
-						"01" => OrderMode.Update,
-						"02" => OrderMode.Cancel,
+						"00" => OrderMode.PLACE,
+						"01" => OrderMode.UPDATE,
+						"02" => OrderMode.CANCEL,
+						"03" => OrderMode.PLACE_LQ,
+						"04" => OrderMode.UPDATE_LQ,
 						_ => OrderMode.NONE
 					}
 				});

@@ -50,11 +50,11 @@ public enum OrderDirection
 public enum OrderMode
 {
     NONE,
-    Place = 10,
-    PlaceContracted = 11,
-    Update = 20,
-    UpdateContracted = 21,
-    Cancel = 88
+    PLACE = 10,
+    PLACE_LQ = 11,
+    UPDATE = 20,
+    UPDATE_LQ = 21,
+    CANCEL = 88
 }
 
 public enum OrderType
