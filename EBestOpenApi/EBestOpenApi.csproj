@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="RestSharp" Version="110.2.0" />
     <PackageReference Include="Websocket.Client" Version="5.1.1" />
   </ItemGroup>

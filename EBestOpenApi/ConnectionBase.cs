@@ -4,7 +4,9 @@ using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
+using EBestOpenApi.Models;
 using OpenBroker.Models;
+using RestSharp;
 using Websocket.Client;
 
 namespace EBestOpenApi;
@@ -12,6 +14,7 @@ public class ConnectionBase
 {
 	internal readonly string host = "https://openapi.ebestsec.co.kr:8080";
 	internal readonly string hostSocket = "wss://openapi.ebestsec.co.kr:9443/websocket";
+	internal readonly string grant_type = "client_credentials";
 
 	public KeyPack KeyInfo { get => _keyInfo; }
 	private KeyPack _keyInfo = new KeyPack();
@@ -32,6 +35,46 @@ public class ConnectionBase
 	public required EventHandler<ResponseCore> Message { get; set; }
 
 	protected IWebsocketClient Client;
+
+	public async Task<ResponseResult<KeyPack>> RequestAccessTokenAsync(string appkey, string appsecret)
+	{
+		var client = new RestClient($"{host}/oauth2/token");
+		var request = new RestRequest()
+			.AddHeaders(new Dictionary<string, string>
+			{
+				{ "content-type", "application/x-www-form-urlencoded" },
+			})
+			.AddJsonBody(new
+			{
+				grant_type,
+				appkey,
+				appsecretkey = appsecret,
+				scope = "oob",
+			});
+
+		var response = await client.PostAsync<AccessTokenResponse>(request);
+
+		if (response is null) return new ResponseResult<KeyPack>
+		{
+			StatusCode = Status.ERROR_OPEN_API,
+			Message = "response is null"
+		};
+
+		if (string.IsNullOrEmpty(response.AccessToken)) return new ResponseResult<KeyPack>
+		{
+			StatusCode = Status.UNAUTHORIZED,
+			Message = "no token",
+		};
+
+		return new ResponseResult<KeyPack>
+		{
+			Info = new KeyPack
+			{
+				AccessToken = response.AccessToken,
+				AccessTokenExpired = response.DateExpired
+			}
+		};
+	}
 
 	#region Connect/disconnect Websocket
 	/// <summary>
@@ -54,7 +97,7 @@ public class ConnectionBase
 				ErrorReconnectTimeout = TimeSpan.FromSeconds(30),
 			};
 
-			//Client.MessageReceived.Subscribe(message => SubscribeCallback(message));
+			Client.MessageReceived.Subscribe(message => SubscribeCallback(message));
 			await Client.Start();
 
 			SetConnect();
@@ -86,5 +129,51 @@ public class ConnectionBase
 			Message = "disconnected"
 		};
 	}
+	#endregion
+
+	#region Websocket Callback
+	/// <summary>
+	/// Websocket Callback
+	/// </summary>
+	/// <param name="message"></param>
+	protected void SubscribeCallback(ResponseMessage message)
+	{
+		if (message is null || message.MessageType != WebSocketMessageType.Text)
+		{
+			Message(this, new ResponseCore
+			{
+				Code = "BINARY",
+				Message = "binary message type"
+			});
+			return;
+		}
+
+		if (message.Text is null)
+		{
+			Message(this, new ResponseCore
+			{
+				Code = "TEXTNULL",
+				Message = "message.Text is null"
+			});
+			return;
+		}
+
+	} 
+	#endregion
+
+	#region Parse Callback Message & Response
+	/// <summary>
+	/// Parse Callback Message
+	/// </summary>
+	/// <param name="callbackTxt"></param>
+	protected void ParseCallbackMessage(string callbackTxt)
+	{
+	}
+
+	/// <summary>
+	/// Parse Callback Response Data
+	/// </summary>
+	/// <param name="callbackTxt"></param>
+	protected virtual void ParseCallbackResponse(string callbackTxt) { }
 	#endregion
 }
