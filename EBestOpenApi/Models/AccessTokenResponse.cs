@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 namespace EBestOpenApi.Models;
 internal class AccessTokenResponse
 {
-	[JsonPropertyName("token")]
+	[JsonPropertyName("access_token")]
 	public string AccessToken { get; set; } = string.Empty;
 
-	[JsonPropertyName("expire_in")]
-	public string? DateExpiredString { get; set; }
+	[JsonPropertyName("expires_in")]
+	public int DateRemained { get; set; }
 
 	public DateTime DateExpired
 	{
-		get => DateTime.Now.AddSeconds(Convert.ToInt32(DateExpiredString));
+		get => DateTime.Now.AddSeconds(DateRemained);
 	}
 }

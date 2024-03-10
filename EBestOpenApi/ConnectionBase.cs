@@ -39,41 +39,59 @@ public class ConnectionBase
 	public async Task<ResponseResult<KeyPack>> RequestAccessTokenAsync(string appkey, string appsecret)
 	{
 		var client = new RestClient($"{host}/oauth2/token");
+
+		var queryParameters = GenerateParameters(new
+		{
+			grant_type,
+			appkey,
+			appsecretkey = appsecret,
+			scope = "oob",
+		});
 		var request = new RestRequest()
 			.AddHeaders(new Dictionary<string, string>
 			{
 				{ "content-type", "application/x-www-form-urlencoded" },
-			})
-			.AddJsonBody(new
-			{
-				grant_type,
-				appkey,
-				appsecretkey = appsecret,
-				scope = "oob",
 			});
 
-		var response = await client.PostAsync<AccessTokenResponse>(request);
-
-		if (response is null) return new ResponseResult<KeyPack>
+		foreach ( var param in queryParameters )
 		{
-			StatusCode = Status.ERROR_OPEN_API,
-			Message = "response is null"
-		};
+			request.AddQueryParameter( param.Key, param.Value );
+		}
 
-		if (string.IsNullOrEmpty(response.AccessToken)) return new ResponseResult<KeyPack>
+		try
 		{
-			StatusCode = Status.UNAUTHORIZED,
-			Message = "no token",
-		};
+			var response = await client.PostAsync<AccessTokenResponse>(request);
 
-		return new ResponseResult<KeyPack>
-		{
-			Info = new KeyPack
+			if (response is null) return new ResponseResult<KeyPack>
 			{
-				AccessToken = response.AccessToken,
-				AccessTokenExpired = response.DateExpired
-			}
-		};
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = "response is null"
+			};
+
+			if (string.IsNullOrEmpty(response.AccessToken)) return new ResponseResult<KeyPack>
+			{
+				StatusCode = Status.UNAUTHORIZED,
+				Message = "no token",
+			};
+
+			return new ResponseResult<KeyPack>
+			{
+				Info = new KeyPack
+				{
+					AccessToken = response.AccessToken,
+					AccessTokenExpired = response.DateExpired
+				}
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResult<KeyPack>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = ex.Message,
+				Remark = "error catch"
+			};
+		}
 	}
 
 	#region Connect/disconnect Websocket
@@ -175,5 +193,35 @@ public class ConnectionBase
 	/// </summary>
 	/// <param name="callbackTxt"></param>
 	protected virtual void ParseCallbackResponse(string callbackTxt) { }
+	#endregion
+
+	#region Generate Parameters
+	/// <summary>
+	/// Generate Parameters
+	/// </summary>
+	/// <param name="additionalOption"></param>
+	/// <returns></returns>
+	protected Dictionary<string, string?> GenerateParameters(Dictionary<string, string?> additionalOption)
+	{
+		var basicParameters = new
+		{
+		};
+
+		var parameters = basicParameters.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(basicParameters, null)?.ToString());
+		foreach (var parameter in additionalOption)
+		{
+			parameters.Add(parameter.Key, parameter.Value?.ToString());
+		}
+
+		return parameters ?? new Dictionary<string, string?>();
+	}
+
+	/// <summary>
+	/// Generate QueryParameters
+	/// </summary>
+	/// <param name="additionalOption"></param>
+	/// <returns></returns>
+	protected Dictionary<string, string?> GenerateParameters(object additionalOption) =>
+		GenerateParameters(additionalOption.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(additionalOption, null)?.ToString()));
 	#endregion
 }
