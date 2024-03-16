@@ -74,6 +74,14 @@ public class ConnectionBase
 				Message = "no token",
 			};
 
+			SetKeyPack(new KeyPack
+			{
+				AppKey = appkey,
+				SecretKey = appsecret,
+				AccessToken = response.AccessToken,
+				AccessTokenExpired = response.DateExpired,
+			});
+
 			return new ResponseResult<KeyPack>
 			{
 				Info = new KeyPack
