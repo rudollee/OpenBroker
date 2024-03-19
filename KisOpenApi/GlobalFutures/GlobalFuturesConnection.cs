@@ -111,6 +111,15 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 						VolumeUpdatable = Convert.ToInt32(data[(int)HDFFF1C0.ord_qty]) - Convert.ToInt32(data[(int)HDFFF1C0.tot_ccld_qty]),
 						TimeOrdered = data[(int)HDFFF1C0.ord_dtl_dtime].ToDateTimeMicro(),
 						Symbol = data[(int)HDFFF1C0.series],
+						Mode = data[(int)HDFFF1C0.rvse_cncl_dvsn_cd] switch
+						{
+							"00" => OrderMode.PLACE,
+							"01" => OrderMode.UPDATE,
+							"02" => OrderMode.CANCEL,
+							"03" => OrderMode.PLACE_LQ,
+							"04" => OrderMode.UPDATE_LQ,
+							_ => OrderMode.NONE
+						}
 					},
 					Remark = plainTxt
 				});
