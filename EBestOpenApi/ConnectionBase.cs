@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using EBestOpenApi.Models;
 using OpenBroker.Models;
@@ -107,7 +108,7 @@ public class ConnectionBase
 	/// Connect Websocket & subscribe Order/Contract
 	/// </summary>
 	/// <returns></returns>
-	public async Task<ResponseCore> ConnectAsync()
+	protected async Task<ResponseCore> ConnectAsync(Action<ResponseMessage> callback)
 	{
 		try
 		{
@@ -123,10 +124,12 @@ public class ConnectionBase
 				ErrorReconnectTimeout = TimeSpan.FromSeconds(30),
 			};
 
-			Client.MessageReceived.Subscribe(message => SubscribeCallback(message));
+			Client.MessageReceived.Subscribe(message => callback(message));
 			await Client.Start();
 
 			SetConnect();
+
+			var result = await Subscribe("NWS", "NWS001");
 			return new ResponseCore
 			{
 				StatusCode = Status.SUCCESS,
@@ -157,6 +160,39 @@ public class ConnectionBase
 	}
 	#endregion
 
+	#region Subscribe / Unsubscribe
+	public async Task<ResponseCore> Subscribe(string trCode, string key, bool connecting = true)
+	{
+		string GenerateSubscriptionRequest(string id, string key = "", bool connecting = true)
+		{
+			if (string.IsNullOrWhiteSpace(key)) key = AccountInfo.ID;
+
+			return JsonSerializer.Serialize(new EBestSubscriptionRequest(KeyInfo.AccessToken, id, key, connecting));
+		}
+
+		try
+		{
+			var result = await Task.Run(() => Client.Send(GenerateSubscriptionRequest(trCode, key, connecting)));
+
+			return new ResponseCore
+			{
+				StatusCode = result ? Status.SUCCESS : Status.ERROR_OPEN_API,
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseCore
+			{
+				StatusCode = Status.INTERNALSERVERERROR,
+				Message = $"catch error : {ex.Message}",
+				Remark = $"from {System.Reflection.MethodBase.GetCurrentMethod()?.Name} connecting is {connecting}"
+			};
+		};
+	}
+	#endregion
+
+
+
 	#region Websocket Callback
 	/// <summary>
 	/// Websocket Callback
@@ -184,23 +220,28 @@ public class ConnectionBase
 			return;
 		}
 
-	} 
+		var document = JsonDocument.Parse(message.Text);
+		var root = document.RootElement;
+
+		if (root.GetProperty("body").GetType() is null) return;
+
+		ParseCallbackMessage(root.GetProperty("header").GetProperty("tr_cd").GetString(), message.Text);
+	}
 	#endregion
 
 	#region Parse Callback Message & Response
 	/// <summary>
-	/// Parse Callback Message
+	/// 
 	/// </summary>
+	/// <param name="trCode"></param>
 	/// <param name="callbackTxt"></param>
-	protected void ParseCallbackMessage(string callbackTxt)
-	{
-	}
+	protected void ParseCallbackMessage(string trCode, string callbackTxt) { }
 
 	/// <summary>
 	/// Parse Callback Response Data
 	/// </summary>
 	/// <param name="callbackTxt"></param>
-	protected virtual void ParseCallbackResponse(string callbackTxt) { }
+	protected virtual void ParseCallbackResponse(string trCode, string callbackTxt) { }
 	#endregion
 
 	#region Generate Parameters
@@ -231,5 +272,52 @@ public class ConnectionBase
 	/// <returns></returns>
 	protected Dictionary<string, string?> GenerateParameters(object additionalOption) =>
 		GenerateParameters(additionalOption.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(additionalOption, null)?.ToString()));
+	#endregion
+
+	#region Generate Headers
+	/// <summary>
+	/// Generate Headers
+	/// </summary>
+	/// <param name="tr"></param>
+	/// <param name="additionalOption"></param>
+	/// <returns></returns>
+	protected Dictionary<string, string> GenerateHeaders(string tr, Dictionary<string, string> additionalOption)
+	{
+		var headers = GenerateHeaders(tr);
+
+		foreach (var header in additionalOption)
+		{
+			headers.Add(header.Key, header.Value);
+		}
+
+		return headers;
+	}
+
+	/// <summary>
+	/// Generate Headers
+	/// </summary>
+	/// <param name="tr"></param>
+	/// <returns></returns>
+	protected Dictionary<string, string> GenerateHeaders(string tr)
+	{
+		return new Dictionary<string, string>
+		{
+			{ "content-type", "application/json; charset=utf-8" },
+			{ "authorization", $"Bearer {KeyInfo.AccessToken}"},
+			{ "tr_cd", tr},
+			{ "tr_cont", "N" },
+			{ "tr_cont_key", "" },
+			{ "mac_address", ""}
+		};
+	}
+
+	/// <summary>
+	/// Generate Headers
+	/// </summary>
+	/// <param name="tr"></param>
+	/// <param name="additionalOption"></param>
+	/// <returns></returns>
+	protected Dictionary<string, string> GenerateHeaders(string tr, object additionalOption) =>
+		GenerateHeaders(tr, additionalOption.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(additionalOption, null)?.ToString()));
 	#endregion
 }
