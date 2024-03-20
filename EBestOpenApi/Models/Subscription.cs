@@ -40,3 +40,4 @@ internal class EBestSubscriptionRequest(string token, string trCode, string key,
 		public string Key { get; set; } = key;
 	}
 }
+

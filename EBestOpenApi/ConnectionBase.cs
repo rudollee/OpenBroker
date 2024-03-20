@@ -268,4 +268,51 @@ public class ConnectionBase
 	protected Dictionary<string, string?> GenerateParameters(object additionalOption) =>
 		GenerateParameters(additionalOption.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(additionalOption, null)?.ToString()));
 	#endregion
+
+	#region Generate Headers
+	/// <summary>
+	/// Generate Headers
+	/// </summary>
+	/// <param name="tr"></param>
+	/// <param name="additionalOption"></param>
+	/// <returns></returns>
+	protected Dictionary<string, string> GenerateHeaders(string tr, Dictionary<string, string> additionalOption)
+	{
+		var headers = GenerateHeaders(tr);
+
+		foreach (var header in additionalOption)
+		{
+			headers.Add(header.Key, header.Value);
+		}
+
+		return headers;
+	}
+
+	/// <summary>
+	/// Generate Headers
+	/// </summary>
+	/// <param name="tr"></param>
+	/// <returns></returns>
+	protected Dictionary<string, string> GenerateHeaders(string tr)
+	{
+		return new Dictionary<string, string>
+		{
+			{ "content-type", "application/json; charset=utf-8" },
+			{ "authorization", $"Bearer {KeyInfo.AccessToken}"},
+			{ "tr_cd", tr},
+			{ "tr_cont", "N" },
+			{ "tr_cont_key", "" },
+			{ "mac_address", ""}
+		};
+	}
+
+	/// <summary>
+	/// Generate Headers
+	/// </summary>
+	/// <param name="tr"></param>
+	/// <param name="additionalOption"></param>
+	/// <returns></returns>
+	protected Dictionary<string, string> GenerateHeaders(string tr, object additionalOption) =>
+		GenerateHeaders(tr, additionalOption.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(additionalOption, null)?.ToString()));
+	#endregion
 }
