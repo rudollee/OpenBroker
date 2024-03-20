@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using EBestOpenApi.Models;
 using OpenBroker.Models;
@@ -127,6 +128,8 @@ public class ConnectionBase
 			await Client.Start();
 
 			SetConnect();
+
+			var result = await Subscribe("NWS", "NWS001");
 			return new ResponseCore
 			{
 				StatusCode = Status.SUCCESS,
@@ -156,6 +159,39 @@ public class ConnectionBase
 		};
 	}
 	#endregion
+
+	#region Subscribe / Unsubscribe
+	public async Task<ResponseCore> Subscribe(string trCode, string key, bool connecting = true)
+	{
+		string GenerateSubscriptionRequest(string id, string key = "", bool connecting = true)
+		{
+			if (string.IsNullOrWhiteSpace(key)) key = AccountInfo.ID;
+
+			return JsonSerializer.Serialize(new EBestSubscriptionRequest(KeyInfo.AccessToken, id, key, connecting));
+		}
+
+		try
+		{
+			var result = await Task.Run(() => Client.Send(GenerateSubscriptionRequest(trCode, key, connecting)));
+
+			return new ResponseCore
+			{
+				StatusCode = result ? Status.SUCCESS : Status.ERROR_OPEN_API,
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseCore
+			{
+				StatusCode = Status.INTERNALSERVERERROR,
+				Message = $"catch error : {ex.Message}",
+				Remark = $"from {System.Reflection.MethodBase.GetCurrentMethod()?.Name} connecting is {connecting}"
+			};
+		};
+	}
+	#endregion
+
+
 
 	#region Websocket Callback
 	/// <summary>
