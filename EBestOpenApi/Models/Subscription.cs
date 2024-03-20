@@ -41,3 +41,11 @@ internal class EBestSubscriptionRequest(string token, string trCode, string key,
 	}
 }
 
+internal class EBestSubscriptionCallback<T>
+{
+	[JsonPropertyName("header")]
+	public EBestResponseCore Header { get; set; } = new();
+
+	[JsonPropertyName("body")]
+	public T? Body { get; set; }
+}

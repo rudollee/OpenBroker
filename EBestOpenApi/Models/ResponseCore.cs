@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 namespace EBestOpenApi.Models;
 internal class EBestResponseCore
 {
+	[JsonPropertyName("tr_cd")]
+	public string TrCode { get; set; } = string.Empty;
+
 	[JsonPropertyName("rsp_cd")]
 	public string Code { get; set; } = string.Empty;
 

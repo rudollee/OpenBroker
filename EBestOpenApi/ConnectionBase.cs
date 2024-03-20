@@ -108,7 +108,7 @@ public class ConnectionBase
 	/// Connect Websocket & subscribe Order/Contract
 	/// </summary>
 	/// <returns></returns>
-	public async Task<ResponseCore> ConnectAsync()
+	protected async Task<ResponseCore> ConnectAsync(Action<ResponseMessage> callback)
 	{
 		try
 		{
@@ -124,7 +124,7 @@ public class ConnectionBase
 				ErrorReconnectTimeout = TimeSpan.FromSeconds(30),
 			};
 
-			Client.MessageReceived.Subscribe(message => SubscribeCallback(message));
+			Client.MessageReceived.Subscribe(message => callback(message));
 			await Client.Start();
 
 			SetConnect();
@@ -220,23 +220,28 @@ public class ConnectionBase
 			return;
 		}
 
-	} 
+		var document = JsonDocument.Parse(message.Text);
+		var root = document.RootElement;
+
+		if (root.GetProperty("body").GetType() is null) return;
+
+		ParseCallbackMessage(root.GetProperty("header").GetProperty("tr_cd").GetString(), message.Text);
+	}
 	#endregion
 
 	#region Parse Callback Message & Response
 	/// <summary>
-	/// Parse Callback Message
+	/// 
 	/// </summary>
+	/// <param name="trCode"></param>
 	/// <param name="callbackTxt"></param>
-	protected void ParseCallbackMessage(string callbackTxt)
-	{
-	}
+	protected void ParseCallbackMessage(string trCode, string callbackTxt) { }
 
 	/// <summary>
 	/// Parse Callback Response Data
 	/// </summary>
 	/// <param name="callbackTxt"></param>
-	protected virtual void ParseCallbackResponse(string callbackTxt) { }
+	protected virtual void ParseCallbackResponse(string trCode, string callbackTxt) { }
 	#endregion
 
 	#region Generate Parameters

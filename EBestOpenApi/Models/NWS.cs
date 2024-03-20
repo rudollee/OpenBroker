@@ -6,8 +6,7 @@ namespace EBestOpenApi.Models;
 /// </summary>
 internal class NWS
 {
-	public NWSInBlock InBlock { get; set; } = new();
-	public NWSOutBlock OutBlock { get; set; } = new();
+	public NWSOutBlock Body { get; set; } = new();
 
 	/// <summary>
 	/// 실시간 뉴스 제목 패킷(NWS) - InBlock
@@ -21,27 +20,28 @@ internal class NWS
 	/// <summary>
 	/// 실시간 뉴스 제목 패킷(NWS) - OutBlock
 	/// </summary>
-	internal class NWSOutBlock
-	{
-		/// <summary>날짜</summary>
-		public string date { get; set; }
+}
 
-		/// <summary>시간</summary>
-		public string time { get; set; }
+internal class NWSOutBlock
+{
+	/// <summary>날짜</summary>
+	public string date { get; set; }
 
-		/// <summary>뉴스구분자</summary>
-		public string id { get; set; }
+	/// <summary>시간</summary>
+	public string time { get; set; }
 
-		/// <summary>키값</summary>
-		public string realkey { get; set; }
+	/// <summary>뉴스구분자</summary>
+	public string id { get; set; }
 
-		/// <summary>제목</summary>
-		public string title { get; set; }
+	/// <summary>키값</summary>
+	public string realkey { get; set; }
 
-		/// <summary>단축종목코드</summary>
-		public string code { get; set; }
+	/// <summary>제목</summary>
+	public string title { get; set; }
 
-		/// <summary>BODY길이</summary>
-		public long bodysize { get; set; }
-	}
+	/// <summary>단축종목코드</summary>
+	public string code { get; set; }
+
+	/// <summary>BODY길이</summary>
+	public string bodysize { get; set; }
 }
