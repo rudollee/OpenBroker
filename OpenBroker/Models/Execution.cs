@@ -23,7 +23,8 @@ public class Order : InstrumentCore
 
 public class OrderCore
 {
-	public long IdOrigin { get; set; }
+    public DateOnly DateOrdered { get; set; } = DateOnly.FromDateTime(DateTime.Now);
+    public long IdOrigin { get; set; }
 	public string Symbol { get; set; } = string.Empty;
 	public decimal VolumeOrdered { get; set; }
 	public decimal PriceOrdered { get; set; }

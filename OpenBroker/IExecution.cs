@@ -51,11 +51,9 @@ public interface IExecution
 	/// <summary>
 	/// 주문 취소
 	/// </summary>
-	/// <param name="bizDate">주문일자</param>
-	/// <param name="oid">원주문번호</param>
-	/// <param name="volume">취소 수량</param>
+	/// <param name="order"></param>
 	/// <returns></returns>
-	Task<ResponseCore> CancelOrderAsync(DateOnly bizDate, long oid, int volume);
+	Task<ResponseCore> CancelOrderAsync(OrderCore order);
 
 	/// <summary>
 	/// 주문내역 - 당일
