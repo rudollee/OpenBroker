@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -17,8 +18,94 @@ public partial class EBestKrxEquity : ConnectionBase, IExecution
 	public EventHandler<ResponseResult<Order>> Executed { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 	public EventHandler<ResponseResult<Balance>> BalanceAggregated { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-	public Task<ResponseCore> AddOrderAsync(OrderCore order) => throw new NotImplementedException();
-	public Task<ResponseCore> CancelOrderAsync(DateOnly bizDate, long oid, int volume) => throw new NotImplementedException();
+	#region KRX 주식 주문/정정/취소 - CSPAT00601/CSPAT00701/CSPAT00801
+	public async Task<ResponseCore> AddOrderAsync(OrderCore order) =>
+		await RequestOrderAsync<CSPAT00601>(new
+		{
+			CSPAT00601InBlock1 = new CSPAT00601InBlock1
+			{
+				IsuNo = $"A{order.Symbol}",
+				OrdQty = order.VolumeOrdered,
+				OrdPrc = order.PriceOrdered,
+				BnsTpCode = order.IsLong ? "2" : "1",
+				OrdprcPtnCode = order.OrderType switch
+				{
+					OrderType.LIMIT => "00",
+					OrderType.MARKET => "03",
+					_ => "03"
+				},
+				MgntrnCode = "000",
+				LoanDt = "",
+				OrdCndiTpCode = "0"
+			}
+		});
+
+	public async Task<ResponseCore> UpdateOrderAsync(OrderCore order) =>
+		await RequestOrderAsync<CSPAT00701>(new
+		{
+			CSPAT00701InBlock1 = new CSPAT00701InBlock1
+			{
+				OrgOrdNo = order.IdOrigin,
+				IsuNo = $"A{order.Symbol}",
+				OrdQty = order.VolumeOrdered,
+				OrdPrc = order.PriceOrdered,
+				OrdprcPtnCode = order.OrderType switch
+				{
+					OrderType.LIMIT => "00",
+					OrderType.MARKET => "03",
+					_ => "00"
+				},
+				OrdCndiTpCode = "0"
+			}
+		});
+
+	public async Task<ResponseCore> CancelOrderAsync(OrderCore order) =>
+		await RequestOrderAsync<CSPAT00801>(new
+		{
+			CSPAT00801InBlock1 = new CSPAT00801InBlock1
+			{
+				OrgOrdNo = order.IdOrigin,
+				IsuNo = order.Symbol,
+				OrdQty = order.VolumeOrdered,
+			}
+		});
+
+	private async Task<ResponseCore> RequestOrderAsync<T>(object parameters) where T : EBestOrderResponseStandard
+	{
+		var client = new RestClient($"{host}/stock/order");
+		var request = new RestRequest().AddHeaders(GenerateHeaders(typeof(T).Name));
+
+		request.AddBody(JsonSerializer.Serialize(parameters));
+
+		try
+		{
+			var response = await client.PostAsync<T>(request);
+			if (response is null) return new ResponseCore
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = "response is null",
+			};
+
+			return new ResponseCore
+			{
+				Code = response.Code,
+				Message = response.Message,
+				Remark = response.OrderNo.ToString()
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseCore
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = ex.Message,
+				Remark = "exception"
+			};
+		}
+	}
+
+	#endregion
+
 	public Task<ResponseResult<Balance>> RequestBalancesAsync(DateTime? date = null) => throw new NotImplementedException();
 
 	public async Task<ResponseResults<Contract>> RequestContractsAsync(ContractStatus status = ContractStatus.ExecutedOnly)
@@ -88,5 +175,4 @@ public partial class EBestKrxEquity : ConnectionBase, IExecution
 	public Task<ResponseResults<Position>> RequestPositionsAsync(DateTime? date = null) => throw new NotImplementedException();
 	public Task<ResponseCore> SubscribeContractAsync(bool connecting = true) => throw new NotImplementedException();
 	public Task<ResponseCore> SubscribeOrderAsync(bool connecting = true) => throw new NotImplementedException();
-	public Task<ResponseCore> UpdateOrderAsync(OrderCore order) => throw new NotImplementedException();
 }
