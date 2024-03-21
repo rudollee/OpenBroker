@@ -107,9 +107,9 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 		throw new NotImplementedException();
 	}
 
-	public async Task<ResponseCore> CancelOrderAsync(DateOnly bizDate, long oid, int volume)
+	public async Task<ResponseCore> CancelOrderAsync(OrderCore order)
 	{
-		if (oid == 0 || volume == 0) return new ResponseCore
+		if (order.IdOrigin == 0 || order.VolumeOrdered == 0) return new ResponseCore
 		{
 			StatusCode = Status.BAD_REQUEST,
 			Code = "REFUSE",
@@ -118,8 +118,8 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 
 		var parameters = GenerateParameters(new
 		{
-			ORGN_ORD_DT = bizDate.ToString("yyyyMMdd"),
-			ORGN_ODNO = oid.ToString().PadLeft(8, '0'),
+			ORGN_ORD_DT = order.DateOrdered.ToString("yyyyMMdd"),
+			ORGN_ODNO = order.IdOrigin.ToString().PadLeft(8, '0'),
 			FM_HDGE_ORD_SCRN_YN = "N",
 			FM_MKPR_CVSN_YN = "N"
 		});

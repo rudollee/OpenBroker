@@ -41,9 +41,9 @@ public partial class KisKrxEquity : ConnectionBase, IExecution
 
 	public Task<ResponseCore> UpdateOrderAsync(OrderCore order) => throw new NotImplementedException();
 	
-	public async Task<ResponseCore> CancelOrderAsync(DateOnly bizDate, long oid, int volume)
+	public async Task<ResponseCore> CancelOrderAsync(OrderCore order)
 	{
-		if (oid == 0 || volume == 0) return new ResponseCore
+		if (order.IdOrigin == 0 || order.VolumeOrdered == 0) return new ResponseCore
 		{
 			StatusCode = Status.BAD_REQUEST,
 			Code = "REFUSE",
@@ -53,7 +53,7 @@ public partial class KisKrxEquity : ConnectionBase, IExecution
 		var parameters = GenerateParameters(new
 		{
 			KRX_FWDG_ORD_ORGNO = "",
-			ORGN_ODNO = oid.ToString().PadLeft(10, '0'),
+			ORGN_ODNO = order.IdOrigin.ToString().PadLeft(10, '0'),
 			ORD_DVSN = "00",
 			RVSE_CNCL_DVSN_CD = "02",
 			ORD_QTY = "0",
