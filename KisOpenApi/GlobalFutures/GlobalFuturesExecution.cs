@@ -483,6 +483,8 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 				CashAvailable = response.output.fm_ord_psbl_amt,
 				Margin = response.output.fm_mntn_mgn_amt,
 				MarginInitial = response.output.fm_brkg_mgn_amt,
+				ProfitLiquidated = response.output.fm_lqd_pfls_amt,
+				TotalFee = response.output.fm_fee,
 			};
 
 			return new ResponseResult<Balance>

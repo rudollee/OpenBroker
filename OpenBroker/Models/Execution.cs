@@ -66,6 +66,11 @@ public class Balance
     public IList<AssetCashable> Deposit { get; set; } = new List<AssetCashable>();
 
     /// <summary>
+    /// 청산손익
+    /// </summary>
+    public decimal ProfitLiquidated { get; set; }
+
+    /// <summary>
     /// (기본 통화단위로 환산한) 예탁금 : 평가예탁금 + Option Value
     /// </summary>
     public decimal DepositConverted { get; set; }
@@ -89,6 +94,11 @@ public class Balance
     /// 유지증거금
     /// </summary>
     public decimal Margin { get; set; }
+
+    /// <summary>
+    /// 수수료 총액
+    /// </summary>
+    public decimal TotalFee { get; set; }
 
     /// <summary>
     /// 보유 포지션
