@@ -71,19 +71,24 @@ public class Balance
     public decimal ProfitLiquidated { get; set; }
 
     /// <summary>
-    /// (기본 통화단위로 환산한) 예탁금 : 평가예탁금 + Option Value
+    /// 평가손익
     /// </summary>
-    public decimal DepositConverted { get; set; }
+    public decimal ProfitEst { get; set; }
 
     /// <summary>
-    /// 평가예탁금
+    /// 예탁금 : 평가이익 및 당일청산손익 제외
     /// </summary>
-    public decimal DepositEst { get; set; }
+    public decimal DepositInit { get; set; }
+
+	/// <summary>
+	/// 예탁금 : Deposit + 청산손익 + 평가손익
+	/// </summary>
+	public decimal DepositEst { get; set; }
 
     /// <summary>
     /// 주문가능금액
     /// </summary>
-    public decimal CashAvailable { get; set; }
+    public decimal CashTradable { get; set; }
 
     /// <summary>
     /// 위탁증거금

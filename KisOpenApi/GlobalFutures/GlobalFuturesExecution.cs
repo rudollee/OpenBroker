@@ -478,13 +478,14 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 				BrokerCode = "KI",
 				AccountNumber = response.output.Account,
 				CurBased = Enum.Parse<Currency>(response.output.crcy_cd),
-				DepositEst = response.output.fm_opt_icld_asst_evlu_amt,
-				DepositConverted = response.output.fm_tot_asst_evlu_amt,
-				CashAvailable = response.output.fm_ord_psbl_amt,
+				DepositInit = response.output.fm_opt_icld_asst_evlu_amt,
+				ProfitLiquidated = response.output.fm_lqd_pfls_amt,
+				ProfitEst = response.output.fm_fuop_evlu_pfls_amt,
+				TotalFee = response.output.fm_fee,
+				DepositEst = response.output.fm_tot_asst_evlu_amt,
 				Margin = response.output.fm_mntn_mgn_amt,
 				MarginInitial = response.output.fm_brkg_mgn_amt,
-				ProfitLiquidated = response.output.fm_lqd_pfls_amt,
-				TotalFee = response.output.fm_fee,
+				CashTradable = response.output.fm_ord_psbl_amt,
 			};
 
 			return new ResponseResult<Balance>
