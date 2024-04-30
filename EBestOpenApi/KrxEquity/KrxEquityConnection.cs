@@ -69,6 +69,14 @@ public partial class EBestKrxEquity : ConnectionBase, IConnection
 					}
 				});
 				break;
+			case nameof(JIF):
+				var jifResponse = JsonSerializer.Deserialize<EBestSubscriptionCallback<JIFOutBlock>>(message.Text);
+				Message(this, new ResponseCore
+				{
+					Code = jifResponse?.Body?.jangubun ?? "",
+					Message = jifResponse?.Body?.jstatus ?? ""
+				});
+				break;
 		}
 	}
 

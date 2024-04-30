@@ -129,7 +129,7 @@ public class ConnectionBase
 
 			SetConnect();
 
-			var result = await Subscribe("NWS", "NWS001");
+			var jifResult = await Subscribe("JIF", "0");
 			return new ResponseCore
 			{
 				StatusCode = Status.SUCCESS,

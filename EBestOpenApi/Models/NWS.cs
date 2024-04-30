@@ -17,11 +17,11 @@ internal class NWS
 		public string nwcode { get; set; }
 	}
 
-	/// <summary>
-	/// 실시간 뉴스 제목 패킷(NWS) - OutBlock
-	/// </summary>
 }
 
+/// <summary>
+/// 실시간 뉴스 제목 패킷(NWS) - OutBlock
+/// </summary>
 internal class NWSOutBlock
 {
 	/// <summary>날짜</summary>
