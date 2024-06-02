@@ -13,8 +13,8 @@ using Websocket.Client;
 namespace EBestOpenApi;
 public class ConnectionBase
 {
-	internal readonly string host = "https://openapi.ebestsec.co.kr:8080";
-	internal readonly string hostSocket = "wss://openapi.ebestsec.co.kr:9443/websocket";
+	internal readonly string host = "https://openapi.ls-sec.co.kr:8080";
+	internal readonly string hostSocket = "wss://openapi.ls-sec.co.kr:9443/websocket";
 	internal readonly string grant_type = "client_credentials";
 
 	public KeyPack KeyInfo { get => _keyInfo; }
