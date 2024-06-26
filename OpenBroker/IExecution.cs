@@ -100,12 +100,13 @@ public interface IExecution
 	/// <returns></returns>
 	Task<ResponseCore> SubscribeContractAsync(bool connecting = true);
 
-    /// <summary>
-    /// 예탁금 및 Positions
-    /// </summary>
-    /// <param name="date"></param>
-    /// <returns></returns>
-    Task<ResponseResult<Balance>> RequestBalancesAsync(DateTime? date = null);
+	/// <summary>
+	/// 예탁금 및 Positions
+	/// </summary>
+	/// <param name="date"></param>
+	/// <param name="currency"></param>
+	/// <returns></returns>
+	Task<ResponseResult<Balance>> RequestBalancesAsync(DateTime? date = null, Currency currency = Currency.TUS);
 
     /// <summary>
     /// 미결제 약정 현황

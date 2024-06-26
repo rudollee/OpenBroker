@@ -447,14 +447,14 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 	#endregion
 
 	#region 예수금현황 : OTFM1411R
-	public async Task<ResponseResult<Balance>> RequestBalancesAsync(DateTime? date = null)
+	public async Task<ResponseResult<Balance>> RequestBalancesAsync(DateTime? date = null, Currency currency = Currency.TUS)
 	{
 		var client = new RestClient($"{host}/uapi/overseas-futureoption/v1/trading/inquire-deposit");
 		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(OTFM1411R)));
 
 		var body = GenerateParameters(new
 		{
-			CRCY_CD = "TUS",
+			CRCY_CD = currency.ToString(),
 			INQR_DT = (date is null ? DateTime.Now : date)?.ToString("yyyyMMdd")
 		});
 
