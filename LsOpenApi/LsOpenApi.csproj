@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="KrxEquity\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="RestSharp" Version="111.4.1" />
     <PackageReference Include="Websocket.Client" Version="5.1.2" />
   </ItemGroup>

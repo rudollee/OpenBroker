@@ -38,6 +38,72 @@ public class ConnectionBase
 
 	protected IWebsocketClient Client;
 
+	public async Task<ResponseResult<KeyPack>> RequestAccessTokenAsync(string appkey, string appsecret)
+	{
+		var client = new RestClient($"{host}/oauth2/token");
+
+		var queryParameters = GenerateParameters(new
+		{
+			grant_type,
+			appkey,
+			appsecretkey = appsecret,
+			scope = "oob",
+		});
+		var request = new RestRequest()
+			.AddHeaders(new Dictionary<string, string>
+			{
+				{ "content-type", "application/x-www-form-urlencoded" },
+			});
+
+		foreach (var param in queryParameters)
+		{
+			request.AddQueryParameter(param.Key, param.Value);
+		}
+
+		try
+		{
+			var response = await client.PostAsync<AccessTokenResponse>(request);
+
+			if (response is null) return new ResponseResult<KeyPack>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = "response is null"
+			};
+
+			if (string.IsNullOrEmpty(response.AccessToken)) return new ResponseResult<KeyPack>
+			{
+				StatusCode = Status.UNAUTHORIZED,
+				Message = "no token",
+			};
+
+			SetKeyPack(new KeyPack
+			{
+				AppKey = appkey,
+				SecretKey = appsecret,
+				AccessToken = response.AccessToken,
+				AccessTokenExpired = response.DateExpired,
+			});
+
+			return new ResponseResult<KeyPack>
+			{
+				Info = new KeyPack
+				{
+					AccessToken = response.AccessToken,
+					AccessTokenExpired = response.DateExpired
+				}
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResult<KeyPack>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = ex.Message,
+				Remark = "error catch"
+			};
+		}
+	}
+
 	#region Connect/disconnect Websocket
 	/// <summary>
 	/// Connect Websocket & subscribe Order/Contract
@@ -54,7 +120,7 @@ public class ConnectionBase
 
 			Client = new WebsocketClient(new Uri(hostSocket), options)
 			{
-				Name = "eBest",
+				Name = "LS",
 				ReconnectTimeout = TimeSpan.FromSeconds(30),
 				ErrorReconnectTimeout = TimeSpan.FromSeconds(30),
 			};
