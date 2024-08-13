@@ -40,6 +40,8 @@ public class ConnectionBase
 	protected string _iv = string.Empty;
 	protected string _key = string.Empty;
 
+	private Dictionary<string, string> _subscriptions = new Dictionary<string, string>();
+
 	#region Request Access Token using appkey & secret
 	/// <summary>
 	/// Request Access Token using appkey & secret
@@ -186,9 +188,16 @@ public class ConnectionBase
 			};
 
 			Client.MessageReceived.Subscribe(message => SubscribeCallback(message));
+			Client.ReconnectionHappened.Subscribe(info => ReconnectCallback(info));
 			await Client.Start();
 
 			SetConnect();
+
+			foreach (KeyValuePair<string, string> subscription in _subscriptions)
+			{
+				await Subscribe(subscription.Key, subscription.Value);
+			}
+
 			return new ResponseCore
 			{
 				StatusCode = Status.SUCCESS,
@@ -212,6 +221,11 @@ public class ConnectionBase
 		Client.Dispose();
 		SetConnect(false);
 
+		foreach (KeyValuePair<string, string> subscription in _subscriptions)
+		{
+			_subscriptions.Remove(subscription.Key);
+		}
+
 		return new ResponseCore
 		{
 			Message = "disconnected"
@@ -232,6 +246,17 @@ public class ConnectionBase
 		try
 		{
 			var result = await Task.Run(() => Client.Send(GenerateSubscriptionRequest(trCode, key, connecting)));
+			if (result)
+			{
+				if (connecting)
+				{
+					_subscriptions.Add(trCode, key);
+				}
+				else
+				{
+					_subscriptions.Remove(trCode);
+				}
+			}
 
 			return new ResponseCore
 			{
@@ -288,6 +313,15 @@ public class ConnectionBase
 				Remark = message.Text
 			});
 		}
+	}
+
+	protected void ReconnectCallback(ReconnectionInfo info)
+	{
+		Message(this, new ResponseCore
+		{
+			Code = "Reconnected",
+			Message = info.Type.ToString(),
+		});
 	}
 
 	#endregion
