@@ -46,9 +46,13 @@ public static class DateExtension
     /// <returns></returns>
     public static DateTime ToDateTime(this string datetimeTxt14)
     {
+        if (datetimeTxt14.Length < 8) return DateTime.Now;
+
         int year = Convert.ToInt32(datetimeTxt14.Substring(0, 4));
         int month = Convert.ToInt32(datetimeTxt14.Substring(4, 2));
         int day = Convert.ToInt32(datetimeTxt14.Substring(6, 2));
+
+        if (datetimeTxt14.Length < 14) return new DateTime(year, month, day);
 
         var hour = Convert.ToInt32(datetimeTxt14.Substring(8, 2));
         var minute = Convert.ToInt32(datetimeTxt14.Substring(10, 2));
