@@ -25,7 +25,7 @@ public interface IExecution
     /// <summary>
     /// 잔고
     /// </summary>
-    EventHandler<ResponseResult<Balance>> BalanceAggregated { get; set; }
+    EventHandler<ResponseResult<Balance>>? BalanceAggregated { get; set; }
 
     /// <summary>
     /// 주문가능금액

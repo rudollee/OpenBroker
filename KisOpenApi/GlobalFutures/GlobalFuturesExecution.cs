@@ -10,7 +10,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 {
 	public required EventHandler<ResponseResult<Contract>> Contracted { get; set; }
 	public required EventHandler<ResponseResult<Order>> Executed { get; set; }
-	public EventHandler<ResponseResult<Balance>> BalanceAggregated { get; set; }
+	public EventHandler<ResponseResult<Balance>>? BalanceAggregated { get; set; }
 
 	#region 해외선물 주문가능조회 - OTFM3304R
 	public async Task<ResponseCore> RequestOrderableAsync(Order order)
