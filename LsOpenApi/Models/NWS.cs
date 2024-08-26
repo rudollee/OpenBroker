@@ -12,7 +12,7 @@ internal class NWS
 	internal class NWSInBlock
 	{
 		/// <summary>뉴스코드</summary>
-		public string nwcode { get; set; }
+		public string nwcode { get; set; } = string.Empty;
 	}
 }
 
@@ -22,23 +22,23 @@ internal class NWS
 internal class NWSOutBlock
 {
 	/// <summary>날짜</summary>
-	public string date { get; set; }
+	public string date { get; set; } = string.Empty;
 
 	/// <summary>시간</summary>
-	public string time { get; set; }
+	public string time { get; set; } = string.Empty;
 
 	/// <summary>뉴스구분자</summary>
-	public string id { get; set; }
+	public string id { get; set; } = string.Empty;
 
 	/// <summary>키값</summary>
-	public string realkey { get; set; }
+	public string realkey { get; set; } = string.Empty;
 
 	/// <summary>제목</summary>
-	public string title { get; set; }
+	public string title { get; set; } = string.Empty;
 
 	/// <summary>단축종목코드</summary>
-	public string code { get; set; }
+	public string code { get; set; } = string.Empty;
 
 	/// <summary>BODY길이</summary>
-	public string bodysize { get; set; }
+	public string bodysize { get; set; } = string.Empty;
 }

@@ -15,28 +15,28 @@ internal class CSPAQ13700
 /// </summary>
 internal class CSPAQ13700InBlock1
 {
-	public string OrdMktCode { get; set; }
+	public string OrdMktCode { get; set; } = string.Empty;
 
 	/// <summary>매매구분</summary>
-	public string BnsTpCode { get; set; }
+	public string BnsTpCode { get; set; } = string.Empty;
 
 	/// <summary>종목번호</summary>
-	public string IsuNo { get; set; }
+	public string IsuNo { get; set; } = string.Empty;
 
 	/// <summary>체결여부</summary>
-	public string ExecYn { get; set; }
+	public string ExecYn { get; set; } = string.Empty;
 
 	/// <summary>주문일</summary>
-	public string OrdDt { get; set; }
+	public string OrdDt { get; set; } = string.Empty;
 
 	/// <summary>시작주문번호2</summary>
 	public long SrtOrdNo2 { get; set; }
 
 	/// <summary>역순구분</summary>
-	public string BkseqTpCode { get; set; }
+	public string BkseqTpCode { get; set; } = string.Empty;
 
 	/// <summary>주문유형코드</summary>
-	public string OrdPtnCode { get; set; }
+	public string OrdPtnCode { get; set; } = string.Empty;
 }
 
 /// <summary>
@@ -48,34 +48,34 @@ internal class CSPAQ13700OutBlock1
 	public long RecCnt { get; set; }
 
 	/// <summary>계좌번호</summary>
-	public string AcntNo { get; set; }
+	public string AcntNo { get; set; } = string.Empty;
 
 	/// <summary>입력비밀번호</summary>
-	public string InptPwd { get; set; }
+	public string InptPwd { get; set; } = string.Empty;
 
 	/// <summary>주문시장코드</summary>
-	public string OrdMktCode { get; set; }
+	public string OrdMktCode { get; set; } = string.Empty;
 
 	/// <summary>매매구분</summary>
-	public string BnsTpCode { get; set; }
+	public string BnsTpCode { get; set; } = string.Empty;
 
 	/// <summary>종목번호</summary>
-	public string IsuNo { get; set; }
+	public string IsuNo { get; set; } = string.Empty;
 
 	/// <summary>체결여부</summary>
-	public string ExecYn { get; set; }
+	public string ExecYn { get; set; } = string.Empty;
 
 	/// <summary>주문일</summary>
-	public string OrdDt { get; set; }
+	public string OrdDt { get; set; } = string.Empty;
 
 	/// <summary>시작주문번호2</summary>
 	public long SrtOrdNo2 { get; set; }
 
 	/// <summary>역순구분</summary>
-	public string BkseqTpCode { get; set; }
+	public string BkseqTpCode { get; set; } = string.Empty;
 
 	/// <summary>주문유형코드</summary>
-	public string OrdPtnCode { get; set; }
+	public string OrdPtnCode { get; set; } = string.Empty;
 
 }
 
@@ -113,13 +113,13 @@ internal class CSPAQ13700OutBlock2
 internal class CSPAQ13700OutBlock3
 {
 	/// <summary>주문일</summary>
-	public string OrdDt { get; set; }
+	public string OrdDt { get; set; } = string.Empty;
 
 	/// <summary>관리지점번호</summary>
-	public string MgmtBrnNo { get; set; }
+	public string MgmtBrnNo { get; set; } = string.Empty;
 
 	/// <summary>주문시장코드</summary>
-	public string OrdMktCode { get; set; }
+	public string OrdMktCode { get; set; } = string.Empty;
 
 	/// <summary>주문번호</summary>
 	public long OrdNo { get; set; }
@@ -128,34 +128,34 @@ internal class CSPAQ13700OutBlock3
 	public long OrgOrdNo { get; set; }
 
 	/// <summary>종목번호</summary>
-	public string IsuNo { get; set; }
+	public string IsuNo { get; set; } = string.Empty;
 
 	/// <summary>종목명</summary>
-	public string IsuNm { get; set; }
+	public string IsuNm { get; set; } = string.Empty;
 
 	/// <summary>매매구분</summary>
-	public string BnsTpCode { get; set; }
+	public string BnsTpCode { get; set; } = string.Empty;
 
 	/// <summary>매매구분</summary>
-	public string BnsTpNm { get; set; }
+	public string BnsTpNm { get; set; } = string.Empty;
 
 	/// <summary>주문유형코드</summary>
-	public string OrdPtnCode { get; set; }
+	public string OrdPtnCode { get; set; } = string.Empty;
 
 	/// <summary>주문유형명</summary>
-	public string OrdPtnNm { get; set; }
+	public string OrdPtnNm { get; set; } = string.Empty;
 
 	/// <summary>주문처리유형코드</summary>
 	public long OrdTrxPtnCode { get; set; }
 
 	/// <summary>주문처리유형명</summary>
-	public string OrdTrxPtnNm { get; set; }
+	public string OrdTrxPtnNm { get; set; } = string.Empty;
 
 	/// <summary>정정취소구분</summary>
-	public string MrcTpCode { get; set; }
+	public string MrcTpCode { get; set; } = string.Empty;
 
 	/// <summary>정정취소구분명</summary>
-	public string MrcTpNm { get; set; }
+	public string MrcTpNm { get; set; } = string.Empty;
 
 	/// <summary>정정취소수량</summary>
 	public long MrcQty { get; set; }
@@ -176,46 +176,46 @@ internal class CSPAQ13700OutBlock3
 	public decimal ExecPrc { get; set; }
 
 	/// <summary>체결처리시각</summary>
-	public string ExecTrxTime { get; set; }
+	public string ExecTrxTime { get; set; } = string.Empty;
 
 	/// <summary>최종체결시각</summary>
-	public string LastExecTime { get; set; }
+	public string LastExecTime { get; set; } = string.Empty;
 
 	/// <summary>호가유형코드</summary>
-	public string OrdprcPtnCode { get; set; }
+	public string OrdprcPtnCode { get; set; } = string.Empty;
 
 	/// <summary>호가유형명</summary>
-	public string OrdprcPtnNm { get; set; }
+	public string OrdprcPtnNm { get; set; } = string.Empty;
 
 	/// <summary>주문조건구분</summary>
-	public string OrdCndiTpCode { get; set; }
+	public string OrdCndiTpCode { get; set; } = string.Empty;
 
 	/// <summary>전체체결수량</summary>
 	public long AllExecQty { get; set; }
 
 	/// <summary>통신매체코드</summary>
-	public string RegCommdaCode { get; set; }
+	public string RegCommdaCode { get; set; } = string.Empty;
 
 	/// <summary>통신매체명</summary>
-	public string CommdaNm { get; set; }
+	public string CommdaNm { get; set; } = string.Empty;
 
 	/// <summary>회원번호</summary>
-	public string MbrNo { get; set; }
+	public string MbrNo { get; set; } = string.Empty;
 
 	/// <summary>예약주문여부</summary>
-	public string RsvOrdYn { get; set; }
+	public string RsvOrdYn { get; set; } = string.Empty;
 
 	/// <summary>대출일</summary>
-	public string LoanDt { get; set; }
+	public string LoanDt { get; set; } = string.Empty;
 
 	/// <summary>주문시각</summary>
-	public string OrdTime { get; set; }
+	public string OrdTime { get; set; } = string.Empty;
 
 	/// <summary>운용지시번호</summary>
-	public string OpDrtnNo { get; set; }
+	public string OpDrtnNo { get; set; } = string.Empty;
 
 	/// <summary>주문자ID</summary>
-	public string OdrrId { get; set; }
+	public string OdrrId { get; set; } = string.Empty;
 
 }
 

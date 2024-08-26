@@ -9,10 +9,13 @@ using LsOpenApi.Models;
 using OpenBroker.Models;
 using OpenBroker;
 using Websocket.Client;
+using OpenBroker.Extensions;
 
 namespace LsOpenApi.KrxEquity;
 public partial class LsKrxEquity : ConnectionBase, IConnection
 {
+	private readonly string _broker = "LS";
+
 	public Task<ResponseResult<KeyPack>> RequestApprovalKeyAsync(string appkey, string secretkey) =>
 		throw new NotImplementedException();
 
@@ -56,6 +59,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		var trCode = root.GetProperty("header").GetProperty("tr_cd").GetString();
 		switch (trCode)
 		{
+			#region NWS 뉴스
 			case nameof(NWS):
 				var response = JsonSerializer.Deserialize<LsSubscriptionCallback<NWSOutBlock>>(message.Text);
 				if (response is null || response.Body is null) return;
@@ -69,6 +73,8 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					}
 				});
 				break;
+			#endregion
+			#region JIF 장운영정보
 			case nameof(JIF):
 				var jifResponse = JsonSerializer.Deserialize<LsSubscriptionCallback<JIFOutBlock>>(message.Text);
 				Message(this, new ResponseCore
@@ -77,6 +83,65 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					Message = jifResponse?.Body?.jstatus ?? ""
 				});
 				break;
+			#endregion
+			#region SC0 주식주문접수
+			case nameof(SC0):
+				var sc0Res = JsonSerializer.Deserialize<LsSubscriptionCallback<SC0OutBlock>>(message.Text);
+				if (sc0Res is null || sc0Res.Body is null) return;
+
+				Executed(this, new ResponseResult<Order>
+				{
+					StatusCode = Status.SUCCESS,
+					Code = nameof(SC0),
+					Info = new Order
+					{
+						BrokerCo = _broker,
+						DateBiz = DateOnly.FromDateTime(DateTime.Now),
+						OID = sc0Res.Body.ordno,
+						Symbol = sc0Res.Body.shtcode.Substring(1),
+						InstrumentName = sc0Res.Body.hname,
+						Mode = sc0Res.Body.ordchegb switch
+						{
+							"01" => OrderMode.PLACE,
+							"02" => OrderMode.UPDATE,
+							"03" => OrderMode.CANCEL,
+							_ => OrderMode.NONE
+						},
+						IsLong = sc0Res.Body.bnstp == "2",
+						PriceOrdered = sc0Res.Body.ordprice,
+						VolumeOrdered = sc0Res.Body.ordqty,
+						TimeOrdered = (DateTime.Now.ToString("yyyyMMdd") + sc0Res.Body.ordtm).ToDateTimeMicro(),
+					},
+					Remark = message.Text
+				});
+				break;
+			#endregion
+			#region SC1 주문체결
+			case nameof(SC1):
+				var sc1Res = JsonSerializer.Deserialize<LsSubscriptionCallback<SC1OutBlock>>(message.Text);
+				if (sc1Res is null || sc1Res.Body is null) return;
+
+				Contracted(this, new ResponseResult<Contract>
+				{
+					StatusCode = Status.SUCCESS,
+					Code = nameof(SC1),
+					Info = new Contract
+					{
+						BrokerCo = _broker,
+						DateBiz = DateOnly.FromDateTime(DateTime.Now),
+						OID = sc1Res.Body.ordno,
+						CID = sc1Res.Body.execno,
+						Symbol = sc1Res.Body.shtnIsuno,
+						InstrumentName = sc1Res.Body.Isunm,
+						IsLong = sc1Res.Body.bnstp == "2",
+						Price = sc1Res.Body.execprc,
+						Volume = sc1Res.Body.execqty,
+						TimeContracted = (DateTime.Now.ToString("yyyyMMdd") + sc1Res.Body.exectime).ToDateTimeMicro(),
+					},
+					Remark = message.Text
+				});
+				break; 
+			#endregion
 		}
 	}
 }

@@ -14,19 +14,19 @@ internal class t0425 : LsResponseCore
 internal class t0425InBlock
 {
 	/// <summary>종목번호</summary>
-	public string expcode { get; set; }
+	public string expcode { get; set; } = string.Empty;
 
 	/// <summary>체결구분</summary>
-	public string chegb { get; set; }
+	public string chegb { get; set; } = string.Empty;
 
 	/// <summary>매매구분</summary>
-	public string medosu { get; set; }
+	public string medosu { get; set; } = string.Empty;
 
 	/// <summary>정렬순서</summary>
-	public string sortgb { get; set; }
+	public string sortgb { get; set; } = string.Empty;
 
 	/// <summary>주문번호</summary>
-	public string cts_ordno { get; set; }
+	public string cts_ordno { get; set; } = string.Empty;
 
 }
 
@@ -60,7 +60,7 @@ internal class t0425OutBlock
 	public long tax { get; set; }
 
 	/// <summary>주문번호</summary>
-	public string cts_ordno { get; set; }
+	public string cts_ordno { get; set; } = string.Empty;
 
 }
 
@@ -73,10 +73,10 @@ internal class t0425OutBlock1
 	public long ordno { get; set; }
 
 	/// <summary>종목번호</summary>
-	public string expcode { get; set; }
+	public string expcode { get; set; } = string.Empty;
 
 	/// <summary>구분</summary>
-	public string medosu { get; set; }
+	public string medosu { get; set; } = string.Empty;
 
 	/// <summary>주문수량</summary>
 	public long qty { get; set; }
@@ -97,36 +97,36 @@ internal class t0425OutBlock1
 	public long cfmqty { get; set; }
 
 	/// <summary>상태</summary>
-	public string status { get; set; }
+	public string status { get; set; } = string.Empty;
 
 	/// <summary>원주문번호</summary>
 	public long orgordno { get; set; }
 
 	/// <summary>유형</summary>
-	public string ordgb { get; set; }
+	public string ordgb { get; set; } = string.Empty;
 
 	/// <summary>주문시간</summary>
-	public string ordtime { get; set; }
+	public string ordtime { get; set; } = string.Empty;
 
 	/// <summary>주문매체</summary>
-	public string ordermtd { get; set; }
+	public string ordermtd { get; set; } = string.Empty;
 
 	/// <summary>처리순번</summary>
 	public long sysprocseq { get; set; }
 
 	/// <summary>호가유형</summary>
-	public string hogagb { get; set; }
+	public string hogagb { get; set; } = string.Empty;
 
 	/// <summary>현재가</summary>
 	public long price1 { get; set; }
 
 	/// <summary>주문구분</summary>
-	public string orggb { get; set; }
+	public string orggb { get; set; } = string.Empty;
 
 	/// <summary>신용구분</summary>
-	public string singb { get; set; }
+	public string singb { get; set; } = string.Empty;
 
 	/// <summary>대출일자</summary>
-	public string loandt { get; set; }
+	public string loandt { get; set; } = string.Empty;
 
 }

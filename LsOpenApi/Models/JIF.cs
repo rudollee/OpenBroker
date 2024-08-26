@@ -14,7 +14,7 @@ internal class JIF
 internal class JIFInBlock
 {
 	/// <summary>장구분</summary>
-	public string jangubun { get; set; }
+	public string jangubun { get; set; } = string.Empty;
 
 }
 
@@ -24,9 +24,9 @@ internal class JIFInBlock
 internal class JIFOutBlock
 {
 	/// <summary>장구분</summary>
-	public string jangubun { get; set; }
+	public string jangubun { get; set; } = string.Empty;
 
 	/// <summary>장상태</summary>
-	public string jstatus { get; set; }
+	public string jstatus { get; set; } = string.Empty;
 
 }
