@@ -38,6 +38,8 @@ public class ConnectionBase
 
 	protected IWebsocketClient Client;
 
+	private Dictionary<string, string> _subscriptions = new Dictionary<string, string>();
+
 	public async Task<ResponseResult<KeyPack>> RequestAccessTokenAsync(string appkey, string appsecret)
 	{
 		var client = new RestClient($"{host}/oauth2/token");
@@ -130,7 +132,9 @@ public class ConnectionBase
 
 			SetConnect();
 
-			var jifResult = await Subscribe("JIF", "0");
+			await Subscribe("JIF", "0");
+			await Subscribe("SC0");
+			await Subscribe("SC1");
 			return new ResponseCore
 			{
 				StatusCode = Status.SUCCESS,
@@ -154,6 +158,11 @@ public class ConnectionBase
 		Client.Dispose();
 		SetConnect(false);
 
+		foreach (KeyValuePair<string, string> subscription in _subscriptions)
+		{
+			_subscriptions.Remove(subscription.Key);
+		}
+
 		return new ResponseCore
 		{
 			Message = "disconnected"
@@ -162,7 +171,7 @@ public class ConnectionBase
 	#endregion
 
 	#region Subscribe / Unsubscribe
-	public async Task<ResponseCore> Subscribe(string trCode, string key, bool connecting = true)
+	public async Task<ResponseCore> Subscribe(string trCode, string key = "", bool connecting = true)
 	{
 		string GenerateSubscriptionRequest(string id, string key = "", bool connecting = true)
 		{
@@ -174,6 +183,15 @@ public class ConnectionBase
 		try
 		{
 			var result = await Task.Run(() => Client.Send(GenerateSubscriptionRequest(trCode, key, connecting)));
+
+			if (connecting)
+			{
+				_subscriptions.Add(trCode, key);
+			}
+			else
+			{
+				_subscriptions.Remove(trCode);
+			}
 
 			return new ResponseCore
 			{
