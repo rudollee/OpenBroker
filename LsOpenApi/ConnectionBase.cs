@@ -193,6 +193,12 @@ public class ConnectionBase
 				_subscriptions.Remove(trCode);
 			}
 
+			Message(this, new ResponseCore
+			{
+				Code = $"{trCode} / {key}",
+				Message = connecting ? "Subscribed" : "Unsubscribed",
+			});
+
 			return new ResponseCore
 			{
 				StatusCode = result ? Status.SUCCESS : Status.ERROR_OPEN_API,
