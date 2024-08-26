@@ -67,9 +67,10 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				{
 					Info = new News
 					{
-						Title = response.Body.title,
+						Code = response.Body.realkey,
 						TimePosted = DateTime.Now,
-						Body = response.Body.realkey
+						Title = response.Body.title,
+						Remark = response.Body.code,
 					}
 				});
 				break;
