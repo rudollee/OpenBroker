@@ -128,6 +128,7 @@ public class ConnectionBase
 			};
 
 			Client.MessageReceived.Subscribe(message => callback(message));
+			Client.IsReconnectionEnabled = true;
 			await Client.Start();
 
 			SetConnect();
