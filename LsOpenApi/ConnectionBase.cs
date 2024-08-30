@@ -128,6 +128,7 @@ public class ConnectionBase
 			};
 
 			Client.MessageReceived.Subscribe(message => callback(message));
+			Client.ReconnectionHappened.Subscribe(info => ReconnectCallback(info));
 			Client.IsReconnectionEnabled = true;
 			await Client.Start();
 
@@ -187,7 +188,7 @@ public class ConnectionBase
 
 			if (connecting)
 			{
-				_subscriptions.Add(trCode, key);
+				if (!_subscriptions.ContainsKey(trCode)) _subscriptions.Add(trCode, key);
 			}
 			else
 			{
@@ -250,6 +251,20 @@ public class ConnectionBase
 		if (root.GetProperty("body").GetType() is null) return;
 
 		ParseCallbackMessage(root.GetProperty("header").GetProperty("tr_cd").GetString(), message.Text);
+	}
+
+	protected async Task ReconnectCallback(ReconnectionInfo info)
+	{
+		foreach (var subscirption in _subscriptions)
+		{
+			await Subscribe(subscirption.Key, subscirption.Value);
+		}
+
+		Message(this, new ResponseCore
+		{
+			Code = "Reconnected",
+			Message = info.Type.ToString(),
+		});
 	}
 	#endregion
 
