@@ -8,4 +8,5 @@ public class News
     public required string Title { get; set; }
     public string Body { get; set; } = string.Empty;
     public string Remark { get; set; } = string.Empty;
+    public string[] SymbolList { get; set; }
 }
