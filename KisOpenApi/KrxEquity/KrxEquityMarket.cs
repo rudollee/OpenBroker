@@ -17,7 +17,6 @@ public partial class KisKrxEquity : ConnectionBase, IMarket
 
 	public Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol) => throw new NotImplementedException();
 	public Task<ResponseResult<MarketContract>> RequestMarketContract(string symbol) => throw new NotImplementedException();
-	
 	public async Task<ResponseCore> SubscribeMarketContract(string symbol, bool connecting = true) => 
 		await Subscribe(nameof(H0STCNT0), symbol, connecting);
 
@@ -25,4 +24,6 @@ public partial class KisKrxEquity : ConnectionBase, IMarket
 		await Subscribe(nameof(H0STASP0), symbol, connecting);
 
 	public Task<ResponseCore> SubscribeNews(bool connecting = true) => throw new NotImplementedException();
+
+	public Task<ResponseResult<News>> RequestNews(string id) => throw new NotImplementedException();
 }

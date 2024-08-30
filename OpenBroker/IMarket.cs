@@ -53,6 +53,13 @@ public interface IMarket
 	Task<ResponseCore> SubscribeNews(bool connecting = true);
 
 	/// <summary>
+	/// 뉴스 상세 정보
+	/// </summary>
+	/// <param name="id"></param>
+	/// <returns></returns>
+	Task<ResponseResult<News>> RequestNews(string id);
+
+	/// <summary>
 	/// 종목 상세
 	/// </summary>
 	/// <param name="symbol"></param>
