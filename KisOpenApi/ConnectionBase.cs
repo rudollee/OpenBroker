@@ -250,7 +250,7 @@ public class ConnectionBase
 			{
 				if (connecting)
 				{
-					_subscriptions.Add(trCode, key);
+					if (!_subscriptions.ContainsKey(trCode)) _subscriptions.Add(trCode, key);
 				}
 				else
 				{
@@ -321,8 +321,13 @@ public class ConnectionBase
 		}
 	}
 
-	protected void ReconnectCallback(ReconnectionInfo info)
+	protected async Task ReconnectCallback(ReconnectionInfo info)
 	{
+		foreach (var subscirption in _subscriptions)
+		{
+			await Subscribe(subscirption.Key, subscirption.Value);
+		}
+
 		Message(this, new ResponseCore
 		{
 			Code = "Reconnected",
