@@ -22,7 +22,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket
 
 	public async Task<ResponseResult<News>> RequestNews(string id)
 	{
-		var client = new RestClient($"{host}/stock/market-data");
+		var client = new RestClient($"{host}/stock/investinfo");
 		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(t3102)));
 
 		request.AddBody(JsonSerializer.Serialize(new
