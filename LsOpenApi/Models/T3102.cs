@@ -4,12 +4,12 @@ namespace LsOpenApi.Models;
 /// <summary>
 /// 뉴스본문(t3102)
 /// </summary>
-internal class t3102
+internal class t3102 : LsResponseCore
 {
 	public t3102InBlock InBlock { get; set; } = new();
-	public List<t3102OutBlock> OutBlock { get; set; } = new();
-	public List<t3102OutBlock1> OutBlock1 { get; set; } = new();
-	public t3102OutBlock2 OutBlock2 { get; set; } = new();
+	public t3102OutBlock[] t3102OutBlock { get; set; } = Array.Empty<t3102OutBlock>();
+	public IEnumerable<t3102OutBlock1> t3102OutBlock1 { get; set; } = Enumerable.Empty<t3102OutBlock1>();
+	public t3102OutBlock2 t3102OutBlock2 { get; set; } = new();
 }
 
 /// <summary>

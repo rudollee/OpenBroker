@@ -3,7 +3,6 @@ using OpenBroker;
 using RestSharp;
 using LsOpenApi.Models;
 using System.Text.Json;
-using System.Text;
 
 namespace LsOpenApi.KrxEquity;
 public partial class LsKrxEquity : ConnectionBase, IMarket
@@ -36,15 +35,16 @@ public partial class LsKrxEquity : ConnectionBase, IMarket
 		try
 		{
 			var response = await client.PostAsync<t3102>(request) ?? new t3102();
+			var htmlString = string.Join("", response.t3102OutBlock1.Select(s => s.sBody)).Replace("t3102OutBlock1", "");
 
 			return new ResponseResult<News>
 			{
 				Info = new News
 				{
 					Code = id,
-					Title = response.OutBlock2.sTitle,
-					Body = string.Join("", response.OutBlock1.Select(s => s.sBody).ToArray()),
-					SymbolList = response.OutBlock.Select(s => s.sJongcode).ToArray()
+					Title = response.t3102OutBlock2.sTitle,
+					Body = htmlString,
+					SymbolList = response.t3102OutBlock.Select(s => s.sJongcode).ToArray()
 				}
 			};
 		}
