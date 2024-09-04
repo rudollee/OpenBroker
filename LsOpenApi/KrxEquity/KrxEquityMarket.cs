@@ -5,7 +5,7 @@ using LsOpenApi.Models;
 using System.Text.Json;
 
 namespace LsOpenApi.KrxEquity;
-public partial class LsKrxEquity : ConnectionBase, IMarket
+public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 {
 	public EventHandler<ResponseResult<MarketContract>> MarketContracted { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 	public EventHandler<ResponseResult<MarketDepth>> MarketDepthListed { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
@@ -58,7 +58,9 @@ public partial class LsKrxEquity : ConnectionBase, IMarket
 		}
 	}
 
-	public async Task<ResponseResults<Instrument>> RequestInstruments(int option)
+	public Task<ResponseResults<Instrument>> RequestInstruments(int option) => throw new NotImplementedException();
+
+	public async Task<ResponseResults<Equity>> RequestEquityList(int option = 0)
 	{
 		var client = new RestClient($"{host}/stock/etc");
 		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(t8436)));
@@ -75,32 +77,39 @@ public partial class LsKrxEquity : ConnectionBase, IMarket
 		{
 			var response = await client.PostAsync<t8436>(request) ?? new t8436();
 
-			var resultsFiltered = response.t8436OutBlock.Where(w => new string[] { "01", "03" }.Contains(w.bu12gubun));
-			var instruments = new List<Instrument>();
-			foreach (var instrument in resultsFiltered)
+			if (!response.t8436OutBlock.Any()) return new ResponseResults<Equity>
 			{
-				instruments.Add(new Instrument
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = "no data",
+				Code = response.Code,
+				List = new List<Equity>()
+			};
+
+			var equities = new List<Equity>();
+			foreach (var equity in response.t8436OutBlock.Where(w => new string[] { "01", "03" }.Contains(w.bu12gubun)))
+			{
+				equities.Add(new Equity
 				{
-					Currency = Currency.KRW,
-					Symbol = instrument.shcode,
-					Sym = instrument.gubun, // temparary 1.KOSPI; 2.KOSDAQ
-					InstrumentName = instrument.hname,
+					Symbol = equity.shcode,
+					Section = equity.gubun == "1" ? ExchangeSection.KOSPI : ExchangeSection.KOSDAQ,
+					NameOfficial = equity.hname,
 				});
 			}
 
-			return new ResponseResults<Instrument>
+			return new ResponseResults<Equity>
 			{
-				List = instruments,
+				List = equities,
 			};
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<Instrument>
+			return new ResponseResults<Equity>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = ex.Message,
-				List = new List<Instrument>(),
+				List = new List<Equity>(),
 			};
 		}
 	}
+
 }
