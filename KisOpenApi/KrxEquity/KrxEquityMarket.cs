@@ -26,4 +26,5 @@ public partial class KisKrxEquity : ConnectionBase, IMarket
 	public Task<ResponseCore> SubscribeNews(bool connecting = true) => throw new NotImplementedException();
 
 	public Task<ResponseResult<News>> RequestNews(string id) => throw new NotImplementedException();
+	public Task<ResponseResults<InstrumentCore>> RequestInstruments(int option) => throw new NotImplementedException();
 }

@@ -66,4 +66,11 @@ public interface IMarket
 	/// <returns></returns>
 	Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol);
 
+	/// <summary>
+	/// 거래 종목 리스트
+	/// </summary>
+	/// <param name="option"></param>
+	/// <returns></returns>
+	Task<ResponseResults<InstrumentCore>> RequestInstruments(int option);
+
 }

@@ -15,7 +15,9 @@ public partial class EBestKrxEquity : ConnectionBase, IMarket
 	public EventHandler<ResponseResult<News>> NewsPosted { get; set; }
 
 	public Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol) => throw new NotImplementedException();
+	public Task<ResponseResults<InstrumentCore>> RequestInstruments(int option) => throw new NotImplementedException();
 	public Task<ResponseResult<MarketContract>> RequestMarketContract(string symbol) => throw new NotImplementedException();
+	public Task<ResponseResult<News>> RequestNews(string id) => throw new NotImplementedException();
 	public Task<ResponseCore> SubscribeMarketContract(string symbol, bool connecting = true) => throw new NotImplementedException();
 	public Task<ResponseCore> SubscribeMarketDepth(string symbol, bool connecting = true) => throw new NotImplementedException();
 	public async Task<ResponseCore> SubscribeNews(bool connecting = true) => await Subscribe("NWS", "NWS001", connecting);
