@@ -85,6 +85,26 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				});
 				break;
 			#endregion
+			#region VI_ 주식 VI 발동/해제
+			case nameof(VI_):
+				var viResponse = JsonSerializer.Deserialize<LsSubscriptionCallback<VI_OutBlock>>(message.Text);
+				if (viResponse is null || viResponse.Body is null) break;
+				MarketPaused(this, new ResponseResult<MarketPause>
+				{
+					Info = new MarketPause
+					{
+						Time = viResponse.Body.time.ToTime(),
+						Symbol = viResponse.Body.shcode,
+						PauseType = viResponse.Body.vi_gubun == "0"
+							? MarketPauseType.VI0
+							: (viResponse.Body.vi_gubun == "1" ? MarketPauseType.VIS : MarketPauseType.VID),
+						BasePrice = Convert.ToDecimal(viResponse.Body.vi_gubun == "1" ? viResponse.Body.svi_recprice : viResponse.Body.dvi_recprice),
+						TriggerPrice = Convert.ToDecimal(viResponse.Body.vi_trgprice),
+						Remark = viResponse.Body.ref_shcode,
+					}
+				});
+				break; 
+			#endregion
 			#region SC0 주식주문접수
 			case nameof(SC0):
 				var sc0Res = JsonSerializer.Deserialize<LsSubscriptionCallback<SC0OutBlock>>(message.Text);

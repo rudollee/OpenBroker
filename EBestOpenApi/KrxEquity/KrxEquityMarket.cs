@@ -13,6 +13,7 @@ public partial class EBestKrxEquity : ConnectionBase, IMarket
 	public EventHandler<ResponseResult<MarketDepth>> MarketDepthListed { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
 	public EventHandler<ResponseResult<News>> NewsPosted { get; set; }
+	public EventHandler<ResponseResult<MarketPause>> MarketPaused { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
 	public Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol) => throw new NotImplementedException();
 	public Task<ResponseResults<Instrument>> RequestInstruments(int option) => throw new NotImplementedException();

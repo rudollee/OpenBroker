@@ -227,3 +227,25 @@ public enum AccountType
     KD = 22,
 
 }
+
+/// <summary>
+/// Market Pause Type
+/// </summary>
+public enum MarketPauseType
+{
+    /// <summary>
+    /// VI Normalized
+    /// </summary>
+    VI0 = 8210,
+    
+    /// <summary>
+    /// VI Static
+    /// </summary>
+    VIS = 8211,
+
+    /// <summary>
+    /// VI Dynamic
+    /// </summary>
+    VID = 8212,
+
+}

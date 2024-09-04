@@ -23,6 +23,11 @@ public interface IMarket
 	EventHandler<ResponseResult<News>> NewsPosted { get; set; }
 
 	/// <summary>
+	/// Market Paused callback
+	/// </summary>
+	EventHandler<ResponseResult<MarketPause>> MarketPaused { get; set; }
+
+	/// <summary>
 	/// 현재가
 	/// </summary>
 	/// <param name="symbol"></param>
