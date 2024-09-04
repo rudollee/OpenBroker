@@ -63,6 +63,7 @@ public partial class EBestKrxEquity : ConnectionBase, IConnection
 				{
 					Info = new News
 					{
+						Code = response.Body.code,
 						Title = response.Body.title,
 						TimePosted = DateTime.Now,
 						Body = response.Body.realkey

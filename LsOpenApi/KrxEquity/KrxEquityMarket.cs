@@ -58,4 +58,5 @@ public partial class LsKrxEquity : ConnectionBase, IMarket
 		}
 	}
 
+	public Task<ResponseResults<InstrumentCore>> RequestInstruments(int option) => throw new NotImplementedException();
 }
