@@ -78,4 +78,11 @@ public interface IMarket
 	/// <returns></returns>
 	Task<ResponseResults<Instrument>> RequestInstruments(int option = 0);
 
+	/// <summary>
+	/// 시장 중지 상태 - realtime
+	/// </summary>
+	/// <param name="symbol"></param>
+	/// <returns></returns>
+	Task<ResponseCore> SubscribeMarketPause(string symbol = "000000");
+
 }
