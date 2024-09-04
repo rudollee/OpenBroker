@@ -71,6 +71,6 @@ public interface IMarket
 	/// </summary>
 	/// <param name="option"></param>
 	/// <returns></returns>
-	Task<ResponseResults<InstrumentCore>> RequestInstruments(int option = 0);
+	Task<ResponseResults<Instrument>> RequestInstruments(int option = 0);
 
 }

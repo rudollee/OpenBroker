@@ -58,7 +58,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket
 		}
 	}
 
-	public async Task<ResponseResults<InstrumentCore>> RequestInstruments(int option)
+	public async Task<ResponseResults<Instrument>> RequestInstruments(int option)
 	{
 		var client = new RestClient($"{host}/stock/etc");
 		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(t8436)));
@@ -76,10 +76,10 @@ public partial class LsKrxEquity : ConnectionBase, IMarket
 			var response = await client.PostAsync<t8436>(request) ?? new t8436();
 
 			var resultsFiltered = response.t8436OutBlock.Where(w => new string[] { "01", "03" }.Contains(w.bu12gubun));
-			var instruments = new List<InstrumentCore>();
+			var instruments = new List<Instrument>();
 			foreach (var instrument in resultsFiltered)
 			{
-				instruments.Add(new InstrumentCore
+				instruments.Add(new Instrument
 				{
 					Currency = Currency.KRW,
 					Symbol = instrument.shcode,
@@ -88,18 +88,18 @@ public partial class LsKrxEquity : ConnectionBase, IMarket
 				});
 			}
 
-			return new ResponseResults<InstrumentCore>
+			return new ResponseResults<Instrument>
 			{
 				List = instruments,
 			};
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<InstrumentCore>
+			return new ResponseResults<Instrument>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = ex.Message,
-				List = new List<InstrumentCore>(),
+				List = new List<Instrument>(),
 			};
 		}
 	}

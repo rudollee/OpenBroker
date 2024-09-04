@@ -82,6 +82,16 @@ public enum ContractStatus
     UnexecutedOnly
 }
 
+/// <summary>
+/// Discard Status
+/// </summary>
+public enum DiscardStatus
+{
+	TRADABLE = 0,
+    PAUSE = 80,
+	DISCARD = 88,
+}
+
 public enum Currency
 {
     NONE = 0,
@@ -123,10 +133,11 @@ public enum Currency
 
 public enum Exchange
 {
-    KRX = 0,
+    NONE = 0,
     CME = 10,
     EUREX = 20,
     OSE = 30,
+	KRX = 820,
 }
 
 public enum MarketCode
@@ -135,6 +146,19 @@ public enum MarketCode
     KOSDAQ = 2,
     DERIVATIVES = 5,
     CME = 20,
+}
+
+public enum ExchangeSection
+{
+	NONE = 0,
+	CME = 100,
+	CBOT = 101,
+	NYMEX = 102,
+	COMEX = 103,
+	EUREX = 200,
+	KRX = 820,
+	KOSPI = 821,
+	KOSDAQ = 822,
 }
 
 public enum Brkr

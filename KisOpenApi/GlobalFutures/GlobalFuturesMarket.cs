@@ -70,7 +70,7 @@ public partial class KisGlobalFutures : ConnectionBase, IMarket
 		}
 	}
 
-	public Task<ResponseResults<InstrumentCore>> RequestInstruments(int option) => throw new NotImplementedException();
+	public Task<ResponseResults<Instrument>> RequestInstruments(int option) => throw new NotImplementedException();
 	public Task<ResponseResult<MarketContract>> RequestMarketContract(string symbol) => throw new NotImplementedException();
 	public Task<ResponseResult<News>> RequestNews(string id) => throw new NotImplementedException();
 	public async Task<ResponseCore> SubscribeMarketContract(string symbol, bool connecting = true) =>
