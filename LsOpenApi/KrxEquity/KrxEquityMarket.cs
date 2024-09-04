@@ -58,5 +58,49 @@ public partial class LsKrxEquity : ConnectionBase, IMarket
 		}
 	}
 
-	public Task<ResponseResults<InstrumentCore>> RequestInstruments(int option) => throw new NotImplementedException();
+	public async Task<ResponseResults<InstrumentCore>> RequestInstruments(int option)
+	{
+		var client = new RestClient($"{host}/stock/etc");
+		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(t8436)));
+
+		request.AddBody(JsonSerializer.Serialize(new
+		{
+			t8436InBlock = new t8436InBlock
+			{
+				gubun = "0"
+			}
+		}));
+
+		try
+		{
+			var response = await client.PostAsync<t8436>(request) ?? new t8436();
+
+			var resultsFiltered = response.t8436OutBlock.Where(w => new string[] { "01", "03" }.Contains(w.bu12gubun));
+			var instruments = new List<InstrumentCore>();
+			foreach (var instrument in resultsFiltered)
+			{
+				instruments.Add(new InstrumentCore
+				{
+					Currency = Currency.KRW,
+					Symbol = instrument.shcode,
+					Sym = instrument.gubun, // temparary 1.KOSPI; 2.KOSDAQ
+					InstrumentName = instrument.hname,
+				});
+			}
+
+			return new ResponseResults<InstrumentCore>
+			{
+				List = instruments,
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResults<InstrumentCore>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = ex.Message,
+				List = new List<InstrumentCore>(),
+			};
+		}
+	}
 }
