@@ -182,6 +182,13 @@ public class ConnectionBase
 			return JsonSerializer.Serialize(new LsSubscriptionRequest(KeyInfo.AccessToken, id, key, connecting));
 		}
 
+		if (Client is null) return new ResponseCore
+		{
+			StatusCode = Status.ERROR_OPEN_API,
+			Code = "NOCONNECTION",
+			Message = "client is null"
+		};
+
 		try
 		{
 			var result = await Task.Run(() => Client.Send(GenerateSubscriptionRequest(trCode, key, connecting)));
