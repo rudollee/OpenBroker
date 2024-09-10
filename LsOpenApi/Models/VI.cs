@@ -27,13 +27,13 @@ internal class VI_OutBlock
 	public string vi_gubun { get; set; } = string.Empty;
 
 	/// <summary>정적VI발동기준가격</summary>
-	public long svi_recprice { get; set; }
+	public string svi_recprice { get; set; } = "0";
 
 	/// <summary>동적VI발동기준가격</summary>
-	public long dvi_recprice { get; set; }
+	public string dvi_recprice { get; set; } = "0";
 
 	/// <summary>VI발동가격</summary>
-	public long vi_trgprice { get; set; }
+	public string vi_trgprice { get; set; } = "0";
 
 	/// <summary>단축코드(KEY)</summary>
 	public string shcode { get; set; } = string.Empty;

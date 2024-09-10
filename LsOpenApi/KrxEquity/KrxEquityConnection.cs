@@ -94,13 +94,13 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					Info = new MarketPause
 					{
 						Time = viResponse.Body.time.ToTime(),
-						Symbol = viResponse.Body.shcode,
+						Symbol = viResponse.Body.ref_shcode,
 						PauseType = viResponse.Body.vi_gubun == "0"
 							? MarketPauseType.VI0
 							: (viResponse.Body.vi_gubun == "1" ? MarketPauseType.VIS : MarketPauseType.VID),
 						BasePrice = Convert.ToDecimal(viResponse.Body.vi_gubun == "1" ? viResponse.Body.svi_recprice : viResponse.Body.dvi_recprice),
 						TriggerPrice = Convert.ToDecimal(viResponse.Body.vi_trgprice),
-						Remark = viResponse.Body.ref_shcode,
+						Remark = viResponse.Body.shcode,
 					}
 				});
 				break; 
