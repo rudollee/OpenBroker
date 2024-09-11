@@ -2,6 +2,14 @@
 
 public class InstrumentCore
 {
+    /// <summary>
+    /// Market
+    /// </summary>
+	public ExchangeSection Section { get; set; } = ExchangeSection.NONE;
+	
+    /// <summary>
+    /// Currency
+    /// </summary>
     public Currency Currency { get; set; }
 
     /// <summary>
@@ -44,6 +52,10 @@ public class InstrumentCore
     /// </summary>
     public bool Tradable { get; set; }
 
+    /// <summary>
+    /// Status for Trading
+    /// </summary>
+	public DiscardStatus DiscardStatus { get; set; } = DiscardStatus.TRADABLE;
 }
 
 public class Instrument : InstrumentCore
