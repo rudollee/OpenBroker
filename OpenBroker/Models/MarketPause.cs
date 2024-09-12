@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OpenBroker.Models;
+﻿namespace OpenBroker.Models;
 public class MarketPause
 {
 	public TimeOnly Time { get; set; }
@@ -13,9 +7,13 @@ public class MarketPause
 
 	public string Symbol { get; set; } = string.Empty;
 
+	public string NameOfficial { get; set; } = string.Empty;
+
 	public decimal BasePrice { get; set; }
 
 	public decimal TriggerPrice { get; set; }
+
+	public decimal Rate { get => (TriggerPrice - BasePrice) / Math.Max(1, BasePrice) * 100;}
 
 	public string Remark { get; set; } = string.Empty;
 
