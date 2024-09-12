@@ -36,7 +36,7 @@ public class ConnectionBase
 
 	public required EventHandler<ResponseCore> Message { get; set; }
 
-	protected IWebsocketClient Client;
+	protected IWebsocketClient? Client;
 
 	private Dictionary<string, string> _subscriptions = new Dictionary<string, string>();
 
@@ -128,15 +128,15 @@ public class ConnectionBase
 			};
 
 			Client.MessageReceived.Subscribe(message => callback(message));
-			Client.ReconnectionHappened.Subscribe(info => ReconnectCallback(info));
+			Client.ReconnectionHappened.Subscribe(async info => await ReconnectCallback(info));
 			Client.IsReconnectionEnabled = true;
 			await Client.Start();
 
 			SetConnect();
 
-			await Subscribe("JIF", "0");
-			await Subscribe("SC0");
-			await Subscribe("SC1");
+			await SubscribeAsync("JIF", "0");
+			await SubscribeAsync("SC0");
+			await SubscribeAsync("SC1");
 			return new ResponseCore
 			{
 				StatusCode = Status.SUCCESS,
@@ -156,6 +156,12 @@ public class ConnectionBase
 
 	public async Task<ResponseCore> DisconnectAsync()
 	{
+		if (Client is null) return new ResponseCore
+		{
+			Code = "NOCONNECTION",
+			Message = "no connection to disconnect or already disconnected"
+		};
+
 		await Client.Stop(WebSocketCloseStatus.NormalClosure, "");
 		Client.Dispose();
 		SetConnect(false);
@@ -173,7 +179,7 @@ public class ConnectionBase
 	#endregion
 
 	#region Subscribe / Unsubscribe
-	public async Task<ResponseCore> Subscribe(string trCode, string key = "", bool connecting = true)
+	public async Task<ResponseCore> SubscribeAsync(string trCode, string key = "", bool connecting = true)
 	{
 		string GenerateSubscriptionRequest(string id, string key = "", bool connecting = true)
 		{
@@ -256,15 +262,28 @@ public class ConnectionBase
 		var root = document.RootElement;
 
 		if (root.GetProperty("body").GetType() is null) return;
+		var trCode = root.GetProperty("header").GetProperty("tr_cd").GetString();
+		if (trCode is null)
+		{
+			Message(this, new ResponseCore
+			{
+				Code = "TRCODEERR",
+				Message = "failed to parse TR code"
+			});
 
-		ParseCallbackMessage(root.GetProperty("header").GetProperty("tr_cd").GetString(), message.Text);
+			return;
+		}
+
+		ParseCallbackMessage(trCode, message.Text);
 	}
 
 	protected async Task ReconnectCallback(ReconnectionInfo info)
 	{
+		if (info.Type == ReconnectionType.Initial) return;
+
 		foreach (var subscirption in _subscriptions)
 		{
-			await Subscribe(subscirption.Key, subscirption.Value);
+			await SubscribeAsync(subscirption.Key, subscirption.Value);
 		}
 
 		Message(this, new ResponseCore
@@ -327,13 +346,16 @@ public class ConnectionBase
 	/// <param name="tr"></param>
 	/// <param name="additionalOption"></param>
 	/// <returns></returns>
-	protected Dictionary<string, string> GenerateHeaders(string tr, Dictionary<string, string> additionalOption)
+	protected Dictionary<string, string> GenerateHeaders(string tr, Dictionary<string, string?>? additionalOption)
 	{
 		var headers = GenerateHeaders(tr);
 
-		foreach (var header in additionalOption)
+		if (additionalOption is not null)
 		{
-			headers.Add(header.Key, header.Value);
+			foreach (var header in additionalOption)
+			{
+				headers.Add(header.Key, header.Value ?? string.Empty);
+			}
 		}
 
 		return headers;
@@ -365,5 +387,6 @@ public class ConnectionBase
 	/// <returns></returns>
 	protected Dictionary<string, string> GenerateHeaders(string tr, object additionalOption) =>
 		GenerateHeaders(tr, additionalOption.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(additionalOption, null)?.ToString()));
+		
 	#endregion
 }

@@ -19,15 +19,15 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 	public Task<ResponseResult<KeyPack>> RequestApprovalKeyAsync(string appkey, string secretkey) =>
 		throw new NotImplementedException();
 
-	protected override void ParseCallbackResponse(string trCode, string callbackTxt)
-	{
-		switch (trCode)
-		{
-			case nameof(NWS):
-				var response = JsonSerializer.Deserialize<LsSubscriptionCallback<NWS>>(callbackTxt);
-				break;
-		}
-	}
+	//protected override void ParseCallbackResponse(string trCode, string callbackTxt)
+	//{
+	//	switch (trCode)
+	//	{
+	//		case nameof(NWS):
+	//			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<NWS>>(callbackTxt);
+	//			break;
+	//	}
+	//}
 
 	public async Task<ResponseCore> ConnectAsync() => await ConnectAsync(Callback);
 
