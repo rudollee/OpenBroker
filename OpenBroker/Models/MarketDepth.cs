@@ -41,6 +41,35 @@ public class PriceOHLC : MarketContract
     public decimal O { get; set; }
     public decimal H { get; set; }
     public decimal L { get; set; }
+
+}
+
+/// <summary>
+/// 시고저종 + 비율
+/// </summary>
+public class PriceRate : PriceOHLC
+{
+    private decimal basePrice;
+
+	/// <summary>
+	/// price at previous timeframe or 
+	/// </summary>
+	public decimal BasePrice
+    {
+        get { return basePrice; }
+        set { basePrice = value; }
+    }
+
+    public decimal Diff { get => C - basePrice; }
+
+    public decimal DiffRate { get => (C - basePrice) / basePrice; }
+
+    public decimal ORate { get => (O - basePrice) / basePrice; }
+
+    public decimal HRate { get => (H - basePrice) / basePrice;  }
+
+    public decimal LRate { get => (L - basePrice) / basePrice; }
+
 }
 
 /// <summary>
@@ -56,7 +85,7 @@ public class PriceExt : PriceOHLC
     /// <summary>
     /// Underlying Asset Price (Close)
     /// </summary>
-		public decimal UA { get; set; }
+	public decimal UA { get; set; }
 }
 
 /// <summary>
