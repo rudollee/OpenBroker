@@ -10,22 +10,22 @@ public interface IMarket
 	/// <summary>
 	/// Marekt Contracted callback
 	/// </summary>
-	EventHandler<ResponseResult<MarketContract>> MarketContracted { get; set; }
+	EventHandler<ResponseResult<MarketContract>>? MarketContracted { get; set; }
 
 	/// <summary>
 	/// Market Depth callback
 	/// </summary>
-	EventHandler<ResponseResult<MarketDepth>> MarketDepthListed { get; set; }
+	EventHandler<ResponseResult<MarketDepth>>? MarketDepthListed { get; set; }
 
 	/// <summary>
 	/// News callback
 	/// </summary>
-	EventHandler<ResponseResult<News>> NewsPosted { get; set; }
+	EventHandler<ResponseResult<News>>? NewsPosted { get; set; }
 
 	/// <summary>
 	/// Market Paused callback
 	/// </summary>
-	EventHandler<ResponseResult<MarketPause>> MarketPaused { get; set; }
+	EventHandler<ResponseResult<MarketPause>>? MarketPaused { get; set; }
 
 	/// <summary>
 	/// 현재가

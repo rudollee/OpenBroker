@@ -40,6 +40,8 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 		{
 			#region 실시간 호가 HDFFF010
 			case nameof(HDFFF010):
+				if (MarketDepthListed is null) return;
+
 				var bidList = new List<OrderBook>();
 				var askList = new List<OrderBook>();
 				var bidQuantityIndex = (int)HDFFF010.bid_qntt_1;
@@ -80,6 +82,8 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 			#endregion
 			#region 실시간 체결가 HDFFF020
 			case nameof(HDFFF020):
+				if (MarketContracted is null) return;
+
 				MarketContracted(this, new ResponseResult<MarketContract>
 				{
 					Code = rawData[2],

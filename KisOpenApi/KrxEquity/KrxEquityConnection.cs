@@ -42,6 +42,8 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 		{
 			#region 실시간 호가 H0STASP0
 			case nameof(H0STASP0):
+				if (MarketDepthListed is null) return;
+
 				var bidList = new List<OrderBook>();
 				var askList = new List<OrderBook>();
 				var bidQuantityIndex = (int)H0STASP0.BIDP_RSQN1;
@@ -81,6 +83,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 			#endregion
 			#region 실시간 체결가 H0STCNT0
 			case nameof(H0STCNT0):
+				if (MarketContracted is null) return;
 				MarketContracted(this, new ResponseResult<MarketContract>
 				{
 					Code = rawData[2],

@@ -61,8 +61,11 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		{
 			#region NWS 뉴스
 			case nameof(NWS):
+				if (NewsPosted is null) return;
+
 				var response = JsonSerializer.Deserialize<LsSubscriptionCallback<NWSOutBlock>>(message.Text);
 				if (response is null || response.Body is null) return;
+
 				NewsPosted(this, new ResponseResult<News>
 				{
 					Info = new News
@@ -87,8 +90,11 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 			#endregion
 			#region VI_ 주식 VI 발동/해제
 			case nameof(VI_):
+				if (MarketPaused is null) return;
+
 				var viResponse = JsonSerializer.Deserialize<LsSubscriptionCallback<VI_OutBlock>>(message.Text);
 				if (viResponse is null || viResponse.Body is null) break;
+
 				MarketPaused(this, new ResponseResult<MarketPause>
 				{
 					Info = new MarketPause

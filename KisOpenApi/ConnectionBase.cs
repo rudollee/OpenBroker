@@ -35,7 +35,7 @@ public class ConnectionBase
 
 	public required EventHandler<ResponseCore> Message { get; set; }
 
-	protected IWebsocketClient Client;
+	protected IWebsocketClient? Client;
 
 	protected string _iv = string.Empty;
 	protected string _key = string.Empty;
@@ -188,7 +188,7 @@ public class ConnectionBase
 			};
 
 			Client.MessageReceived.Subscribe(message => SubscribeCallback(message));
-			Client.ReconnectionHappened.Subscribe(info => ReconnectCallback(info));
+			Client.ReconnectionHappened.Subscribe(async info => await ReconnectCallback(info));
 			await Client.Start();
 
 			SetConnect();
@@ -323,6 +323,8 @@ public class ConnectionBase
 
 	protected async Task ReconnectCallback(ReconnectionInfo info)
 	{
+		if (info.Type is ReconnectionType.Initial) return;
+
 		foreach (var subscirption in _subscriptions)
 		{
 			await Subscribe(subscirption.Key, subscirption.Value);
@@ -438,13 +440,16 @@ public class ConnectionBase
 	/// <param name="tr"></param>
 	/// <param name="additionalOption"></param>
 	/// <returns></returns>
-	protected Dictionary<string, string> GenerateHeaders(string tr, Dictionary<string, string> additionalOption)
+	protected Dictionary<string, string> GenerateHeaders(string tr, Dictionary<string, string?>? additionalOption)
 	{
 		var headers = GenerateHeaders(tr);
 
-		foreach (var header in additionalOption)
+		if (additionalOption is not null)
 		{
-			headers.Add(header.Key, header.Value);
+			foreach (var header in additionalOption)
+			{
+				headers.Add(header.Key, header.Value ?? string.Empty);
+			}
 		}
 
 		return headers;
