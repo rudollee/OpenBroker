@@ -217,6 +217,12 @@ public class ConnectionBase
 
 	public async Task<ResponseCore> DisconnectAsync()
 	{
+		if (Client is null) return new ResponseCore
+		{
+			Code = "NOCONNECTION",
+			Message = "no connection to disconnect or already disconnected"
+		};
+
 		await Client.Stop(WebSocketCloseStatus.NormalClosure, "");
 		Client.Dispose();
 		SetConnect(false);
@@ -236,6 +242,12 @@ public class ConnectionBase
 	#region Subscribe / Unsubscribe
 	public async Task<ResponseCore> Subscribe(string trCode, string key, bool connecting = true)
 	{
+		if (Client is null) return new ResponseCore
+		{
+			Code = "NULLERR",
+			Message = "Client is null"
+		};
+
 		string GenerateSubscriptionRequest(string id, string key = "", bool connecting = true)
 		{
 			if (string.IsNullOrWhiteSpace(key)) key = AccountInfo.ID;
@@ -363,7 +375,7 @@ public class ConnectionBase
 			switch (messageInfo.Header.ID)
 			{
 				case "PINGPONG":
-					Client.Send(callbackTxt);
+					Client?.Send(callbackTxt);
 					return;
 				case nameof(HDFFF1C0):
 				case nameof(HDFFF2C0):
