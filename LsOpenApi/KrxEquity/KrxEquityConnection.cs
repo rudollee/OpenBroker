@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.WebSockets;
-using System.Text;
+﻿using System.Net.WebSockets;
 using System.Text.Json;
-using System.Threading.Tasks;
 using LsOpenApi.Models;
 using OpenBroker.Models;
 using OpenBroker;
@@ -80,11 +75,13 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 			#endregion
 			#region JIF 장운영정보
 			case nameof(JIF):
-				var jifResponse = JsonSerializer.Deserialize<LsSubscriptionCallback<JIFOutBlock>>(message.Text);
+				var resJif = JsonSerializer.Deserialize<LsSubscriptionCallback<JIFOutBlock>>(message.Text);
+				if (resJif is null || resJif.Body is null) return;
+
 				Message(this, new ResponseCore
 				{
-					Code = jifResponse?.Body?.jangubun ?? "",
-					Message = jifResponse?.Body?.jstatus ?? ""
+					Code = $"{resJif.Body.jangubun}.{resJif.Body.jstatus}",
+					Message = $"{CodeRef.MarketSectionDic[resJif.Body.jangubun]} {CodeRef.MarketStatusDic[resJif.Body.jstatus]}"
 				});
 				break;
 			#endregion
