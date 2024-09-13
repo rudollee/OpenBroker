@@ -166,9 +166,9 @@ public class ConnectionBase
 		Client.Dispose();
 		SetConnect(false);
 
-		foreach (KeyValuePair<string, string> subscription in _subscriptions)
+		foreach (var subscription in _subscriptions)
 		{
-			_subscriptions.Remove(subscription.Key);
+			await SubscribeAsync(subscription.Key, subscription.Value, false);
 		}
 
 		return new ResponseCore
