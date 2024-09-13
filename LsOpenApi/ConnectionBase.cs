@@ -123,7 +123,7 @@ public class ConnectionBase
 			Client = new WebsocketClient(new Uri(hostSocket), options)
 			{
 				Name = "LS",
-				ReconnectTimeout = TimeSpan.FromSeconds(30),
+				ReconnectTimeout = TimeSpan.FromSeconds(15),
 				ErrorReconnectTimeout = TimeSpan.FromSeconds(30),
 			};
 
@@ -283,7 +283,17 @@ public class ConnectionBase
 
 		foreach (var subscirption in _subscriptions)
 		{
-			await SubscribeAsync(subscirption.Key, subscirption.Value);
+			var response = await SubscribeAsync(subscirption.Key, subscirption.Value);
+			if (response is null || response.StatusCode != Status.SUCCESS)
+			{
+				Message(this, new ResponseCore
+				{
+					Code = "RECON-FAIL",
+					Message = $"subscription {subscirption.Key} failed during reconnection",
+					Remark = subscirption.Value
+				});
+				return;
+			}
 		}
 
 		Message(this, new ResponseCore
