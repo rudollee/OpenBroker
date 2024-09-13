@@ -123,7 +123,7 @@ public class ConnectionBase
 			Client = new WebsocketClient(new Uri(hostSocket), options)
 			{
 				Name = "LS",
-				ReconnectTimeout = TimeSpan.FromSeconds(15),
+				ReconnectTimeout = TimeSpan.FromSeconds(20),
 				ErrorReconnectTimeout = TimeSpan.FromSeconds(30),
 			};
 
@@ -210,7 +210,7 @@ public class ConnectionBase
 
 			Message(this, new ResponseCore
 			{
-				Code = $"{trCode} / {key}",
+				Code = $"{trCode}({key})",
 				Message = connecting ? "Subscribed" : "Unsubscribed",
 			});
 
