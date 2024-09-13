@@ -229,7 +229,7 @@ public class ConnectionBase
 
 		foreach (KeyValuePair<string, string> subscription in _subscriptions)
 		{
-			_subscriptions.Remove(subscription.Key);
+			await Subscribe(subscription.Key, subscription.Value, false);
 		}
 
 		return new ResponseCore
