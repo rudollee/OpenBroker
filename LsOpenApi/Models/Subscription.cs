@@ -16,19 +16,18 @@ namespace LsOpenApi.Models;
 internal class LsSubscriptionRequest(string token, string trCode, string key, bool connecting = true)
 {
 	[JsonPropertyName("header")]
-	public LsHeader Header { get; set; } = new(token, connecting);
+	public LsHeader Header { get; set; } = new(token, trCode, connecting);
 
 	[JsonPropertyName("body")]
 	public LsBody Body { get; set; } = new(trCode, key);
 
-	public class LsHeader(string token, bool connecting)
+	public class LsHeader(string token, string trCode, bool connecting)
 	{
 		[JsonPropertyName("token")]
 		public string Token { get; set; } = token;
 
 		[JsonPropertyName("tr_type")]
-		public string TrType { get; set; } = connecting ? "3" : "4";
-
+		public string TrType { get; set; } = ((connecting ? 3 : 4) - (new string[] { "SC0", "SC1" }.Contains(trCode) ? 2 : 0)).ToString();
 	}
 
 	public class LsBody(string trCode, string key)
