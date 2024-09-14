@@ -14,17 +14,14 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 	public Task<ResponseResult<KeyPack>> RequestApprovalKeyAsync(string appkey, string secretkey) =>
 		throw new NotImplementedException();
 
-	//protected override void ParseCallbackResponse(string trCode, string callbackTxt)
-	//{
-	//	switch (trCode)
-	//	{
-	//		case nameof(NWS):
-	//			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<NWS>>(callbackTxt);
-	//			break;
-	//	}
-	//}
+	private Dictionary<string, string> _subscriptions = new Dictionary<string, string>
+	{
+		{ "JIF", "0" },
+		{ "SC0", "" },
+		{ "SC1", "" }
+	};
 
-	public async Task<ResponseCore> ConnectAsync() => await ConnectAsync(Callback);
+	public async Task<ResponseCore> ConnectAsync() => await ConnectAsync(Callback, _subscriptions);
 
 	private void Callback(ResponseMessage message)
 	{

@@ -105,7 +105,7 @@ public class ConnectionBase
 	/// Connect Websocket & subscribe Order/Contract
 	/// </summary>
 	/// <returns></returns>
-	protected async Task<ResponseCore> ConnectAsync(Action<ResponseMessage> callback)
+	protected async Task<ResponseCore> ConnectAsync(Action<ResponseMessage> callback, Dictionary<string, string> subscriptions)
 	{
 		try
 		{
@@ -128,9 +128,11 @@ public class ConnectionBase
 
 			SetConnect();
 
-			await SubscribeAsync("JIF", "0");
-			await SubscribeAsync("SC0");
-			await SubscribeAsync("SC1");
+			foreach (var subscription in subscriptions)
+			{
+				await SubscribeAsync(subscription.Key, subscription.Value);
+			}
+
 			return new ResponseCore
 			{
 				StatusCode = Status.SUCCESS,
