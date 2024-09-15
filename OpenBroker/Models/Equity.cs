@@ -23,4 +23,11 @@ public class EquityPack : Equity
 {
 	public PriceRate PriceInfo { get; set; } = new();
 	public OrderBook OrderBook { get; set; } = new();
+	public TradingData TradingInfo { get; set; } = new();
+
+	public class TradingData
+	{
+		public decimal Margin { get; set; }
+		public decimal MarginRate { get; set; }
+	}
 }
