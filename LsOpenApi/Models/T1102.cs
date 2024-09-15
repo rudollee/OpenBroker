@@ -2,10 +2,9 @@
 /// <summary>
 /// 주식현재가(시세)조회(t1102)
 /// </summary>
-internal class t1102
+internal class t1102 : LsResponseCore
 {
-	public t1102InBlock InBlock { get; set; } = new();
-	public t1102OutBlock OutBlock { get; set; } = new();
+	public t1102OutBlock t1102OutBlock { get; set; } = new();
 }
 
 /// <summary>

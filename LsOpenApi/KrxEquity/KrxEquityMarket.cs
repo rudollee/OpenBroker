@@ -114,5 +114,65 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 	}
 
-	public Task<ResponseResult<EquityPack>> RequestEquityInfo(string symbol) => throw new NotImplementedException();
+	public async Task<ResponseResult<EquityPack>> RequestEquityInfo(string symbol)
+	{
+		var client = new RestClient($"{host}/stock/market-data");
+		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(t1102)));
+
+		request.AddBody(JsonSerializer.Serialize(new
+		{
+			t1102InBlock = new t1102InBlock
+			{
+				shcode = symbol
+			}
+		}));
+
+		try
+		{
+			var response = await client.PostAsync<t1102>(request) ?? new t1102();
+
+			if (response.t1102OutBlock is null) return new ResponseResult<EquityPack>
+			{
+				StatusCode = Status.NODATA,
+				Message = response.Message,
+				Code = response.Code,
+				Remark = "no data"
+			};
+
+			var equity = new EquityPack
+			{
+				Symbol = response.t1102OutBlock.shcode,
+				NameOfficial = response.t1102OutBlock.hname,
+				Section = response.t1102OutBlock.janginfo.Contains("KOSPI") ? ExchangeSection.KOSPI : ExchangeSection.KOSDAQ,
+				PriceInfo = new PriceRate
+				{
+					BasePrice = response.t1102OutBlock.recprice,
+					C = response.t1102OutBlock.price,
+					O = response.t1102OutBlock.open,
+					H = response.t1102OutBlock.high,
+					L = response.t1102OutBlock.low,
+					V = response.t1102OutBlock.volume,
+					TimeContract = DateTime.Now
+				},
+				DiscardStatus = DiscardStatus.TRADABLE,
+				TradingInfo = new EquityPack.TradingData
+				{
+					MarginRate = response.t1102OutBlock.jkrate,
+				}
+			};
+
+			return new ResponseResult<EquityPack>
+			{
+				Info = equity,
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResult<EquityPack>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = ex.Message
+			};
+		}
+	}
 }
