@@ -9,9 +9,4 @@ public interface IMarketKrxEquity
 	/// <param name="option"></param>
 	/// <returns></returns>
 	Task<ResponseResults<Equity>> RequestEquityList(int option = 0);
-
-	/// <summary>
-	/// Equity list
-	/// </summary>
-	List<Equity> Equities { get; set; }
 }
