@@ -36,13 +36,13 @@ public class PriceOHLC : MarketContract
 /// <summary>
 /// 시고저종 + 비율
 /// </summary>
-public class PriceRate(decimal basePrice, PriceOHLC ohlc)
+public class PriceRate : PriceOHLC
 {
-    public decimal ORate { get => (ohlc.O - basePrice) / basePrice; }
+    public decimal ORate { get => (O - BasePrice) / BasePrice; }
 
-    public decimal HRate { get => (ohlc.H - basePrice) / basePrice;  }
+    public decimal HRate { get => (H - BasePrice) / BasePrice;  }
 
-    public decimal LRate { get => (ohlc.L - basePrice) / basePrice; }
+    public decimal LRate { get => (L - BasePrice) / BasePrice; }
 }
 
 /// <summary>

@@ -18,3 +18,9 @@ public class Equity
 
 	public DiscardStatus DiscardStatus { get; set; } = DiscardStatus.TRADABLE;
 }
+
+public class EquityPack : Equity
+{
+	public PriceRate PriceInfo { get; set; } = new();
+	public OrderBook OrderBook { get; set; } = new();
+}
