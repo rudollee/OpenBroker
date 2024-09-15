@@ -42,38 +42,38 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 		{
 			#region 실시간 호가 H0STASP0
 			case nameof(H0STASP0):
-				if (MarketDepthListed is null) return;
+				if (OrderBookTaken is null) return;
 
-				var bidList = new List<OrderBook>();
-				var askList = new List<OrderBook>();
+				var bidList = new List<MarketOrder>();
+				var askList = new List<MarketOrder>();
 				var bidQuantityIndex = (int)H0STASP0.BIDP_RSQN1;
 				var bidPriceIndex = (int)H0STASP0.BIDP1;
 				var askQuantityIndex = (int)H0STASP0.ASKP_RSQN1;
 				var askPriceIndex = (int)H0STASP0.ASKP1;
 				for (int i = 0; i < 10; i++)
 				{
-					bidList.Add(new OrderBook
+					bidList.Add(new MarketOrder
 					{
 						Seq = Convert.ToByte(i + 1),
 						Amount = Convert.ToDecimal(data[bidQuantityIndex + i]),
 						Price = Convert.ToDecimal(data[bidPriceIndex + i]),
 					});
-					askList.Add(new OrderBook
+					askList.Add(new MarketOrder
 					{
 						Seq = Convert.ToByte(i + 1),
 						Amount = Convert.ToDecimal(data[askQuantityIndex + i]),
 						Price = Convert.ToDecimal(data[askPriceIndex + i])
 					});
 				}
-				MarketDepthListed(this, new ResponseResult<MarketDepth>
+				OrderBookTaken(this, new ResponseResult<OrderBook>
 				{
 					Code = rawData[2],
-					Info = new MarketDepth
+					Info = new OrderBook
 					{
 						Ask = askList,
 						Bid = bidList,
-						AskAgg = new OrderBook { Seq = 0, Amount = askList.Sum(x => x.Amount) },
-						BidAgg = new OrderBook { Seq = 0, Amount = bidList.Sum(x => x.Amount) },
+						AskAgg = new MarketOrder { Seq = 0, Amount = askList.Sum(x => x.Amount) },
+						BidAgg = new MarketOrder { Seq = 0, Amount = bidList.Sum(x => x.Amount) },
 						Symbol = data[(int)HDFFF010.series_cd],
 						TimeContract = (data[(int)HDFFF010.recv_date] + data[(int)HDFFF010.recv_time]).ToDateTimeMicro(),
 					},
@@ -93,7 +93,6 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 						V = Convert.ToDecimal(data[(int)H0STCNT0.CNTG_VOL]),
 						C = Convert.ToDecimal(data[(int)H0STCNT0.STCK_PRPR]),
 						TimeContract = (DateTime.Now.ToString("yyyyMMdd") + data[(int)H0STCNT0.STCK_CNTG_HOUR]).ToDateTime(),
-						Tradable = data[(int)H0STCNT0.TRHT_YN] == "N"
 					},
 					Remark = plainTxt
 				});

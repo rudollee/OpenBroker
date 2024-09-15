@@ -40,38 +40,38 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 		{
 			#region 실시간 호가 HDFFF010
 			case nameof(HDFFF010):
-				if (MarketDepthListed is null) return;
+				if (OrderBookTaken is null) return;
 
-				var bidList = new List<OrderBook>();
-				var askList = new List<OrderBook>();
+				var bidList = new List<MarketOrder>();
+				var askList = new List<MarketOrder>();
 				var bidQuantityIndex = (int)HDFFF010.bid_qntt_1;
 				var bidPriceIndex = (int)HDFFF010.bid_price_1;
 				var askQuantityIndex = (int)HDFFF010.ask_qntt_1;
 				var askPriceIndex = (int)HDFFF010.ask_price_1;
 				for (int i = 0; i < 5; i++)
 				{
-					bidList.Add(new OrderBook
+					bidList.Add(new MarketOrder
 					{
 						Seq = Convert.ToByte(i + 1),
 						Amount = Convert.ToDecimal(data[bidQuantityIndex + i * 6]),
 						Price = Convert.ToDecimal(data[bidPriceIndex + i * 6]),
 					});
-					askList.Add(new OrderBook
+					askList.Add(new MarketOrder
 					{
 						Seq = Convert.ToByte(i + 1),
 						Amount = Convert.ToDecimal(data[askQuantityIndex + i * 6]),
 						Price = Convert.ToDecimal(data[askPriceIndex + i * 6])
 					});
 				}
-				MarketDepthListed(this, new ResponseResult<MarketDepth>
+				OrderBookTaken(this, new ResponseResult<OrderBook>
 				{
 					Code = rawData[2],
-					Info = new MarketDepth
+					Info = new OrderBook
 					{
 						Ask = askList,
 						Bid = bidList,
-						AskAgg = new OrderBook { Seq = 0, Amount = askList.Sum(x => x.Amount) },
-						BidAgg = new OrderBook { Seq = 0, Amount = bidList.Sum(x => x.Amount) },
+						AskAgg = new MarketOrder { Seq = 0, Amount = askList.Sum(x => x.Amount) },
+						BidAgg = new MarketOrder { Seq = 0, Amount = bidList.Sum(x => x.Amount) },
 						Symbol = data[(int)HDFFF010.series_cd],
 						TimeContract = (data[(int)HDFFF010.recv_date] + data[(int)HDFFF010.recv_time]).ToDateTimeMicro(),
 

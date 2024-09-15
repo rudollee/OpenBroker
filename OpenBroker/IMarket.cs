@@ -13,9 +13,9 @@ public interface IMarket
 	EventHandler<ResponseResult<MarketContract>>? MarketContracted { get; set; }
 
 	/// <summary>
-	/// Market Depth callback
+	/// Order Book callback
 	/// </summary>
-	EventHandler<ResponseResult<MarketDepth>>? MarketDepthListed { get; set; }
+	EventHandler<ResponseResult<OrderBook>>? OrderBookTaken { get; set; }
 
 	/// <summary>
 	/// News callback
