@@ -114,4 +114,5 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 	}
 
+	public Task<ResponseResult<EquityPack>> RequestEquityInfo(string symbol) => throw new NotImplementedException();
 }

@@ -9,4 +9,11 @@ public interface IMarketKrxEquity
 	/// <param name="option"></param>
 	/// <returns></returns>
 	Task<ResponseResults<Equity>> RequestEquityList(int option = 0);
+
+	/// <summary>
+	/// 종목 종합 정보
+	/// </summary>
+	/// <param name="symbol"></param>
+	/// <returns></returns>
+	Task<ResponseResult<EquityPack>> RequestEquityInfo(string symbol);
 }
