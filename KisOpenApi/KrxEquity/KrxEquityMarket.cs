@@ -29,4 +29,5 @@ public partial class KisKrxEquity : ConnectionBase, IMarket
 	public Task<ResponseResult<News>> RequestNews(string id) => throw new NotImplementedException();
 	public Task<ResponseResults<Instrument>> RequestInstruments(int option) => throw new NotImplementedException();
 	public Task<ResponseCore> SubscribeMarketPause(string symbol = "000000") => throw new NotImplementedException();
+	public Task<ResponseResults<MarketContract>> RequestMarketContract(List<string> symbols) => throw new NotImplementedException();
 }

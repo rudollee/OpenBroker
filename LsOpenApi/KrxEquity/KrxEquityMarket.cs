@@ -175,4 +175,6 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			};
 		}
 	}
+
+	public Task<ResponseResults<MarketContract>> RequestMarketContract(List<string> symbols) => throw new NotImplementedException();
 }

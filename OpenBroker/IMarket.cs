@@ -35,6 +35,13 @@ public interface IMarket
 	Task<ResponseResult<MarketContract>> RequestMarketContract(string symbol);
 
 	/// <summary>
+	/// 현재가 Multiple
+	/// </summary>
+	/// <param name="symbols"></param>
+	/// <returns></returns>
+	Task<ResponseResults<MarketContract>> RequestMarketContract(List<string> symbols);
+
+	/// <summary>
 	/// 현재가 - realtime
 	/// </summary>
 	/// <param name="symbol"></param>
