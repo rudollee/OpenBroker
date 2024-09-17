@@ -21,6 +21,9 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	public async Task<ResponseCore> SubscribeMarketPause(string symbol = "000000") => await SubscribeAsync("VI_", symbol);
 	public async Task<ResponseCore> SubscribeNews(bool connecting = true) => await SubscribeAsync("NWS", "NWS001", connecting);
 
+	public Task<ResponseResults<Instrument>> RequestInstruments(int option) => throw new NotImplementedException();
+	
+	#region request news using t3102
 	public async Task<ResponseResult<News>> RequestNews(string id)
 	{
 		var client = new RestClient($"{host}/stock/investinfo");
@@ -59,9 +62,9 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			};
 		}
 	}
+	#endregion
 
-	public Task<ResponseResults<Instrument>> RequestInstruments(int option) => throw new NotImplementedException();
-
+	#region request equity list using t8436
 	public async Task<ResponseResults<Equity>> RequestEquityList(int option = 0)
 	{
 		var client = new RestClient($"{host}/stock/etc");
@@ -113,7 +116,9 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			};
 		}
 	}
+	#endregion
 
+	#region request equity complex using t1102
 	public async Task<ResponseResult<EquityPack>> RequestEquityInfo(string symbol)
 	{
 		var client = new RestClient($"{host}/stock/market-data");
@@ -175,6 +180,64 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			};
 		}
 	}
+	#endregion
 
-	public Task<ResponseResults<MarketContract>> RequestMarketContract(List<string> symbols) => throw new NotImplementedException();
+	#region request marketContract using t8407
+	public async Task<ResponseResults<MarketContract>> RequestMarketContract(List<string> symbols)
+	{
+		var client = new RestClient($"{host}/stock/market-data");
+		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(t8407)));
+
+		request.AddBody(JsonSerializer.Serialize(new
+		{
+			t8407InBlock = new t8407InBlock
+			{
+				nrec = symbols.Count(),
+				shcode = string.Join("", symbols)
+			}
+		}));
+
+		try
+		{
+			var response = await client.PostAsync<t8407>(request) ?? new t8407();
+			if (response.t8407OutBlock1 is null) return new ResponseResults<MarketContract>
+			{
+				StatusCode = Status.NODATA,
+				List = new List<MarketContract>(),
+				Code = response.Code,
+				Message = response.Message,
+				Remark = "no data"
+			};
+
+			var contracts = new List<MarketContract>();
+			response.t8407OutBlock1.ForEach(f =>
+			{
+				contracts.Add(new MarketContract
+				{
+					Symbol = f.shcode,
+					C = f.price,
+					BasePrice = f.jnilclose,
+					V = f.volume,
+					TimeContract = DateTime.Now,
+				});
+			});
+
+			return new ResponseResults<MarketContract>
+			{
+				Code = response.Code,
+				List = contracts,
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResults<MarketContract>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				List = new List<MarketContract>(),
+				Code = "ERROR",
+				Message = ex.Message,
+			};
+		}
+	} 
+	#endregion
 }

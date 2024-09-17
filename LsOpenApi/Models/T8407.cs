@@ -2,7 +2,7 @@
 /// <summary>
 /// API용주식멀티현재가조회(t8407)
 /// </summary>
-internal class t8407
+internal class t8407 : LsResponseCore
 {
 	public List<t8407OutBlock1> t8407OutBlock1 { get; set; } = new();
 }
