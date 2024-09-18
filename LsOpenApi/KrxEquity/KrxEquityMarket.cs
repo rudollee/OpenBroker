@@ -22,7 +22,9 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	public async Task<ResponseCore> SubscribeNews(bool connecting = true) => await SubscribeAsync("NWS", "NWS001", connecting);
 
 	public Task<ResponseResults<Instrument>> RequestInstruments(int option) => throw new NotImplementedException();
-	
+
+	public Task<ResponseResults<Equity>> RequestIPO(string beginYYYYMM = "", string endYYYYMM = "") => throw new NotImplementedException();
+
 	#region request news using t3102
 	public async Task<ResponseResult<News>> RequestNews(string id)
 	{
@@ -238,6 +240,6 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				Message = ex.Message,
 			};
 		}
-	} 
+	}
 	#endregion
 }
