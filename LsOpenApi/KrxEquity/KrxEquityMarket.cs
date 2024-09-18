@@ -23,8 +23,6 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 	public Task<ResponseResults<Instrument>> RequestInstruments(int option) => throw new NotImplementedException();
 
-	public Task<ResponseResults<Equity>> RequestIPO(DateOnly begin, DateOnly end) => throw new NotImplementedException();
-
 	#region request news using t3102
 	public async Task<ResponseResult<News>> RequestNews(string id)
 	{
@@ -106,6 +104,61 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			return new ResponseResults<Equity>
 			{
 				List = equities,
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResults<Equity>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = ex.Message,
+				List = new List<Equity>(),
+			};
+		}
+	}
+	#endregion
+
+	#region request equity ipo list using t1403
+	public async Task<ResponseResults<Equity>> RequestIPO(DateOnly begin, DateOnly end)
+	{
+		var client = new RestClient($"{host}/stock/etc");
+		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(t1403)));
+
+		request.AddBody(JsonSerializer.Serialize(new
+		{
+			t1403InBlock = new t1403InBlock
+			{
+				gubun = "0",
+				styymm = begin.ToString("yyyyMM"),
+				enyymm = end.ToString("yyyyMM"),
+			}
+		}));
+
+		try
+		{
+			var response = await client.PostAsync<t1403>(request) ?? new t1403();
+			if (!response.t1403OutBlock1.Any()) return new ResponseResults<Equity>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = "no data",
+				Code = response.Code,
+				List = new List<Equity>()
+			};
+
+			var equities = new List<Equity>();
+			foreach (var equity in response.t1403OutBlock1)
+			{
+				equities.Add(new Equity
+				{
+					Symbol = equity.shcode,
+					NameOfficial = equity.hname,
+				});
+			}
+
+			return new ResponseResults<Equity>
+			{
+				List = equities,
+				Remark = response.t1403OutBlock1.Select(s => s.date).Max() ?? string.Empty
 			};
 		}
 		catch (Exception ex)
