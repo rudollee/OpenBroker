@@ -23,7 +23,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 	public Task<ResponseResults<Instrument>> RequestInstruments(int option) => throw new NotImplementedException();
 
-	public Task<ResponseResults<Equity>> RequestIPO(string beginYYYYMM = "", string endYYYYMM = "") => throw new NotImplementedException();
+	public Task<ResponseResults<Equity>> RequestIPO(DateOnly begin, DateOnly end) => throw new NotImplementedException();
 
 	#region request news using t3102
 	public async Task<ResponseResult<News>> RequestNews(string id)

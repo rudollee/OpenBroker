@@ -20,8 +20,8 @@ public interface IMarketKrxEquity
 	/// <summary>
 	/// 신규 상장 종목 리스트
 	/// </summary>
-	/// <param name="beginYYYYMM"></param>
-	/// <param name="endYYYYMM"></param>
+	/// <param name="begin"></param>
+	/// <param name="end"></param>
 	/// <returns></returns>
-	Task<ResponseResults<Equity>> RequestIPO(string beginYYYYMM = "", string endYYYYMM = "");
+	Task<ResponseResults<Equity>> RequestIPO(DateOnly begin, DateOnly end);
 }
