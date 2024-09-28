@@ -34,7 +34,7 @@ public class PriceOHLC : MarketContract
 }
 
 /// <summary>
-/// 시고저종 + 비율
+/// 시고저종 + 비율 + 상한가/하한가
 /// </summary>
 public class PriceRate : PriceOHLC
 {
@@ -43,6 +43,16 @@ public class PriceRate : PriceOHLC
     public decimal HRate { get => (H - BasePrice) / BasePrice;  }
 
     public decimal LRate { get => (L - BasePrice) / BasePrice; }
+
+    /// <summary>
+    /// 상한가
+    /// </summary>
+    public decimal HighLimit { get; set; }
+
+    /// <summary>
+    /// 하한가
+    /// </summary>
+    public decimal LowLimit { get; set; }
 }
 
 /// <summary>
