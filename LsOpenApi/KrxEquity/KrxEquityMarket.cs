@@ -7,7 +7,7 @@ using System.Text.Json;
 namespace LsOpenApi.KrxEquity;
 public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 {
-	public EventHandler<ResponseResult<MarketContract>>? MarketContracted { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+	public EventHandler<ResponseResult<MarketContract>>? MarketContracted { get; set; }
 	public EventHandler<ResponseResult<OrderBook>>? OrderBookTaken { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
 	public EventHandler<ResponseResult<News>>? NewsPosted { get; set; }
@@ -15,7 +15,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 	public Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol) => throw new NotImplementedException();
 	public Task<ResponseResult<MarketContract>> RequestMarketContract(string symbol) => throw new NotImplementedException();
-	public Task<ResponseCore> SubscribeMarketContract(string symbol, bool connecting = true) => throw new NotImplementedException();
+	public async Task<ResponseCore> SubscribeMarketContract(string symbol, bool connecting = true) => await SubscribeAsync("S3_", symbol, connecting);
 	public Task<ResponseCore> SubscribeMarketDepth(string symbol, bool connecting = true) => throw new NotImplementedException();
 
 	public async Task<ResponseCore> SubscribeMarketPause(string symbol = "000000") => await SubscribeAsync("VI_", symbol);

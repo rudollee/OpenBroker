@@ -82,6 +82,27 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				});
 				break;
 			#endregion
+			#region S3_ 시장 체결
+			case nameof(S3_):
+				if (MarketContracted is null) return;
+
+				var s3Res = JsonSerializer.Deserialize<LsSubscriptionCallback<S3_OutBlock>>(message.Text);
+				if (s3Res is null || s3Res.Body is null) return;
+
+				MarketContracted(this, new ResponseResult<MarketContract>
+				{
+					Code = "S3",
+					Info = new MarketContract
+					{
+						Symbol = s3Res.Body.shcode,
+						TimeContract = s3Res.Body.chetime.ToDateTime(),
+						C = s3Res.Body.price,
+						V = s3Res.Body.cvolume,
+						BasePrice = s3Res.Body.price - s3Res.Body.change,
+					}
+				});
+				break;
+			#endregion
 			#region VI_ 주식 VI 발동/해제
 			case nameof(VI_):
 				if (MarketPaused is null) return;
@@ -161,8 +182,9 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					},
 					Remark = message.Text
 				});
-				break; 
+				break;
 			#endregion
+
 		}
 	}
 }
