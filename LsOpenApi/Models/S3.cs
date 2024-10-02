@@ -102,3 +102,20 @@ internal class S3_OutBlock
 
 }
 
+/// <summary>
+/// KOSDAQ체결(K3)
+/// </summary>
+internal class K3_
+{
+	public K3_OutBlock K3_OutBlock { get; set; } = new();
+}
+
+/// <summary>
+/// KOSDAQ체결(K3) - Inblock
+/// </summary>
+internal class K3_InBlock : S3_InBlock { }
+
+/// <summary>
+/// KOSDAQ체결(K3) - OutBlock
+/// </summary>
+internal class K3_OutBlock : S3_OutBlock { }
