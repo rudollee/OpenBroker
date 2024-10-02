@@ -96,9 +96,9 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					{
 						Symbol = s3Res.Body.shcode,
 						TimeContract = s3Res.Body.chetime.ToDateTime(),
-						C = s3Res.Body.price,
-						V = s3Res.Body.cvolume,
-						BasePrice = s3Res.Body.price - s3Res.Body.change,
+						C = Convert.ToDecimal(s3Res.Body.price),
+						V = Convert.ToDecimal(s3Res.Body.cvolume),
+						BasePrice = Convert.ToDecimal(s3Res.Body.price) - Convert.ToDecimal(s3Res.Body.change),
 					}
 				});
 				break;
@@ -139,7 +139,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					{
 						BrokerCo = _broker,
 						DateBiz = DateOnly.FromDateTime(DateTime.Now),
-						OID = sc0Res.Body.ordno,
+						OID = Convert.ToInt64(sc0Res.Body.ordno),
 						Symbol = sc0Res.Body.shtcode.Substring(1),
 						InstrumentName = sc0Res.Body.hname,
 						Mode = sc0Res.Body.ordchegb switch
@@ -150,8 +150,8 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 							_ => OrderMode.NONE
 						},
 						IsLong = sc0Res.Body.bnstp == "2",
-						PriceOrdered = sc0Res.Body.ordprice,
-						VolumeOrdered = sc0Res.Body.ordqty,
+						PriceOrdered = Convert.ToDecimal(sc0Res.Body.ordprice),
+						VolumeOrdered = Convert.ToDecimal(sc0Res.Body.ordqty),
 						TimeOrdered = (DateTime.Now.ToString("yyyyMMdd") + sc0Res.Body.ordtm).ToDateTimeMicro(),
 					},
 					Remark = message.Text
@@ -171,13 +171,13 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					{
 						BrokerCo = _broker,
 						DateBiz = DateOnly.FromDateTime(DateTime.Now),
-						OID = sc1Res.Body.ordno,
-						CID = sc1Res.Body.execno,
+						OID = Convert.ToInt64(sc1Res.Body.ordno),
+						CID = Convert.ToInt64(sc1Res.Body.execno),
 						Symbol = sc1Res.Body.shtnIsuno,
 						InstrumentName = sc1Res.Body.Isunm,
 						IsLong = sc1Res.Body.bnstp == "2",
-						Price = sc1Res.Body.execprc,
-						Volume = sc1Res.Body.execqty,
+						Price = Convert.ToDecimal(sc1Res.Body.execprc),
+						Volume = Convert.ToDecimal(sc1Res.Body.execqty),
 						TimeContracted = (DateTime.Now.ToString("yyyyMMdd") + sc1Res.Body.exectime).ToDateTimeMicro(),
 					},
 					Remark = message.Text

@@ -23,7 +23,7 @@ internal class SC1InBlock
 internal class SC1OutBlock
 {
 	/// <summary>라인일련번호</summary>
-	public long lineseq { get; set; }
+	public string lineseq { get; set; } = string.Empty;
 
 	/// <summary>계좌번호</summary>
 	public string accno { get; set; } = string.Empty;
@@ -32,7 +32,7 @@ internal class SC1OutBlock
 	public string user { get; set; } = string.Empty;
 
 	/// <summary>헤더길이</summary>
-	public long len { get; set; }
+	public string len { get; set; } = string.Empty;
 
 	/// <summary>헤더구분</summary>
 	public string gubun { get; set; } = string.Empty;
@@ -44,7 +44,7 @@ internal class SC1OutBlock
 	public string encrypt { get; set; } = string.Empty;
 
 	/// <summary>공통시작지점</summary>
-	public long offset { get; set; }
+	public string offset { get; set; } = string.Empty;
 
 	/// <summary>TRCODE</summary>
 	public string trcode { get; set; } = string.Empty;
@@ -86,7 +86,7 @@ internal class SC1OutBlock
 	public string lang { get; set; } = string.Empty;
 
 	/// <summary>AP처리시간</summary>
-	public long proctm { get; set; }
+	public string proctm { get; set; } = string.Empty;
 
 	/// <summary>메세지코드</summary>
 	public string msgcode { get; set; } = string.Empty;
@@ -101,7 +101,7 @@ internal class SC1OutBlock
 	public string funckey { get; set; } = string.Empty;
 
 	/// <summary>요청레코드개수</summary>
-	public long reqcnt { get; set; }
+	public string reqcnt { get; set; } = string.Empty;
 
 	/// <summary>예비영역</summary>
 	public string filler { get; set; } = string.Empty;
@@ -113,13 +113,13 @@ internal class SC1OutBlock
 	public string contkey { get; set; } = string.Empty;
 
 	/// <summary>가변시스템길이</summary>
-	public long varlen { get; set; }
+	public string varlen { get; set; } = string.Empty;
 
 	/// <summary>가변해더길이</summary>
-	public long varhdlen { get; set; }
+	public string varhdlen { get; set; } = string.Empty;
 
 	/// <summary>가변메시지길이</summary>
-	public long varmsglen { get; set; }
+	public string varmsglen { get; set; } = string.Empty;
 
 	/// <summary>조회발원지</summary>
 	public string trsrc { get; set; } = string.Empty;
@@ -161,43 +161,43 @@ internal class SC1OutBlock
 	public string Isunm { get; set; } = string.Empty;
 
 	/// <summary>주문번호</summary>
-	public long ordno { get; set; }
+	public string ordno { get; set; } = string.Empty;
 
 	/// <summary>원주문번호</summary>
-	public long orgordno { get; set; }
+	public string orgordno { get; set; } = string.Empty;
 
 	/// <summary>체결번호</summary>
-	public long execno { get; set; }
+	public string execno { get; set; } = string.Empty;
 
 	/// <summary>주문수량</summary>
-	public long ordqty { get; set; }
+	public string ordqty { get; set; } = string.Empty;
 
 	/// <summary>주문가격</summary>
-	public long ordprc { get; set; }
+	public string ordprc { get; set; } = string.Empty;
 
 	/// <summary>체결수량</summary>
-	public long execqty { get; set; }
+	public string execqty { get; set; } = string.Empty;
 
 	/// <summary>체결가격</summary>
-	public long execprc { get; set; }
+	public string execprc { get; set; } = string.Empty;
 
 	/// <summary>정정확인수량</summary>
-	public long mdfycnfqty { get; set; }
+	public string mdfycnfqty { get; set; } = string.Empty;
 
 	/// <summary>정정확인가격</summary>
-	public long mdfycnfprc { get; set; }
+	public string mdfycnfprc { get; set; } = string.Empty;
 
 	/// <summary>취소확인수량</summary>
-	public long canccnfqty { get; set; }
+	public string canccnfqty { get; set; } = string.Empty;
 
 	/// <summary>거부수량</summary>
-	public long rjtqty { get; set; }
+	public string rjtqty { get; set; } = string.Empty;
 
 	/// <summary>주문처리유형코드</summary>
-	public long ordtrxptncode { get; set; }
+	public string ordtrxptncode { get; set; } = string.Empty;
 
 	/// <summary>복수주문일련번호</summary>
-	public long mtiordseqno { get; set; }
+	public string mtiordseqno { get; set; } = string.Empty;
 
 	/// <summary>주문조건</summary>
 	public string ordcndi { get; set; } = string.Empty;
@@ -206,7 +206,7 @@ internal class SC1OutBlock
 	public string ordprcptncode { get; set; } = string.Empty;
 
 	/// <summary>비저축체결수량</summary>
-	public long nsavtrdqty { get; set; }
+	public string nsavtrdqty { get; set; } = string.Empty;
 
 	/// <summary>단축종목번호</summary>
 	public string shtnIsuno { get; set; } = string.Empty;
@@ -218,22 +218,22 @@ internal class SC1OutBlock
 	public string cvrgordtp { get; set; } = string.Empty;
 
 	/// <summary>미체결수량(주문)</summary>
-	public long unercqty { get; set; }
+	public string unercqty { get; set; } = string.Empty;
 
 	/// <summary>원주문미체결수량</summary>
-	public long orgordunercqty { get; set; }
+	public string orgordunercqty { get; set; } = string.Empty;
 
 	/// <summary>원주문정정수량</summary>
-	public long orgordmdfyqty { get; set; }
+	public string orgordmdfyqty { get; set; } = string.Empty;
 
 	/// <summary>원주문취소수량</summary>
-	public long orgordcancqty { get; set; }
+	public string orgordcancqty { get; set; } = string.Empty;
 
 	/// <summary>주문평균체결가격</summary>
-	public long ordavrexecprc { get; set; }
+	public string ordavrexecprc { get; set; } = string.Empty;
 
 	/// <summary>주문금액</summary>
-	public long ordamt { get; set; }
+	public string ordamt { get; set; } = string.Empty;
 
 	/// <summary>표준종목번호</summary>
 	public string stdIsuno { get; set; } = string.Empty;
@@ -260,7 +260,7 @@ internal class SC1OutBlock
 	public string Loandt { get; set; } = string.Empty;
 
 	/// <summary>회원/비회원사번호</summary>
-	public long mbrnmbrno { get; set; }
+	public string mbrnmbrno { get; set; } = string.Empty;
 
 	/// <summary>주문계좌번호</summary>
 	public string ordacntno { get; set; } = string.Empty;
@@ -284,37 +284,37 @@ internal class SC1OutBlock
 	public string regmktcode { get; set; } = string.Empty;
 
 	/// <summary>현금증거금률</summary>
-	public long mnymgnrat { get; set; }
+	public string mnymgnrat { get; set; } = string.Empty;
 
 	/// <summary>대용증거금률</summary>
-	public long substmgnrat { get; set; }
+	public string substmgnrat { get; set; } = string.Empty;
 
 	/// <summary>현금체결금액</summary>
-	public long mnyexecamt { get; set; }
+	public string mnyexecamt { get; set; } = string.Empty;
 
 	/// <summary>대용체결금액</summary>
-	public long ubstexecamt { get; set; }
+	public string ubstexecamt { get; set; } = string.Empty;
 
 	/// <summary>수수료체결금액</summary>
-	public long cmsnamtexecamt { get; set; }
+	public string cmsnamtexecamt { get; set; } = string.Empty;
 
 	/// <summary>신용담보체결금액</summary>
-	public long crdtpldgexecamt { get; set; }
+	public string crdtpldgexecamt { get; set; } = string.Empty;
 
 	/// <summary>신용체결금액</summary>
-	public long crdtexecamt { get; set; }
+	public string crdtexecamt { get; set; } = string.Empty;
 
 	/// <summary>전일재사용체결금액</summary>
-	public long prdayruseexecval { get; set; }
+	public string prdayruseexecval { get; set; } = string.Empty;
 
 	/// <summary>금일재사용체결금액</summary>
-	public long crdayruseexecval { get; set; }
+	public string crdayruseexecval { get; set; } = string.Empty;
 
 	/// <summary>실물체결수량</summary>
-	public long spotexecqty { get; set; }
+	public string spotexecqty { get; set; } = string.Empty;
 
 	/// <summary>공매도체결수량</summary>
-	public long stslexecqty { get; set; }
+	public string stslexecqty { get; set; } = string.Empty;
 
 	/// <summary>전략코드</summary>
 	public string strtgcode { get; set; } = string.Empty;
@@ -323,25 +323,25 @@ internal class SC1OutBlock
 	public string grpId { get; set; } = string.Empty;
 
 	/// <summary>주문회차</summary>
-	public long ordseqno { get; set; }
+	public string ordseqno { get; set; } = string.Empty;
 
 	/// <summary>포트폴리오번호</summary>
-	public long ptflno { get; set; }
+	public string ptflno { get; set; } = string.Empty;
 
 	/// <summary>바스켓번호</summary>
-	public long bskno { get; set; }
+	public string bskno { get; set; } = string.Empty;
 
 	/// <summary>트렌치번호</summary>
-	public long trchno { get; set; }
+	public string trchno { get; set; } = string.Empty;
 
 	/// <summary>아이템번호</summary>
-	public long itemno { get; set; }
+	public string itemno { get; set; } = string.Empty;
 
 	/// <summary>주문자Id</summary>
 	public string orduserId { get; set; } = string.Empty;
 
 	/// <summary>차입관리여부</summary>
-	public long brwmgmtYn { get; set; }
+	public string brwmgmtYn { get; set; } = string.Empty;
 
 	/// <summary>외국인고유번호</summary>
 	public string frgrunqno { get; set; } = string.Empty;
@@ -359,58 +359,58 @@ internal class SC1OutBlock
 	public string rcptexectime { get; set; } = string.Empty;
 
 	/// <summary>잔여대출금액</summary>
-	public long rmndLoanamt { get; set; }
+	public string rmndLoanamt { get; set; } = string.Empty;
 
 	/// <summary>잔고수량</summary>
-	public long secbalqty { get; set; }
+	public string secbalqty { get; set; } = string.Empty;
 
 	/// <summary>실물가능수량</summary>
-	public long spotordableqty { get; set; }
+	public string spotordableqty { get; set; } = string.Empty;
 
 	/// <summary>재사용가능수량(매도)</summary>
-	public long ordableruseqty { get; set; }
+	public string ordableruseqty { get; set; } = string.Empty;
 
 	/// <summary>변동수량</summary>
-	public long flctqty { get; set; }
+	public string flctqty { get; set; } = string.Empty;
 
 	/// <summary>잔고수량(d2)</summary>
-	public long secbalqtyd2 { get; set; }
+	public string secbalqtyd2 { get; set; } = string.Empty;
 
 	/// <summary>매도주문가능수량</summary>
-	public long sellableqty { get; set; }
+	public string sellableqty { get; set; } = string.Empty;
 
 	/// <summary>미체결매도주문수량</summary>
-	public long unercsellordqty { get; set; }
+	public string unercsellordqty { get; set; } = string.Empty;
 
 	/// <summary>평균매입가</summary>
-	public long avrpchsprc { get; set; }
+	public string avrpchsprc { get; set; } = string.Empty;
 
 	/// <summary>매입금액</summary>
-	public long pchsant { get; set; }
+	public string pchsant { get; set; } = string.Empty;
 
 	/// <summary>예수금</summary>
-	public long deposit { get; set; }
+	public string deposit { get; set; } = string.Empty;
 
 	/// <summary>대용금</summary>
-	public long substamt { get; set; }
+	public string substamt { get; set; } = string.Empty;
 
 	/// <summary>위탁증거금현금</summary>
-	public long csgnmnymgn { get; set; }
+	public string csgnmnymgn { get; set; } = string.Empty;
 
 	/// <summary>위탁증거금대용</summary>
-	public long csgnsubstmgn { get; set; }
+	public string csgnsubstmgn { get; set; } = string.Empty;
 
 	/// <summary>신용담보재사용금</summary>
-	public long crdtpldgruseamt { get; set; }
+	public string crdtpldgruseamt { get; set; } = string.Empty;
 
 	/// <summary>주문가능현금</summary>
-	public long ordablemny { get; set; }
+	public string ordablemny { get; set; } = string.Empty;
 
 	/// <summary>주문가능대용</summary>
-	public long ordablesubstamt { get; set; }
+	public string ordablesubstamt { get; set; } = string.Empty;
 
 	/// <summary>재사용가능금액</summary>
-	public long ruseableamt { get; set; }
+	public string ruseableamt { get; set; } = string.Empty;
 
 }
 

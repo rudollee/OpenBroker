@@ -29,73 +29,73 @@ internal class S3_OutBlock
 	public string sign { get; set; } = string.Empty;
 
 	/// <summary>전일대비</summary>
-	public long change { get; set; }
+	public string change { get; set; } = string.Empty;
 
 	/// <summary>등락율</summary>
-	public decimal drate { get; set; }
+	public string drate { get; set; } = string.Empty;
 
 	/// <summary>현재가</summary>
-	public long price { get; set; }
+	public string price { get; set; } = string.Empty;
 
 	/// <summary>시가시간</summary>
 	public string opentime { get; set; } = string.Empty;
 
 	/// <summary>시가</summary>
-	public long open { get; set; }
+	public string open { get; set; } = string.Empty;
 
 	/// <summary>고가시간</summary>
 	public string hightime { get; set; } = string.Empty;
 
 	/// <summary>고가</summary>
-	public long high { get; set; }
+	public string high { get; set; } = string.Empty;
 
 	/// <summary>저가시간</summary>
 	public string lowtime { get; set; } = string.Empty;
 
 	/// <summary>저가</summary>
-	public long low { get; set; }
+	public string low { get; set; } = string.Empty;
 
 	/// <summary>체결구분</summary>
 	public string cgubun { get; set; } = string.Empty;
 
 	/// <summary>체결량</summary>
-	public long cvolume { get; set; }
+	public string cvolume { get; set; } = string.Empty;
 
 	/// <summary>누적거래량</summary>
-	public long volume { get; set; }
+	public string volume { get; set; } = string.Empty;
 
 	/// <summary>누적거래대금</summary>
-	public long value { get; set; }
+	public string value { get; set; } = string.Empty;
 
 	/// <summary>매도누적체결량</summary>
-	public long mdvolume { get; set; }
+	public string mdvolume { get; set; } = string.Empty;
 
 	/// <summary>매도누적체결건수</summary>
-	public long mdchecnt { get; set; }
+	public string mdchecnt { get; set; } = string.Empty;
 
 	/// <summary>매수누적체결량</summary>
-	public long msvolume { get; set; }
+	public string msvolume { get; set; } = string.Empty;
 
 	/// <summary>매수누적체결건수</summary>
-	public long mschecnt { get; set; }
+	public string mschecnt { get; set; } = string.Empty;
 
 	/// <summary>체결강도</summary>
-	public decimal cpower { get; set; }
+	public string cpower { get; set; } = string.Empty;
 
 	/// <summary>가중평균가</summary>
-	public long w_avrg { get; set; }
+	public string w_avrg { get; set; } = string.Empty;
 
 	/// <summary>매도호가</summary>
-	public long offerho { get; set; }
+	public string offerho { get; set; }	= string.Empty;
 
 	/// <summary>매수호가</summary>
-	public long bidho { get; set; }
+	public string bidho { get; set; } = string.Empty;
 
 	/// <summary>장정보</summary>
 	public string status { get; set; } = string.Empty;
 
 	/// <summary>전일동시간대거래량</summary>
-	public long jnilvolume { get; set; }
+	public string jnilvolume { get; set; } = string.Empty;
 
 	/// <summary>단축코드</summary>
 	public string shcode { get; set; } = string.Empty;
