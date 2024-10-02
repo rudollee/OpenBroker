@@ -72,8 +72,8 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 					{
 						Ask = askList,
 						Bid = bidList,
-						AskAgg = new MarketOrder { Seq = 0, Amount = askList.Sum(x => x.Amount) },
-						BidAgg = new MarketOrder { Seq = 0, Amount = bidList.Sum(x => x.Amount) },
+						AskAgg = askList.Sum(x => x.Amount),
+						BidAgg = bidList.Sum(x => x.Amount),
 						Symbol = data[(int)HDFFF010.series_cd],
 						TimeContract = (data[(int)HDFFF010.recv_date] + data[(int)HDFFF010.recv_time]).ToDateTimeMicro(),
 					},
