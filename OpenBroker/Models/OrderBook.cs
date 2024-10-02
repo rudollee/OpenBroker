@@ -5,7 +5,7 @@
 /// </summary>
 public class OrderBook : MarketContract
 {
-    public TimeSpan TimeTaken { get; set; }
+    public TimeOnly TimeTaken { get; set; }
     public IList<MarketOrder> Ask { get; set; } = new List<MarketOrder>();
     public IList<MarketOrder> Bid { get; set; } = new List<MarketOrder>();
     public MarketOrder AskAgg { get; set; } = new MarketOrder();
