@@ -206,13 +206,16 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				Section = response.t1102OutBlock.janginfo.Contains("KOSPI") ? ExchangeSection.KOSPI : ExchangeSection.KOSDAQ,
 				PriceInfo = new PriceRate
 				{
+					Symbol = response.t1102OutBlock.shcode,
+					TimeContract = DateTime.Now,
 					BasePrice = response.t1102OutBlock.recprice,
 					C = response.t1102OutBlock.price,
 					O = response.t1102OutBlock.open,
 					H = response.t1102OutBlock.high,
 					L = response.t1102OutBlock.low,
 					V = response.t1102OutBlock.volume,
-					TimeContract = DateTime.Now
+					HighLimit = response.t1102OutBlock.uplmtprice,
+					LowLimit = response.t1102OutBlock.dnlmtprice,
 				},
 				DiscardStatus = DiscardStatus.TRADABLE,
 				TradingInfo = new EquityPack.TradingData
