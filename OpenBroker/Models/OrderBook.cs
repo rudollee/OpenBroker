@@ -8,8 +8,8 @@ public class OrderBook : MarketContract
     public TimeOnly TimeTaken { get; set; }
     public IList<MarketOrder> Ask { get; set; } = new List<MarketOrder>();
     public IList<MarketOrder> Bid { get; set; } = new List<MarketOrder>();
-    public MarketOrder AskAgg { get; set; } = new MarketOrder();
-    public MarketOrder BidAgg { get; set; } = new MarketOrder();
+    public decimal AskAgg { get; set; }
+    public decimal BidAgg { get; set; }
 }
 
 /// <summary>
