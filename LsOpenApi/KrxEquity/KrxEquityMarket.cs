@@ -8,7 +8,7 @@ namespace LsOpenApi.KrxEquity;
 public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 {
 	public EventHandler<ResponseResult<MarketContract>>? MarketContracted { get; set; }
-	public EventHandler<ResponseResult<OrderBook>>? OrderBookTaken { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+	public EventHandler<ResponseResult<OrderBook>>? OrderBookTaken { get; set; }
 
 	public EventHandler<ResponseResult<News>>? NewsPosted { get; set; }
 	public EventHandler<ResponseResult<MarketPause>>? MarketPaused { get; set; }

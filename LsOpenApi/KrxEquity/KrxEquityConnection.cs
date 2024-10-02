@@ -5,6 +5,7 @@ using OpenBroker.Models;
 using OpenBroker;
 using Websocket.Client;
 using OpenBroker.Extensions;
+using System.Reflection;
 
 namespace LsOpenApi.KrxEquity;
 public partial class LsKrxEquity : ConnectionBase, IConnection
@@ -99,6 +100,51 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 						C = Convert.ToDecimal(s3Res.Body.price),
 						V = Convert.ToDecimal(s3Res.Body.cvolume),
 						BasePrice = Convert.ToDecimal(s3Res.Body.price) - Convert.ToDecimal((new string[] { "4", "5" }.Contains(s3Res.Body.sign) ? "-" : "") + s3Res.Body.change),
+					},
+					Remark = message.Text
+				});
+				break;
+			#endregion
+			#region H1_ 전체 호가
+			case nameof(H1_):
+				if (OrderBookTaken is null) return;
+
+				var h1Res = JsonSerializer.Deserialize<LsSubscriptionCallback<H1_OutBlock>>(message.Text);
+				if (h1Res is null || h1Res.Body is null) return;
+
+				var asks = new List<MarketOrder>();
+				for (int i = 0; i < 10; i++)
+				{
+					asks.Add(new MarketOrder
+					{
+						Seq = Convert.ToByte(i + 1),
+						Price = Convert.ToDecimal(h1Res.Body.GetPropValue($"offerho{(i + 1)}")),
+						Amount = Convert.ToDecimal(h1Res.Body.GetPropValue($"offerrem{(i + 1)}")),
+					});
+				}
+
+				var bids = new List<MarketOrder>();
+				for (int i = 0; i < 10; i++)
+				{
+					bids.Add(new MarketOrder
+					{
+						Seq = Convert.ToByte(i + 1),
+						Price = Convert.ToDecimal(h1Res.Body.GetPropValue($"bidho{(i + 1)}")),
+						Amount = Convert.ToDecimal(h1Res.Body.GetPropValue($"bidrem{(i + 1)}"))
+					});
+				}
+
+				OrderBookTaken(this, new ResponseResult<OrderBook>
+				{
+					Code = "H1",
+					Info = new OrderBook
+					{
+						Symbol = h1Res.Body.shcode,
+						TimeTaken = h1Res.Body.hotime.ToTime(),
+						Ask = asks,
+						Bid = bids,
+						AskAgg = Convert.ToDecimal(h1Res.Body.totofferrem),
+						BidAgg = Convert.ToDecimal(h1Res.Body.totbidrem),
 					},
 					Remark = message.Text
 				});

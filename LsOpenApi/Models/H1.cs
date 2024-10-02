@@ -14,7 +14,6 @@ internal class H1_InBlock
 {
 	/// <summary>단축코드</summary>
 	public string shcode { get; set; } = string.Empty;
-
 }
 
 /// <summary>
@@ -151,7 +150,7 @@ internal class H1_OutBlock
 	/// <summary>총매수호가잔량</summary>
 	public string totbidrem { get; set; } = string.Empty;
 
-	/// <summary>        동시호가구분</summary>
+	/// <summary>동시호가구분</summary>
 	public string donsigubun { get; set; } = string.Empty;
 
 	/// <summary>단축코드</summary>
