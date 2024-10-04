@@ -85,6 +85,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 			#endregion
 			#region S3_ 시장 체결
 			case nameof(S3_):
+			case nameof(K3_):
 				if (MarketContracted is null) return;
 
 				var s3Res = JsonSerializer.Deserialize<LsSubscriptionCallback<S3_OutBlock>>(message.Text);

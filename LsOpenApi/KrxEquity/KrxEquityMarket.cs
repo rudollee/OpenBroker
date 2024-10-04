@@ -15,7 +15,29 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 	public Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol) => throw new NotImplementedException();
 	public Task<ResponseResult<MarketContract>> RequestMarketContract(string symbol) => throw new NotImplementedException();
-	public async Task<ResponseCore> SubscribeMarketContract(string symbol, bool connecting = true) => await SubscribeAsync("S3_", symbol, connecting);
+
+	public async Task<ResponseCore> SubscribeMarketContract(string symbol, bool connecting = true)
+	{
+		var history = equityHistory.FirstOrDefault(f => f.Symbol == symbol);
+		if (history is null)
+		{
+			var equity = await RequestEquityInfo(symbol);
+			if (equity is null || equity.StatusCode != Status.SUCCESS)
+			{
+				return new ResponseCore
+				{
+					Code = "ERR",
+					Message = "incorrect symbol",
+					StatusCode = Status.BAD_REQUEST,
+				};
+			}
+
+			history = equity.Info;
+		}
+
+		return await SubscribeAsync(history?.Section == ExchangeSection.KOSPI ? "S3_" : "K3_", symbol, connecting);
+	}
+
 	public Task<ResponseCore> SubscribeMarketDepth(string symbol, bool connecting = true) => throw new NotImplementedException();
 
 	public async Task<ResponseCore> SubscribeMarketPause(string symbol = "000000") => await SubscribeAsync("VI_", symbol);
@@ -298,4 +320,6 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 	}
 	#endregion
+
+	private List<Equity> equityHistory = new() { Capacity = 64 };
 }
