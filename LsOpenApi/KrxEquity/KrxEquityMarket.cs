@@ -216,7 +216,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#endregion
 
 	#region request equity complex using t1102
-	public async Task<ResponseResult<EquityPack>> RequestEquityInfo(string symbol)
+	public async Task<ResponseResult<EquityPack>> RequestEquityInfo(string symbol, bool needsOrderbook = false)
 	{
 		var client = new RestClient($"{host}/stock/market-data");
 		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(t1102)));
