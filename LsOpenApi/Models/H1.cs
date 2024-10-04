@@ -162,3 +162,8 @@ internal class H1_OutBlock
 	/// <summary>누적거래량</summary>
 	public string volume { get; set; } = string.Empty;
 }
+
+/// <summary>
+/// KOSDAQ 호가잔량(HA)
+/// </summary>
+internal class HA_ { };

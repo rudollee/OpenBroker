@@ -38,7 +38,27 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		return await SubscribeAsync(history?.Section == ExchangeSection.KOSPI ? "S3_" : "K3_", symbol, connecting);
 	}
 
-	public Task<ResponseCore> SubscribeMarketDepth(string symbol, bool connecting = true) => throw new NotImplementedException();
+	public async Task<ResponseCore> SubscribeMarketDepth(string symbol, bool connecting = true)
+	{
+		var history = equityHistory.FirstOrDefault(f => f.Symbol == symbol);
+		if (history is null)
+		{
+			var equity = await RequestEquityInfo(symbol);
+			if (equity is null || equity.StatusCode != Status.SUCCESS)
+			{
+				return new ResponseCore
+				{
+					Code = "ERR",
+					Message = "incorrect symbol",
+					StatusCode = Status.BAD_REQUEST,
+				};
+			}
+
+			history = equity.Info;
+		}
+
+		return await SubscribeAsync(history?.Section == ExchangeSection.KOSPI ? "H1_" : "HA_", symbol, connecting);
+	}
 
 	public async Task<ResponseCore> SubscribeMarketPause(string symbol = "000000") => await SubscribeAsync("VI_", symbol);
 	public async Task<ResponseCore> SubscribeNews(bool connecting = true) => await SubscribeAsync("NWS", "NWS001", connecting);

@@ -108,6 +108,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 			#endregion
 			#region H1_ 전체 호가
 			case nameof(H1_):
+			case nameof(HA_):
 				if (OrderBookTaken is null) return;
 
 				var h1Res = JsonSerializer.Deserialize<LsSubscriptionCallback<H1_OutBlock>>(message.Text);
