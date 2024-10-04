@@ -38,11 +38,11 @@ public class PriceOHLC : MarketContract
 /// </summary>
 public class PriceRate : PriceOHLC
 {
-    public decimal ORate { get => (O - BasePrice) / BasePrice; }
+    public decimal ORate { get => BasePrice == 0 ? 0 : (O - BasePrice) / BasePrice; }
 
-    public decimal HRate { get => (H - BasePrice) / BasePrice;  }
+    public decimal HRate { get => BasePrice == 0 ? 0 : (H - BasePrice) / BasePrice;  }
 
-    public decimal LRate { get => (L - BasePrice) / BasePrice; }
+    public decimal LRate { get => BasePrice == 0 ? 0 : (L - BasePrice) / BasePrice; }
 
     /// <summary>
     /// 상한가
