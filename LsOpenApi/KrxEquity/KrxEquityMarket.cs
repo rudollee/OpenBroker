@@ -3,6 +3,7 @@ using OpenBroker;
 using RestSharp;
 using LsOpenApi.Models;
 using System.Text.Json;
+using OpenBroker.Extensions;
 
 namespace LsOpenApi.KrxEquity;
 public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
@@ -215,8 +216,8 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	}
 	#endregion
 
-	#region request equity complex using t1102
-	public async Task<ResponseResult<EquityPack>> RequestEquityInfo(string symbol, bool needsOrderbook = false)
+	#region request equity complex using t1101 & t1102
+	public async Task<ResponseResult<EquityPack>> RequestEquityInfo(string symbol, bool needsOrderBook = false)
 	{
 		var client = new RestClient($"{host}/stock/market-data");
 		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(t1102)));
@@ -265,6 +266,52 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 					MarginRate = response.t1102OutBlock.jkrate,
 				}
 			};
+
+			if (needsOrderBook)
+			{
+				request = new RestRequest().AddHeaders(GenerateHeaders(nameof(t1101)));
+				request.AddBody(JsonSerializer.Serialize(new
+				{
+					t1101InBlock = new t1101InBlock
+					{
+						shcode = symbol
+					}
+				}));
+
+				var responseOrderbook = await client.PostAsync<t1101>(request) ?? new t1101();
+
+				if (responseOrderbook.t1101OutBlock is not null)
+				{
+					var orderbook = new OrderBook();
+					var asks = new List<MarketOrder>();
+					var bids = new List<MarketOrder>();
+					for (int i = 0; i < 10; i++)
+					{
+						asks.Add(new MarketOrder
+						{
+							Seq = Convert.ToByte(i + 1),
+							Price = Convert.ToDecimal(responseOrderbook.t1101OutBlock.GetPropValue($"offerho{(i + 1)}")),
+							Amount = Convert.ToDecimal(responseOrderbook.t1101OutBlock.GetPropValue($"offerrem{(i + 1)}"))
+						});
+
+						bids.Add(new MarketOrder
+						{
+							Seq = Convert.ToByte(i + 1),
+							Price = Convert.ToDecimal(responseOrderbook.t1101OutBlock.GetPropValue($"bidho{(i + 1)}")),
+							Amount = Convert.ToDecimal(responseOrderbook.t1101OutBlock.GetPropValue($"bidrem{(i + 1)}"))
+						});
+					}
+
+					equity.OrderBook = new OrderBook
+					{
+						Ask = asks,
+						Bid = bids,
+						AskAgg = responseOrderbook.t1101OutBlock.offer,
+						BidAgg = responseOrderbook.t1101OutBlock.bid,
+						TimeTaken = responseOrderbook.t1101OutBlock.hotime.ToTime()
+					};
+				}
+			}
 
 			return new ResponseResult<EquityPack>
 			{

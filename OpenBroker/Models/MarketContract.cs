@@ -10,6 +10,6 @@ public class MarketContract
     public decimal C { get; set; }
     public decimal V { get; set; }
     public decimal BasePrice { get; set; }
-	public decimal Diff { get => C - BasePrice; }
-	public decimal DiffRate { get => (C - BasePrice) / BasePrice; }
+	public decimal Diff { get => BasePrice == 0 ? 0 : C - BasePrice; }
+	public decimal DiffRate { get => BasePrice == 0 ? 0 : (C - BasePrice) / BasePrice; }
 }
