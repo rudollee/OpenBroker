@@ -93,7 +93,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 
 				MarketContracted(this, new ResponseResult<MarketContract>
 				{
-					Code = "S3",
+					Code = trCode,
 					Info = new MarketContract
 					{
 						Symbol = s3Res.Body.shcode,
@@ -138,7 +138,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 
 				OrderBookTaken(this, new ResponseResult<OrderBook>
 				{
-					Code = "H1",
+					Code = trCode,
 					Info = new OrderBook
 					{
 						Symbol = h1Res.Body.shcode,
