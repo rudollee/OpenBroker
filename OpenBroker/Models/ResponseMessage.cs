@@ -1,4 +1,6 @@
-﻿namespace OpenBroker.Models;
+﻿using System.Collections;
+
+namespace OpenBroker.Models;
 
 public class ResponseCore
 {
@@ -44,4 +46,9 @@ public class ResponseResultsWithPaging<T> : ResponseCore where T : class
 	public int Page { get; set; } = 1;
 
 	public IEnumerable<string>? RefData { get; set; }
+}
+
+public class ResponseDictionary<TKey, TValue> : ResponseCore where TKey : notnull
+{
+    public Dictionary<TKey, TValue> Dic { get; set; } = new(); 
 }
