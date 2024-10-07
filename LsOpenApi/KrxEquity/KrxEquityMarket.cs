@@ -89,7 +89,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	}
 	#endregion
 
-	#region request equity list using t8436
+	#region request equity dictionary using t8436
 	public async Task<ResponseResults<Equity>> RequestEquityList(int option = 0)
 	{
 		var client = new RestClient($"{host}/stock/etc");
@@ -141,6 +141,55 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = ex.Message,
 				List = new List<Equity>(),
+			};
+		}
+	}
+
+	public async Task<ResponseDictionary<string, Equity>> RequestEquityDictionary(int option = 0)
+	{
+		var client = new RestClient($"{host}/stock/etc");
+		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(t8436)));
+
+		request.AddBody(JsonSerializer.Serialize(new
+		{
+			t8436InBlock = new t8436InBlock
+			{
+				gubun = "0"
+			}
+		}));
+
+		try
+		{
+			var response = await client.PostAsync<t8436>(request) ?? new t8436();
+			if (!response.t8436OutBlock.Any()) return new ResponseDictionary<string, Equity>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Code = response.Code,
+				Message = "no data",
+			};
+
+			foreach (var instrument in response.t8436OutBlock.Where(w => new string[] { "01", "03" }.Contains(w.bu12gubun)))
+			{
+				Equities.Add(instrument.shcode, new Equity
+				{
+					Symbol = instrument.shcode,
+					Section = instrument.gubun == "1" ? ExchangeSection.KOSPI : ExchangeSection.KOSDAQ,
+					NameOfficial = instrument.hname,
+				});
+			}
+
+			return new ResponseDictionary<string, Equity>
+			{
+				Dic = Equities
+			};
+
+		}
+		catch (Exception ex)
+		{
+			return new ResponseDictionary<string, Equity>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = ex.Message,
 			};
 		}
 	}

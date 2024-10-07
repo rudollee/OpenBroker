@@ -13,7 +13,7 @@ public interface IMarketKrxEquity
 	/// </summary>
 	/// <param name="option"></param>
 	/// <returns></returns>
-	Task<ResponseResults<Equity>> RequestEquityList(int option = 0);
+	Task<ResponseDictionary<string, Equity>> RequestEquityDictionary(int option = 0);
 
 	/// <summary>
 	/// 종목 종합 정보
