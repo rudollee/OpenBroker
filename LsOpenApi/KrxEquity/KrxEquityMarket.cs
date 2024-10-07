@@ -14,51 +14,33 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	public EventHandler<ResponseResult<News>>? NewsPosted { get; set; }
 	public EventHandler<ResponseResult<MarketPause>>? MarketPaused { get; set; }
 
+	public Dictionary<string, Equity> Equities { get; set; } = new();
+
 	public Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol) => throw new NotImplementedException();
 	public Task<ResponseResult<MarketContract>> RequestMarketContract(string symbol) => throw new NotImplementedException();
 
 	public async Task<ResponseCore> SubscribeMarketContract(string symbol, bool connecting = true)
 	{
-		var history = equityHistory.FirstOrDefault(f => f.Symbol == symbol);
-		if (history is null)
+		if (!Equities.ContainsKey(symbol)) return new ResponseCore
 		{
-			var equity = await RequestEquityInfo(symbol);
-			if (equity is null || equity.StatusCode != Status.SUCCESS)
-			{
-				return new ResponseCore
-				{
-					Code = "ERR",
-					Message = "incorrect symbol",
-					StatusCode = Status.BAD_REQUEST,
-				};
-			}
+			Code = "NOT-FOUND",
+			Message = "A requested Symbol have not found",
+			StatusCode = Status.BAD_REQUEST,
+		};
 
-			history = equity.Info;
-		}
-
-		return await SubscribeAsync(history?.Section == ExchangeSection.KOSPI ? "S3_" : "K3_", symbol, connecting);
+		return await SubscribeAsync(Equities[symbol].Section == ExchangeSection.KOSPI ? "S3_" : "K3_", symbol, connecting);
 	}
 
 	public async Task<ResponseCore> SubscribeMarketDepth(string symbol, bool connecting = true)
 	{
-		var history = equityHistory.FirstOrDefault(f => f.Symbol == symbol);
-		if (history is null)
+		if (!Equities.ContainsKey(symbol)) return new ResponseCore
 		{
-			var equity = await RequestEquityInfo(symbol);
-			if (equity is null || equity.StatusCode != Status.SUCCESS)
-			{
-				return new ResponseCore
-				{
-					Code = "ERR",
-					Message = "incorrect symbol",
-					StatusCode = Status.BAD_REQUEST,
-				};
-			}
+			Code = "NOT-FOUND",
+			Message = "A requested Symbol have not found",
+			StatusCode = Status.BAD_REQUEST,
+		};
 
-			history = equity.Info;
-		}
-
-		return await SubscribeAsync(history?.Section == ExchangeSection.KOSPI ? "H1_" : "HA_", symbol, connecting);
+		return await SubscribeAsync(Equities[symbol].Section == ExchangeSection.KOSPI ? "H1_" : "HA_", symbol, connecting);
 	}
 
 	public async Task<ResponseCore> SubscribeMarketPause(string symbol = "000000") => await SubscribeAsync("VI_", symbol);
@@ -134,14 +116,17 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			};
 
 			var equities = new List<Equity>();
-			foreach (var equity in response.t8436OutBlock.Where(w => new string[] { "01", "03" }.Contains(w.bu12gubun)))
+			foreach (var instrument in response.t8436OutBlock.Where(w => new string[] { "01", "03" }.Contains(w.bu12gubun)))
 			{
-				equities.Add(new Equity
+				var equity = new Equity
 				{
-					Symbol = equity.shcode,
-					Section = equity.gubun == "1" ? ExchangeSection.KOSPI : ExchangeSection.KOSDAQ,
-					NameOfficial = equity.hname,
-				});
+					Symbol = instrument.shcode,
+					Section = instrument.gubun == "1" ? ExchangeSection.KOSPI : ExchangeSection.KOSDAQ,
+					NameOfficial = instrument.hname,
+				};
+
+				equities.Add(equity);
+				Equities.Add(instrument.shcode, equity);
 			}
 
 			return new ResponseResults<Equity>
@@ -387,6 +372,4 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 	}
 	#endregion
-
-	private List<Equity> equityHistory = new() { Capacity = 64 };
 }

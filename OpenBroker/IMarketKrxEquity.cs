@@ -4,6 +4,11 @@ namespace OpenBroker;
 public interface IMarketKrxEquity
 {
 	/// <summary>
+	/// 종목 마스터
+	/// </summary>
+	Dictionary<string, Equity> Equities { get; set; }
+
+	/// <summary>
 	/// 거래 종목 리스트
 	/// </summary>
 	/// <param name="option"></param>
