@@ -105,7 +105,7 @@ public class ConnectionBase
 	/// Connect Websocket & subscribe Order/Contract
 	/// </summary>
 	/// <returns></returns>
-	protected async Task<ResponseCore> ConnectAsync(Action<ResponseMessage> callback, Dictionary<string, string> subscriptions)
+	protected async Task<ResponseCore> ConnectAsync(Action<ResponseMessage> callback)
 	{
 		try
 		{
@@ -128,9 +128,9 @@ public class ConnectionBase
 
 			SetConnect();
 
-			foreach (var subscription in subscriptions)
+			foreach (var subscription in _subscriptions)
 			{
-				await SubscribeAsync(subscription.Key, subscription.Value);
+				await SubscribeAsync("SYS", subscription.Key, subscription.Value.Key);
 			}
 
 			return new ResponseCore
@@ -177,6 +177,13 @@ public class ConnectionBase
 	#region Subscribe / Unsubscribe
 	public async Task<ResponseCore> SubscribeAsync(string subscriber, string trCode, string key = "", bool connecting = true)
 	{
+		if (string.IsNullOrWhiteSpace(trCode)) return new ResponseCore
+		{
+			StatusCode = Status.BAD_REQUEST,
+			Code = "NOTRCODE",
+			Remark = subscriber
+		};
+
 		string GenerateSubscriptionRequest(string id, string key = "", bool connecting = true)
 		{
 			if (string.IsNullOrWhiteSpace(key)) key = AccountInfo.ID;
@@ -210,7 +217,7 @@ public class ConnectionBase
 					}
 					else
 					{
-						_subscriptions[trCode].Subscriber.Add(subscriber);
+						_subscriptions[$"{trCode}-{key}"].Subscriber.Add(subscriber);
 					}
 				}
 				else

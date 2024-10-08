@@ -22,7 +22,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		{ "SC1", "" }
 	};
 
-	public async Task<ResponseCore> ConnectAsync() => await ConnectAsync(Callback, _subscriptions);
+	public async Task<ResponseCore> ConnectAsync() => await ConnectAsync(Callback);
 
 	private void Callback(ResponseMessage message)
 	{
