@@ -101,6 +101,8 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 						C = Convert.ToDecimal(s3Res.Body.price),
 						V = Convert.ToDecimal(s3Res.Body.cvolume),
 						BasePrice = Convert.ToDecimal(s3Res.Body.price) - Convert.ToDecimal((new string[] { "4", "5" }.Contains(s3Res.Body.sign) ? "-" : "") + s3Res.Body.change),
+						VolumeAgg = Convert.ToDecimal(s3Res.Body.volume),
+						MoneyAgg = Convert.ToDecimal(s3Res.Body.value),
 					},
 					Remark = message.Text
 				});

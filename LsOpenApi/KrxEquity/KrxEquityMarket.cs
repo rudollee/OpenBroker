@@ -395,11 +395,13 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			{
 				contracts.Add(new MarketContract
 				{
+					TimeContract = DateTime.Now,
 					Symbol = f.shcode,
 					C = f.price,
 					BasePrice = f.jnilclose,
-					V = f.volume,
-					TimeContract = DateTime.Now,
+					V = f.cvolume,
+					VolumeAgg = f.volume,
+					MoneyAgg = f.value * 1000000
 				});
 			});
 
