@@ -12,4 +12,5 @@ public class MarketContract
     public decimal BasePrice { get; set; }
 	public decimal Diff { get => BasePrice == 0 ? 0 : C - BasePrice; }
 	public decimal DiffRate { get => BasePrice == 0 ? 0 : (C - BasePrice) / BasePrice; }
+    public decimal VolumeAgg { get; set; }
 }
