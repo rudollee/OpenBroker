@@ -198,7 +198,11 @@ public class ConnectionBase
 
 			if (connecting)
 			{
-				if (_subscriptions.ContainsKey($"{trCode}-{key}"))
+				if (subscriber == "RECONNECTION")
+				{
+					needsAction = true;
+				}
+				else if (_subscriptions.ContainsKey($"{trCode}-{key}"))
 				{
 					if (_subscriptions[$"{trCode}-{key}"].Subscriber.Contains(subscriber))
 					{
@@ -328,7 +332,7 @@ public class ConnectionBase
 
 		foreach (var subscirption in _subscriptions)
 		{
-			var response = await SubscribeAsync("SYS", subscirption.Key, subscirption.Value.Key);
+			var response = await SubscribeAsync("RECONNECTION", subscirption.Key, subscirption.Value.Key);
 			if (response is null || response.StatusCode != Status.SUCCESS)
 			{
 				Message(this, new ResponseCore
