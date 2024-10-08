@@ -32,7 +32,7 @@ public class ConnectionBase
 
 	protected IWebsocketClient? Client;
 
-	private Dictionary<string, string> _subscriptions = new Dictionary<string, string>();
+	private Dictionary<string, SubscriptionPack> _subscriptions = new();
 
 	public async Task<ResponseResult<KeyPack>> RequestAccessTokenAsync(string appkey, string appsecret)
 	{
@@ -164,7 +164,7 @@ public class ConnectionBase
 
 		foreach (var subscription in _subscriptions)
 		{
-			await SubscribeAsync(subscription.Key, subscription.Value, false);
+			await SubscribeAsync("SYS", subscription.Key, subscription.Value.Key, false);
 		}
 
 		return new ResponseCore
@@ -175,7 +175,7 @@ public class ConnectionBase
 	#endregion
 
 	#region Subscribe / Unsubscribe
-	public async Task<ResponseCore> SubscribeAsync(string trCode, string key = "", bool connecting = true)
+	public async Task<ResponseCore> SubscribeAsync(string subscriber, string trCode, string key = "", bool connecting = true)
 	{
 		string GenerateSubscriptionRequest(string id, string key = "", bool connecting = true)
 		{
@@ -193,21 +193,70 @@ public class ConnectionBase
 
 		try
 		{
-			var result = await Task.Run(() => Client.Send(GenerateSubscriptionRequest(trCode, key, connecting)));
+			var needsAction = false;
+			var message = string.Empty;
 
 			if (connecting)
 			{
-				if (!_subscriptions.ContainsKey(trCode)) _subscriptions.Add(trCode, key);
+				if (_subscriptions.ContainsKey($"{trCode}-{key}"))
+				{
+					if (_subscriptions[$"{trCode}-{key}"].Subscriber.Contains(subscriber))
+					{
+						message = "already subscribing!";
+					}
+					else
+					{
+						_subscriptions[trCode].Subscriber.Add(subscriber);
+					}
+				}
+				else
+				{
+					_subscriptions.Add($"{trCode}-{key}", new SubscriptionPack
+					{
+						TrCode = trCode,
+						Key = key,
+						Subscriber = new List<string> { subscriber }
+					});
+					needsAction = true;
+				}
 			}
 			else
 			{
-				_subscriptions.Remove(trCode);
+				if (_subscriptions.ContainsKey($"{trCode}-{key}"))
+				{
+					if (subscriber == "SYS")
+					{
+						needsAction = true;
+					}
+					else if (_subscriptions[$"{trCode}-{key}"].Subscriber.Contains(subscriber))
+					{
+						_subscriptions[$"{trCode}-{key}"].Subscriber.Remove(subscriber);
+						if (!_subscriptions[$"{trCode}-{key}"].Subscriber.Any())
+						{
+							_subscriptions.Remove($"{trCode}-{key}");
+							needsAction = true;
+						}
+					}
+					else
+					{
+						message = "not subscribing";
+					}
+				}
 			}
+
+			if (!needsAction) return new ResponseCore
+			{
+				StatusCode = Status.SUCCESS,
+				Code = "NOACTION",
+				Message = message
+			};
+
+			var result = await Task.Run(() => Client.Send(GenerateSubscriptionRequest(trCode, key, connecting)));
 
 			Message(this, new ResponseCore
 			{
 				Code = $"{trCode}({key})",
-				Message = connecting ? "Subscribed" : "Unsubscribed",
+				Message = $"Sent {(connecting ? "subscribe" : "unsubscribe")} request.",
 			});
 
 			return new ResponseCore
@@ -279,14 +328,14 @@ public class ConnectionBase
 
 		foreach (var subscirption in _subscriptions)
 		{
-			var response = await SubscribeAsync(subscirption.Key, subscirption.Value);
+			var response = await SubscribeAsync("SYS", subscirption.Key, subscirption.Value.Key);
 			if (response is null || response.StatusCode != Status.SUCCESS)
 			{
 				Message(this, new ResponseCore
 				{
 					Code = "RECON-FAIL",
 					Message = $"subscription {subscirption.Key} failed during reconnection",
-					Remark = subscirption.Value
+					Remark = subscirption.Value.Key
 				});
 				return;
 			}

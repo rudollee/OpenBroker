@@ -168,13 +168,13 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 	public Task<ResponseResults<Order>> RequestOrdersAsync(DateOnly dateBegun, DateOnly dateFin) => throw new NotImplementedException();
 	public Task<ResponseResults<Position>> RequestPositionsAsync(DateTime? date = null) => throw new NotImplementedException();
 
-	public async Task<ResponseCore> SubscribeContractAsync(bool connecting = true) => await SubscribeAsync("SC1", "", connecting);
+	public async Task<ResponseCore> SubscribeContractAsync(bool connecting = true) => await SubscribeAsync("SYS", "SC1", "", connecting);
 
 	public async Task<ResponseCore> SubscribeOrderAsync(bool connecting = true)
 	{
 		foreach (var trCode in new string[] { "SC0", "SC2", "SC3", "SC4" })
 		{
-			var response = await SubscribeAsync(trCode, "", connecting) ?? new ResponseCore
+			var response = await SubscribeAsync("SYS", trCode, "", connecting) ?? new ResponseCore
 			{
 				Code = trCode,
 				StatusCode = Status.ERROR_OPEN_API,

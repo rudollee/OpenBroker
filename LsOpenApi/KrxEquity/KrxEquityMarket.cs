@@ -19,7 +19,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	public Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol) => throw new NotImplementedException();
 	public Task<ResponseResult<MarketContract>> RequestMarketContract(string symbol) => throw new NotImplementedException();
 
-	public async Task<ResponseCore> SubscribeMarketContract(string symbol, bool connecting = true)
+	public async Task<ResponseCore> SubscribeMarketContract(string symbol, bool connecting = true, string subscriber = "")
 	{
 		if (!Equities.ContainsKey(symbol)) return new ResponseCore
 		{
@@ -28,10 +28,12 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			StatusCode = Status.BAD_REQUEST,
 		};
 
-		return await SubscribeAsync(Equities[symbol].Section == ExchangeSection.KOSPI ? "S3_" : "K3_", symbol, connecting);
+		if (string.IsNullOrWhiteSpace(subscriber)) subscriber = "SYS";
+
+		return await SubscribeAsync(subscriber, Equities[symbol].Section == ExchangeSection.KOSPI ? "S3_" : "K3_", symbol, connecting);
 	}
 
-	public async Task<ResponseCore> SubscribeMarketDepth(string symbol, bool connecting = true)
+	public async Task<ResponseCore> SubscribeMarketDepth(string symbol, bool connecting = true, string subscriber = "")
 	{
 		if (!Equities.ContainsKey(symbol)) return new ResponseCore
 		{
@@ -40,11 +42,13 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			StatusCode = Status.BAD_REQUEST,
 		};
 
-		return await SubscribeAsync(Equities[symbol].Section == ExchangeSection.KOSPI ? "H1_" : "HA_", symbol, connecting);
+		if (string.IsNullOrWhiteSpace(subscriber)) subscriber = "SYS";
+
+		return await SubscribeAsync(subscriber, Equities[symbol].Section == ExchangeSection.KOSPI ? "H1_" : "HA_", symbol, connecting);
 	}
 
 	public async Task<ResponseCore> SubscribeMarketPause(string symbol = "000000") => await SubscribeAsync("VI_", symbol);
-	public async Task<ResponseCore> SubscribeNews(bool connecting = true) => await SubscribeAsync("NWS", "NWS001", connecting);
+	public async Task<ResponseCore> SubscribeNews(bool connecting = true) => await SubscribeAsync("SYS", "NWS", "NWS001", connecting);
 
 	public Task<ResponseResults<Instrument>> RequestInstruments(int option) => throw new NotImplementedException();
 
