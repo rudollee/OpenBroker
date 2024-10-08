@@ -46,16 +46,18 @@ public interface IMarket
 	/// </summary>
 	/// <param name="symbol"></param>
 	/// <param name="connecting"></param>
+	/// <param name="subscriber"></param>
 	/// <returns></returns>
-	Task<ResponseCore> SubscribeMarketContract(string symbol, bool connecting = true);
+	Task<ResponseCore> SubscribeMarketContract(string symbol, bool connecting = true, string subscriber = "");
 
 	/// <summary>
 	/// 호가 - realtime
 	/// </summary>
 	/// <param name="symbol"></param>
 	/// <param name="connecting"></param>
+	/// <param name="subscriber"></param>
 	/// <returns></returns>
-	Task<ResponseCore> SubscribeMarketDepth(string symbol, bool connecting = true);
+	Task<ResponseCore> SubscribeMarketDepth(string symbol, bool connecting = true, string subscriber = "");
 
 	/// <summary>
 	/// 뉴스 정보 - realtime
