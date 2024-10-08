@@ -43,10 +43,10 @@ public class MarketContract
     /// <summary>
     /// 일간 누적 거래량
     /// </summary>
-    public decimal VolumeAgg { get; set; }
+    public decimal VolumeAcc { get; set; }
 
     /// <summary>
     /// 일간 누적 거래대금
     /// </summary>
-    public decimal MoneyAgg { get; set; }
+    public decimal MoneyAcc { get; set; }
 }

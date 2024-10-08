@@ -291,6 +291,8 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 					H = response.t1102OutBlock.high,
 					L = response.t1102OutBlock.low,
 					V = response.t1102OutBlock.volume,
+					VolumeAcc = response.t1102OutBlock.volume,
+					MoneyAcc = response.t1102OutBlock.value,
 					HighLimit = response.t1102OutBlock.uplmtprice,
 					LowLimit = response.t1102OutBlock.dnlmtprice,
 				},
@@ -350,6 +352,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			return new ResponseResult<EquityPack>
 			{
 				Info = equity,
+				Remark = "MoneyAgg multiple: M"
 			};
 		}
 		catch (Exception ex)
@@ -400,8 +403,8 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 					C = f.price,
 					BasePrice = f.jnilclose,
 					V = f.cvolume,
-					VolumeAgg = f.volume,
-					MoneyAgg = f.value * 1000000
+					VolumeAcc = f.volume,
+					MoneyAcc = f.value * 1000000
 				});
 			});
 
