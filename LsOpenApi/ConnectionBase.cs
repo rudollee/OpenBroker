@@ -238,6 +238,7 @@ public class ConnectionBase
 					if (subscriber == "SYS")
 					{
 						needsAction = true;
+						_subscriptions.Remove($"{trCode}-{key}");
 					}
 					else if (_subscriptions[$"{trCode}-{key}"].Subscriber.Contains(subscriber))
 					{
