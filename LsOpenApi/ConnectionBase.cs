@@ -32,7 +32,12 @@ public class ConnectionBase
 
 	protected IWebsocketClient? Client;
 
-	private Dictionary<string, SubscriptionPack> _subscriptions = new();
+	private Dictionary<string, SubscriptionPack> _subscriptions = new()
+	{
+		{ "JIF", new SubscriptionPack{ TrCode = "JIF", Key = "0", Subscriber = new List<string>(){ "ESSENCIAL" }} },
+		{ "SC0", new SubscriptionPack{ TrCode = "SC0", Subscriber = new List<string>{ "ESSENCIAL" } } },
+		{ "SC1", new SubscriptionPack{ TrCode = "SC1", Subscriber = new List<string>{ "ESSENCIAL" } } }
+	};
 
 	public async Task<ResponseResult<KeyPack>> RequestAccessTokenAsync(string appkey, string appsecret)
 	{
