@@ -15,13 +15,6 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 	public Task<ResponseResult<KeyPack>> RequestApprovalKeyAsync(string appkey, string secretkey) =>
 		throw new NotImplementedException();
 
-	private Dictionary<string, string> _subscriptions = new Dictionary<string, string>
-	{
-		{ "JIF", "0" },
-		{ "SC0", "" },
-		{ "SC1", "" }
-	};
-
 	public async Task<ResponseCore> ConnectAsync() => await ConnectAsync(Callback);
 
 	private void Callback(ResponseMessage message)
@@ -204,6 +197,48 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 						PriceOrdered = Convert.ToDecimal(sc0Res.Body.ordprice),
 						VolumeOrdered = Convert.ToDecimal(sc0Res.Body.ordqty),
 						TimeOrdered = (DateTime.Now.ToString("yyyyMMdd") + sc0Res.Body.ordtm).ToDateTimeMicro(),
+					},
+					Remark = message.Text
+				});
+				break;
+			#endregion
+			#region SC2/SC3/SC4 주문 정정/취소/거부
+			case nameof(SC2):
+			case nameof(SC3):
+			case nameof(SC4):
+				var sc2res = JsonSerializer.Deserialize<LsSubscriptionCallback<SC2OutBlock>>(message.Text);
+				if (sc2res is null || sc2res.Body is null) return;
+
+				Executed(this, new ResponseResult<Order>
+				{
+					StatusCode = Status.SUCCESS,
+					Code = nameof(SC2),
+					Info = new Order
+					{
+						BrokerCo = _broker,
+						DateBiz = DateOnly.FromDateTime(DateTime.Now),
+						TimeOrdered = (DateTime.Now.ToString("yyyyMMdd") + sc2res.Body.proctm).ToDateTimeMicro(),
+						Currency = Currency.KRW,
+						Precision = 0,
+						NumeralSystem = 10,
+						Symbol = sc2res.Body.shtnIsuno,
+						InstrumentName = sc2res.Body.Isunm,
+						OID = Convert.ToInt64(sc2res.Body.ordno),
+						IdOrigin = Convert.ToInt64(sc2res.Body.orgordno),
+						IsLong = sc2res.Body.bnstp == "2",
+						VolumeOrdered = Convert.ToDecimal(sc2res.Body.ordqty),
+						PriceOrdered = Convert.ToDecimal(sc2res.Body.ordprc),
+						Aggregation = Convert.ToDecimal(sc2res.Body.ordamt),
+						DiscardStatus = DiscardStatus.TRADABLE,
+						Mode = sc2res.Body.trcode switch
+						{
+							"SONAT000" => OrderMode.PLACE,
+							"SONAT001" => OrderMode.UPDATE,
+							"SONAT002" => OrderMode.CANCEL,
+							"SONAS100" => OrderMode.UPDATE_LQ,
+							_ => OrderMode.NONE
+						},
+						Tradable = true,
 					},
 					Remark = message.Text
 				});

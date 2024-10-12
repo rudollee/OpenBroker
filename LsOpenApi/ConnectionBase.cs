@@ -35,8 +35,6 @@ public class ConnectionBase
 	private Dictionary<string, SubscriptionPack> _subscriptions = new()
 	{
 		{ "JIF", new SubscriptionPack{ TrCode = "JIF", Key = "0", Subscriber = new List<string>(){ "INIT" }} },
-		{ "SC0", new SubscriptionPack{ TrCode = "SC0", Subscriber = new List<string>{ "INIT" } } },
-		{ "SC1", new SubscriptionPack{ TrCode = "SC1", Subscriber = new List<string>{ "INIT" } } }
 	};
 
 	public async Task<ResponseResult<KeyPack>> RequestAccessTokenAsync(string appkey, string appsecret)
