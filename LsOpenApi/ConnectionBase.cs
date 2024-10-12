@@ -34,9 +34,9 @@ public class ConnectionBase
 
 	private Dictionary<string, SubscriptionPack> _subscriptions = new()
 	{
-		{ "JIF", new SubscriptionPack{ TrCode = "JIF", Key = "0", Subscriber = new List<string>(){ "ESSENCIAL" }} },
-		{ "SC0", new SubscriptionPack{ TrCode = "SC0", Subscriber = new List<string>{ "ESSENCIAL" } } },
-		{ "SC1", new SubscriptionPack{ TrCode = "SC1", Subscriber = new List<string>{ "ESSENCIAL" } } }
+		{ "JIF", new SubscriptionPack{ TrCode = "JIF", Key = "0", Subscriber = new List<string>(){ "INIT" }} },
+		{ "SC0", new SubscriptionPack{ TrCode = "SC0", Subscriber = new List<string>{ "INIT" } } },
+		{ "SC1", new SubscriptionPack{ TrCode = "SC1", Subscriber = new List<string>{ "INIT" } } }
 	};
 
 	public async Task<ResponseResult<KeyPack>> RequestAccessTokenAsync(string appkey, string appsecret)
@@ -135,7 +135,7 @@ public class ConnectionBase
 
 			foreach (var subscription in _subscriptions)
 			{
-				await SubscribeAsync("SYS", subscription.Key, subscription.Value.Key);
+				await SubscribeAsync("RECONNECTION", subscription.Key, subscription.Value.Key);
 			}
 
 			return new ResponseCore
