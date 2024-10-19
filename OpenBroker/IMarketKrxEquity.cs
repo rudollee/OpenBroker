@@ -30,4 +30,7 @@ public interface IMarketKrxEquity
 	/// <param name="end"></param>
 	/// <returns></returns>
 	Task<ResponseResults<Equity>> RequestIPO(DateOnly begin, DateOnly end);
+
+	bool AvailableToSubscribe { get; }
+
 }

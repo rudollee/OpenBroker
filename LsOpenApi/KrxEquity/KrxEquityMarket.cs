@@ -8,6 +8,21 @@ using OpenBroker.Extensions;
 namespace LsOpenApi.KrxEquity;
 public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 {
+	public bool AvailableToSubscribe
+	{
+		get
+		{
+			var now = DateTime.UtcNow.AddHours(9);
+			var closedWeeks = new List<DayOfWeek>() { DayOfWeek.Saturday, DayOfWeek.Sunday };
+			if (closedWeeks.Contains(now.DayOfWeek)) return false;
+
+			if (now.TimeOfDay < new TimeSpan(8, 55, 00)) return false;
+			if (now.TimeOfDay > new TimeSpan(16, 00, 00)) return false;
+
+			return true;
+		}
+	}
+
 	public EventHandler<ResponseResult<MarketContract>>? MarketContracted { get; set; }
 	public EventHandler<ResponseResult<OrderBook>>? OrderBookTaken { get; set; }
 
