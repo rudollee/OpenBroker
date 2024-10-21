@@ -161,12 +161,68 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 	}
 
 	public Task<ResponseResults<Contract>> RequestContractsAsync(DateTime dateBegun, DateTime dateFin, ContractStatus status = ContractStatus.ExecutedOnly) => throw new NotImplementedException();
-
 	public Task<ResponseResults<Earning>> RequestEarningAsync(DateTime dateBegin, DateTime dateFin, Exchange exchange = Exchange.KRX) => throw new NotImplementedException();
 	public Task<ResponseCore> RequestOrderableAsync(Order order) => throw new NotImplementedException();
 	public Task<ResponseResults<Order>> RequestOrdersAsync() => throw new NotImplementedException();
 	public Task<ResponseResults<Order>> RequestOrdersAsync(DateOnly dateBegun, DateOnly dateFin) => throw new NotImplementedException();
-	public Task<ResponseResults<Position>> RequestPositionsAsync(DateTime? date = null) => throw new NotImplementedException();
+	
+	public async Task<ResponseResults<Position>> RequestPositionsAsync(DateTime? date = null)
+	{
+		var client = new RestClient($"{host}/stock/accno");
+		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(t0424)));
+
+		request.AddBody(JsonSerializer.Serialize(new
+		{
+			t0424InBlock = new t0424InBlock
+			{
+				prcgb = "2",
+				chegb = "2",
+				dangb = "0",
+				charge = "1",
+				cts_expcode = ""
+			}
+		}));
+
+		var positions = new List<Position>();
+
+		try
+		{
+			var response = await client.PostAsync<t0424>(request) ?? new t0424();
+			positions.Capacity = response.t0424OutBlock1.Count;
+			response.t0424OutBlock1.ForEach(position =>
+			{
+				positions.Add(new Position
+				{
+					Currency = Currency.KRW,
+					Symbol = position.expcode,
+					InstrumentName = position.hname,
+					NumeralSystem = 10,
+					Precision = 0,
+					PriceEntry = position.pamt,
+					Price = position.price,
+					VolumeEntry = position.janqty,
+					Volume = position.mdposqt,
+					Tradable = true
+				});
+			});
+
+			return new ResponseResults<Position>
+			{
+				List = positions,
+				Remark = response.t0424OutBlock.dtsunik.ToString()
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResults<Position>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Code = "ERROR - T0424",
+				Message = ex.Message,
+				List = positions,
+			};
+		}
+	}
 
 	public async Task<ResponseCore> SubscribeContractAsync(bool connecting = true) => await SubscribeAsync("SYS", "SC1", "", connecting);
 
