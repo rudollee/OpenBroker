@@ -175,7 +175,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 		{
 			t0424InBlock = new t0424InBlock
 			{
-				prcgb = "2",
+				prcgb = "1",
 				chegb = "2",
 				dangb = "0",
 				charge = "1",
