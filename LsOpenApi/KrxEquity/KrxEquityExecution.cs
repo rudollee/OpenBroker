@@ -166,7 +166,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 	public Task<ResponseResults<Order>> RequestOrdersAsync() => throw new NotImplementedException();
 	public Task<ResponseResults<Order>> RequestOrdersAsync(DateOnly dateBegun, DateOnly dateFin) => throw new NotImplementedException();
 	
-	public async Task<ResponseResults<Position>> RequestPositionsAsync(DateTime? date = null)
+	public async Task<ResponseResults<Position>> RequestPositionsAsync()
 	{
 		var client = new RestClient($"{host}/stock/accno");
 		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(t0424)));
@@ -202,7 +202,9 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 					Price = position.price,
 					VolumeEntry = position.janqty,
 					Volume = position.mdposqt,
-					Tradable = true
+					Tradable = true,
+					Tax = position.tax,
+					Fee = position.fee,
 				});
 			});
 

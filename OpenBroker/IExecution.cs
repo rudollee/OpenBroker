@@ -113,7 +113,7 @@ public interface IExecution
     /// </summary>
     /// <param name="date"></param>
     /// <returns></returns>
-    Task<ResponseResults<Position>> RequestPositionsAsync(DateTime? date = null);
+    Task<ResponseResults<Position>> RequestPositionsAsync();
 
     /// <summary>
     /// 손익내역

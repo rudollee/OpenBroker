@@ -125,6 +125,8 @@ public class Position : InstrumentCore
     public decimal Volume { get; set; }
     public decimal Price { get; set; }
     public DateTime DateEntry { get; set; }
+    public decimal Tax { get; set; }
+    public decimal Fee { get; set; }
 }
 
 public class Earning

@@ -105,7 +105,7 @@ public partial class KisKrxEquity : ConnectionBase, IExecution
 	public Task<ResponseCore> RequestOrderableAsync(Order order) => throw new NotImplementedException();
 	public Task<ResponseResults<Order>> RequestOrdersAsync() => throw new NotImplementedException();
 	public Task<ResponseResults<Order>> RequestOrdersAsync(DateOnly dateBegun, DateOnly dateFin) => throw new NotImplementedException();
-	public Task<ResponseResults<Position>> RequestPositionsAsync(DateTime? date = null) => throw new NotImplementedException();
+	public Task<ResponseResults<Position>> RequestPositionsAsync() => throw new NotImplementedException();
 	public Task<ResponseCore> SubscribeContractAsync(bool connecting = true) => throw new NotImplementedException();
 	public Task<ResponseCore> SubscribeOrderAsync(bool connecting = true) => throw new NotImplementedException();
 }

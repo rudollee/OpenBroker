@@ -506,7 +506,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 	}
 	#endregion
 
-	public Task<ResponseResults<Position>> RequestPositionsAsync(DateTime? date = null)
+	public Task<ResponseResults<Position>> RequestPositionsAsync()
 	{
 		throw new NotImplementedException();
 	}
