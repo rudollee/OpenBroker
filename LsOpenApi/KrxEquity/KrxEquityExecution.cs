@@ -201,7 +201,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 					PriceEntry = position.pamt,
 					Price = position.price,
 					VolumeEntry = position.janqty,
-					Volume = position.mdposqt,
+					Volume = position.janqty,
 					Tradable = true,
 					Tax = position.tax,
 					Fee = position.fee,
