@@ -83,7 +83,15 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 		try
 		{
-			var response = await client.PostAsync<t3102>(request) ?? new t3102();
+			var response = await client.PostAsync<t3102>(request) ?? new t3102() { Code = "-1"};
+			if (response.Code != "00000") return new ResponseResult<News>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Code = response.Code,
+				Message = response.Message,
+				Remark = $"{response.TrCode}: response failed"
+			};
+
 			var htmlString = string.Join("", response.t3102OutBlock1.Select(s => s.sBody)).Replace("t3102OutBlock1", "");
 
 			return new ResponseResult<News>
