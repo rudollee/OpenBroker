@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 
 namespace OpenBroker.Models;
 
@@ -248,4 +243,47 @@ public enum MarketPauseType
     /// </summary>
     VID = 8212,
 
+}
+
+public enum MessageType
+{
+    /// <summary>
+    /// General Message (default)
+    /// </summary>
+    SYS = 0,
+
+    /// <summary>
+    /// Error,
+    /// </summary>
+    SYSERR,
+
+    /// <summary>
+    /// Market Data
+    /// </summary>
+    MKT,
+
+    /// <summary>
+    /// Market Status
+    /// </summary>
+    MKTS,
+
+    /// <summary>
+    /// Contract
+    /// </summary>
+    CONTRACT,
+
+    /// <summary>
+    /// Order execution
+    /// </summary>
+    EXECUTION,
+
+    /// <summary>
+    /// Subscribe / Unsubscribe Realtime Data
+    /// </summary>
+    SUB,
+
+    /// <summary>
+    /// Misc.
+    /// </summary>
+    MISC
 }

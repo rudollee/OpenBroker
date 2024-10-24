@@ -67,6 +67,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 				}
 				OrderBookTaken(this, new ResponseResult<OrderBook>
 				{
+					Typ = MessageType.MKT,
 					Code = rawData[2],
 					Info = new OrderBook
 					{
@@ -86,6 +87,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 				if (MarketContracted is null) return;
 				MarketContracted(this, new ResponseResult<MarketContract>
 				{
+					Typ = MessageType.MKT,
 					Code = rawData[2],
 					Info = new MarketContract
 					{
@@ -102,6 +104,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 			case nameof(H0STCNI0):
 				Contracted(this, new ResponseResult<Contract>
 				{
+					Typ = MessageType.CONTRACT,
 					StatusCode = Status.SUCCESS,
 					Code = rawData[2],
 					Info = new Contract
@@ -123,6 +126,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 			default:
 				Message(this, new ResponseCore
 				{
+					Typ = MessageType.SYSERR,
 					StatusCode = Status.ERROR_OPEN_API,
 					Code = rawData[2],
 					Message = "during parsing callback to swich",

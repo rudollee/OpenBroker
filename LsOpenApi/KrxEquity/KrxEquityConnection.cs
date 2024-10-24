@@ -71,6 +71,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 
 				Message(this, new ResponseCore
 				{
+					Typ = MessageType.MKTS,
 					Code = $"{resJif.Body.jangubun}.{resJif.Body.jstatus}",
 					Message = $"{CodeRef.MarketSectionDic[resJif.Body.jangubun]} {CodeRef.MarketStatusDic[resJif.Body.jstatus]}"
 				});
@@ -86,6 +87,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 
 				MarketContracted(this, new ResponseResult<MarketContract>
 				{
+					Typ = MessageType.MKT,
 					Code = trCode,
 					Info = new MarketContract
 					{
@@ -133,6 +135,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 
 				OrderBookTaken(this, new ResponseResult<OrderBook>
 				{
+					Typ = MessageType.MKT,
 					Code = trCode,
 					Info = new OrderBook
 					{
@@ -156,6 +159,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 
 				MarketPaused(this, new ResponseResult<MarketPause>
 				{
+					Typ = MessageType.MKTS,
 					Info = new MarketPause
 					{
 						Time = viResponse.Body.time.ToTime(),
@@ -177,6 +181,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 
 				Executed(this, new ResponseResult<Order>
 				{
+					Typ = MessageType.EXECUTION,
 					StatusCode = Status.SUCCESS,
 					Code = nameof(SC0),
 					Info = new Order
@@ -211,6 +216,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 
 				Executed(this, new ResponseResult<Order>
 				{
+					Typ = MessageType.EXECUTION,
 					StatusCode = Status.SUCCESS,
 					Code = nameof(SC2),
 					Info = new Order
@@ -251,6 +257,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 
 				Contracted(this, new ResponseResult<Contract>
 				{
+					Typ = MessageType.CONTRACT,
 					StatusCode = Status.SUCCESS,
 					Code = nameof(SC1),
 					Info = new Contract
@@ -271,7 +278,6 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				});
 				break;
 			#endregion
-
 		}
 	}
 }

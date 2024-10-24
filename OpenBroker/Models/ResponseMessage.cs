@@ -5,6 +5,11 @@ namespace OpenBroker.Models;
 public class ResponseCore
 {
     /// <summary>
+    /// Message Type
+    /// </summary>
+    public MessageType Typ { get; set; } = MessageType.SYS;
+
+    /// <summary>
     /// 상태 코드
     /// </summary>
     public Status StatusCode { get; set; } = Status.SUCCESS;

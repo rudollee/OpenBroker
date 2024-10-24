@@ -61,6 +61,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 				}
 				OrderBookTaken(this, new ResponseResult<OrderBook>
 				{
+					Typ = MessageType.MKT,
 					Code = rawData[2],
 					Info = new OrderBook
 					{
@@ -81,6 +82,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 
 				MarketContracted(this, new ResponseResult<MarketContract>
 				{
+					Typ = MessageType.MKT,
 					Code = rawData[2],
 					Info = new MarketContract
 					{
@@ -97,6 +99,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 			case nameof(HDFFF1C0):
 				Executed(this, new ResponseResult<Order>
 				{
+					Typ = MessageType.EXECUTION,
 					StatusCode = Status.SUCCESS,
 					Code = rawData[2],
 					Info = new Order
@@ -128,6 +131,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 			case nameof(HDFFF2C0):
 				Contracted(this, new ResponseResult<Contract>
 				{
+					Typ = MessageType.CONTRACT,
 					StatusCode = Status.SUCCESS,
 					Code = rawData[2],
 					Info = new Contract
@@ -149,6 +153,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 			default:
 				Message(this, new ResponseCore
 				{
+					Typ = MessageType.SYSERR,
 					StatusCode = Status.ERROR_OPEN_API,
 					Code = rawData[2],
 					Message = "during parsing callback to swich",
