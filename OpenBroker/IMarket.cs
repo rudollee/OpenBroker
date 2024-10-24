@@ -42,6 +42,16 @@ public interface IMarket
 	Task<ResponseResults<MarketContract>> RequestMarketContract(List<string> symbols);
 
 	/// <summary>
+	/// 기간별 체결 내역
+	/// </summary>
+	/// <param name="symbol"></param>
+	/// <param name="begin"></param>
+	/// <param name="end"></param>
+	/// <param name="baseVolume"></param>
+	/// <returns></returns>
+	Task<ResponseResults<MarketContract>> RequestMarketContractHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0);
+
+	/// <summary>
 	/// 현재가 - realtime
 	/// </summary>
 	/// <param name="symbol"></param>
