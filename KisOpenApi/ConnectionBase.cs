@@ -304,6 +304,7 @@ public class ConnectionBase
 		{
 			Message(this, new ResponseCore
 			{
+				Typ = MessageType.SYSERR,
 				Code = "BINARY",
 				Message = "binary message type"
 			});
@@ -314,6 +315,7 @@ public class ConnectionBase
 		{
 			Message(this, new ResponseCore
 			{
+				Typ = MessageType.SYSERR,
 				Code = "TEXTNULL",
 				Message = "message.Text is null"
 			});
@@ -326,6 +328,7 @@ public class ConnectionBase
 		{
 			Message(this, new ResponseCore
 			{
+				Typ = MessageType.SYSERR,
 				Code = "WEIRD_MESSAGE",
 				Message = "message format is weird",
 				Remark = message.Text
@@ -344,6 +347,7 @@ public class ConnectionBase
 			{
 				Message(this, new ResponseCore
 				{
+					Typ = MessageType.SYSERR,
 					Code = "RECON-FAIL",
 					Message = $"subscription {subscirption.Key} failed during reconnection",
 					Remark = subscirption.Value
@@ -374,6 +378,7 @@ public class ConnectionBase
 			{
 				Message(this, new ResponseCore
 				{
+					Typ= MessageType.SYSERR,
 					Code = "JSON_PARSING_ERR",
 					Message = $"messageInfo is null",
 					Remark = "from ParseCallbackMessage during message deserializing"
@@ -408,6 +413,7 @@ public class ConnectionBase
 		{
 			Message(this, new ResponseCore
 			{
+				Typ = MessageType.SYSERR,
 				Code = "JSON_PARSING_ERR",
 				Message = $"catch err: ${ex.Message}",
 				Remark = "from ParseCallbackMessage"

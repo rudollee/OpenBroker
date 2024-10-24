@@ -65,12 +65,14 @@ public class ConnectionBase
 
 			if (response is null) return new ResponseResult<KeyPack>
 			{
+				Typ = MessageType.SYSERR,
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = "response is null"
 			};
 
 			if (string.IsNullOrEmpty(response.AccessToken)) return new ResponseResult<KeyPack>
 			{
+				Typ = MessageType.SYSERR,
 				StatusCode = Status.UNAUTHORIZED,
 				Message = "no token",
 			};
@@ -96,6 +98,7 @@ public class ConnectionBase
 		{
 			return new ResponseResult<KeyPack>
 			{
+				Typ = MessageType.SYSERR,
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = ex.Message,
 				Remark = "error catch"
@@ -146,6 +149,7 @@ public class ConnectionBase
 		{
 			return new ResponseCore
 			{
+				Typ = MessageType.SYSERR,
 				StatusCode = Status.INTERNALSERVERERROR,
 				Message = ex.Message,
 				Remark = "during connect websocket"
@@ -196,6 +200,7 @@ public class ConnectionBase
 
 		if (Client is null) return new ResponseCore
 		{
+			Typ = MessageType.SYSERR,
 			StatusCode = Status.ERROR_OPEN_API,
 			Code = "NOCONNECTION",
 			Message = "client is null"
@@ -261,6 +266,7 @@ public class ConnectionBase
 
 			if (!needsAction) return new ResponseCore
 			{
+				Typ = MessageType.SUB,
 				StatusCode = Status.SUCCESS,
 				Code = "NOACTION",
 				Message = message
@@ -270,6 +276,7 @@ public class ConnectionBase
 
 			Message(this, new ResponseCore
 			{
+				Typ = MessageType.SUB,
 				Code = $"{trCode}({key})",
 				Message = $"Sent {(connecting ? "subscribe" : "unsubscribe")} request.",
 			});
@@ -283,6 +290,7 @@ public class ConnectionBase
 		{
 			return new ResponseCore
 			{
+				Typ = MessageType.SYSERR,
 				StatusCode = Status.INTERNALSERVERERROR,
 				Message = $"catch error : {ex.Message}",
 				Remark = $"from {System.Reflection.MethodBase.GetCurrentMethod()?.Name} connecting is {connecting}"
@@ -302,6 +310,7 @@ public class ConnectionBase
 		{
 			Message(this, new ResponseCore
 			{
+				Typ = MessageType.SYSERR,
 				Code = "BINARY",
 				Message = "binary message type"
 			});
@@ -312,6 +321,7 @@ public class ConnectionBase
 		{
 			Message(this, new ResponseCore
 			{
+				Typ = MessageType.SYSERR,
 				Code = "TEXTNULL",
 				Message = "message.Text is null"
 			});
@@ -327,6 +337,7 @@ public class ConnectionBase
 		{
 			Message(this, new ResponseCore
 			{
+				Typ = MessageType.SYSERR,
 				Code = "TRCODEERR",
 				Message = "failed to parse TR code"
 			});
@@ -348,6 +359,7 @@ public class ConnectionBase
 			{
 				Message(this, new ResponseCore
 				{
+					Typ = MessageType.SYSERR,
 					Code = "RECON-FAIL",
 					Message = $"subscription {subscirption.Key} failed during reconnection",
 					Remark = subscirption.Value.Key
