@@ -259,11 +259,12 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 						DateBiz = DateOnly.FromDateTime(DateTime.Now),
 						OID = Convert.ToInt64(sc1Res.Body.ordno),
 						CID = Convert.ToInt64(sc1Res.Body.execno),
-						Symbol = sc1Res.Body.shtnIsuno,
+						Symbol = sc1Res.Body.shtnIsuno.Substring(1),
 						InstrumentName = sc1Res.Body.Isunm,
 						IsLong = sc1Res.Body.bnstp == "2",
 						Price = Convert.ToDecimal(sc1Res.Body.execprc),
 						Volume = Convert.ToDecimal(sc1Res.Body.execqty),
+						VolumeLeft = Convert.ToDecimal(sc1Res.Body.secbalqty),
 						TimeContracted = (DateTime.Now.ToString("yyyyMMdd") + sc1Res.Body.exectime).ToDateTimeMicro(),
 					},
 					Remark = message.Text
