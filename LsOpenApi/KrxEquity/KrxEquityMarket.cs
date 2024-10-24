@@ -444,7 +444,60 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			};
 		}
 	}
+	#endregion
 
-	public Task<ResponseResults<MarketContract>> RequestMarketContractHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
+	#region request marketContractHistory using t1301
+	public async Task<ResponseResults<MarketContract>> RequestMarketContractHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0)
+	{
+		var client = new RestClient($"{host}/stock/market-data");
+		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(t1301)));
+		request.AddBody(JsonSerializer.Serialize(new
+		{
+			t1301InBlock = new t1301InBlock
+			{
+				shcode = symbol,
+				starttime = begin,
+				endtime = end,
+				cvolume = Convert.ToInt64(baseVolume)
+			}
+		}));
+
+		try
+		{
+			var response = await client.PostAsync<t1301>(request) ?? new t1301();
+			if (!response.t1301OutBlock1.Any()) return new ResponseResults<MarketContract>
+			{
+				StatusCode = Status.NODATA,
+				Message = response.Message,
+				Code = response.Code,
+				Remark = "no data",
+				List = new List<MarketContract>()
+			};
+
+			var marketContracts = new List<MarketContract>();
+			response.t1301OutBlock1.ForEach(contract => marketContracts.Add(new MarketContract
+			{
+				TimeContract = (DateTime.Now.ToString("yyyyMMdd") + contract.chetime).ToDateTime(),
+				C = contract.price,
+				BasePrice = contract.price + contract.change * (Convert.ToInt32(contract.sign) > 3 ? 1 : -1),
+				V = contract.cvolume,
+				VolumeAcc = contract.volume,
+			}));
+
+			return new ResponseResults<MarketContract>
+			{
+				List = marketContracts,
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResults<MarketContract>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = ex.Message,
+				List = new List<MarketContract>()
+			};
+		}
+	} 
 	#endregion
 }
