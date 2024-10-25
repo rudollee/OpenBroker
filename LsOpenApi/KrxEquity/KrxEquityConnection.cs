@@ -60,7 +60,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 						Code = response.Body.realkey,
 						TimePosted = DateTime.Now,
 						PublisherId = publisherId,
-						Publisher = NewsPublishers.ContainsKey(publisherId) ? NewsPublishers[publisherId] : response.Body.id,
+						Publisher = CodeRef.NewsPublishers.ContainsKey(publisherId) ? CodeRef.NewsPublishers[publisherId] : response.Body.id,
 						Title = response.Body.title,
 						Remark = response.Body.code,
 					}
