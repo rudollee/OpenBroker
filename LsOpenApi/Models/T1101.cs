@@ -2,7 +2,7 @@
 /// <summary>
 /// 주식현재가호가조회(t1101)
 /// </summary>
-internal class t1101
+internal class t1101 : LsResponseCore
 {
 	public t1101InBlock t1101InBlock { get; set; } = new();
 	public t1101OutBlock t1101OutBlock { get; set; } = new();

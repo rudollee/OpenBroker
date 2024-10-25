@@ -1,8 +1,6 @@
 ﻿using OpenBroker.Models;
 using OpenBroker;
-using RestSharp;
 using LsOpenApi.Models;
-using System.Text.Json;
 using OpenBroker.Extensions;
 
 namespace LsOpenApi.KrxEquity;
@@ -70,21 +68,17 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#region request news using t3102
 	public async Task<ResponseResult<News>> RequestNews(string id)
 	{
-		var client = new RestClient($"{host}/stock/investinfo");
-		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(t3102)));
-
-		request.AddBody(JsonSerializer.Serialize(new
+		var response = await RequestStandardAsync<t3102>("stock/investinfo", new
 		{
 			t3102InBlock = new t3102InBlock
 			{
 				sNewsno = id
 			}
-		}));
+		});
 
 		try
 		{
-			var response = await client.PostAsync<t3102>(request) ?? new t3102() { Code = "-1"};
-			if (response.Code != "00000" || !response.t3102OutBlock1.Any()) return new ResponseResult<News>
+			if (!response.t3102OutBlock1.Any()) return new ResponseResult<News>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Code = response.Code,
@@ -120,21 +114,16 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#region request equity dictionary using t8436
 	public async Task<ResponseResults<Equity>> RequestEquityList(int option = 0)
 	{
-		var client = new RestClient($"{host}/stock/etc");
-		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(t8436)));
-
-		request.AddBody(JsonSerializer.Serialize(new
+		var response = await RequestStandardAsync<t8436>(LsEndpoint.EquityEtc.ToDescription(), new
 		{
 			t8436InBlock = new t8436InBlock
 			{
 				gubun = "0"
 			}
-		}));
+		});
 
 		try
 		{
-			var response = await client.PostAsync<t8436>(request) ?? new t8436();
-
 			if (!response.t8436OutBlock.Any()) return new ResponseResults<Equity>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
@@ -175,20 +164,16 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 	public async Task<ResponseDictionary<string, Equity>> RequestEquityDictionary(int option = 0)
 	{
-		var client = new RestClient($"{host}/stock/etc");
-		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(t8436)));
-
-		request.AddBody(JsonSerializer.Serialize(new
+		var response = await RequestStandardAsync<t8436>(LsEndpoint.EquityEtc.ToDescription(), new
 		{
 			t8436InBlock = new t8436InBlock
 			{
 				gubun = "0"
 			}
-		}));
+		});
 
 		try
 		{
-			var response = await client.PostAsync<t8436>(request) ?? new t8436();
 			if (!response.t8436OutBlock.Any()) return new ResponseDictionary<string, Equity>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
@@ -226,10 +211,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#region request equity ipo list using t1403
 	public async Task<ResponseResults<Equity>> RequestIPO(DateOnly begin, DateOnly end)
 	{
-		var client = new RestClient($"{host}/stock/etc");
-		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(t1403)));
-
-		request.AddBody(JsonSerializer.Serialize(new
+		var response = await RequestStandardAsync<t1403>(LsEndpoint.EquityEtc.ToDescription(), new
 		{
 			t1403InBlock = new t1403InBlock
 			{
@@ -237,11 +219,10 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				styymm = begin.ToString("yyyyMM"),
 				enyymm = end.ToString("yyyyMM"),
 			}
-		}));
+		});
 
 		try
 		{
-			var response = await client.PostAsync<t1403>(request) ?? new t1403();
 			if (!response.t1403OutBlock1.Any()) return new ResponseResults<Equity>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
@@ -281,21 +262,16 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#region request equity complex using t1101 & t1102
 	public async Task<ResponseResult<EquityPack>> RequestEquityInfo(string symbol, bool needsOrderBook = false)
 	{
-		var client = new RestClient($"{host}/stock/market-data");
-		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(t1102)));
-
-		request.AddBody(JsonSerializer.Serialize(new
+		var response = await RequestStandardAsync<t1102>(LsEndpoint.EquityMarketData.ToDescription(), new
 		{
 			t1102InBlock = new t1102InBlock
 			{
 				shcode = symbol
 			}
-		}));
+		});
 
 		try
 		{
-			var response = await client.PostAsync<t1102>(request) ?? new t1102();
-
 			if (response.t1102OutBlock is null) return new ResponseResult<EquityPack>
 			{
 				StatusCode = Status.NODATA,
@@ -333,16 +309,13 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 			if (needsOrderBook)
 			{
-				request = new RestRequest().AddHeaders(GenerateHeaders(nameof(t1101)));
-				request.AddBody(JsonSerializer.Serialize(new
+				var responseOrderbook = await RequestStandardAsync<t1101>(LsEndpoint.EquityMarketData.ToDescription(), new
 				{
 					t1101InBlock = new t1101InBlock
 					{
 						shcode = symbol
 					}
-				}));
-
-				var responseOrderbook = await client.PostAsync<t1101>(request) ?? new t1101();
+				});
 
 				if (responseOrderbook.t1101OutBlock is not null)
 				{
@@ -397,21 +370,17 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#region request marketContract using t8407
 	public async Task<ResponseResults<MarketContract>> RequestMarketContract(List<string> symbols)
 	{
-		var client = new RestClient($"{host}/stock/market-data");
-		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(t8407)));
-
-		request.AddBody(JsonSerializer.Serialize(new
+		var response = await RequestStandardAsync<t8407>(LsEndpoint.EquityMarketData.ToDescription(), new
 		{
 			t8407InBlock = new t8407InBlock
 			{
 				nrec = symbols.Count(),
 				shcode = string.Join("", symbols)
 			}
-		}));
+		});
 
 		try
 		{
-			var response = await client.PostAsync<t8407>(request) ?? new t8407();
 			if (response.t8407OutBlock1 is null) return new ResponseResults<MarketContract>
 			{
 				StatusCode = Status.NODATA,
@@ -458,9 +427,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#region request marketContractHistory using t1301
 	public async Task<ResponseResults<MarketContract>> RequestMarketContractHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0)
 	{
-		var client = new RestClient($"{host}/stock/market-data");
-		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(t1301)));
-		request.AddBody(JsonSerializer.Serialize(new
+		var response = await RequestStandardAsync<t1301>("stock/market-data", new
 		{
 			t1301InBlock = new t1301InBlock
 			{
@@ -469,11 +436,10 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				endtime = end,
 				cvolume = Convert.ToInt64(baseVolume)
 			}
-		}));
+		});
 
 		try
 		{
-			var response = await client.PostAsync<t1301>(request) ?? new t1301();
 			if (!response.t1301OutBlock1.Any()) return new ResponseResults<MarketContract>
 			{
 				StatusCode = Status.NODATA,
