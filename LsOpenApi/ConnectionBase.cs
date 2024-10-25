@@ -32,6 +32,8 @@ public class ConnectionBase
 
 	protected IWebsocketClient? Client;
 
+	private Dictionary<string, DateTime> LastRequests = new();
+
 	private Dictionary<string, SubscriptionPack> _subscriptions = new()
 	{
 		{ "JIF", new SubscriptionPack{ TrCode = "JIF", Key = "0", Subscriber = new List<string>(){ "INIT" }} },
@@ -471,4 +473,60 @@ public class ConnectionBase
 		GenerateHeaders(tr, additionalOption.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(additionalOption, null)?.ToString()));
 		
 	#endregion
+
+	internal bool DelayRequest(string trCode)
+	{
+		if (LastRequests.ContainsKey(trCode))
+		{
+			var milliseconds = 1000 / CodeRef.RequestIntervals[trCode] + 1;
+			var timeAllowed = LastRequests[trCode].AddMilliseconds(milliseconds);
+			if (timeAllowed > DateTime.UtcNow)
+			{
+				Message(this, new ResponseCore
+				{
+					StatusCode = Status.SUCCESS,
+					Code = trCode,
+					Message = $"request forcely delayed {timeAllowed.Subtract(DateTime.UtcNow).TotalMilliseconds * 0.001} sec."
+				});
+				Thread.Sleep(timeAllowed.Subtract(DateTime.UtcNow));
+			}
+
+			LastRequests[trCode] = DateTime.UtcNow;
+			return true;
+		}
+
+		LastRequests.Add(trCode, DateTime.UtcNow);
+
+		return false;
+	}
+
+	internal async Task<T> RequestStandardAsync<T>(string endpoint, object parameter) where T : LsResponseCore
+	{
+		var client = new RestClient($"{host}/{endpoint}");
+		var request = new RestRequest().AddHeaders(GenerateHeaders(typeof(T).Name));
+		request.AddBody(JsonSerializer.Serialize(parameter));
+
+		try
+		{
+			DelayRequest(typeof(T).Name);
+			var response = await client.PostAsync<T>(request) ?? (T)new LsResponseCore();
+			if (response is null) return (T)new LsResponseCore
+			{
+				Code = "ERR",
+				Message = "failed to response",
+				TrCode = nameof(T),
+			};
+
+			return response;
+		}
+		catch (Exception ex)
+		{
+			return (T)new LsResponseCore
+			{
+				Code = "ERR",
+				Message = ex.Message,
+				TrCode = nameof(T)
+			};
+		}
+	}
 }
