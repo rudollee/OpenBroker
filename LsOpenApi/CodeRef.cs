@@ -1,7 +1,12 @@
-﻿namespace LsOpenApi;
+﻿using LsOpenApi.Models;
+
+namespace LsOpenApi;
 
 internal static class CodeRef
 {
+	/// <summary>
+	/// 거래소/시장
+	/// </summary>
 	internal static Dictionary<string, string> MarketSectionDic { get; set; } = new()
 	{
 		{"1", "코스피"},
@@ -16,6 +21,9 @@ internal static class CodeRef
 		{"D", "홍콩주식오후"},
 	};
 
+	/// <summary>
+	/// 장운영정보
+	/// </summary>
 	internal static Dictionary<string, string> MarketStatusDic { get; set; } = new()
 	{
 		{"11", "장전동시호가개시"},
@@ -46,6 +54,9 @@ internal static class CodeRef
 		{"71", "서킷브레이크2단계,동시호가종료"}
 	};
 
+	/// <summary>
+	/// 언론사
+	/// </summary>
 	internal static Dictionary<int, string> NewsPublishers { get; set; } = new()
 	{
 		{ 11, "연합뉴스" },
@@ -67,5 +78,25 @@ internal static class CodeRef
 		{ 33, "데이터투자" },
 		{ 34, "연합인포맥스" },
 		{ 35, "서울경제" },
+	};
+
+	/// <summary>
+	/// 초당 전송 건수
+	/// </summary>
+	internal static Dictionary<string, int> RequestIntervals { get; set; } = new()
+	{
+		{ nameof(t1101), 3 },
+		{ nameof(t1102), 3 },
+		{ nameof(t1301), 2 },
+		{ nameof(t8407), 2 },
+		{ nameof(t3102), 1 },
+		{ nameof(t8436), 2 },
+		{ nameof(CSPAQ13700), 1 },
+		{ nameof(CSPBQ00200), 1 },
+		{ nameof(t0424), 1 },
+		{ nameof(t0425), 1 },
+		{ nameof(CSPAT00601), 10 },
+		{ nameof(CSPAT00701), 3 },
+		{ nameof(CSPAT00801), 3 },
 	};
 }
