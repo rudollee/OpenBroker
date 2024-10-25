@@ -100,16 +100,12 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 
 	#endregion
 
-	#region 체결/미체결 - t0425
 	public Task<ResponseResult<Balance>> RequestBalancesAsync(DateTime? date = null, Currency currency = Currency.NONE) => throw new NotImplementedException();
 
+	#region 체결/미체결 - t0425
 	public async Task<ResponseResults<Contract>> RequestContractsAsync(ContractStatus status = ContractStatus.ExecutedOnly)
 	{
-		var contracts = new List<Contract>();
-		var client = new RestClient($"{host}/stock/accno");
-		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(t0425)));
-
-		request.AddBody(JsonSerializer.Serialize(new
+		var response = await RequestStandardAsync<t0425>(LsEndpoint.EquityAccount.ToDescription(), new
 		{
 			t0425InBlock = new t0425InBlock
 			{
@@ -125,13 +121,11 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 				sortgb = "1",
 				cts_ordno = "",
 			}
-		}));
+		});
 
+		var contracts = new List<Contract>() { Capacity = response.t0425OutBlock1.Count };
 		try
 		{
-			var response = await client.PostAsync<t0425>(request) ?? new t0425();
-
-			contracts.Capacity = response.t0425OutBlock1.Count;
 			response.t0425OutBlock1.ForEach(contract =>
 			{
 				contracts.Add(new Contract
@@ -164,19 +158,93 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 				List = new List<Contract>()
 			};
 		}
+	}
+	#endregion
+
+	#region 체결/미체결 기간 - CSPAQ13700
+	public async Task<ResponseResults<Contract>> RequestContractsAsync(DateTime dateBegun, DateTime dateFin, ContractStatus status = ContractStatus.ExecutedOnly)
+	{
+		var response = await RequestStandardAsync<CSPAQ13700>(LsEndpoint.EquityAccount.ToDescription(), new
+		{
+			CSPAQ13700InBlock1 = new CSPAQ13700InBlock1
+			{
+				OrdMktCode = "00",
+				BnsTpCode = "0",
+				IsuNo = string.Empty,
+				ExecYn = status switch
+				{
+					ContractStatus.All => "0",
+					ContractStatus.ExecutedOnly => "1",
+					ContractStatus.UnexecutedOnly => "3",
+					_ => "0"
+				},
+				OrdDt = dateBegun.ToString("yyyyMMdd"),
+				SrtOrdNo2 = 0,
+				BkseqTpCode = "1",
+				OrdPtnCode = "00"
+			}
+		});
+
+		var executions = new List<Contract>() { Capacity = response.CSPAQ13700OutBlock3.Count };
+
+		try
+		{
+			response.CSPAQ13700OutBlock3.ForEach(execution =>
+			{
+				executions.Add(new Contract
+				{
+					BrokerCo = "LS",
+					DateBiz = execution.OrdDt.ToDate(),
+					TimeContracted = (DateTime.Now.ToString("yyyyMMdd") + execution.ExecTrxTime).ToDateTimeMicro(),
+					Currency = Currency.KRW,
+					Precision = 0,
+					NumeralSystem = 10,
+					Symbol = execution.IsuNo,
+					InstrumentName = execution.IsuNm,
+					OID = execution.OrdNo,
+					IdOrigin = execution.OrgOrdNo,
+					CID = execution.OrdNo,
+					IsLong = execution.BnsTpCode == "2",
+					Mode = execution.MrcTpCode switch
+					{
+						"0" => OrderMode.PLACE,
+						"1" => OrderMode.UPDATE,
+						"2" => OrderMode.CANCEL,
+						_ => OrderMode.NONE,
+					},
+					PriceOrdered = execution.OrdPrc,
+					VolumeOrdered = execution.OrdQty,
+					Price = execution.ExecPrc,
+					Volume = execution.ExecQty,
+					Aggregation = execution.OrdPrc * execution.OrdQty,
+					Section = execution.OrdMktCode == "10" ? ExchangeSection.KOSPI : ExchangeSection.KOSDAQ
+				});
+			});
+
+			return new ResponseResults<Contract>
+			{
+				List = executions
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResults<Contract>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = ex.Message,
+				Remark = "catch area",
+				List = new List<Contract>()
+			};
+		}
 	} 
 	#endregion
 
-	public Task<ResponseResults<Contract>> RequestContractsAsync(DateTime dateBegun, DateTime dateFin, ContractStatus status = ContractStatus.ExecutedOnly) => throw new NotImplementedException();
 	public Task<ResponseResults<Earning>> RequestEarningAsync(DateTime dateBegin, DateTime dateFin, Exchange exchange = Exchange.KRX) => throw new NotImplementedException();
 
 	#region 주문가능금액 - CSPBQ00200
 	public async Task<ResponseCore> RequestOrderableAsync(Order order)
 	{
-		var client = new RestClient($"{host}/stock/accno");
-		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(CSPBQ00200)));
-
-		request.AddBody(JsonSerializer.Serialize(new
+		var response = await RequestStandardAsync<CSPBQ00200>(LsEndpoint.EquityAccount.ToDescription(), new
 		{
 			CSPBQ00200InBlock1 = new CSPBQ00200InBlock1
 			{
@@ -184,12 +252,10 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 				IsuNo = order.Symbol,
 				OrdPrc = order.PriceOrdered
 			}
-		}));
+		});
 
 		try
 		{
-			var response = await client.PostAsync<CSPBQ00200>(request) ?? new CSPBQ00200();
-
 			return new ResponseCore
 			{
 				Code = response.CSPBQ00200OutBlock2.TrdMgnrt.ToString(),
@@ -210,14 +276,11 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 
 	#region 주문 내역 - CSPAQ13700
 	public async Task<ResponseResults<Order>> RequestOrdersAsync() =>
-	await RequestOrdersAsync(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now));
+		await RequestOrdersAsync(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now));
 
 	public async Task<ResponseResults<Order>> RequestOrdersAsync(DateOnly dateBegun, DateOnly dateFin)
 	{
-		var client = new RestClient($"{host}/stock/accno");
-		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(CSPAQ13700)));
-
-		request.AddBody(JsonSerializer.Serialize(new
+		var response = await RequestStandardAsync<CSPAQ13700>(LsEndpoint.EquityAccount.ToDescription(), new
 		{
 			CSPAQ13700InBlock1 = new CSPAQ13700InBlock1
 			{
@@ -230,13 +293,11 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 				BkseqTpCode = "1",
 				OrdPtnCode = "00"
 			}
-		}));
+		});
 
-		var orders = new List<Order>();
+		var orders = new List<Order>() { Capacity = response.CSPAQ13700OutBlock3.Count };
 		try
 		{
-			var response = await client.PostAsync<CSPAQ13700>(request) ?? new CSPAQ13700();
-			orders.Capacity = response.CSPAQ13700OutBlock3.Count;
 			response.CSPAQ13700OutBlock3.ForEach(order =>
 			{
 				orders.Add(new Order
@@ -288,10 +349,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 	#region 잔고 - t0424
 	public async Task<ResponseResults<Position>> RequestPositionsAsync()
 	{
-		var client = new RestClient($"{host}/stock/accno");
-		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(t0424)));
-
-		request.AddBody(JsonSerializer.Serialize(new
+		var response = await RequestStandardAsync<t0424>(LsEndpoint.EquityAccount.ToDescription(), new
 		{
 			t0424InBlock = new t0424InBlock
 			{
@@ -301,14 +359,12 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 				charge = "1",
 				cts_expcode = ""
 			}
-		}));
+		});
 
-		var positions = new List<Position>();
+		var positions = new List<Position>() { Capacity = response.t0424OutBlock1.Count };
 
 		try
 		{
-			var response = await client.PostAsync<t0424>(request) ?? new t0424();
-			positions.Capacity = response.t0424OutBlock1.Count;
 			response.t0424OutBlock1.ForEach(position =>
 			{
 				positions.Add(new Position
