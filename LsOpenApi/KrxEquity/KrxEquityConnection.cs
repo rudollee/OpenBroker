@@ -52,12 +52,15 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				var response = JsonSerializer.Deserialize<LsSubscriptionCallback<NWSOutBlock>>(message.Text);
 				if (response is null || response.Body is null) return;
 
+				var publisherId = Convert.ToInt32(response.Body.id);
 				NewsPosted(this, new ResponseResult<News>
 				{
 					Info = new News
 					{
 						Code = response.Body.realkey,
 						TimePosted = DateTime.Now,
+						PublisherId = publisherId,
+						Publisher = NewsPublishers.ContainsKey(publisherId) ? NewsPublishers[publisherId] : response.Body.id,
 						Title = response.Body.title,
 						Remark = response.Body.code,
 					}

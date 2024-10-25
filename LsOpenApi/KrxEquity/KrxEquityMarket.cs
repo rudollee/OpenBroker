@@ -31,6 +31,29 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 	public Dictionary<string, Equity> Equities { get; set; } = new();
 
+	internal Dictionary<int, string> NewsPublishers { get; set; } = new()
+	{
+		{ 11, "연합뉴스" },
+		{ 14, "이데일리" },
+		{ 15, "공시" },
+		{ 20, "머니투데이" },
+		{ 21, "인포스탁" },
+		{ 22, "이베스트" },
+		{ 23, "아시아경제" },
+		{ 24, "뉴스핌" },
+		{ 25, "매일경제" },
+		{ 26, "한국경제" },
+		{ 27, "헤럴드경제" },
+		{ 28, "로이터" },
+		{ 29, "코리아헤럴드" },
+		{ 30, "파이낸셜뉴스" },
+		{ 31, "이투데이" },
+		{ 32, "조선비즈" },
+		{ 33, "데이터투자" },
+		{ 34, "연합인포맥스" }, 
+		{ 35, "서울경제" }, 
+	};
+
 	public Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol) => throw new NotImplementedException();
 	public Task<ResponseResult<MarketContract>> RequestMarketContract(string symbol) => throw new NotImplementedException();
 
@@ -84,7 +107,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		try
 		{
 			var response = await client.PostAsync<t3102>(request) ?? new t3102() { Code = "-1"};
-			if (response.Code != "00000") return new ResponseResult<News>
+			if (response.Code != "00000" || !response.t3102OutBlock1.Any()) return new ResponseResult<News>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Code = response.Code,
@@ -111,6 +134,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = ex.Message,
+				Remark = "exception catch area"
 			};
 		}
 	}
