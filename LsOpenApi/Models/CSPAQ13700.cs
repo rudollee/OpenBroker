@@ -2,12 +2,12 @@
 /// <summary>
 /// 현물계좌주문체결내역조회
 /// </summary>
-internal class CSPAQ13700
+internal class CSPAQ13700 : LsResponseCore
 {
-	public CSPAQ13700InBlock1 InBlock { get; set; } = new();
-	public CSPAQ13700OutBlock1 OutBlock1 { get; set; } = new();
-	public CSPAQ13700OutBlock2 OutBlock2 { get; set; } = new();
-	public List<CSPAQ13700OutBlock3> OutBlock3 { get; set; } = new();
+	public CSPAQ13700InBlock1 CSPAQ13700InBlock1 { get; set; } = new();
+	public CSPAQ13700OutBlock1 CSPAQ13700OutBlock1 { get; set; } = new();
+	public CSPAQ13700OutBlock2 CSPAQ13700CSPAQ13700OutBlock2 { get; set; } = new();
+	public List<CSPAQ13700OutBlock3> CSPAQ13700OutBlock3 { get; set; } = new();
 }
 
 /// <summary>

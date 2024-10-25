@@ -113,7 +113,13 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 			t0425InBlock = new t0425InBlock
 			{
 				expcode = "",
-				chegb = "0",
+				chegb = status switch
+				{
+					ContractStatus.All => "0",
+					ContractStatus.ExecutedOnly => "1",
+					ContractStatus.UnexecutedOnly => "2",
+					_ => "0"
+				},
 				medosu = "0",
 				sortgb = "1",
 				cts_ordno = "",
@@ -163,9 +169,83 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 	public Task<ResponseResults<Contract>> RequestContractsAsync(DateTime dateBegun, DateTime dateFin, ContractStatus status = ContractStatus.ExecutedOnly) => throw new NotImplementedException();
 	public Task<ResponseResults<Earning>> RequestEarningAsync(DateTime dateBegin, DateTime dateFin, Exchange exchange = Exchange.KRX) => throw new NotImplementedException();
 	public Task<ResponseCore> RequestOrderableAsync(Order order) => throw new NotImplementedException();
-	public Task<ResponseResults<Order>> RequestOrdersAsync() => throw new NotImplementedException();
-	public Task<ResponseResults<Order>> RequestOrdersAsync(DateOnly dateBegun, DateOnly dateFin) => throw new NotImplementedException();
+
+	public async Task<ResponseResults<Order>> RequestOrdersAsync() => 
+		await RequestOrdersAsync(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now));
 	
+	public async Task<ResponseResults<Order>> RequestOrdersAsync(DateOnly dateBegun, DateOnly dateFin)
+	{
+		var client = new RestClient($"{host}/stock/accno");
+		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(CSPAQ13700)));
+
+		request.AddBody(JsonSerializer.Serialize(new
+		{
+			CSPAQ13700InBlock1 = new CSPAQ13700InBlock1
+			{
+				OrdMktCode = "00",
+				BnsTpCode = "0",
+				IsuNo = string.Empty,
+				ExecYn = "0",
+				OrdDt = dateBegun.ToString("yyyyMMdd"),
+				SrtOrdNo2 = 0,
+				BkseqTpCode = "1",
+				OrdPtnCode = "00"
+			}
+		}));
+
+		var orders = new List<Order>();
+		try
+		{
+			var response = await client.PostAsync<CSPAQ13700>(request) ?? new CSPAQ13700();
+			orders.Capacity = response.CSPAQ13700OutBlock3.Count;
+			response.CSPAQ13700OutBlock3.ForEach(order =>
+			{
+				orders.Add(new Order
+				{
+					BrokerCo = "LS",
+					DateBiz = order.OrdDt.ToDate(),
+					TimeOrdered = (DateTime.Now.ToString("yyyyMMdd") + order.OrdTime).ToDateTimeMicro(),
+					Symbol = order.IsuNo.Substring(1),
+					InstrumentName = order.IsuNm,
+					OID = order.OrdNo,
+					IdOrigin = order.OrgOrdNo,
+					Currency = Currency.KRW,
+					NumeralSystem = 10,
+					Precision = 0,
+					IsLong = order.BnsTpCode.Equals("2"),
+					Mode = order.MrcTpCode switch
+					{
+						"0" => OrderMode.PLACE,
+						"1" => OrderMode.UPDATE,
+						"2" => OrderMode.CANCEL,
+						_ => OrderMode.NONE,
+					},
+					PriceOrdered = order.OrdPrc,
+					VolumeOrdered = order.OrdQty,
+					Aggregation = order.OrdPrc * order.OrdQty,
+					Section = order.OrdMktCode == "10" ? ExchangeSection.KOSPI : ExchangeSection.KOSDAQ
+				});
+			});
+
+			return new ResponseResults<Order>
+			{
+				List = orders,
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResults<Order>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = ex.Message,
+				List = new List<Order>(),
+				Remark = "catch area"
+			};
+			throw;
+		}
+
+	}
+
 	public async Task<ResponseResults<Position>> RequestPositionsAsync()
 	{
 		var client = new RestClient($"{host}/stock/accno");
