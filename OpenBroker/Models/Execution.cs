@@ -8,7 +8,7 @@ public class Order : InstrumentCore
     public long OID { get; set; }
     public long IdOrigin { get; set; }
     public decimal VolumeOrdered { get; set; }
-    public decimal VolumeOrdable { get; set; }
+    public decimal VolumeOrderable { get; set; }
     public decimal VolumeUpdatable { get; set; }
     public decimal VolumeCancelable { get; set; }
     public decimal PriceOrdered { get; set; }
