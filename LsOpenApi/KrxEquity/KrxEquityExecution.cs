@@ -130,17 +130,23 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 			{
 				contracts.Add(new Contract
 				{
-					BrokerCo = "EB",
+					BrokerCo = "LS",
 					OID = contract.ordno,
 					CID = contract.sysprocseq,
 					Currency = Currency.KRW,
 					DateBiz = DateOnly.FromDateTime(DateTime.Now),
 					ExchangeCode = Exchange.KRX,
+					Symbol = contract.expcode,
+					TimeOrdered = contract.ordtime.ToDateTime(),
 					IdOrigin = contract.orgordno,
 					PriceOrdered = contract.price,
 					Price = contract.cheprice,
-					Symbol = contract.expcode,
-					TimeOrdered = contract.ordtime.ToDateTime(),
+					Volume = contract.cheqty,
+					VolumeLeft = contract.ordrem,
+					VolumeOrdered = contract.qty,
+					VolumeCancelable = contract.ordrem,
+					VolumeUpdatable = contract.ordrem,
+					VolumeOrderable = contract.ordrem,
 				});
 			});
 
