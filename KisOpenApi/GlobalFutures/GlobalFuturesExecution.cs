@@ -349,17 +349,17 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 	#endregion
 
 	#region 일별 체결내역 : OTFM3122R
-	public async Task<ResponseResults<Contract>> RequestContractsAsync(ContractStatus status = ContractStatus.ExecutedOnly, string symbol = "")
+	public async Task<ResponseResults<Contract>> RequestContractsAsync(ContractStatus status = ContractStatus.ContractedOnly, string symbol = "")
 	{
 		var date = DateTime.Now.ToNewYorkTime();
 
 		return await RequestContractsAsync(date, date, status);
 	}
 
-	public async Task<ResponseResults<Contract>> RequestContractsAsync(DateTime dateBegun, ContractStatus status = ContractStatus.ExecutedOnly) =>
+	public async Task<ResponseResults<Contract>> RequestContractsAsync(DateTime dateBegun, ContractStatus status = ContractStatus.ContractedOnly) =>
 		await RequestContractsAsync(dateBegun, dateBegun, status);
 
-	public async Task<ResponseResults<Contract>> RequestContractsAsync(DateTime dateBegun, DateTime dateFin, ContractStatus status = ContractStatus.ExecutedOnly)
+	public async Task<ResponseResults<Contract>> RequestContractsAsync(DateTime dateBegun, DateTime dateFin, ContractStatus status = ContractStatus.ContractedOnly)
 	{
 		if (string.IsNullOrEmpty(BankAccountInfo.AccountNumber)) return new ResponseResults<Contract>
 		{

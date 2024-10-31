@@ -81,7 +81,7 @@ public interface IExecution
 	/// </summary>
 	/// <param name="status"></param>
 	/// <returns></returns>
-	Task<ResponseResults<Contract>> RequestContractsAsync(ContractStatus status = ContractStatus.ExecutedOnly, string symbol = "");
+	Task<ResponseResults<Contract>> RequestContractsAsync(ContractStatus status = ContractStatus.ContractedOnly, string symbol = "");
 
     /// <summary>
     /// 체결내역 - 기간별
@@ -91,7 +91,7 @@ public interface IExecution
     /// <param name="status"></param>
     /// <param name="exchange"></param>
     /// <returns></returns>
-    Task<ResponseResults<Contract>> RequestContractsAsync(DateTime dateBegun, DateTime dateFin, ContractStatus status = ContractStatus.ExecutedOnly);
+    Task<ResponseResults<Contract>> RequestContractsAsync(DateTime dateBegun, DateTime dateFin, ContractStatus status = ContractStatus.ContractedOnly);
 
 	/// <summary>
 	/// 체결내역 통보 - realtime

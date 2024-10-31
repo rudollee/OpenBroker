@@ -74,8 +74,8 @@ public enum ContractStatus
 {
     None = 0,
     All,
-    ExecutedOnly,
-    UnexecutedOnly
+    ContractedOnly,
+    UncontractedOnly
 }
 
 /// <summary>
