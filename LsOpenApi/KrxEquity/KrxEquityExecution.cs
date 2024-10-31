@@ -109,7 +109,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 		{
 			t0425InBlock = new t0425InBlock
 			{
-				expcode = "",
+				expcode = symbol,
 				chegb = status switch
 				{
 					ContractStatus.All => "0",
@@ -137,8 +137,9 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 					DateBiz = DateOnly.FromDateTime(DateTime.Now),
 					ExchangeCode = Exchange.KRX,
 					Symbol = contract.expcode,
-					TimeOrdered = contract.ordtime.ToDateTime(),
+					TimeOrdered = (DateTime.Now.ToString("yyyyMMdd") + contract.ordtime).ToDateTime(),
 					IdOrigin = contract.orgordno,
+					IsLong = contract.medosu == "매수",
 					PriceOrdered = contract.price,
 					Price = contract.cheprice,
 					Volume = contract.cheqty,
