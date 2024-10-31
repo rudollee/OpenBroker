@@ -244,7 +244,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 							"SONAT000" => OrderMode.PLACE,
 							"SONAT001" => OrderMode.UPDATE,
 							"SONAT002" => OrderMode.CANCEL,
-							"SONAS100" => OrderMode.UPDATE_LQ,
+							"SONAS100" => OrderMode.UPDATE_RESPONSE,
 							_ => OrderMode.NONE
 						},
 						Tradable = true,

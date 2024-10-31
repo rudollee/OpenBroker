@@ -46,10 +46,11 @@ public enum OrderMode
 {
     NONE,
     PLACE = 10,
-    PLACE_LQ = 11,
+    PLACE_RESPONSE = 11,
     UPDATE = 20,
-    UPDATE_LQ = 21,
-    CANCEL = 88
+    UPDATE_RESPONSE = 21,
+    CANCEL = 80,
+    CANCEL_RESPONSE = 81,
 }
 
 public enum OrderType

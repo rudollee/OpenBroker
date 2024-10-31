@@ -118,8 +118,8 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 							"00" => OrderMode.PLACE,
 							"01" => OrderMode.UPDATE,
 							"02" => OrderMode.CANCEL,
-							"03" => OrderMode.PLACE_LQ,
-							"04" => OrderMode.UPDATE_LQ,
+							"03" => OrderMode.PLACE_RESPONSE,
+							"04" => OrderMode.UPDATE_RESPONSE,
 							_ => OrderMode.NONE
 						}
 					},
