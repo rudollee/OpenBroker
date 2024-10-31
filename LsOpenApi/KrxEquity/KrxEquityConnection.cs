@@ -214,8 +214,8 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 			case nameof(SC2):
 			case nameof(SC3):
 			case nameof(SC4):
-				var sc2res = JsonSerializer.Deserialize<LsSubscriptionCallback<SC2OutBlock>>(message.Text);
-				if (sc2res is null || sc2res.Body is null) return;
+				var scxres = JsonSerializer.Deserialize<LsSubscriptionCallback<SC2OutBlock>>(message.Text);
+				if (scxres is null || scxres.Body is null) return;
 
 				Executed(this, new ResponseResult<Order>
 				{
@@ -226,25 +226,23 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					{
 						BrokerCo = _broker,
 						DateBiz = DateOnly.FromDateTime(DateTime.Now),
-						TimeOrdered = (DateTime.Now.ToString("yyyyMMdd") + sc2res.Body.proctm).ToDateTimeMicro(),
+						TimeOrdered = (DateTime.Now.ToString("yyyyMMdd") + scxres.Body.proctm).ToDateTimeMicro(),
 						Currency = Currency.KRW,
 						Precision = 0,
 						NumeralSystem = 10,
-						Symbol = sc2res.Body.shtnIsuno.Substring(1),
-						InstrumentName = sc2res.Body.Isunm,
-						OID = Convert.ToInt64(sc2res.Body.ordno),
-						IdOrigin = Convert.ToInt64(sc2res.Body.orgordno),
-						IsLong = sc2res.Body.bnstp == "2",
-						VolumeOrdered = Convert.ToDecimal(sc2res.Body.ordqty),
-						PriceOrdered = Convert.ToDecimal(sc2res.Body.ordprc),
-						Aggregation = Convert.ToDecimal(sc2res.Body.ordamt),
+						Symbol = scxres.Body.shtnIsuno.Substring(1),
+						InstrumentName = scxres.Body.Isunm,
+						OID = Convert.ToInt64(scxres.Body.ordno),
+						IdOrigin = Convert.ToInt64(scxres.Body.orgordno),
+						IsLong = scxres.Body.bnstp == "2",
+						VolumeOrdered = Convert.ToDecimal(trCode == nameof(SC2) ? scxres.Body.mdfycnfqty : scxres.Body.canccnfqty),
+						PriceOrdered = Convert.ToDecimal(trCode == nameof(SC2) ? scxres.Body.mdfycnfprc : "0"),
+						Aggregation = Convert.ToDecimal(scxres.Body.ordamt),
 						DiscardStatus = DiscardStatus.TRADABLE,
-						Mode = sc2res.Body.trcode switch
+						Mode = trCode switch
 						{
-							"SONAT000" => OrderMode.PLACE,
-							"SONAT001" => OrderMode.UPDATE,
-							"SONAT002" => OrderMode.CANCEL,
-							"SONAS100" => OrderMode.UPDATE_RESPONSE,
+							"SC2" => OrderMode.UPDATE_RESPONSE,
+							"SC3" => OrderMode.CANCEL_RESPONSE,
 							_ => OrderMode.NONE
 						},
 						Tradable = true,
