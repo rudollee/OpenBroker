@@ -221,7 +221,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				{
 					Typ = MessageType.EXECUTION,
 					StatusCode = Status.SUCCESS,
-					Code = nameof(SC2),
+					Code = trCode,
 					Info = new Order
 					{
 						BrokerCo = _broker,
@@ -230,7 +230,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 						Currency = Currency.KRW,
 						Precision = 0,
 						NumeralSystem = 10,
-						Symbol = sc2res.Body.shtnIsuno,
+						Symbol = sc2res.Body.shtnIsuno.Substring(1),
 						InstrumentName = sc2res.Body.Isunm,
 						OID = Convert.ToInt64(sc2res.Body.ordno),
 						IdOrigin = Convert.ToInt64(sc2res.Body.orgordno),
