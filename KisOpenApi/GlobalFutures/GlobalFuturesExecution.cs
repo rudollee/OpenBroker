@@ -349,7 +349,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 	#endregion
 
 	#region 일별 체결내역 : OTFM3122R
-	public async Task<ResponseResults<Contract>> RequestContractsAsync(ContractStatus status = ContractStatus.ExecutedOnly)
+	public async Task<ResponseResults<Contract>> RequestContractsAsync(ContractStatus status = ContractStatus.ExecutedOnly, string symbol = "")
 	{
 		var date = DateTime.Now.ToNewYorkTime();
 

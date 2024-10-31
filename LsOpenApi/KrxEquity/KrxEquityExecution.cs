@@ -103,7 +103,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 	public Task<ResponseResult<Balance>> RequestBalancesAsync(DateTime? date = null, Currency currency = Currency.NONE) => throw new NotImplementedException();
 
 	#region 체결/미체결 - t0425
-	public async Task<ResponseResults<Contract>> RequestContractsAsync(ContractStatus status = ContractStatus.ExecutedOnly)
+	public async Task<ResponseResults<Contract>> RequestContractsAsync(ContractStatus status = ContractStatus.ExecutedOnly, string symbol = "")
 	{
 		var response = await RequestStandardAsync<t0425>(LsEndpoint.EquityAccount.ToDescription(), new
 		{
