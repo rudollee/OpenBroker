@@ -78,6 +78,7 @@ internal static class CodeRef
 		{ 33, "데이터투자" },
 		{ 34, "연합인포맥스" },
 		{ 35, "서울경제" },
+		{ 36, "포춘코리아" }
 	};
 
 	/// <summary>
