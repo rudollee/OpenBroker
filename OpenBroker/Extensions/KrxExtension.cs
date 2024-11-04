@@ -25,4 +25,22 @@ public static class KrxExtension
 			> 2000 => 5,
 			_ => 1,
 		};
+
+	public static decimal ToUpTickPrice(this decimal price, bool needsOnlyNormalizing = false)
+	{
+		var uptick = price.ToUpTick();
+		var di = 1 / uptick;
+		decimal normalizedPrice = Math.Ceiling(price * di) / di;
+
+		return normalizedPrice += needsOnlyNormalizing ? 0 : uptick;
+	}
+
+	public static decimal ToDownTickPrice(this decimal price, bool needsOnlyNormalizing = false)
+	{
+		var downtick = price.ToDownTick();
+		var di = 1 / downtick;
+		decimal normalizedPrice = Math.Floor(price * di) / di;
+
+		return normalizedPrice -= needsOnlyNormalizing ? 0 : downtick;
+	}
 }
