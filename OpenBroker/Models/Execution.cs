@@ -23,6 +23,7 @@ public class Order : InstrumentCore
 
 public class OrderCore
 {
+    public OrderMode Mode { get; set; }
     public DateOnly DateOrdered { get; set; } = DateOnly.FromDateTime(DateTime.Now);
     public long IdOrigin { get; set; }
 	public string Symbol { get; set; } = string.Empty;
