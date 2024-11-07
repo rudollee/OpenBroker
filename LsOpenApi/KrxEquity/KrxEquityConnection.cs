@@ -271,6 +271,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 						InstrumentName = sc1Res.Body.Isunm,
 						IsLong = sc1Res.Body.bnstp == "2",
 						Price = Convert.ToDecimal(sc1Res.Body.execprc),
+						PriceOrdered = Convert.ToDecimal(sc1Res.Body.ordprc),
 						Volume = Convert.ToDecimal(sc1Res.Body.execqty),
 						VolumeLeft = Convert.ToDecimal(sc1Res.Body.secbalqty),
 						TimeContracted = (DateTime.Now.ToString("yyyyMMdd") + sc1Res.Body.exectime).ToDateTimeMicro(),
