@@ -81,10 +81,15 @@ public class Balance
     /// </summary>
     public decimal DepositInit { get; set; }
 
-	/// <summary>
-	/// 예탁금 : Deposit + 청산손익 + 평가손익
-	/// </summary>
-	public decimal DepositEst { get; set; }
+    /// <summary>
+    /// 예탁금 : KRX D+1
+    /// </summary>
+    public decimal DepositD1 { get; set; }
+
+    /// <summary>
+    /// 예탁금 : Deposit + 청산손익 + 평가손익
+    /// </summary>
+    public decimal DepositEst { get; set; }
 
     /// <summary>
     /// 주문가능금액
