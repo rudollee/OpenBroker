@@ -100,7 +100,51 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 
 	#endregion
 
-	public Task<ResponseResult<Balance>> RequestBalancesAsync(DateTime? date = null, Currency currency = Currency.NONE) => throw new NotImplementedException();
+	#region 예수금 - CSPAQ22200
+	public async Task<ResponseResult<Balance>> RequestBalancesAsync(DateTime? date = null, Currency currency = Currency.NONE)
+	{
+		var response = await RequestStandardAsync<CSPAQ22200>(LsEndpoint.EquityAccount.ToDescription(), new
+		{
+			CSPAQ22200InBlock1 = new CSPAQ22200InBlock1
+			{
+				BalCreTp = "0"
+			}
+		});
+
+		try
+		{
+			if (response is null || response.CSPAQ22200OutBlock2 is null) return new ResponseResult<Balance>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = "response or CSPAQ22200OutBlock2 is null"
+			};
+
+			return new ResponseResult<Balance>
+			{
+				Info = new Balance
+				{
+					BrokerCode = "LS",
+					CurBased = Currency.KRW,
+					AccountNumber = response.CSPAQ22200OutBlock1.AcntNo,
+					DepositInit = Convert.ToDecimal(response.CSPAQ22200OutBlock2.Dps),
+					DepositD1 = Convert.ToDecimal(response.CSPAQ22200OutBlock2.D1Dps),
+					DepositEst = Convert.ToDecimal(response.CSPAQ22200OutBlock2.D2Dps),
+					CashTradable = Convert.ToDecimal(response.CSPAQ22200OutBlock2.D2Dps),
+					MarginInitial = Convert.ToDecimal(response.CSPAQ22200OutBlock2.MgnMny),
+				}
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResult<Balance>
+			{
+				StatusCode = Status.INTERNALSERVERERROR,
+				Message = ex.Message,
+				Remark = "catch"
+			};
+		}
+	} 
+	#endregion
 
 	#region 체결/미체결 - t0425
 	public async Task<ResponseResults<Contract>> RequestContractsAsync(ContractStatus status = ContractStatus.ContractedOnly, string symbol = "")

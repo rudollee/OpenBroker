@@ -99,5 +99,6 @@ internal static class CodeRef
 		{ nameof(CSPAT00601), 10 },
 		{ nameof(CSPAT00701), 3 },
 		{ nameof(CSPAT00801), 3 },
+		{ nameof(CSPAQ22200), 1 },
 	};
 }
