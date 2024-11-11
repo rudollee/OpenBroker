@@ -1,4 +1,7 @@
 ﻿namespace LsOpenApi.Models;
+/// <summary>
+/// 현물정정주문
+/// </summary>
 internal class CSPAT00701 : LsOrderResponseStandard
 {
 	public OutBlock1 CSPAT00701OutBlock1 { get; set; } = new();

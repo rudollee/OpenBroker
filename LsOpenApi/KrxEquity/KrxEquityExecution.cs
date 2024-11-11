@@ -300,7 +300,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 			CSPBQ00200InBlock1 = new CSPBQ00200InBlock1
 			{
 				BnsTpCode = order.IsLong ? "2" : "1",
-				IsuNo = order.Symbol,
+				IsuNo = $"A{order.Symbol}",
 				OrdPrc = order.PriceOrdered
 			}
 		});
@@ -309,7 +309,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 		{
 			return new ResponseCore
 			{
-				Code = response.CSPBQ00200OutBlock2.TrdMgnrt.ToString(),
+				Code = response.CSPBQ00200OutBlock2.IsuMgnRat.ToString(),
 				Remark = response.CSPBQ00200OutBlock2.OrdAbleQty.ToString()
 			};
 		}
