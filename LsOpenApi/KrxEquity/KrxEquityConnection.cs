@@ -98,6 +98,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 						TimeContract = s3Res.Body.chetime.ToDateTime(),
 						C = Convert.ToDecimal(s3Res.Body.price),
 						V = Convert.ToDecimal(s3Res.Body.cvolume),
+						ContractSide = s3Res.Body.cgubun == "+" ? ContractSide.ASK : ContractSide.BID,
 						BasePrice = Convert.ToDecimal(s3Res.Body.price) - Convert.ToDecimal((new string[] { "4", "5" }.Contains(s3Res.Body.sign) ? "-" : "") + s3Res.Body.change),
 						VolumeAcc = Convert.ToDecimal(s3Res.Body.volume),
 						MoneyAcc = Convert.ToDecimal(s3Res.Body.value),
