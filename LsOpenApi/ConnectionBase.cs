@@ -32,7 +32,7 @@ public class ConnectionBase
 
 	protected IWebsocketClient? Client;
 
-	private Dictionary<string, DateTime> LastRequests = new();
+	private List<Request> Requests = new();
 
 	private Dictionary<string, SubscriptionPack> _subscriptions = new()
 	{
@@ -471,33 +471,43 @@ public class ConnectionBase
 	/// <returns></returns>
 	protected Dictionary<string, string> GenerateHeaders(string tr, object additionalOption) =>
 		GenerateHeaders(tr, additionalOption.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(additionalOption, null)?.ToString()));
-		
 	#endregion
 
+	#region Request Standard
 	internal bool DelayRequest(string trCode)
 	{
-		if (LastRequests.ContainsKey(trCode))
+		var requestsOld = Requests.Where(w => w.TrCode == trCode && w.RequestTime < DateTime.UtcNow.AddSeconds(-1)).ToList();
+		try
 		{
-			var milliseconds = 1000 / CodeRef.RequestIntervals[trCode] + 1;
-			var timeAllowed = LastRequests[trCode].AddMilliseconds(milliseconds);
-			if (timeAllowed > DateTime.UtcNow)
+			foreach (var request in requestsOld)
 			{
-				Message(this, new ResponseCore
-				{
-					StatusCode = Status.SUCCESS,
-					Code = trCode,
-					Message = $"request forcely delayed {timeAllowed.Subtract(DateTime.UtcNow).TotalMilliseconds * 0.001} sec."
-				});
-				Thread.Sleep(timeAllowed.Subtract(DateTime.UtcNow));
+				Requests.Remove(request);
 			}
+		}
+		catch (Exception ex)
+		{
+			var x = ex.Message;
+			return false;
+		}
 
-			LastRequests[trCode] = DateTime.UtcNow;
+		var requests = Requests.Where(request => request.TrCode == trCode).OrderByDescending(o => o.RequestTime).ToList();
+		if (requests.Count() < CodeRef.RequestIntervals[trCode])
+		{
+			Requests.Add(new Request { TrCode = trCode });
 			return true;
 		}
 
-		LastRequests.Add(trCode, DateTime.UtcNow);
+		var delaying = requests[0].RequestTime.Subtract(DateTime.UtcNow.AddSeconds(-1));
+		Message(this, new ResponseCore
+		{
+			StatusCode = Status.SUCCESS,
+			Code = trCode,
+			Message = $"request forcely delayed {delaying.TotalMilliseconds * 0.001} sec."
+		});
+		Thread.Sleep(delaying);
+		Requests.Add(new Request { TrCode = trCode });
 
-		return false;
+		return true;
 	}
 
 	internal async Task<T> RequestStandardAsync<T>(string endpoint, object parameter) where T : LsResponseCore
@@ -508,7 +518,22 @@ public class ConnectionBase
 
 		try
 		{
-			DelayRequest(typeof(T).Name);
+			var delaying = DelayRequest(typeof(T).Name);
+			if (!delaying)
+			{
+				Message(this, new ResponseCore
+				{
+					StatusCode = Status.INTERNALSERVERERROR,
+					Message = "delaying calculation failed"
+				});
+
+				return (T)new LsResponseCore
+				{
+					Code = "ERR",
+					Message = "delaying calculation failed",
+					TrCode = nameof(T)
+				};
+			}
 			var response = await client.PostAsync<T>(request) ?? (T)new LsResponseCore();
 			if (response is null) return (T)new LsResponseCore
 			{
@@ -528,5 +553,6 @@ public class ConnectionBase
 				TrCode = nameof(T)
 			};
 		}
-	}
+	} 
+	#endregion
 }

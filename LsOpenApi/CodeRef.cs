@@ -86,19 +86,20 @@ internal static class CodeRef
 	/// </summary>
 	internal static Dictionary<string, int> RequestIntervals { get; set; } = new()
 	{
-		{ nameof(t1101), 3 },
-		{ nameof(t1102), 3 },
-		{ nameof(t1301), 2 },
-		{ nameof(t8407), 2 },
-		{ nameof(t3102), 1 },
-		{ nameof(t8436), 2 },
 		{ nameof(CSPAQ13700), 1 },
-		{ nameof(CSPBQ00200), 1 },
-		{ nameof(t0424), 1 },
-		{ nameof(t0425), 1 },
+		{ nameof(CSPAQ22200), 1 },
 		{ nameof(CSPAT00601), 10 },
 		{ nameof(CSPAT00701), 3 },
 		{ nameof(CSPAT00801), 3 },
-		{ nameof(CSPAQ22200), 1 },
+		{ nameof(CSPBQ00200), 1 },
+		{ nameof(t0424), 1 },
+		{ nameof(t0425), 1 },
+		{ nameof(t1101), 3 },
+		{ nameof(t1102), 3 },
+		{ nameof(t1301), 2 },
+		{ nameof(t1403), 1 },
+		{ nameof(t3102), 1 },
+		{ nameof(t8407), 2 },
+		{ nameof(t8436), 2 },
 	};
 }
