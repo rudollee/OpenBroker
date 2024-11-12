@@ -78,6 +78,13 @@ public enum ContractStatus
     UncontractedOnly
 }
 
+public enum ContractSide
+{
+    ASK = 1,
+    NONE = 0,
+    BID = -1
+}
+
 /// <summary>
 /// Discard Status
 /// </summary>

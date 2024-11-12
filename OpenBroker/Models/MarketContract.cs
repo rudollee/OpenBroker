@@ -16,9 +16,14 @@ public class MarketContract
     public DateTime TimeContract { get; set; }
 
     /// <summary>
-    /// 현재가
+    /// 체결가/현재가
     /// </summary>
     public decimal C { get; set; }
+
+    /// <summary>
+    /// 체결 Side - Ask / Bid
+    /// </summary>
+    public ContractSide ContractSide { get; set; } = ContractSide.NONE;
 
     /// <summary>
     /// 체결 거래량
