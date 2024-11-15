@@ -86,6 +86,7 @@ internal static class CodeRef
 	/// </summary>
 	internal static Dictionary<string, int> RequestIntervals { get; set; } = new()
 	{
+		{ nameof(CSPAQ12300), 1 },
 		{ nameof(CSPAQ13700), 1 },
 		{ nameof(CSPAQ22200), 1 },
 		{ nameof(CSPAT00601), 10 },

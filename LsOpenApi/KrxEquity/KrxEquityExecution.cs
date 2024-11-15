@@ -292,7 +292,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 
 	public Task<ResponseResults<Earning>> RequestEarningAsync(DateTime dateBegin, DateTime dateFin, Exchange exchange = Exchange.KRX) => throw new NotImplementedException();
 
-	#region 주문가능금액 - CSPBQ00200
+	#region 주문가능금액 - CSPBQ00200 / CSPAQ12300
 	public async Task<ResponseCore> RequestOrderableAsync(Order order)
 	{
 		var response = await RequestStandardAsync<CSPBQ00200>(LsEndpoint.EquityAccount.ToDescription(), new
@@ -305,12 +305,35 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 			}
 		});
 
+		decimal bep = 0.00m;
+
+		if (!order.IsLong && response.CSPBQ00200OutBlock2.OrdAbleQty > 0)
+		{
+			var responseBep = await RequestStandardAsync<CSPAQ12300>(LsEndpoint.EquityAccount.ToDescription(), new
+			{
+				CSPAQ12300InBlock1 = new CSPAQ12300InBlock1
+				{
+					BalCreTp = "1",
+					CmsnAppTpCode = "0",
+					D2balBaseQryTp = "1",
+					UprcTpCode = "1"
+				}
+			});
+
+			var position = responseBep.CSPAQ12300OutBlock3.FirstOrDefault(f => f.IsuNo == $"A{order.Symbol}");
+			if (position is not null)
+			{
+				bep = position.AvrUprc;
+			}
+		}
+
 		try
 		{
 			return new ResponseCore
 			{
 				Code = response.CSPBQ00200OutBlock2.IsuMgnRat.ToString(),
-				Remark = response.CSPBQ00200OutBlock2.OrdAbleQty.ToString()
+				Remark = response.CSPBQ00200OutBlock2.OrdAbleQty.ToString(),
+				Message = bep.ToString()
 			};
 		}
 		catch (Exception ex)
