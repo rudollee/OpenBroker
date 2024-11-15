@@ -227,7 +227,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					{
 						BrokerCo = _broker,
 						DateBiz = DateOnly.FromDateTime(DateTime.Now),
-						TimeOrdered = (DateTime.Now.ToString("yyyyMMdd") + scxres.Body.proctm).ToDateTimeMicro(),
+						TimeOrdered = (DateTime.Now.ToString("yyyyMMdd") + scxres.Body.proctm.PadLeft(9, '0')).ToDateTimeMicro(),
 						Currency = Currency.KRW,
 						Precision = 0,
 						NumeralSystem = 10,
