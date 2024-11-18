@@ -183,7 +183,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 					Symbol = contract.expcode,
 					TimeOrdered = (DateTime.Now.ToString("yyyyMMdd") + contract.ordtime).ToDateTime(),
 					IdOrigin = contract.orgordno,
-					IsLong = contract.medosu == "매수",
+					IsLong = contract.orggb == "02",
 					PriceOrdered = contract.price,
 					Price = contract.cheprice,
 					Volume = contract.cheqty,
