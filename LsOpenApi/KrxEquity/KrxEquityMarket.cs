@@ -34,14 +34,16 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 	public async Task<ResponseCore> SubscribeMarketContract(string symbol, bool connecting = true, string subscriber = "")
 	{
+		if (string.IsNullOrWhiteSpace(subscriber)) subscriber = "SYS";
+
+		if (symbol == "USD") return await SubscribeAsync(subscriber, "CUR", symbol.PadRight(6, ' '), connecting);
+
 		if (!Equities.ContainsKey(symbol)) return new ResponseCore
 		{
 			Code = "NOT-FOUND",
 			Message = "A requested Symbol have not found",
 			StatusCode = Status.BAD_REQUEST,
 		};
-
-		if (string.IsNullOrWhiteSpace(subscriber)) subscriber = "SYS";
 
 		return await SubscribeAsync(subscriber, Equities[symbol].Section == ExchangeSection.KOSPI ? "S3_" : "K3_", symbol, connecting);
 	}

@@ -107,6 +107,27 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				});
 				break;
 			#endregion
+			#region CUR 현물정보USD
+			case nameof(CUR):
+				if (MarketContracted is null) return;
+				var curRes = JsonSerializer.Deserialize<LsSubscriptionCallback<CUROutBlock>>(message.Text);
+				if (curRes is null || curRes.Body is null) return;
+
+				MarketContracted(this, new ResponseResult<MarketContract>
+				{
+					Typ = MessageType.MKT,
+					Code = trCode,
+					Info = new MarketContract
+					{
+						Symbol = curRes.Body.base_id,
+						TimeContract = (DateTime.UtcNow.AddHours(9).ToString("yyyyMMdd") + curRes.Body.ctime).ToDateTime(),
+						C = Convert.ToDecimal(curRes.Body.price),
+						BasePrice = Convert.ToDecimal(curRes.Body.price) - Convert.ToDecimal(curRes.Body.change),
+					},
+					Remark = message.Text
+				});
+				break;
+			#endregion
 			#region H1_ 전체 호가
 			case nameof(H1_):
 			case nameof(HA_):
