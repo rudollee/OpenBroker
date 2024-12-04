@@ -70,7 +70,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#region request news using t3102
 	public async Task<ResponseResult<News>> RequestNews(string id)
 	{
-		var response = await RequestStandardAsync<t3102>("stock/investinfo", new
+		var response = await RequestStandardAsync<t3102>(LsEndpoint.EquityInfo.ToDescription(), new
 		{
 			t3102InBlock = new t3102InBlock
 			{
