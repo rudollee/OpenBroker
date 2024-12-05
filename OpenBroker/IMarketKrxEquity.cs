@@ -31,6 +31,23 @@ public interface IMarketKrxEquity
 	/// <returns></returns>
 	Task<ResponseResults<Equity>> RequestIPO(DateOnly begin, DateOnly end);
 
-	bool AvailableToSubscribe { get; }
+	/// <summary>
+	/// 섹터/테마 리스트
+	/// </summary>
+	/// <param name="code"></param>
+	/// <param name="name"></param>
+	/// <returns></returns>
+	Task<ResponseResults<Sector>> RequestSectors(string code = "", string name = "");
 
+	/// <summary>
+	/// 섹터 종목 리스트
+	/// </summary>
+	/// <param name="sectorCode"></param>
+	/// <returns></returns>
+	Task<ResponseResults<PriceOHLC>> RequestEquitiesBySector(string sectorCode);
+
+	/// <summary>
+	/// Realtime Data 가능 상황
+	/// </summary>
+	bool AvailableToSubscribe { get; }
 }
