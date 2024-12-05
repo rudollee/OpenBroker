@@ -475,6 +475,99 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				List = new List<MarketContract>()
 			};
 		}
-	} 
+	}
+	#endregion
+
+	#region request sectors using t1531
+	public async Task<ResponseResults<Sector>> RequestSectors(string code = "", string name = "")
+	{
+		var response = await RequestStandardAsync<t1531>(LsEndpoint.EquitySector.ToDescription(), new
+		{
+			t1531InBlock = new t1531InBlock
+			{
+				tmname = name,
+				tmcode = code
+			}
+		});
+
+		try
+		{
+			if (!response.t1531OutBlock.Any()) return new ResponseResults<Sector>
+			{
+				StatusCode = Status.NODATA,
+				Message = response.Message,
+				Code = response.Code,
+				Remark = "no data",
+				List = new List<Sector>()
+			};
+
+			var sectors = new List<Sector>();
+			response.t1531OutBlock.ForEach(sector => sectors.Add(new Sector
+			{
+				Code = sector.tmcode,
+				Name = sector.tmname,
+				Diff = Convert.ToDecimal(sector.avgdiff)
+			}));
+
+			return new ResponseResults<Sector> { List = sectors };
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResults<Sector>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = ex.Message,
+				List = new List<Sector>()
+			};
+		}
+	}
+	#endregion
+
+	#region request equities by sector using t1537
+	public async Task<ResponseResults<PriceOHLC>> RequestEquitiesBySector(string sectorCode)
+	{
+		var response = await RequestStandardAsync<t1537>(LsEndpoint.EquitySector.ToDescription(), new
+		{
+			t1537InBlock = new t1537InBlock
+			{
+				tmcode = sectorCode
+			}
+		});
+
+		try
+		{
+			if (!response.t1537OutBlock1.Any()) return new ResponseResults<PriceOHLC>
+			{
+				StatusCode = Status.NODATA,
+				Message = response.Message,
+				Code = response.Code,
+				Remark = "no data",
+				List = new List<PriceOHLC>()
+			};
+
+			var equities = new List<PriceOHLC>();
+			response.t1537OutBlock1.ForEach(equity => equities.Add(new PriceOHLC
+			{
+				Symbol = equity.shcode,
+				O = Convert.ToDecimal(equity.open),
+				C = Convert.ToDecimal(equity.price),
+				H = Convert.ToDecimal(equity.high),
+				L = Convert.ToDecimal(equity.low),
+				VolumeAcc = Convert.ToDecimal(equity.volume),
+				BasePrice = Convert.ToDecimal(equity.price) - Convert.ToDecimal(equity.change) * (equity.sign == "2" ? 1 : -1)
+			}));
+
+			return new ResponseResults<PriceOHLC> { List = equities };
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResults<PriceOHLC>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = ex.Message,
+				List = new List<PriceOHLC>()
+			};
+		}
+	}
 	#endregion
 }
