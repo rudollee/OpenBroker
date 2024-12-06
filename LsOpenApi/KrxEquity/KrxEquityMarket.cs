@@ -37,6 +37,8 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		if (string.IsNullOrWhiteSpace(subscriber)) subscriber = "SYS";
 
 		if (symbol == "USD") return await SubscribeAsync(subscriber, "CUR", symbol.PadRight(6, ' '), connecting);
+		else if (symbol == "JPYUSD") return await SubscribeAsync(subscriber, "CUR", symbol.PadRight(6, ' '), connecting);
+		else if (symbol.Contains('@')) return await SubscribeAsync(subscriber, "MK2", symbol.PadRight(16, ' '), connecting);
 
 		if (!Equities.ContainsKey(symbol)) return new ResponseCore
 		{

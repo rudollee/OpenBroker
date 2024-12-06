@@ -128,6 +128,27 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				});
 				break;
 			#endregion
+			#region MK2 US지수
+			case nameof(MK2):
+				if (MarketContracted is null) return;
+				var mk2Res = JsonSerializer.Deserialize<LsSubscriptionCallback<MK2OutBlock>>(message.Text);
+				if (mk2Res is null || mk2Res.Body is null) return;
+
+				MarketContracted(this, new ResponseResult<MarketContract>
+				{
+					Typ = MessageType.MKT,
+					Code = trCode,
+					Info = new MarketContract
+					{
+						Symbol = mk2Res.Body.xsymbol,
+						TimeContract = (mk2Res.Body.kodate + mk2Res.Body.kotime.PadLeft(6, '0')).ToDateTime(),
+						C = Convert.ToDecimal(mk2Res.Body.price),
+						BasePrice = Convert.ToDecimal(mk2Res.Body.price) - Convert.ToDecimal(mk2Res.Body.change)
+					},
+					Remark = message.Text
+				});
+				break; 
+			#endregion
 			#region H1_ 전체 호가
 			case nameof(H1_):
 			case nameof(HA_):
