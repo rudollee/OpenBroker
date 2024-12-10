@@ -431,7 +431,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#region request marketContractHistory using t1301
 	public async Task<ResponseResults<MarketContract>> RequestMarketContractHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0)
 	{
-		var response = await RequestStandardAsync<t1301>("stock/market-data", new
+		var response = await RequestStandardAsync<t1301>(LsEndpoint.EquityMarketData.ToDescription(), new
 		{
 			t1301InBlock = new t1301InBlock
 			{
