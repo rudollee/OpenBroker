@@ -525,6 +525,10 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	}
 	#endregion
 
+	#region request sectors by equity using t1532
+	public Task<ResponseResults<Sector>> RequestSectorsByEquity(string symbol) => throw new NotImplementedException();
+	#endregion
+
 	#region request equities by sector using t1537
 	public async Task<ResponseResults<PriceOHLC>> RequestEquitiesBySector(string sectorCode)
 	{

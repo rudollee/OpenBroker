@@ -40,6 +40,13 @@ public interface IMarketKrxEquity
 	Task<ResponseResults<Sector>> RequestSectors(string code = "", string name = "");
 
 	/// <summary>
+	/// 종목별섹터
+	/// </summary>
+	/// <param name="symbol"></param>
+	/// <returns></returns>
+	Task<ResponseResults<Sector>> RequestSectorsByEquity(string symbol);
+
+	/// <summary>
 	/// 섹터 종목 리스트
 	/// </summary>
 	/// <param name="sectorCode"></param>
