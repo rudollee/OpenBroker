@@ -526,7 +526,47 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#endregion
 
 	#region request sectors by equity using t1532
-	public Task<ResponseResults<Sector>> RequestSectorsByEquity(string symbol) => throw new NotImplementedException();
+	public async Task<ResponseResults<Sector>> RequestSectorsByEquity(string symbol)
+	{
+		var response = await RequestStandardAsync<t1532>(LsEndpoint.EquitySector.ToDescription(), new
+		{
+			t1532InBlock = new t1532InBlock
+			{
+				shcode = symbol
+			}
+		});
+
+		try
+		{
+			if (!response.t1532OutBlock.Any()) return new ResponseResults<Sector>
+			{
+				StatusCode = Status.NODATA,
+				Message = response.Message,
+				Code = response.Code,
+				Remark = "no data",
+				List = new List<Sector>()
+			};
+
+			var sectors = new List<Sector>();
+			response.t1532OutBlock.ForEach(sector => sectors.Add(new Sector
+			{
+				Code = sector.tmcode,
+				Name = sector.tmname,
+				Diff = Convert.ToDecimal(sector.avgdiff)
+			}));
+
+			return new ResponseResults<Sector> { List = sectors };
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResults<Sector>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = ex.Message,
+				List = new List<Sector>()
+			};
+		}
+	}
 	#endregion
 
 	#region request equities by sector using t1537
