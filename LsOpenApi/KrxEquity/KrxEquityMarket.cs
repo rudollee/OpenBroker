@@ -14,8 +14,8 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			var closedWeeks = new List<DayOfWeek>() { DayOfWeek.Saturday, DayOfWeek.Sunday };
 			if (closedWeeks.Contains(now.DayOfWeek)) return false;
 
-			if (now.TimeOfDay < new TimeSpan(8, 55, 00)) return false;
-			if (now.TimeOfDay > new TimeSpan(16, 00, 00)) return false;
+			if (now.TimeOfDay < new TimeSpan(8, 30, 00)) return false;
+			if (now.TimeOfDay > new TimeSpan(16, 45, 00)) return false;
 
 			return true;
 		}
