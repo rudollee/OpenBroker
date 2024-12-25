@@ -80,3 +80,12 @@ public class OptionGreek
     public decimal Gamma { get; set; }
     public decimal Theta { get; set; }
 }
+
+/// <summary>
+/// Price package
+/// </summary>
+public class PricePack
+{
+    public required IList<PriceOHLC> PrimaryList { get; set; } = new List<PriceOHLC>();
+    public IList<PriceRate> SecondaryList { get; set; } = new List<PriceRate>();
+}
