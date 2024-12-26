@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.WebSockets;
-using System.Text;
+﻿using System.Net.WebSockets;
 using System.Text.Json;
-using System.Threading.Tasks;
 using KisOpenApi.Models;
 using OpenBroker.Models;
 using RestSharp;
@@ -40,7 +35,7 @@ public class ConnectionBase
 	protected string _iv = string.Empty;
 	protected string _key = string.Empty;
 
-	private Dictionary<string, string> _subscriptions = new Dictionary<string, string>();
+	private Dictionary<string, SubscriptionPack> _subscriptions = new();
 
 	#region Request Access Token using appkey & secret
 	/// <summary>
@@ -193,9 +188,9 @@ public class ConnectionBase
 
 			SetConnect();
 
-			foreach (KeyValuePair<string, string> subscription in _subscriptions)
+			foreach (KeyValuePair<string, SubscriptionPack> subscription in _subscriptions)
 			{
-				await SubscribeAsync(subscription.Key, subscription.Value);
+				await SubscribeAsync(subscription.Key, subscription.Value.Key);
 			}
 
 			return new ResponseCore
@@ -227,9 +222,9 @@ public class ConnectionBase
 		Client.Dispose();
 		SetConnect(false);
 
-		foreach (KeyValuePair<string, string> subscription in _subscriptions)
+		foreach (KeyValuePair<string, SubscriptionPack> subscription in _subscriptions)
 		{
-			await SubscribeAsync(subscription.Key, subscription.Value, false);
+			await SubscribeAsync(subscription.Key, subscription.Value.Key, false);
 		}
 
 		return new ResponseCore
@@ -245,7 +240,8 @@ public class ConnectionBase
 		if (Client is null) return new ResponseCore
 		{
 			Code = "NULLERR",
-			Message = "Client is null"
+			Message = "Client is null",
+			Remark = subscriber
 		};
 
 		string GenerateSubscriptionRequest(string id, string key = "", bool connecting = true)
@@ -257,24 +253,84 @@ public class ConnectionBase
 
 		try
 		{
-			var result = await Task.Run(() => Client.Send(GenerateSubscriptionRequest(trCode, key, connecting)));
-			if (result)
+			var needsAction = false;
+			var message = string.Empty;
+
+			if (connecting)
 			{
-				if (connecting)
+				if (subscriber == "RECONNECTION")
 				{
-					if (!_subscriptions.ContainsKey(trCode)) _subscriptions.Add(trCode, key);
+					needsAction = true;
+				}
+				else if (_subscriptions.ContainsKey($"{trCode}-{key}"))
+				{
+					if (_subscriptions[$"{trCode}-{key}"].Subscriber.Contains(subscriber))
+					{
+						message = "already subscribing!";
+					}
+					else
+					{
+						_subscriptions[$"{trCode}-{key}"].Subscriber.Add(subscriber);
+					}
 				}
 				else
 				{
-					_subscriptions.Remove(trCode);
+					_subscriptions.Add($"{trCode}-{key}", new SubscriptionPack
+					{
+						TrCode = trCode,
+						Key = key,
+						Subscriber = new List<string> { subscriber }
+					});
+					needsAction = true;
 				}
-
-				Message(this, new ResponseCore
-				{
-					Code = $"{trCode} / {key}",
-					Message = connecting ? "Subscribed" : "Unsubscribed",
-				});
 			}
+			else
+			{
+				if (_subscriptions.ContainsKey($"{trCode}-{key}"))
+				{
+					if (subscriber == "SYS")
+					{
+						needsAction = true;
+						_subscriptions.Remove($"{trCode}-{key}");
+					}
+					else if (_subscriptions[$"{trCode}-{key}"].Subscriber.Contains(subscriber))
+					{
+						_subscriptions[$"{trCode}-{key}"].Subscriber.Remove(subscriber);
+						if (!_subscriptions[$"{trCode}-{key}"].Subscriber.Any())
+						{
+							_subscriptions.Remove($"{trCode}-{key}");
+							needsAction = true;
+						}
+					}
+					else
+					{
+						message = "not subscribing";
+					}
+				}
+			}
+
+			Message(this, new ResponseCore
+			{
+				Code = $"{trCode} / {key}",
+				Message = connecting ? "Subscribed" : "Unsubscribed",
+			});
+
+			if (!needsAction) return new ResponseCore
+			{
+				Typ = MessageType.SUB,
+				StatusCode = Status.SUCCESS,
+				Code = "NOACTION",
+				Message = message
+			};
+
+			var result = await Task.Run(() => Client.Send(GenerateSubscriptionRequest(trCode, key, connecting)));
+
+			Message(this, new ResponseCore
+			{
+				Typ = MessageType.SUB,
+				Code = $"{trCode}({key})",
+				Message = $"Sent {(connecting ? "subscribe" : "unsubscribe")} request.",
+			});
 
 			return new ResponseCore
 			{
@@ -342,7 +398,7 @@ public class ConnectionBase
 
 		foreach (var subscirption in _subscriptions)
 		{
-			var response = await SubscribeAsync(subscirption.Key, subscirption.Value);
+			var response = await SubscribeAsync(subscirption.Key, subscirption.Value.Key);
 			if (response is null || response.StatusCode != Status.SUCCESS)
 			{
 				Message(this, new ResponseCore
@@ -350,7 +406,7 @@ public class ConnectionBase
 					Typ = MessageType.SYSERR,
 					Code = "RECON-FAIL",
 					Message = $"subscription {subscirption.Key} failed during reconnection",
-					Remark = subscirption.Value
+					Remark = subscirption.Value.Key
 				});
 			}
 		}

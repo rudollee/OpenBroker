@@ -1,5 +1,5 @@
-﻿namespace LsOpenApi.Models;
-internal class SubscriptionPack
+﻿namespace OpenBroker.Models;
+public class SubscriptionPack
 {
 	public string TrCode { get; set; } = string.Empty;
 
