@@ -518,11 +518,11 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 
 	#region 주문내역 구독 : HDFFF1C0
 	public async Task<ResponseCore> SubscribeOrderAsync(bool connecting = true) =>
-		await Subscribe(nameof(HDFFF1C0), "", connecting);
+		await SubscribeAsync(nameof(HDFFF1C0), "", connecting);
 	#endregion
 
 	#region 체결내역 구독 : HDFFF2C0
 	public async Task<ResponseCore> SubscribeContractAsync(bool connecting = true) =>
-		await Subscribe(nameof(HDFFF2C0), "", connecting);
+		await SubscribeAsync(nameof(HDFFF2C0), "", connecting);
 	#endregion
 }
