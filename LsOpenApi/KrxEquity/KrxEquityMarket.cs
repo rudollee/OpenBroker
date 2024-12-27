@@ -616,4 +616,9 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 	}
 	#endregion
+
+	#region request chart data by ...
+	public Task<ResponseResult<PricePack>> RequestPricePack(PricePackRequest request) => throw new NotImplementedException(); 
+	#endregion
+
 }

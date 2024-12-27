@@ -52,6 +52,13 @@ public interface IMarket
 	Task<ResponseResults<MarketContract>> RequestMarketContractHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0);
 
 	/// <summary>
+	/// 차트 데이터
+	/// </summary>
+	/// <param name="request"></param>
+	/// <returns></returns>
+	Task<ResponseResult<PricePack>> RequestPricePack(PricePackRequest request);
+	
+	/// <summary>
 	/// 현재가 - realtime
 	/// </summary>
 	/// <param name="symbol"></param>

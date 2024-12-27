@@ -130,8 +130,6 @@ public enum Currency
 	TRK = 8201,
 	
     HKD = 85200,
-
-
 }
 
 public enum Exchange
@@ -294,4 +292,15 @@ public enum MessageType
     /// Misc.
     /// </summary>
     MISC
+}
+
+public enum IntervalUnit
+{
+    Tick = 11,
+	Second = 21,
+	Minute = 22,
+	Hour = 23,
+	Day = 31,
+	Week = 32,
+	Month = 33,
 }
