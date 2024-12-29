@@ -19,5 +19,5 @@ public class PricePackRequest
 	public int TimeInterval { get; set; } = 1;
 	public int Amount { get; set; } = 0;
 	public DateTime DateTimeBegin { get; set; }
-	public DateTime DatetimeEnd { get; set; }
+	public DateTime DateTimeEnd { get; set; }
 }
