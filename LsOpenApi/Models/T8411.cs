@@ -21,31 +21,31 @@ internal class t841XInBlock
 	public long ncnt { get; set; }
 
 	/// <summary>요청건수(최대-압축:2000비압축:500)</summary>
-	public long qrycnt { get; set; }
+	public long qrycnt { get; set; } = 500;
 
 	/// <summary>조회영업일수(0:미사용1>=사용)</summary>
-	public string nday { get; set; } = string.Empty;
+	public string nday { get; set; } = "0";
 
 	/// <summary>시작일자</summary>
 	public string sdate { get; set; } = string.Empty;
 
 	/// <summary>시작시간(현재미사용)</summary>
-	public string stime { get; set; } = string.Empty;
+	public string stime { get; set; } = " ";
 
 	/// <summary>종료일자</summary>
-	public string edate { get; set; } = string.Empty;
+	public string edate { get; set; } = " ";
 
 	/// <summary>종료시간(현재미사용)</summary>
 	public string etime { get; set; } = string.Empty;
 
 	/// <summary>연속일자</summary>
-	public string cts_date { get; set; } = string.Empty;
+	public string cts_date { get; set; } = " ";
 
 	/// <summary>연속시간</summary>
-	public string cts_time { get; set; } = string.Empty;
+	public string cts_time { get; set; } = " ";
 
 	/// <summary>압축여부(Y:압축N:비압축)</summary>
-	public string comp_yn { get; set; } = string.Empty;
+	public string comp_yn { get; set; } = "N";
 
 }
 

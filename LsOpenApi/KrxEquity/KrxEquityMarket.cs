@@ -617,8 +617,219 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	}
 	#endregion
 
-	#region request chart data by ...
-	public Task<ResponseResult<PricePack>> RequestPricePack(PricePackRequest request) => throw new NotImplementedException(); 
+	#region request chart data by t8410, t8411, t8412
+	public async Task<ResponseResult<PricePack>> RequestPricePack(PricePackRequest request) =>
+		request.TimeIntervalUnit switch
+		{
+			IntervalUnit.Tick => await RequestPricePackTick(request),
+			IntervalUnit.Minute => await RequestPricePackMinute(request),
+			_ => await RequestPricePackX(request)
+		};
+
+	private async Task<ResponseResult<PricePack>> RequestPricePackTick(PricePackRequest request)
+	{
+		var response = await RequestStandardAsync<t8411>(LsEndpoint.EquityChart.ToDescription(), new
+		{
+			t8411InBlock = new t841XInBlock
+			{
+				shcode = request.Symbol,
+				ncnt = request.TimeInterval,
+				qrycnt = 500,
+				sdate = request.DateTimeBegin.ToString("yyyyMMdd"),
+				edate = request.DateTimeEnd.ToString("yyyyMMdd"),
+			}
+		});
+
+		try
+		{
+			if (!response.t8411OutBlock1.Any()) return new ResponseResult<PricePack>
+			{
+				StatusCode = Status.NODATA,
+				Message = response.Message,
+				Code = response.Code,
+				Remark = "no data"
+			};
+
+			var priceInfo = new PriceRate
+			{
+				Symbol = response.t8411OutBlock.shcode,
+				TimeContract = DateTime.UtcNow.AddHours(9),
+				BasePrice = response.t8411OutBlock.jiclose,
+				C = response.t8411OutBlock.diclose,
+				O = response.t8411OutBlock.disiga,
+				H = response.t8411OutBlock.dihigh,
+				L = response.t8411OutBlock.dilow,
+				HighLimit = response.t8411OutBlock.highend,
+				LowLimit = response.t8411OutBlock.lowend,
+			};
+
+			var prices = new List<PriceOHLC>();
+			response.t8411OutBlock1.ForEach(price => prices.Add(new PriceOHLC
+			{
+				TimeContract = (price.date + price.time).ToDateTime(),
+				O = Convert.ToDecimal(price.open),
+				C = Convert.ToDecimal(price.close),
+				H = Convert.ToDecimal(price.high),
+				L = Convert.ToDecimal(price.low),
+				V = Convert.ToDecimal(price.jdiff_vol),
+				BasePrice = priceInfo.BasePrice,
+			}));
+
+			// TODO : 수정주가 적용 여부
+
+			return new ResponseResult<PricePack>
+			{
+				Info = new PricePack
+				{
+					PrimaryList = prices,
+					SecondaryInfo = priceInfo
+				}
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResult<PricePack>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = ex.Message,
+				Remark = "exception catch area"
+			};
+		}
+	}
+
+	private async Task<ResponseResult<PricePack>> RequestPricePackMinute(PricePackRequest request)
+	{
+		var response = await RequestStandardAsync<t8412>(LsEndpoint.EquityChart.ToDescription(), new
+		{
+			t8412InBlock = new t841XInBlock
+			{
+				shcode = request.Symbol,
+				ncnt = request.TimeInterval,
+				qrycnt = 500,
+				sdate = request.DateTimeBegin.ToString("yyyyMMdd"),
+				edate = request.DateTimeEnd.ToString("yyyyMMdd"),
+			}
+		});
+
+		try
+		{
+			if (!response.t8412OutBlock1.Any()) return new ResponseResult<PricePack>
+			{
+				StatusCode = Status.NODATA,
+				Message = response.Message,
+				Code = response.Code,
+				Remark = "no data"
+			};
+
+			var priceInfo = new PriceRate
+			{
+				Symbol = response.t8412OutBlock.shcode,
+				TimeContract = DateTime.UtcNow.AddHours(9),
+				BasePrice = response.t8412OutBlock.jiclose,
+				C = response.t8412OutBlock.diclose,
+				O = response.t8412OutBlock.disiga,
+				H = response.t8412OutBlock.dihigh,
+				L = response.t8412OutBlock.dilow,
+				HighLimit = response.t8412OutBlock.highend,
+				LowLimit = response.t8412OutBlock.lowend,
+			};
+
+			var prices = new List<PriceOHLC>();
+			response.t8412OutBlock1.ForEach(price => prices.Add(new PriceOHLC
+			{
+				TimeContract = (price.date + price.time).ToDateTime(),
+				O = Convert.ToDecimal(price.open),
+				C = Convert.ToDecimal(price.close),
+				H = Convert.ToDecimal(price.high),
+				L = Convert.ToDecimal(price.low),
+				V = Convert.ToDecimal(price.jdiff_vol),
+				BasePrice = priceInfo.BasePrice,
+			}));
+
+			// TODO : 수정주가 적용 여부
+
+			return new ResponseResult<PricePack>
+			{
+				Info = new PricePack
+				{
+					PrimaryList = prices,
+					SecondaryInfo = priceInfo
+				}
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResult<PricePack>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = ex.Message,
+				Remark = "exception catch area"
+			};
+		}
+	}
+
+	private async Task<ResponseResult<PricePack>> RequestPricePackX(PricePackRequest request)
+	{
+		var response = await RequestStandardAsync<t8410>(LsEndpoint.EquityChart.ToDescription(), new
+		{
+			t8410InBlock = new t8410InBlock
+			{
+				shcode = request.Symbol,
+				gubun = request.TimeIntervalUnit switch
+				{
+					IntervalUnit.Day => "2",
+					IntervalUnit.Week => "3",
+					IntervalUnit.Month => "4",
+					_ => "5"
+				},
+				qrycnt = 500,
+				sdate = request.DateTimeBegin.ToString("yyyyMMdd"),
+				edate = request.DateTimeEnd.ToString("yyyyMMdd"),
+			}
+		});
+
+		try
+		{
+			if (!response.t8410OutBlock1.Any()) return new ResponseResult<PricePack>
+			{
+				StatusCode = Status.NODATA,
+				Message = response.Message,
+				Code = response.Code,
+				Remark = "no data"
+			};
+
+			var prices = new List<PriceOHLC>();
+			response.t8410OutBlock1.ForEach(price => prices.Add(new PriceOHLC
+			{
+				TimeContract = price.date.ToDateTime(),
+				O = Convert.ToDecimal(price.open),
+				C = Convert.ToDecimal(price.close),
+				H = Convert.ToDecimal(price.high),
+				L = Convert.ToDecimal(price.low),
+				V = Convert.ToDecimal(price.jdiff_vol),
+				BasePrice = Convert.ToDecimal(response.t8410OutBlock.jiclose),
+			}));
+
+			// TODO : 수정주가 적용 여부
+
+			return new ResponseResult<PricePack>
+			{
+				Info = new PricePack
+				{
+					PrimaryList = prices,
+				}
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResult<PricePack>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = ex.Message,
+				Remark = "exception catch area"
+			};
+		}
+	}
 	#endregion
 
 }

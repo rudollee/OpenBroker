@@ -21,22 +21,22 @@ internal class t8410InBlock
 	public string gubun { get; set; } = string.Empty;
 
 	/// <summary>요청건수(최대-압축:2000비압축:500)</summary>
-	public long qrycnt { get; set; }
+	public long qrycnt { get; set; } = 500;
 
 	/// <summary>시작일자</summary>
-	public string sdate { get; set; } = string.Empty;
+	public string sdate { get; set; } = " ";
 
 	/// <summary>종료일자</summary>
-	public string edate { get; set; } = string.Empty;
+	public string edate { get; set; } = " ";
 
 	/// <summary>연속일자</summary>
-	public string cts_date { get; set; } = string.Empty;
+	public string cts_date { get; set; } = " ";
 
 	/// <summary>압축여부(Y:압축N:비압축)</summary>
-	public string comp_yn { get; set; } = string.Empty;
+	public string comp_yn { get; set; } = "N";
 
 	/// <summary>수정주가여부(Y:적용N:비적용)</summary>
-	public string sujung { get; set; } = string.Empty;
+	public string sujung { get; set; } = "N";
 }
 
 /// <summary>
