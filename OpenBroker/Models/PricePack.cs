@@ -6,7 +6,7 @@
 public class PricePack
 {
 	public required IList<PriceOHLC> PrimaryList { get; set; } = new List<PriceOHLC>();
-	public IList<PriceRate> SecondaryList { get; set; } = new List<PriceRate>();
+	public PriceRate SecondaryInfo { get; set; } = new();
 }
 
 /// <summary>
@@ -17,6 +17,7 @@ public class PricePackRequest
 	public string Symbol { get; set; } = string.Empty;
 	public IntervalUnit TimeIntervalUnit { get; set; } = IntervalUnit.Day;
 	public int TimeInterval { get; set; } = 1;
+	public int Amount { get; set; } = 0;
 	public DateTime DateTimeBegin { get; set; }
-	public DateTime DatetimeEnd { get; set; }
+	public DateTime DateTimeEnd { get; set; }
 }
