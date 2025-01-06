@@ -379,7 +379,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			t8407InBlock = new t8407InBlock
 			{
 				nrec = symbols.Count(),
-				shcode = string.Join("", symbols)
+				shcode = string.Join("", symbols.Take(50))
 			}
 		});
 
