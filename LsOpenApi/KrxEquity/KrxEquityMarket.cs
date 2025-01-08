@@ -372,7 +372,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#endregion
 
 	#region request marketContract using t8407
-	public async Task<ResponseResults<MarketContract>> RequestMarketContract(List<string> symbols)
+	public async Task<ResponseResults<MarketContract>> RequestMarketContract(IEnumerable<string> symbols)
 	{
 		var response = await RequestStandardAsync<t8407>(LsEndpoint.EquityMarketData.ToDescription(), new
 		{
