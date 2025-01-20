@@ -136,9 +136,16 @@ public enum Exchange
 {
     NONE = 0,
     CME = 10,
-    EUREX = 20,
-    OSE = 30,
+	CBOE = 11,
+	ICE = 19,
+	OSE = 810,
+	EUREX = 20,
+	ASX = 610,
+	SGX = 650,
 	KRX = 820,
+	HNX = 840,
+	HKEx = 8520,
+	FTX = 8860,
 }
 
 public enum MarketCode
