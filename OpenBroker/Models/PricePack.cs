@@ -5,7 +5,7 @@
 /// </summary>
 public class PricePack
 {
-	public required IList<PriceOHLC> PrimaryList { get; set; } = new List<PriceOHLC>();
+	public required List<PriceOHLC> PrimaryList { get; set; } = new List<PriceOHLC>();
 	public PriceRate SecondaryInfo { get; set; } = new();
 }
 
