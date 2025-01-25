@@ -69,81 +69,68 @@ public partial class KisGlobalFutures : ConnectionBase, IMarket
 	public async Task<ResponseResults<Instrument>> RequestInstruments(int option)
 	{
 		var instruments = new List<Instrument>();
-		using (var client = new HttpClient())
+		using var client = new HttpClient();
+		var url = "https://new.real.download.dws.co.kr/common/master/ffcode.mst.zip";
+		client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0");
+		var zipData = await client.GetByteArrayAsync(url);
+
+		using var zipStream = new MemoryStream(zipData);
+		using var archive = new ZipArchive(zipStream);
+		var entry = archive.GetEntry("ffcode.mst");
+		if (entry is null) return new ResponseResults<Instrument> 
+		{ 
+			StatusCode = Status.NODATA,
+			Message = "ffcode.mst is null",
+			List = new List<Instrument>() 
+		};
+
+		using var entryStream = entry.Open();
+		using var reader = new StreamReader(entryStream, System.Text.Encoding.GetEncoding("cp949"));
+		string? line;
+		while ((line = reader.ReadLine()) != null)
 		{
-			var url = "https://new.real.download.dws.co.kr/common/master/ffcode.mst.zip";
-			client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0");
-			var zipData = await client.GetByteArrayAsync(url);
+			/*
+			Line split guide
+            row["종목코드"] = line.Substring(0, 32).Trim();
+            row["서버자동주문 가능 종목 여부"] = line.Substring(32, 1).Trim();
+            row["서버자동주문 TWAP 가능 종목 여부"] = line.Substring(33, 1).Trim();
+            row["서버자동 경제지표 주문 가능 종목 여부"] = line.Substring(34, 1).Trim();
+            row["필러"] = line.Substring(35, 47).Trim();
+            row["종목한글명"] = line.Substring(82, 25).Trim();
+            row["거래소코드 (ISAM KEY 1)"] = line.Substring(107, 10).Trim();
+            row["품목코드 (ISAM KEY 2)"] = line.Substring(117, 10).Trim();
+            row["품목종류"] = line.Substring(127, 3).Trim();
+            row["출력 소수점"] = line.Substring(130, 5).Trim();
+            row["계산 소수점"] = line.Substring(135, 5).Trim();
+            row["틱사이즈"] = line.Substring(140, 14).Trim();
+            row["틱가치"] = line.Substring(154, 14).Trim();
+            row["계약크기"] = line.Substring(168, 10).Trim();
+            row["가격표시진법"] = line.Substring(178, 4).Trim();
+            row["환산승수"] = line.Substring(182, 10).Trim();
+            row["최다월물여부 0:원월물 1:최다월물"] = line.Substring(192, 1).Trim();
+            row["최근월물여부 0:원월물 1:최근월물"] = line.Substring(193, 1).Trim();
+            row["스프레드여부"] = line.Substring(194, 1).Trim();
+            row["스프레드기준종목 LEG1 여부"] = line.Substring(195, 1).Trim();
+            row["서브 거래소 코드"] = line.Substring(196, 3).Trim();
+			*/
 
-			using (var zipStream = new MemoryStream(zipData))
+			if (line.Substring(192, 1).Trim() == "0") continue; // 최다월물여부 0:원월물 1:최다월물
+			if (line.Substring(194, 1).Trim() == "Y") continue; // 스프레드여부
+
+			instruments.Add(new Instrument
 			{
-				using (var archive = new ZipArchive(zipStream))
-				{
-					var entry = archive.GetEntry("ffcode.mst");
-					if (entry is null) return new ResponseResults<Instrument> 
-					{ 
-						StatusCode = Status.NODATA,
-						Message = "ffcode.mst is null",
-						List = new List<Instrument>() 
-					};
-
-					using (var entryStream = entry.Open())
-					{
-						using (var reader = new StreamReader(entryStream, System.Text.Encoding.GetEncoding("cp949")))
-						{
-							string? line;
-							while ((line = reader.ReadLine()) != null)
-							{
-								// TODO: Implement the logic to parse the line and create an Instrument object
-
-								/*
-                                DataRow row = dataTable.NewRow();
-                                row["종목코드"] = line.Substring(0, 32).Trim();
-                                row["서버자동주문 가능 종목 여부"] = line.Substring(32, 1).Trim();
-                                row["서버자동주문 TWAP 가능 종목 여부"] = line.Substring(33, 1).Trim();
-                                row["서버자동 경제지표 주문 가능 종목 여부"] = line.Substring(34, 1).Trim();
-                                row["필러"] = line.Substring(35, 47).Trim();
-                                row["종목한글명"] = line.Substring(82, 25).Trim();
-                                row["거래소코드 (ISAM KEY 1)"] = line.Substring(107, 10).Trim();
-                                row["품목코드 (ISAM KEY 2)"] = line.Substring(117, 10).Trim();
-                                row["품목종류"] = line.Substring(127, 3).Trim();
-                                row["출력 소수점"] = line.Substring(130, 5).Trim();
-                                row["계산 소수점"] = line.Substring(135, 5).Trim();
-                                row["틱사이즈"] = line.Substring(140, 14).Trim();
-                                row["틱가치"] = line.Substring(154, 14).Trim();
-                                row["계약크기"] = line.Substring(168, 10).Trim();
-                                row["가격표시진법"] = line.Substring(178, 4).Trim();
-                                row["환산승수"] = line.Substring(182, 10).Trim();
-                                row["최다월물여부 0:원월물 1:최다월물"] = line.Substring(192, 1).Trim();
-                                row["최근월물여부 0:원월물 1:최근월물"] = line.Substring(193, 1).Trim();
-                                row["스프레드여부"] = line.Substring(194, 1).Trim();
-                                row["스프레드기준종목 LEG1 여부"] = line.Substring(195, 1).Trim();
-                                row["서브 거래소 코드"] = line.Substring(196, 3).Trim();
-                                dataTable.Rows.Add(row);
-								*/
-
-								if (line.Substring(192, 1).Trim() == "0") continue; // 최다월물여부 0:원월물 1:최다월물
-								if (line.Substring(194, 1).Trim() == "Y") continue; // 스프레드여부
-
-								instruments.Add(new Instrument
-								{
-									Symbol = line.Substring(0, 32).Trim(),
-									Sym = line.Substring(117, 10).Trim(),
-									SymD = line.Substring(0, 32).Trim().Substring(2, 3),
-									InstrumentName = line.Substring(82, 25).Trim(),
-									Tick = Convert.ToDecimal(line.Substring(140, 14).Trim()),
-									TickValue = Convert.ToDecimal(line.Substring(154, 14).Trim()),
-									ExchangeCode = (Exchange)Enum.Parse(typeof(Exchange), line.Substring(196, 3).Trim()),
-									Precision = Convert.ToInt32(line.Substring(130, 5).Trim()),
-									Tradable = true,
-									NumeralSystem = Convert.ToInt32(line.Substring(178, 4).Trim()),
-									DiscardStatus = DiscardStatus.TRADABLE,
-								});
-							}
-						}
-					}
-				}
-			}
+				Symbol = line.Substring(0, 32).Trim(),
+				Sym = line.Substring(117, 10).Trim(),
+				SymD = line.Substring(0, 32).Trim().Substring(2, 3),
+				InstrumentName = line.Substring(82, 25).Trim(),
+				Tick = Convert.ToDecimal(line.Substring(140, 14).Trim()),
+				TickValue = Convert.ToDecimal(line.Substring(154, 14).Trim()),
+				ExchangeCode = (Exchange)Enum.Parse(typeof(Exchange), line.Substring(196, 3).Trim()),
+				Precision = Convert.ToInt32(line.Substring(130, 5).Trim()),
+				Tradable = true,
+				NumeralSystem = Convert.ToInt32(line.Substring(178, 4).Trim()),
+				DiscardStatus = DiscardStatus.TRADABLE,
+			});
 		}
 
 		return new ResponseResults<Instrument> 
