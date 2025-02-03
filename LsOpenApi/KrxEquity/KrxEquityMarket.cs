@@ -30,7 +30,6 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	public Dictionary<string, Equity> Equities { get; set; } = new();
 
 	public Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol) => throw new NotImplementedException();
-	public Task<ResponseResult<MarketContract>> RequestMarketContract(string symbol) => throw new NotImplementedException();
 
 	public async Task<ResponseCore> SubscribeMarketContract(string symbol, bool connecting = true, string subscriber = "")
 	{
@@ -372,6 +371,24 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#endregion
 
 	#region request marketContract using t8407
+	public async Task<ResponseResult<MarketContract>> RequestMarketContract(string symbol)
+	{
+		var response = await RequestMarketContract(new string[] { symbol });
+		if (!response.List.Any()) return new ResponseResult<MarketContract>
+		{
+			StatusCode = Status.NODATA,
+			Message = response.Message,
+			Code = response.Code,
+			Remark = "no data"
+		};
+
+		return new ResponseResult<MarketContract>
+		{
+			Code = response.Code,
+			Info = response.List.FirstOrDefault()
+		};
+	}
+
 	public async Task<ResponseResults<MarketContract>> RequestMarketContract(IEnumerable<string> symbols)
 	{
 		var response = await RequestStandardAsync<t8407>(LsEndpoint.EquityMarketData.ToDescription(), new
@@ -405,7 +422,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 					BasePrice = f.jnilclose,
 					V = f.cvolume,
 					VolumeAcc = f.volume,
-					MoneyAcc = f.value * 1000000
+					MoneyAcc = f.value
 				});
 			});
 
