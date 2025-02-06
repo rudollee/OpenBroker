@@ -698,6 +698,9 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			{
 				Info = new PricePack
 				{
+					Symbol = request.Symbol,
+					TimeIntervalUnit = request.TimeIntervalUnit,
+					TimeInterval = request.TimeInterval,
 					PrimaryList = prices,
 					SecondaryInfo = priceInfo
 				}
