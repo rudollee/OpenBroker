@@ -207,6 +207,14 @@ public enum Brkr
     KI,
 }
 
+public enum MarketSession
+{
+    REGULAR = 0,
+    CLOSED = 3,
+    AFTER = 4,
+    PRE = 10,
+}
+
 public enum AccountType
 {
     /// <summary>

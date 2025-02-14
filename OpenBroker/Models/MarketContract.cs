@@ -6,6 +6,11 @@
 public class MarketContract
 {
     /// <summary>
+    /// 시장 세션 구분
+    /// </summary>
+    public MarketSession MarketSessionInfo { get; set; } = MarketSession.REGULAR;
+
+    /// <summary>
     /// 종목/상품 코드
     /// </summary>
     public string Symbol { get; set; } = string.Empty;
