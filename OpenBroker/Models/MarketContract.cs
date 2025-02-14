@@ -11,6 +11,11 @@ public class MarketContract
     public MarketSession MarketSessionInfo { get; set; } = MarketSession.REGULAR;
 
     /// <summary>
+    /// 예상치 여부
+    /// </summary>
+    public bool IsEstimated { get; set; } = false;
+
+    /// <summary>
     /// 종목/상품 코드
     /// </summary>
     public string Symbol { get; set; } = string.Empty;
