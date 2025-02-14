@@ -94,6 +94,13 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					Code = trCode,
 					Info = new MarketContract
 					{
+						MarketSessionInfo = s3Res.Body.status switch
+						{
+							"3" => MarketSession.CLOSED,
+							"4" => MarketSession.AFTER,
+							"10" => MarketSession.PRE,
+							_ => MarketSession.REGULAR,
+						},
 						Symbol = s3Res.Body.shcode,
 						TimeContract = s3Res.Body.chetime.ToDateTime(),
 						C = Convert.ToDecimal(s3Res.Body.price),
