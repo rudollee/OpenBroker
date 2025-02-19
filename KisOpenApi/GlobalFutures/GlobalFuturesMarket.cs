@@ -10,6 +10,8 @@ using RestSharp;
 namespace KisOpenApi;
 public partial class KisGlobalFutures : ConnectionBase, IMarket
 {
+	public Dictionary<string, Instrument> Instruments { get; set; } = new();
+
 	public required EventHandler<ResponseResult<OrderBook>>? OrderBookTaken { get; set; }
 	public EventHandler<ResponseResult<News>>? NewsPosted { get; set; }
 	public required EventHandler<ResponseResult<MarketContract>>? MarketContracted { get; set; }
@@ -66,7 +68,7 @@ public partial class KisGlobalFutures : ConnectionBase, IMarket
 		}
 	}
 
-	public async Task<ResponseResults<Instrument>> RequestInstruments(int option)
+	public async Task<ResponseDictionary<string, Instrument>> RequestInstruments(int option)
 	{
 		var instruments = new List<Instrument>();
 		using var client = new HttpClient();
@@ -77,11 +79,11 @@ public partial class KisGlobalFutures : ConnectionBase, IMarket
 		using var zipStream = new MemoryStream(zipData);
 		using var archive = new ZipArchive(zipStream);
 		var entry = archive.GetEntry("ffcode.mst");
-		if (entry is null) return new ResponseResults<Instrument> 
+		if (entry is null) return new ResponseDictionary<string, Instrument>
 		{ 
 			StatusCode = Status.NODATA,
 			Message = "ffcode.mst is null",
-			List = new List<Instrument>() 
+			Dic = Instruments,
 		};
 
 		using var entryStream = entry.Open();
@@ -117,7 +119,7 @@ public partial class KisGlobalFutures : ConnectionBase, IMarket
 			if (line.Substring(192, 1).Trim() == "0") continue; // 최다월물여부 0:원월물 1:최다월물
 			if (line.Substring(194, 1).Trim() == "Y") continue; // 스프레드여부
 
-			instruments.Add(new Instrument
+			var instrument = new Instrument
 			{
 				Symbol = line.Substring(0, 32).Trim(),
 				Sym = line.Substring(117, 10).Trim(),
@@ -130,12 +132,14 @@ public partial class KisGlobalFutures : ConnectionBase, IMarket
 				Tradable = true,
 				NumeralSystem = Convert.ToInt32(line.Substring(178, 4).Trim()),
 				DiscardStatus = DiscardStatus.TRADABLE,
-			});
+			};
+
+			Instruments.Add(line.Substring(117, 10).Trim(), instrument);
 		}
 
-		return new ResponseResults<Instrument> 
+		return new ResponseDictionary<string, Instrument>
 		{ 
-			List = instruments
+			Dic = Instruments,
 		};
 	}
 

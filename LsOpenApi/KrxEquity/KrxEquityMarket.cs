@@ -29,6 +29,8 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 	public Dictionary<string, Equity> Equities { get; set; } = new();
 
+	public Dictionary<string, Instrument> Instruments { get; set; } = new();
+
 	public Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol) => throw new NotImplementedException();
 
 	public async Task<ResponseCore> SubscribeMarketContract(string symbol, bool connecting = true, string subscriber = "")
@@ -66,7 +68,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	public async Task<ResponseCore> SubscribeMarketPause(string symbol = "000000") => await SubscribeAsync("SYS", "VI_", symbol);
 	public async Task<ResponseCore> SubscribeNews(bool connecting = true) => await SubscribeAsync("SYS", "NWS", "NWS001", connecting);
 
-	public Task<ResponseResults<Instrument>> RequestInstruments(int option) => throw new NotImplementedException();
+	public Task<ResponseDictionary<string, Instrument>> RequestInstruments(int option) => throw new NotImplementedException();
 
 	#region request news using t3102
 	public async Task<ResponseResult<News>> RequestNews(string id)

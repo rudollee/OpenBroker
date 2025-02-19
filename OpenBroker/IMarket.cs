@@ -8,6 +8,11 @@ namespace OpenBroker;
 public interface IMarket
 {
 	/// <summary>
+	/// 종목 마스터
+	/// </summary>
+	Dictionary<string, Instrument> Instruments { get; set; }
+
+	/// <summary>
 	/// Marekt Contracted callback
 	/// </summary>
 	EventHandler<ResponseResult<MarketContract>>? MarketContracted { get; set; }
@@ -26,6 +31,20 @@ public interface IMarket
 	/// Market Paused callback
 	/// </summary>
 	EventHandler<ResponseResult<MarketPause>>? MarketPaused { get; set; }
+
+	/// <summary>
+	/// 거래 종목 리스트
+	/// </summary>
+	/// <param name="option"></param>
+	/// <returns></returns>
+	Task<ResponseDictionary<string, Instrument>> RequestInstruments(int option = 0);
+
+	/// <summary>
+	/// 종목 상세
+	/// </summary>
+	/// <param name="symbol"></param>
+	/// <returns></returns>
+	Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol);
 
 	/// <summary>
 	/// 현재가
@@ -59,6 +78,27 @@ public interface IMarket
 	Task<ResponseResult<PricePack>> RequestPricePack(PricePackRequest request);
 	
 	/// <summary>
+	/// 뉴스 상세 정보
+	/// </summary>
+	/// <param name="id"></param>
+	/// <returns></returns>
+	Task<ResponseResult<News>> RequestNews(string id);
+
+	/// <summary>
+	/// 시장 중지 상태 - realtime
+	/// </summary>
+	/// <param name="symbol"></param>
+	/// <returns></returns>
+	Task<ResponseCore> SubscribeMarketPause(string symbol = "000000");
+
+	/// <summary>
+	/// 뉴스 정보 - realtime
+	/// </summary>
+	/// <param name="connecting"></param>
+	/// <returns></returns>
+	Task<ResponseCore> SubscribeNews(bool connecting = true);
+
+	/// <summary>
 	/// 현재가 - realtime
 	/// </summary>
 	/// <param name="symbol"></param>
@@ -75,40 +115,5 @@ public interface IMarket
 	/// <param name="subscriber"></param>
 	/// <returns></returns>
 	Task<ResponseCore> SubscribeMarketDepth(string symbol, bool connecting = true, string subscriber = "");
-
-	/// <summary>
-	/// 뉴스 정보 - realtime
-	/// </summary>
-	/// <param name="connecting"></param>
-	/// <returns></returns>
-	Task<ResponseCore> SubscribeNews(bool connecting = true);
-
-	/// <summary>
-	/// 뉴스 상세 정보
-	/// </summary>
-	/// <param name="id"></param>
-	/// <returns></returns>
-	Task<ResponseResult<News>> RequestNews(string id);
-
-	/// <summary>
-	/// 종목 상세
-	/// </summary>
-	/// <param name="symbol"></param>
-	/// <returns></returns>
-	Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol);
-
-	/// <summary>
-	/// 거래 종목 리스트
-	/// </summary>
-	/// <param name="option"></param>
-	/// <returns></returns>
-	Task<ResponseResults<Instrument>> RequestInstruments(int option = 0);
-
-	/// <summary>
-	/// 시장 중지 상태 - realtime
-	/// </summary>
-	/// <param name="symbol"></param>
-	/// <returns></returns>
-	Task<ResponseCore> SubscribeMarketPause(string symbol = "000000");
 
 }
