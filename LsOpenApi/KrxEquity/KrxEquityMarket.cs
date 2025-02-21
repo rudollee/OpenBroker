@@ -62,6 +62,9 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 		if (string.IsNullOrWhiteSpace(subscriber)) subscriber = "SYS";
 
+		var estimation = await SubscribeAsync(subscriber, Equities[symbol].Section == ExchangeSection.KOSPI ? "YS3" : "YK3", symbol, connecting);
+		if (estimation.StatusCode != Status.SUCCESS) return estimation;
+
 		return await SubscribeAsync(subscriber, Equities[symbol].Section == ExchangeSection.KOSPI ? "H1_" : "HA_", symbol, connecting);
 	}
 

@@ -80,7 +80,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				});
 				break;
 			#endregion
-			#region S3_ 시장 체결
+			#region S3_/K3_ 시장 체결
 			case nameof(S3_):
 			case nameof(K3_):
 				if (MarketContracted is null) return;
@@ -109,6 +109,32 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 						BasePrice = Convert.ToDecimal(s3Res.Body.price) - Convert.ToDecimal((new string[] { "4", "5" }.Contains(s3Res.Body.sign) ? "-" : "") + s3Res.Body.change),
 						VolumeAcc = Convert.ToDecimal(s3Res.Body.volume),
 						MoneyAcc = Convert.ToDecimal(s3Res.Body.value),
+					},
+					Remark = message.Text
+				});
+				break;
+			#endregion
+			#region YS3/YK3 예상체결
+			case nameof(YS3):
+			case nameof(YK3):
+				if (MarketContracted is null) return;
+				
+				var ys3Res = JsonSerializer.Deserialize<LsSubscriptionCallback<YS3OutBlock>>(message.Text);
+				if (ys3Res is null || ys3Res.Body is null) return;
+
+				MarketContracted(this, new ResponseResult<MarketContract>
+				{
+					Typ = MessageType.MKT,
+					Code = trCode,
+					Info = new MarketContract
+					{
+						IsEstimated = true,
+						Symbol = ys3Res.Body.shcode,
+						TimeContract = ys3Res.Body.hotime.ToDateTime(),
+						C = Convert.ToDecimal(ys3Res.Body.yeprice),
+						V = Convert.ToDecimal(ys3Res.Body.yevolume),
+						ContractSide = ys3Res.Body.yeprice == ys3Res.Body.ybidho0 ? ContractSide.ASK : ContractSide.BID,
+						BasePrice = Convert.ToDecimal(ys3Res.Body.yeprice) - Convert.ToDecimal((new string[] { "4", "5" }.Contains(ys3Res.Body.jnilysign) ? "-" : "") + ys3Res.Body.jnilchange),
 					},
 					Remark = message.Text
 				});
