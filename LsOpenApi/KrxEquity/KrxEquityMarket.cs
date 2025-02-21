@@ -622,7 +622,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				H = Convert.ToDecimal(equity.high),
 				L = Convert.ToDecimal(equity.low),
 				VolumeAcc = Convert.ToDecimal(equity.volume),
-				BasePrice = Convert.ToDecimal(equity.price) - Convert.ToDecimal(equity.change) * (equity.sign == "5" ? -1 : 1)
+				BasePrice = Convert.ToDecimal(equity.price) - Convert.ToDecimal(equity.change) * (new string[] { "4", "5" }.Contains(equity.sign) ? -1 : 1)
 			}));
 
 			return new ResponseResults<PriceOHLC> { List = equities };
