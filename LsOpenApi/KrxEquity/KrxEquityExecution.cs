@@ -103,16 +103,16 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 	#region 예수금 - CSPAQ22200
 	public async Task<ResponseResult<Balance>> RequestBalancesAsync(DateTime? date = null, Currency currency = Currency.NONE)
 	{
-		var response = await RequestStandardAsync<CSPAQ22200>(LsEndpoint.EquityAccount.ToDescription(), new
-		{
-			CSPAQ22200InBlock1 = new CSPAQ22200InBlock1
-			{
-				BalCreTp = "0"
-			}
-		});
-
 		try
 		{
+			var response = await RequestStandardAsync<CSPAQ22200>(LsEndpoint.EquityAccount.ToDescription(), new
+			{
+				CSPAQ22200InBlock1 = new CSPAQ22200InBlock1
+				{
+					BalCreTp = "0"
+				}
+			});
+
 			if (response is null || response.CSPAQ22200OutBlock2 is null) return new ResponseResult<Balance>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
@@ -149,27 +149,27 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 	#region 체결/미체결 - t0425
 	public async Task<ResponseResults<Contract>> RequestContractsAsync(ContractStatus status = ContractStatus.ContractedOnly, string symbol = "")
 	{
-		var response = await RequestStandardAsync<t0425>(LsEndpoint.EquityAccount.ToDescription(), new
-		{
-			t0425InBlock = new t0425InBlock
-			{
-				expcode = symbol,
-				chegb = status switch
-				{
-					ContractStatus.All => "0",
-					ContractStatus.ContractedOnly => "1",
-					ContractStatus.UncontractedOnly => "2",
-					_ => "0"
-				},
-				medosu = "0",
-				sortgb = "1",
-				cts_ordno = "",
-			}
-		});
-
-		var contracts = new List<Contract>() { Capacity = response.t0425OutBlock1.Count };
 		try
 		{
+			var response = await RequestStandardAsync<t0425>(LsEndpoint.EquityAccount.ToDescription(), new
+			{
+				t0425InBlock = new t0425InBlock
+				{
+					expcode = symbol,
+					chegb = status switch
+					{
+						ContractStatus.All => "0",
+						ContractStatus.ContractedOnly => "1",
+						ContractStatus.UncontractedOnly => "2",
+						_ => "0"
+					},
+					medosu = "0",
+					sortgb = "1",
+					cts_ordno = "",
+				}
+			});
+
+			var contracts = new List<Contract>() { Capacity = response.t0425OutBlock1.Count };
 			response.t0425OutBlock1.ForEach(contract =>
 			{
 				contracts.Add(new Contract
@@ -215,31 +215,31 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 	#region 체결/미체결 기간 - CSPAQ13700
 	public async Task<ResponseResults<Contract>> RequestContractsAsync(DateTime dateBegun, DateTime dateFin, ContractStatus status = ContractStatus.ContractedOnly)
 	{
-		var response = await RequestStandardAsync<CSPAQ13700>(LsEndpoint.EquityAccount.ToDescription(), new
-		{
-			CSPAQ13700InBlock1 = new CSPAQ13700InBlock1
-			{
-				OrdMktCode = "00",
-				BnsTpCode = "0",
-				IsuNo = string.Empty,
-				ExecYn = status switch
-				{
-					ContractStatus.All => "0",
-					ContractStatus.ContractedOnly => "1",
-					ContractStatus.UncontractedOnly => "3",
-					_ => "0"
-				},
-				OrdDt = dateBegun.ToString("yyyyMMdd"),
-				SrtOrdNo2 = 0,
-				BkseqTpCode = "1",
-				OrdPtnCode = "00"
-			}
-		});
-
-		var executions = new List<Contract>() { Capacity = response.CSPAQ13700OutBlock3.Count };
-
 		try
 		{
+			var response = await RequestStandardAsync<CSPAQ13700>(LsEndpoint.EquityAccount.ToDescription(), new
+			{
+				CSPAQ13700InBlock1 = new CSPAQ13700InBlock1
+				{
+					OrdMktCode = "00",
+					BnsTpCode = "0",
+					IsuNo = string.Empty,
+					ExecYn = status switch
+					{
+						ContractStatus.All => "0",
+						ContractStatus.ContractedOnly => "1",
+						ContractStatus.UncontractedOnly => "3",
+						_ => "0"
+					},
+					OrdDt = dateBegun.ToString("yyyyMMdd"),
+					SrtOrdNo2 = 0,
+					BkseqTpCode = "1",
+					OrdPtnCode = "00"
+				}
+			});
+
+			var executions = new List<Contract>() { Capacity = response.CSPAQ13700OutBlock3.Count };
+
 			response.CSPAQ13700OutBlock3.ForEach(execution =>
 			{
 				executions.Add(new Contract
@@ -295,40 +295,40 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 	#region 주문가능금액 - CSPBQ00200 / CSPAQ12300
 	public async Task<ResponseCore> RequestOrderableAsync(Order order)
 	{
-		var response = await RequestStandardAsync<CSPBQ00200>(LsEndpoint.EquityAccount.ToDescription(), new
+		try
 		{
-			CSPBQ00200InBlock1 = new CSPBQ00200InBlock1
+			var response = await RequestStandardAsync<CSPBQ00200>(LsEndpoint.EquityAccount.ToDescription(), new
 			{
-				BnsTpCode = order.IsLong ? "2" : "1",
-				IsuNo = $"A{order.Symbol}",
-				OrdPrc = order.PriceOrdered
-			}
-		});
-
-		decimal bep = 0.00m;
-
-		if (!order.IsLong && response.CSPBQ00200OutBlock2.OrdAbleQty > 0)
-		{
-			var responseBep = await RequestStandardAsync<CSPAQ12300>(LsEndpoint.EquityAccount.ToDescription(), new
-			{
-				CSPAQ12300InBlock1 = new CSPAQ12300InBlock1
+				CSPBQ00200InBlock1 = new CSPBQ00200InBlock1
 				{
-					BalCreTp = "1",
-					CmsnAppTpCode = "0",
-					D2balBaseQryTp = "1",
-					UprcTpCode = "1"
+					BnsTpCode = order.IsLong ? "2" : "1",
+					IsuNo = $"A{order.Symbol}",
+					OrdPrc = order.PriceOrdered
 				}
 			});
 
-			var position = responseBep.CSPAQ12300OutBlock3.FirstOrDefault(f => f.IsuNo == $"A{order.Symbol}");
-			if (position is not null)
-			{
-				bep = position.AvrUprc;
-			}
-		}
+			decimal bep = 0.00m;
 
-		try
-		{
+			if (!order.IsLong && response.CSPBQ00200OutBlock2.OrdAbleQty > 0)
+			{
+				var responseBep = await RequestStandardAsync<CSPAQ12300>(LsEndpoint.EquityAccount.ToDescription(), new
+				{
+					CSPAQ12300InBlock1 = new CSPAQ12300InBlock1
+					{
+						BalCreTp = "1",
+						CmsnAppTpCode = "0",
+						D2balBaseQryTp = "1",
+						UprcTpCode = "1"
+					}
+				});
+
+				var position = responseBep.CSPAQ12300OutBlock3.FirstOrDefault(f => f.IsuNo == $"A{order.Symbol}");
+				if (position is not null)
+				{
+					bep = position.AvrUprc;
+				}
+			}
+
 			return new ResponseCore
 			{
 				Code = response.CSPBQ00200OutBlock2.IsuMgnRat.ToString(),
@@ -354,24 +354,25 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 
 	public async Task<ResponseResults<Order>> RequestOrdersAsync(DateOnly dateBegun, DateOnly dateFin)
 	{
-		var response = await RequestStandardAsync<CSPAQ13700>(LsEndpoint.EquityAccount.ToDescription(), new
-		{
-			CSPAQ13700InBlock1 = new CSPAQ13700InBlock1
-			{
-				OrdMktCode = "00",
-				BnsTpCode = "0",
-				IsuNo = string.Empty,
-				ExecYn = "0",
-				OrdDt = dateBegun.ToString("yyyyMMdd"),
-				SrtOrdNo2 = 0,
-				BkseqTpCode = "1",
-				OrdPtnCode = "00"
-			}
-		});
-
-		var orders = new List<Order>() { Capacity = response.CSPAQ13700OutBlock3.Count };
 		try
 		{
+			var response = await RequestStandardAsync<CSPAQ13700>(LsEndpoint.EquityAccount.ToDescription(), new
+			{
+				CSPAQ13700InBlock1 = new CSPAQ13700InBlock1
+				{
+					OrdMktCode = "00",
+					BnsTpCode = "0",
+					IsuNo = string.Empty,
+					ExecYn = "0",
+					OrdDt = dateBegun.ToString("yyyyMMdd"),
+					SrtOrdNo2 = 0,
+					BkseqTpCode = "1",
+					OrdPtnCode = "00"
+				}
+			});
+
+			var orders = new List<Order>() { Capacity = response.CSPAQ13700OutBlock3.Count };
+
 			response.CSPAQ13700OutBlock3.ForEach(order =>
 			{
 				orders.Add(new Order
@@ -423,22 +424,23 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 	#region 잔고 - t0424
 	public async Task<ResponseResults<Position>> RequestPositionsAsync()
 	{
-		var response = await RequestStandardAsync<t0424>(LsEndpoint.EquityAccount.ToDescription(), new
-		{
-			t0424InBlock = new t0424InBlock
-			{
-				prcgb = "1",
-				chegb = "2",
-				dangb = "0",
-				charge = "1",
-				cts_expcode = ""
-			}
-		});
-
-		var positions = new List<Position>() { Capacity = response.t0424OutBlock1.Count };
-
+		var positions = new List<Position>();
 		try
 		{
+			var response = await RequestStandardAsync<t0424>(LsEndpoint.EquityAccount.ToDescription(), new
+			{
+				t0424InBlock = new t0424InBlock
+				{
+					prcgb = "1",
+					chegb = "2",
+					dangb = "0",
+					charge = "1",
+					cts_expcode = ""
+				}
+			});
+
+			positions.Capacity = response.t0424OutBlock1.Count;
+
 			response.t0424OutBlock1.ForEach(position =>
 			{
 				positions.Add(new Position

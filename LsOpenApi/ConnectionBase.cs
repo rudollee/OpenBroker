@@ -516,43 +516,31 @@ public class ConnectionBase
 		var request = new RestRequest().AddHeaders(GenerateHeaders(typeof(T).Name));
 		request.AddBody(JsonSerializer.Serialize(parameter));
 
-		try
+		var delaying = DelayRequest(typeof(T).Name);
+		if (!delaying)
 		{
-			var delaying = DelayRequest(typeof(T).Name);
-			if (!delaying)
+			Message(this, new ResponseCore
 			{
-				Message(this, new ResponseCore
-				{
-					StatusCode = Status.INTERNALSERVERERROR,
-					Message = "delaying calculation failed"
-				});
+				StatusCode = Status.INTERNALSERVERERROR,
+				Message = "delaying calculation failed"
+			});
 
-				return (T)new LsResponseCore
-				{
-					Code = "ERR",
-					Message = "delaying calculation failed",
-					TrCode = nameof(T)
-				};
-			}
-			var response = await client.PostAsync<T>(request) ?? (T)new LsResponseCore();
-			if (response is null) return (T)new LsResponseCore
-			{
-				Code = "ERR",
-				Message = "failed to response",
-				TrCode = nameof(T),
-			};
-
-			return response;
-		}
-		catch (Exception ex)
-		{
 			return (T)new LsResponseCore
 			{
 				Code = "ERR",
-				Message = ex.Message,
+				Message = "delaying calculation failed",
 				TrCode = nameof(T)
 			};
 		}
+		var response = await client.PostAsync<T>(request) ?? (T)new LsResponseCore();
+		if (response is null) return (T)new LsResponseCore
+		{
+			Code = "ERR",
+			Message = "failed to response",
+			TrCode = nameof(T),
+		};
+
+		return response;
 	} 
 	#endregion
 }

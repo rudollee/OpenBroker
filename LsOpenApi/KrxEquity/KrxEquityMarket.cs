@@ -76,16 +76,16 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#region request news using t3102
 	public async Task<ResponseResult<News>> RequestNews(string id)
 	{
-		var response = await RequestStandardAsync<t3102>(LsEndpoint.EquityInfo.ToDescription(), new
-		{
-			t3102InBlock = new t3102InBlock
-			{
-				sNewsno = id
-			}
-		});
-
 		try
 		{
+			var response = await RequestStandardAsync<t3102>(LsEndpoint.EquityInfo.ToDescription(), new
+			{
+				t3102InBlock = new t3102InBlock
+				{
+					sNewsno = id
+				}
+			});
+
 			if (!response.t3102OutBlock1.Any()) return new ResponseResult<News>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
@@ -122,16 +122,16 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#region request equity dictionary using t8436
 	public async Task<ResponseResults<Equity>> RequestEquityList(int option = 0)
 	{
-		var response = await RequestStandardAsync<t8436>(LsEndpoint.EquityEtc.ToDescription(), new
-		{
-			t8436InBlock = new t8436InBlock
-			{
-				gubun = "0"
-			}
-		});
-
 		try
 		{
+			var response = await RequestStandardAsync<t8436>(LsEndpoint.EquityEtc.ToDescription(), new
+			{
+				t8436InBlock = new t8436InBlock
+				{
+					gubun = "0"
+				}
+			});
+
 			if (!response.t8436OutBlock.Any()) return new ResponseResults<Equity>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
@@ -172,16 +172,16 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 	public async Task<ResponseDictionary<string, Equity>> RequestEquityDictionary(int option = 0)
 	{
-		var response = await RequestStandardAsync<t8436>(LsEndpoint.EquityEtc.ToDescription(), new
-		{
-			t8436InBlock = new t8436InBlock
-			{
-				gubun = "0"
-			}
-		});
-
 		try
 		{
+			var response = await RequestStandardAsync<t8436>(LsEndpoint.EquityEtc.ToDescription(), new
+			{
+				t8436InBlock = new t8436InBlock
+				{
+					gubun = "0"
+				}
+			});
+
 			if (!response.t8436OutBlock.Any()) return new ResponseDictionary<string, Equity>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
@@ -219,18 +219,18 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#region request equity ipo list using t1403
 	public async Task<ResponseResults<Equity>> RequestIPO(DateOnly begin, DateOnly end)
 	{
-		var response = await RequestStandardAsync<t1403>(LsEndpoint.EquityEtc.ToDescription(), new
-		{
-			t1403InBlock = new t1403InBlock
-			{
-				gubun = "0",
-				styymm = begin.ToString("yyyyMM"),
-				enyymm = end.ToString("yyyyMM"),
-			}
-		});
-
 		try
 		{
+			var response = await RequestStandardAsync<t1403>(LsEndpoint.EquityEtc.ToDescription(), new
+			{
+				t1403InBlock = new t1403InBlock
+				{
+					gubun = "0",
+					styymm = begin.ToString("yyyyMM"),
+					enyymm = end.ToString("yyyyMM"),
+				}
+			});
+
 			if (!response.t1403OutBlock1.Any()) return new ResponseResults<Equity>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
@@ -270,16 +270,16 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#region request equity complex using t1101 & t1102
 	public async Task<ResponseResult<EquityPack>> RequestEquityInfo(string symbol, bool needsOrderBook = false)
 	{
-		var response = await RequestStandardAsync<t1102>(LsEndpoint.EquityMarketData.ToDescription(), new
-		{
-			t1102InBlock = new t1102InBlock
-			{
-				shcode = symbol
-			}
-		});
-
 		try
 		{
+			var response = await RequestStandardAsync<t1102>(LsEndpoint.EquityMarketData.ToDescription(), new
+			{
+				t1102InBlock = new t1102InBlock
+				{
+					shcode = symbol
+				}
+			});
+
 			if (response.t1102OutBlock is null) return new ResponseResult<EquityPack>
 			{
 				StatusCode = Status.NODATA,
@@ -396,17 +396,17 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 	public async Task<ResponseResults<MarketContract>> RequestMarketContract(IEnumerable<string> symbols)
 	{
-		var response = await RequestStandardAsync<t8407>(LsEndpoint.EquityMarketData.ToDescription(), new
-		{
-			t8407InBlock = new t8407InBlock
-			{
-				nrec = symbols.Count(),
-				shcode = string.Join("", symbols.Take(50))
-			}
-		});
-
 		try
 		{
+			var response = await RequestStandardAsync<t8407>(LsEndpoint.EquityMarketData.ToDescription(), new
+			{
+				t8407InBlock = new t8407InBlock
+				{
+					nrec = symbols.Count(),
+					shcode = string.Join("", symbols.Take(50))
+				}
+			});
+
 			if (response.t8407OutBlock1 is null) return new ResponseResults<MarketContract>
 			{
 				StatusCode = Status.NODATA,
@@ -453,19 +453,19 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#region request marketContractHistory using t1301
 	public async Task<ResponseResults<MarketContract>> RequestMarketContractHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0)
 	{
-		var response = await RequestStandardAsync<t1301>(LsEndpoint.EquityMarketData.ToDescription(), new
-		{
-			t1301InBlock = new t1301InBlock
-			{
-				shcode = symbol,
-				starttime = begin,
-				endtime = end,
-				cvolume = Convert.ToInt64(baseVolume)
-			}
-		});
-
 		try
 		{
+			var response = await RequestStandardAsync<t1301>(LsEndpoint.EquityMarketData.ToDescription(), new
+			{
+				t1301InBlock = new t1301InBlock
+				{
+					shcode = symbol,
+					starttime = begin,
+					endtime = end,
+					cvolume = Convert.ToInt64(baseVolume)
+				}
+			});
+
 			if (!response.t1301OutBlock1.Any()) return new ResponseResults<MarketContract>
 			{
 				StatusCode = Status.NODATA,
@@ -505,17 +505,17 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#region request sectors using t1531
 	public async Task<ResponseResults<Sector>> RequestSectors(string code = "", string name = "")
 	{
-		var response = await RequestStandardAsync<t1531>(LsEndpoint.EquitySector.ToDescription(), new
-		{
-			t1531InBlock = new t1531InBlock
-			{
-				tmname = name,
-				tmcode = code
-			}
-		});
-
 		try
 		{
+			var response = await RequestStandardAsync<t1531>(LsEndpoint.EquitySector.ToDescription(), new
+			{
+				t1531InBlock = new t1531InBlock
+				{
+					tmname = name,
+					tmcode = code
+				}
+			});
+
 			if (!response.t1531OutBlock.Any()) return new ResponseResults<Sector>
 			{
 				StatusCode = Status.NODATA,
@@ -550,16 +550,16 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#region request sectors by equity using t1532
 	public async Task<ResponseResults<Sector>> RequestSectorsByEquity(string symbol)
 	{
-		var response = await RequestStandardAsync<t1532>(LsEndpoint.EquitySector.ToDescription(), new
-		{
-			t1532InBlock = new t1532InBlock
-			{
-				shcode = symbol
-			}
-		});
-
 		try
 		{
+			var response = await RequestStandardAsync<t1532>(LsEndpoint.EquitySector.ToDescription(), new
+			{
+				t1532InBlock = new t1532InBlock
+				{
+					shcode = symbol
+				}
+			});
+
 			if (!response.t1532OutBlock.Any()) return new ResponseResults<Sector>
 			{
 				StatusCode = Status.NODATA,
@@ -594,16 +594,16 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#region request equities by sector using t1537
 	public async Task<ResponseResults<PriceOHLC>> RequestEquitiesBySector(string sectorCode)
 	{
-		var response = await RequestStandardAsync<t1537>(LsEndpoint.EquitySector.ToDescription(), new
-		{
-			t1537InBlock = new t1537InBlock
-			{
-				tmcode = sectorCode
-			}
-		});
-
 		try
 		{
+			var response = await RequestStandardAsync<t1537>(LsEndpoint.EquitySector.ToDescription(), new
+			{
+				t1537InBlock = new t1537InBlock
+				{
+					tmcode = sectorCode
+				}
+			});
+
 			if (!response.t1537OutBlock1.Any()) return new ResponseResults<PriceOHLC>
 			{
 				StatusCode = Status.NODATA,
@@ -650,20 +650,20 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 	private async Task<ResponseResult<PricePack>> RequestPricePackTick(PricePackRequest request)
 	{
-		var response = await RequestStandardAsync<t8411>(LsEndpoint.EquityChart.ToDescription(), new
-		{
-			t8411InBlock = new t841XInBlock
-			{
-				shcode = request.Symbol,
-				ncnt = request.TimeInterval,
-				qrycnt = 500,
-				sdate = request.DateTimeBegin.ToString("yyyyMMdd"),
-				edate = request.DateTimeEnd.ToString("yyyyMMdd"),
-			}
-		});
-
 		try
 		{
+			var response = await RequestStandardAsync<t8411>(LsEndpoint.EquityChart.ToDescription(), new
+			{
+				t8411InBlock = new t841XInBlock
+				{
+					shcode = request.Symbol,
+					ncnt = request.TimeInterval,
+					qrycnt = 500,
+					sdate = request.DateTimeBegin.ToString("yyyyMMdd"),
+					edate = request.DateTimeEnd.ToString("yyyyMMdd"),
+				}
+			});
+
 			if (!response.t8411OutBlock1.Any()) return new ResponseResult<PricePack>
 			{
 				StatusCode = Status.NODATA,
@@ -724,20 +724,20 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 	private async Task<ResponseResult<PricePack>> RequestPricePackMinute(PricePackRequest request)
 	{
-		var response = await RequestStandardAsync<t8412>(LsEndpoint.EquityChart.ToDescription(), new
-		{
-			t8412InBlock = new t841XInBlock
-			{
-				shcode = request.Symbol,
-				ncnt = request.TimeInterval,
-				qrycnt = 500,
-				sdate = request.DateTimeBegin.ToString("yyyyMMdd"),
-				edate = request.DateTimeEnd.ToString("yyyyMMdd"),
-			}
-		});
-
 		try
 		{
+			var response = await RequestStandardAsync<t8412>(LsEndpoint.EquityChart.ToDescription(), new
+			{
+				t8412InBlock = new t841XInBlock
+				{
+					shcode = request.Symbol,
+					ncnt = request.TimeInterval,
+					qrycnt = 500,
+					sdate = request.DateTimeBegin.ToString("yyyyMMdd"),
+					edate = request.DateTimeEnd.ToString("yyyyMMdd"),
+				}
+			});
+
 			if (!response.t8412OutBlock1.Any()) return new ResponseResult<PricePack>
 			{
 				StatusCode = Status.NODATA,
@@ -798,26 +798,26 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 	private async Task<ResponseResult<PricePack>> RequestPricePackX(PricePackRequest request)
 	{
-		var response = await RequestStandardAsync<t8410>(LsEndpoint.EquityChart.ToDescription(), new
-		{
-			t8410InBlock = new t8410InBlock
-			{
-				shcode = request.Symbol,
-				gubun = request.TimeIntervalUnit switch
-				{
-					IntervalUnit.Day => "2",
-					IntervalUnit.Week => "3",
-					IntervalUnit.Month => "4",
-					_ => "5"
-				},
-				qrycnt = 500,
-				sdate = request.DateTimeBegin.ToString("yyyyMMdd"),
-				edate = request.DateTimeEnd.ToString("yyyyMMdd"),
-			}
-		});
-
 		try
 		{
+			var response = await RequestStandardAsync<t8410>(LsEndpoint.EquityChart.ToDescription(), new
+			{
+				t8410InBlock = new t8410InBlock
+				{
+					shcode = request.Symbol,
+					gubun = request.TimeIntervalUnit switch
+					{
+						IntervalUnit.Day => "2",
+						IntervalUnit.Week => "3",
+						IntervalUnit.Month => "4",
+						_ => "5"
+					},
+					qrycnt = 500,
+					sdate = request.DateTimeBegin.ToString("yyyyMMdd"),
+					edate = request.DateTimeEnd.ToString("yyyyMMdd"),
+				}
+			});
+
 			if (!response.t8410OutBlock1.Any()) return new ResponseResult<PricePack>
 			{
 				StatusCode = Status.NODATA,
@@ -859,5 +859,4 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 	}
 	#endregion
-
 }
