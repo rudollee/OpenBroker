@@ -87,7 +87,11 @@ public class Instrument : InstrumentCore
 	/// </summary>
 	public decimal Margin { get; set; }
 
-    public DateOnly DateOpened { get; set; }
+    public decimal Multiple { get; set; }
+
+    public bool HasNearing { get; set; }
+
+	public DateOnly DateOpened { get; set; }
 
     public DateOnly DateExpired { get; set; }
 
