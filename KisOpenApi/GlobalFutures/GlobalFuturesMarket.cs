@@ -100,7 +100,7 @@ public partial class KisGlobalFutures : ConnectionBase, IMarket
             row["서버자동주문 TWAP 가능 종목 여부"]		= line.Substring(33, 1).Trim();
             row["서버자동 경제지표 주문 가능 종목 여부"]	= line.Substring(34, 1).Trim();
             row["필러"]								= line.Substring(35, 47).Trim();
-            row["종목한글명"]							= line.Substring(82, 25).Trim();
+            row["종목한글명"]							= line.Substring(82, 50).Trim();
             row["거래소코드 (ISAM KEY 1)"]			= line.Substring(line.Length -91, 10).Trim();
             row["품목코드 (ISAM KEY 2)"]				= line.Substring(line.Length -81, 10).Trim();
             row["품목종류"]							= line.Substring(line.Length -71, 3).Trim();
@@ -121,12 +121,16 @@ public partial class KisGlobalFutures : ConnectionBase, IMarket
 			if (line.Substring(line.Length - 6, 1).Trim() == "0") continue; // 최다월물여부 0:원월물 1:최다월물
 			if (line.Substring(line.Length - 4, 1).Trim() == "Y") continue; // 스프레드여부
 
+			var symbol = line.Substring(0, 32).Trim();
+			var instrumentName = line.Substring(82, 50).Trim();
+			var endIndex = instrumentName.IndexOf("-2");
+
 			var instrument = new Instrument
 			{
-				Symbol = line.Substring(0, 32).Trim(),
+				Symbol = symbol,
 				Sym = line.Substring(line.Length - 81, 10).Trim(),
-				SymD = line.Substring(0, 32).Trim().Substring(2, 3),
-				InstrumentName = line.Substring(82, 25).Trim(),
+				SymD = symbol.Substring(symbol.Length - 3),
+				InstrumentName = endIndex > 0 ? instrumentName.Substring(0, endIndex) : instrumentName,
 				Tick = Convert.ToDecimal(line.Substring(line.Length - 58, 14).Trim()),
 				TickValue = Convert.ToDecimal(line.Substring(line.Length - 44, 14).Trim()),
 				ExchangeCode = (Exchange)Enum.Parse(typeof(Exchange), line.Substring(line.Length - 91, 10).Trim()),
