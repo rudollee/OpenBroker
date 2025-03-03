@@ -44,5 +44,25 @@ internal class VI_OutBlock
 	/// <summary>시간</summary>
 	public string time { get; set; } = string.Empty;
 
+	/// <summary>거래소명</summary>
+	public string exchname { get; set; } = string.Empty;
 }
 
+/// <summary>
+/// 시간외단일가 VI발동해제(DVI)
+/// </summary>
+internal class DVI
+{
+	public DVIInBlock DVI_InBlock { get; set; } = new();
+	public DVIOutBlock DVI_OutBlock { get; set; } = new();
+}
+
+/// <summary>
+/// 시간외단일가 VI발동해제(DVI) - InBlock
+/// </summary>
+internal class DVIInBlock : VI_InBlock { }
+
+/// <summary>
+/// 시간외단일가 VI발동해제(DVI) - OutBlock
+/// </summary>
+internal class DVIOutBlock : VI_OutBlock { }

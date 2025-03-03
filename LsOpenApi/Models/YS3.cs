@@ -53,6 +53,9 @@ internal class YS3OutBlock
 
 	/// <summary>단축코드</summary>
 	public string shcode { get; set; } = string.Empty;
+
+	/// <summary>거래소명</summary>
+	public string exchname { get; set; } = string.Empty;
 }
 
 /// <summary>

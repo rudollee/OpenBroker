@@ -161,6 +161,21 @@ internal class H1_OutBlock
 
 	/// <summary>누적거래량</summary>
 	public string volume { get; set; } = string.Empty;
+
+	/// <summary>중간가격</summary>
+	public string midprice { get; set; } = string.Empty;
+
+	/// <summary>매도중간가잔량합계수량</summary>
+	public string offermidsumrem { get; set; } = string.Empty;
+
+	/// <summary>매수중간가잔량합계수량</summary>
+	public string bidmidsumrem { get; set; } = string.Empty;
+
+	/// <summary>중간가잔량합계수량</summary>
+	public string midsumrem { get; set; } = string.Empty;
+
+	/// <summary>중간가잔량구분</summary>
+	public string midsumremgubun { get; set; } = string.Empty;
 }
 
 /// <summary>

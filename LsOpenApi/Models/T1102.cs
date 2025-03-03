@@ -14,6 +14,9 @@ internal class t1102InBlock
 {
 	/// <summary>단축코드</summary>
 	public string shcode { get; set; } = string.Empty;
+
+	/// <summary>거래소구분코드 - K/N/U</summary>
+	public string exchgubun { get; set; } = "K";
 }
 
 /// <summary>
@@ -500,4 +503,19 @@ internal class t1102OutBlock
 
 	/// <summary>ETF/ETN투자유의</summary>
 	public string ty_text { get; set; } = string.Empty;
+
+	/// <summary>NXT장구분</summary>
+	public string nxt_janginfo { get; set; } = string.Empty;
+
+	/// <summary>NXT단기과열/VI발동</summary>
+	public string nxt_shterm_text { get; set; } = string.Empty;
+
+	/// <summary>NXT정적VI상한가</summary>
+	public long nxt_svi_uplmtprice { get; set; }
+
+	/// <summary>NXT정적VI하한가</summary>
+	public long nxt_svi_dnlmtprice { get; set; }
+
+	/// <summary>거래소별단축코드</summary>
+	public string ex_shcode { get; set; } = string.Empty;
 }

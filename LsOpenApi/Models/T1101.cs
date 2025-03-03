@@ -279,4 +279,19 @@ internal class t1101OutBlock
 
 	/// <summary>저가</summary>
 	public long low { get; set; }
+
+	/// <summary>KRX중간가격</summary>
+	public long krx_midprice { get; set; }
+
+	/// <summary>KRX매도중간가잔량합계수량</summary>
+	public long krx_offermidsumrem { get; set; }
+
+	/// <summary>KRX매수중간가잔량합계수량</summary>
+	public long krx_bidmidsumrem { get; set; }
+
+	/// <summary>KRX중간가잔량합계수량</summary>
+	public long krx_midsumrem { get; set; }
+
+	/// <summary>KRX중간가잔량구분</summary>
+	public string krx_midsumremgubun { get; set; } = string.Empty;
 }

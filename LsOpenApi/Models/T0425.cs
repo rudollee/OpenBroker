@@ -27,7 +27,6 @@ internal class t0425InBlock
 
 	/// <summary>주문번호</summary>
 	public string cts_ordno { get; set; } = string.Empty;
-
 }
 
 /// <summary>
@@ -129,4 +128,6 @@ internal class t0425OutBlock1
 	/// <summary>대출일자</summary>
 	public string loandt { get; set; } = string.Empty;
 
+	/// <summary>거래소명</summary>
+	public string exchname { get; set; } = string.Empty;
 }
