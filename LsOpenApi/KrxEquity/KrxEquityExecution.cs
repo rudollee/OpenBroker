@@ -26,6 +26,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 				{
 					OrderType.LIMIT => "00",
 					OrderType.MARKET => "03",
+					OrderType.MID => "12",
 					_ => "03"
 				},
 				MgntrnCode = "000",
@@ -47,6 +48,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 				{
 					OrderType.LIMIT => "00",
 					OrderType.MARKET => "03",
+					OrderType.MID => "12",
 					_ => "00"
 				},
 				OrdCndiTpCode = "0"
