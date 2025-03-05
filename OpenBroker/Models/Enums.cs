@@ -56,10 +56,21 @@ public enum OrderMode
 public enum OrderType
 {
     AUTO = 0,
-    LIMIT = 1,
-    MARKET = 2,
-    STOP = 3,
-    STOPLIMIT = 4,
+
+	/// <summary>at Limit</summary>
+	LIMIT = 10,
+
+	/// <summary>at Market</summary>
+	MARKET = 20,
+
+	/// <summary>Mid Point</summary>
+	MID = 22,
+
+	/// <summary>Stop</summary>
+	STOP = 40,
+
+	/// <summary>Stop Limit</summary>
+	STOPLIMIT = 41,
 }
 
 public enum OrderDuration
