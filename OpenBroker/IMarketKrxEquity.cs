@@ -54,6 +54,19 @@ public interface IMarketKrxEquity
 	Task<ResponseResults<PriceOHLC>> RequestEquitiesBySector(string sectorCode);
 
 	/// <summary>
+	/// 조건 검색 리스트
+	/// </summary>
+	/// <returns></returns>
+	Task<ResponseResults<SearchFilter>> RequestSearchFilters();
+
+	/// <summary>
+	/// 종목 리스트 by 조건 검색
+	/// </summary>
+	/// <param name="id"></param>
+	/// <returns></returns>
+	Task<ResponseResult<MarketContract>> RequestEquitiesByFilter(int id);
+
+	/// <summary>
 	/// Realtime Data 가능 상황
 	/// </summary>
 	bool AvailableToSubscribe { get; }
