@@ -21,10 +21,10 @@ public partial class KisKrxEquity : ConnectionBase, IMarket
 	public Task<ResponseResult<PricePack>> RequestPricePack(PricePackRequest request) => throw new NotImplementedException();
 
 	public async Task<ResponseCore> SubscribeMarketContract(string symbol = "", bool connecting = true, string subscriber = "") =>
-		await SubscribeAsync(nameof(H0STCNT0), symbol, connecting);
+		await SubscribeAsync(subscriber, nameof(H0STCNT0), symbol, connecting);
 
 	public async Task<ResponseCore> SubscribeMarketDepth(string symbol = "", bool connecting = true, string subscriber = "") =>
-		await SubscribeAsync(nameof(H0STASP0), symbol, connecting);
+		await SubscribeAsync(subscriber, nameof(H0STASP0), symbol, connecting);
 
 	public Task<ResponseCore> SubscribeNews(bool connecting = true) => throw new NotImplementedException();
 	public Task<ResponseCore> SubscribeMarketPause(string symbol = "000000") => throw new NotImplementedException();

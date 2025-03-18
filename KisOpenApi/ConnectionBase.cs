@@ -190,7 +190,7 @@ public class ConnectionBase
 
 			foreach (KeyValuePair<string, SubscriptionPack> subscription in _subscriptions)
 			{
-				await SubscribeAsync(subscription.Key, subscription.Value.Key);
+				await SubscribeAsync("RECONNECTION", subscription.Key, subscription.Value.Key);
 			}
 
 			return new ResponseCore
@@ -224,7 +224,7 @@ public class ConnectionBase
 
 		foreach (KeyValuePair<string, SubscriptionPack> subscription in _subscriptions)
 		{
-			await SubscribeAsync(subscription.Key, subscription.Value.Key, false);
+			await SubscribeAsync("SYS", subscription.Key, subscription.Value.Key, false);
 		}
 
 		return new ResponseCore
@@ -235,7 +235,7 @@ public class ConnectionBase
 	#endregion
 
 	#region Subscribe / Unsubscribe
-	protected async Task<ResponseCore> SubscribeAsync(string trCode, string key, bool connecting = true, string subscriber = "SYS")
+	protected async Task<ResponseCore> SubscribeAsync(string subscriber, string trCode, string key, bool connecting = true)
 	{
 		if (Client is null) return new ResponseCore
 		{
@@ -398,7 +398,7 @@ public class ConnectionBase
 
 		foreach (var subscirption in _subscriptions)
 		{
-			var response = await SubscribeAsync(subscirption.Key, subscirption.Value.Key);
+			var response = await SubscribeAsync("RECONNECTION", subscirption.Key, subscirption.Value.Key);
 			if (response is null || response.StatusCode != Status.SUCCESS)
 			{
 				Message(this, new ResponseCore
