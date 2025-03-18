@@ -78,7 +78,8 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 						Symbol = data[(int)HDFFF010.series_cd],
 						TimeContract = (data[(int)HDFFF010.recv_date] + data[(int)HDFFF010.recv_time]).ToDateTimeMicro(),
 					},
-					Remark = plainTxt
+					Remark = plainTxt,
+					Broker = Brkr.KI
 				});
 				break;
 			#endregion
@@ -96,7 +97,8 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 						C = Convert.ToDecimal(data[(int)H0STCNT0.STCK_PRPR]),
 						TimeContract = (DateTime.Now.ToString("yyyyMMdd") + data[(int)H0STCNT0.STCK_CNTG_HOUR]).ToDateTime(),
 					},
-					Remark = plainTxt
+					Remark = plainTxt,
+					Broker = Brkr.KI
 				});
 				break;
 			#endregion
@@ -119,7 +121,8 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 						TimeContracted = data[(int)H0STCNI0.STCK_CNTG_HOUR].ToDateTime(),
 						Symbol = data[(int)H0STCNI0.STCK_SHRN_ISCD],
 					},
-					Remark = plainTxt
+					Remark = plainTxt,
+					Broker = Brkr.KI
 				});
 				break;
 			#endregion
@@ -131,6 +134,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 					Code = rawData[2],
 					Message = "during parsing callback to swich",
 					Remark = plainTxt,
+					Broker = Brkr.KI
 				});
 				break;
 		}

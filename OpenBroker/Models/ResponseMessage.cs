@@ -28,6 +28,11 @@ public class ResponseCore
     /// 비고
     /// </summary>
     public string Remark { get; set; } = string.Empty;
+
+	/// <summary>
+	/// 증권사/Broker
+	/// </summary>
+	public Brkr Broker { get; set; } = Brkr.NONE;
 }
 
 public class ResponseResult<T> : ResponseCore where T : class

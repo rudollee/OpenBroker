@@ -63,7 +63,8 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 						Publisher = CodeRef.NewsPublishers.ContainsKey(publisherId) ? CodeRef.NewsPublishers[publisherId] : response.Body.id,
 						Title = response.Body.title,
 						Remark = response.Body.code,
-					}
+					},
+					Broker = Brkr.LS
 				});
 				break;
 			#endregion
@@ -76,7 +77,8 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				{
 					Typ = MessageType.MKTS,
 					Code = $"{resJif.Body.jangubun}.{resJif.Body.jstatus}",
-					Message = $"{CodeRef.MarketSectionDic[resJif.Body.jangubun]} {CodeRef.MarketStatusDic[resJif.Body.jstatus]}"
+					Message = $"{CodeRef.MarketSectionDic[resJif.Body.jangubun]} {CodeRef.MarketStatusDic[resJif.Body.jstatus]}",
+					Broker = Brkr.LS
 				});
 				break;
 			#endregion
@@ -110,7 +112,8 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 						VolumeAcc = Convert.ToDecimal(s3Res.Body.volume),
 						MoneyAcc = Convert.ToDecimal(s3Res.Body.value),
 					},
-					Remark = message.Text
+					Remark = message.Text,
+					Broker = Brkr.LS
 				});
 				break;
 			#endregion
@@ -136,7 +139,8 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 						ContractSide = ys3Res.Body.yeprice == ys3Res.Body.ybidho0 ? ContractSide.ASK : ContractSide.BID,
 						BasePrice = Convert.ToDecimal(ys3Res.Body.yeprice) - Convert.ToDecimal((new string[] { "4", "5" }.Contains(ys3Res.Body.jnilysign) ? "-" : "") + ys3Res.Body.jnilchange),
 					},
-					Remark = message.Text
+					Remark = message.Text,
+					Broker = Brkr.LS
 				});
 				break;
 			#endregion
@@ -157,7 +161,8 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 						C = Convert.ToDecimal(curRes.Body.price),
 						BasePrice = Convert.ToDecimal(curRes.Body.price) - Convert.ToDecimal(curRes.Body.change),
 					},
-					Remark = message.Text
+					Remark = message.Text,
+					Broker = Brkr.LS
 				});
 				break;
 			#endregion
@@ -178,7 +183,8 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 						C = Convert.ToDecimal(mk2Res.Body.price),
 						BasePrice = Convert.ToDecimal(mk2Res.Body.price) - Convert.ToDecimal(mk2Res.Body.change)
 					},
-					Remark = message.Text
+					Remark = message.Text,
+					Broker = Brkr.LS
 				});
 				break; 
 			#endregion
@@ -225,7 +231,8 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 						AskAgg = Convert.ToDecimal(h1Res.Body.totofferrem),
 						BidAgg = Convert.ToDecimal(h1Res.Body.totbidrem),
 					},
-					Remark = message.Text
+					Remark = message.Text,
+					Broker = Brkr.LS
 				});
 				break;
 			#endregion
@@ -249,7 +256,8 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 						BasePrice = Convert.ToDecimal(viResponse.Body.vi_gubun == "1" ? viResponse.Body.svi_recprice : viResponse.Body.dvi_recprice),
 						TriggerPrice = Convert.ToDecimal(viResponse.Body.vi_trgprice),
 						Remark = viResponse.Body.shcode,
-					}
+					},
+					Broker = Brkr.LS
 				});
 				break; 
 			#endregion
@@ -282,7 +290,8 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 						VolumeOrdered = Convert.ToDecimal(sc0Res.Body.ordqty),
 						TimeOrdered = (DateTime.Now.ToString("yyyyMMdd") + sc0Res.Body.ordtm).ToDateTimeMicro(),
 					},
-					Remark = message.Text
+					Remark = message.Text,
+					Broker = Brkr.LS
 				});
 				break;
 			#endregion
@@ -323,7 +332,8 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 						},
 						Tradable = true,
 					},
-					Remark = message.Text
+					Remark = message.Text,
+					Broker = Brkr.LS
 				});
 				break;
 			#endregion
@@ -352,7 +362,8 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 						VolumeLeft = Convert.ToDecimal(sc1Res.Body.secbalqty),
 						TimeContracted = (DateTime.Now.ToString("yyyyMMdd") + sc1Res.Body.exectime).ToDateTimeMicro(),
 					},
-					Remark = message.Text
+					Remark = message.Text,
+					Broker = Brkr.LS
 				});
 				break;
 			#endregion
