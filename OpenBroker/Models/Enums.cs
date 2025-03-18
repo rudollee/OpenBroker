@@ -183,15 +183,12 @@ public enum ExchangeSection
 
 public enum Brkr
 {
-    /// <summary>
-    /// 교보증권
-    /// </summary>
-    KY = 0,
+    NONE = 0,
 
     /// <summary>
-    /// eBest증권
+    /// LS증권
     /// </summary>
-    EB = 1,
+    LS = 1,
 
     /// <summary>
     /// 유안타증권
@@ -217,6 +214,11 @@ public enum Brkr
     /// 한국투자증권
     /// </summary>
     KI,
+
+	/// <summary>
+	/// 교보증권
+	/// </summary>
+	KY,
 }
 
 public enum MarketSession

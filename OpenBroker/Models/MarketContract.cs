@@ -6,6 +6,11 @@
 public class MarketContract
 {
     /// <summary>
+    /// 증권사
+    /// </summary>
+    public Brkr Broker { get; set; } = Brkr.LS;
+
+    /// <summary>
     /// 시장 세션 구분
     /// </summary>
     public MarketSession MarketSessionInfo { get; set; } = MarketSession.REGULAR;
