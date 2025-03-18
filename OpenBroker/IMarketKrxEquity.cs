@@ -57,7 +57,7 @@ public interface IMarketKrxEquity
 	/// 조건 검색 리스트
 	/// </summary>
 	/// <returns></returns>
-	Task<ResponseResults<SearchFilter>> RequestSearchFilters(string[]? parameters = null);
+	Task<ResponseResults<SearchFilter>> RequestSearchFilters();
 
 	/// <summary>
 	/// 종목 리스트 by 조건 검색

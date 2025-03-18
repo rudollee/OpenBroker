@@ -860,7 +860,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	}
 	#endregion
 
-	public Task<ResponseResults<SearchFilter>> RequestSearchFilters(string[]? parameters = null) => throw new NotImplementedException();
+	public Task<ResponseResults<SearchFilter>> RequestSearchFilters() => throw new NotImplementedException();
 	public Task<ResponseResult<MarketContract>> RequestEquitiesByFilter(int id) => throw new NotImplementedException();
 
 }
