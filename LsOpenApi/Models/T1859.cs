@@ -4,9 +4,9 @@
 /// </summary>
 internal class t1859 : LsResponseCore
 {
-	public t1859InBlock t1857InBlock { get; set; } = new();
-	public t1859OutBlock t1857OutBlock { get; set; } = new();
-	public List<t1859OutBlock1> t1857OutBlock1 { get; set; } = new();
+	public t1859InBlock t1859InBlock { get; set; } = new();
+	public t1859OutBlock t1859OutBlock { get; set; } = new();
+	public List<t1859OutBlock1> t1859OutBlock1 { get; set; } = new();
 }
 
 /// <summary>

@@ -860,7 +860,99 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	}
 	#endregion
 
-	public Task<ResponseResults<SearchFilter>> RequestSearchFilters() => throw new NotImplementedException();
-	public Task<ResponseResult<MarketContract>> RequestEquitiesByFilter(int id) => throw new NotImplementedException();
+	#region request search filters & filtered equities by t1866, t1859
+	public async Task<ResponseResults<SearchFilter>> RequestSearchFilters()
+	{
+		try
+		{
+			if (AccountInfo is null || string.IsNullOrWhiteSpace(AccountInfo.ID)) return new ResponseResults<SearchFilter>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = "HTS ID is required",
+				List = new List<SearchFilter>()
+			};
+
+			var response = await RequestStandardAsync<t1866>(LsEndpoint.EquitySearch.ToDescription(), new
+			{
+				t1866InBlock = new t1866InBlock
+				{
+					user_id = AccountInfo.ID,
+				}
+			});
+
+			if (!response.t1866OutBlock1.Any()) return new ResponseResults<SearchFilter>
+			{
+				StatusCode = Status.NODATA,
+				Message = response.Message,
+				Code = response.Code,
+				Remark = "no data",
+				List = new List<SearchFilter>()
+			};
+
+			var filters = new List<SearchFilter>();
+			response.t1866OutBlock1.ForEach(filter => filters.Add(new SearchFilter
+			{
+				Group = filter.group_name,
+				ID = filter.query_index,
+				Qeury = filter.query_name
+			}));
+
+			return new ResponseResults<SearchFilter> { List = filters };
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResults<SearchFilter>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = ex.Message,
+				List = new List<SearchFilter>()
+			};
+		}
+	}
+
+	public async Task<ResponseResults<MarketContract>> RequestEquitiesByFilter(string query)
+	{
+		try
+		{
+			var response = await RequestStandardAsync<t1859>(LsEndpoint.EquitySearch.ToDescription(), new
+			{
+				t1859InBlock = new t1859InBlock
+				{
+					query_index = query
+				}
+			});
+
+			if (!response.t1859OutBlock1.Any()) return new ResponseResults<MarketContract>
+			{
+				StatusCode = Status.NODATA,
+				Message = response.Message,
+				Code = response.Code,
+				Remark = "no data",
+				List = new List<MarketContract>()
+			};
+
+			var contracts = new List<MarketContract>();
+			response.t1859OutBlock1.ForEach(contract => contracts.Add(new MarketContract
+			{
+				Symbol = contract.shcode,
+				C = contract.price,
+				BasePrice = contract.price - contract.change * (new string[] { "4", "5" }.Contains(contract.sign) ? -1 : 1),
+				V = contract.volume,
+				VolumeAcc = contract.volume,
+			}));
+
+			return new ResponseResults<MarketContract> { List = contracts };
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResults<MarketContract>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = ex.Message,
+				List = new List<MarketContract>()
+			};
+		}
+	} 
+	#endregion
 
 }

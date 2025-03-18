@@ -64,7 +64,7 @@ public interface IMarketKrxEquity
 	/// </summary>
 	/// <param name="id"></param>
 	/// <returns></returns>
-	Task<ResponseResult<MarketContract>> RequestEquitiesByFilter(int id);
+	Task<ResponseResults<MarketContract>> RequestEquitiesByFilter(string query);
 
 	/// <summary>
 	/// Realtime Data 가능 상황
