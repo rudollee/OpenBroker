@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace KisOpenApi.Models;
+﻿namespace KisOpenApi.Models;
 
 #region 해외선물옵션 실시간체결가
 /// <summary>
@@ -685,145 +679,142 @@ internal enum H0STASP0
 /// </summary>
 internal enum H0STCNT0
 {
-	/// <summary>종목코드</summary>
-	series_cd = 0,
-
 	/// <summary>유가증권 단축 종목코드</summary>
-	MKSC_SHRN_ISCD = 1,
+	MKSC_SHRN_ISCD = 0,
 
 	/// <summary>주식 체결 시간</summary>
-	STCK_CNTG_HOUR = 2,
+	STCK_CNTG_HOUR = 1,
 
 	/// <summary>주식 현재가</summary>
-	STCK_PRPR = 3,
+	STCK_PRPR = 2,
 
 	/// <summary>전일 대비 부호</summary>
-	PRDY_VRSS_SIGN = 4,
+	PRDY_VRSS_SIGN = 3,
 
 	/// <summary>전일 대비</summary>
-	PRDY_VRSS = 5,
+	PRDY_VRSS = 4,
 
 	/// <summary>전일 대비율</summary>
-	PRDY_CTRT = 6,
+	PRDY_CTRT = 5,
 
 	/// <summary>가중 평균 주식 가격</summary>
-	WGHN_AVRG_STCK_PRC = 7,
+	WGHN_AVRG_STCK_PRC = 6,
 
 	/// <summary>주식 시가</summary>
-	STCK_OPRC = 8,
+	STCK_OPRC = 7,
 
 	/// <summary>주식 최고가</summary>
-	STCK_HGPR = 9,
+	STCK_HGPR = 8,
 
 	/// <summary>주식 최저가</summary>
-	STCK_LWPR = 10,
+	STCK_LWPR = 9,
 
 	/// <summary>매도호가1</summary>
-	ASKP1 = 11,
+	ASKP1 = 10,
 
 	/// <summary>매수호가1</summary>
-	BIDP1 = 12,
+	BIDP1 = 11,
 
 	/// <summary>체결 거래량</summary>
-	CNTG_VOL = 13,
+	CNTG_VOL = 12,
 
 	/// <summary>누적 거래량</summary>
-	ACML_VOL = 14,
+	ACML_VOL = 13,
 
 	/// <summary>누적 거래 대금</summary>
-	ACML_TR_PBMN = 15,
+	ACML_TR_PBMN = 14,
 
 	/// <summary>매도 체결 건수</summary>
-	SELN_CNTG_CSNU = 16,
+	SELN_CNTG_CSNU = 15,
 
 	/// <summary>매수 체결 건수</summary>
-	SHNU_CNTG_CSNU = 17,
+	SHNU_CNTG_CSNU = 16,
 
 	/// <summary>순매수 체결 건수</summary>
-	NTBY_CNTG_CSNU = 18,
+	NTBY_CNTG_CSNU = 17,
 
 	/// <summary>체결강도</summary>
-	CTTR = 19,
+	CTTR = 18,
 
 	/// <summary>총 매도 수량</summary>
-	SELN_CNTG_SMTN = 20,
+	SELN_CNTG_SMTN = 19,
 
 	/// <summary>총 매수 수량</summary>
-	SHNU_CNTG_SMTN = 21,
+	SHNU_CNTG_SMTN = 20,
 
 	/// <summary>체결구분</summary>
-	CCLD_DVSN = 22,
+	CCLD_DVSN = 21,
 
 	/// <summary>매수비율</summary>
-	SHNU_RATE = 23,
+	SHNU_RATE = 22,
 
 	/// <summary>전일 거래량 대비 등락율</summary>
-	PRDY_VOL_VRSS_ACML_VOL_RATE = 24,
+	PRDY_VOL_VRSS_ACML_VOL_RATE = 23,
 
 	/// <summary>시가 시간</summary>
-	OPRC_HOUR = 25,
+	OPRC_HOUR = 24,
 
 	/// <summary>시가대비구분</summary>
-	OPRC_VRSS_PRPR_SIGN = 26,
+	OPRC_VRSS_PRPR_SIGN = 25,
 
 	/// <summary>시가대비</summary>
-	OPRC_VRSS_PRPR = 27,
+	OPRC_VRSS_PRPR = 26,
 
 	/// <summary>최고가 시간</summary>
-	HGPR_HOUR = 28,
+	HGPR_HOUR = 27,
 
 	/// <summary>고가대비구분</summary>
-	HGPR_VRSS_PRPR_SIGN = 29,
+	HGPR_VRSS_PRPR_SIGN = 28,
 
 	/// <summary>고가대비</summary>
-	HGPR_VRSS_PRPR = 30,
+	HGPR_VRSS_PRPR = 29,
 
 	/// <summary>최저가 시간</summary>
-	LWPR_HOUR = 31,
+	LWPR_HOUR = 30,
 
 	/// <summary>저가대비구분</summary>
-	LWPR_VRSS_PRPR_SIGN = 32,
+	LWPR_VRSS_PRPR_SIGN = 31,
 
 	/// <summary>저가대비</summary>
-	LWPR_VRSS_PRPR = 33,
+	LWPR_VRSS_PRPR = 32,
 
 	/// <summary>영업 일자</summary>
-	BSOP_DATE = 34,
+	BSOP_DATE = 33,
 
 	/// <summary>신 장운영 구분 코드</summary>
-	NEW_MKOP_CLS_CODE = 35,
+	NEW_MKOP_CLS_CODE = 34,
 
 	/// <summary>거래정지 여부</summary>
-	TRHT_YN = 36,
+	TRHT_YN = 35,
 
 	/// <summary>매도호가 잔량1</summary>
-	ASKP_RSQN1 = 37,
+	ASKP_RSQN1 = 36,
 
 	/// <summary>매수호가 잔량1</summary>
-	BIDP_RSQN1 = 38,
+	BIDP_RSQN1 = 37,
 
 	/// <summary>총 매도호가 잔량</summary>
-	TOTAL_ASKP_RSQN = 39,
+	TOTAL_ASKP_RSQN = 38,
 
 	/// <summary>총 매수호가 잔량</summary>
-	TOTAL_BIDP_RSQN = 40,
+	TOTAL_BIDP_RSQN = 39,
 
 	/// <summary>거래량 회전율</summary>
-	VOL_TNRT = 41,
+	VOL_TNRT = 40,
 
 	/// <summary>전일 동시간 누적 거래량</summary>
-	PRDY_SMNS_HOUR_ACML_VOL = 42,
+	PRDY_SMNS_HOUR_ACML_VOL = 41,
 
 	/// <summary>전일 동시간 누적 거래량 비율</summary>
-	PRDY_SMNS_HOUR_ACML_VOL_RATE = 43,
+	PRDY_SMNS_HOUR_ACML_VOL_RATE = 42,
 
 	/// <summary>시간 구분 코드</summary>
-	HOUR_CLS_CODE = 44,
+	HOUR_CLS_CODE = 43,
 
 	/// <summary>임의종료구분코드</summary>
-	MRKT_TRTM_CLS_CODE = 45,
+	MRKT_TRTM_CLS_CODE = 44,
 
 	/// <summary>정적VI발동기준가</summary>
-	VI_STND_PRC = 46,
+	VI_STND_PRC = 45,
 }
 #endregion

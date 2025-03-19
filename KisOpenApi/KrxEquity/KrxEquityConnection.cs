@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 using KisOpenApi.Models;
 using OpenBroker;
 using OpenBroker.Extensions;
 using OpenBroker.Models;
-using Websocket.Client;
 
 namespace KisOpenApi.KrxEquity;
 public partial class KisKrxEquity : ConnectionBase, IConnection
@@ -92,10 +86,27 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 					Code = rawData[2],
 					Info = new MarketContract
 					{
+						MarketSessionInfo = data[(int)H0STCNT0.NEW_MKOP_CLS_CODE].Substring(0, 1) switch
+						{
+							"1" => MarketSession.PRE,
+							"2" => MarketSession.REGULAR,
+							"3" => MarketSession.CLOSED,
+							"4" => MarketSession.AFTER,
+							_ => MarketSession.REGULAR
+						},
 						Symbol = data[(int)H0STCNT0.MKSC_SHRN_ISCD],
-						V = Convert.ToDecimal(data[(int)H0STCNT0.CNTG_VOL]),
-						C = Convert.ToDecimal(data[(int)H0STCNT0.STCK_PRPR]),
 						TimeContract = (DateTime.Now.ToString("yyyyMMdd") + data[(int)H0STCNT0.STCK_CNTG_HOUR]).ToDateTime(),
+						C = Convert.ToDecimal(data[(int)H0STCNT0.STCK_PRPR]),
+						V = Convert.ToDecimal(data[(int)H0STCNT0.CNTG_VOL]),
+						ContractSide = data[(int)H0STCNT0.CCLD_DVSN] switch
+						{
+							"1" => ContractSide.ASK,
+							"5" => ContractSide.BID,
+							_ => ContractSide.NONE
+						},
+						BasePrice = Convert.ToDecimal(data[(int)H0STCNT0.STCK_PRPR]) - Convert.ToDecimal(data[(int)H0STCNT0.PRDY_VRSS]),
+						VolumeAcc = Convert.ToDecimal(data[(int)H0STCNT0.ACML_VOL]),
+						MoneyAcc = Convert.ToDecimal(data[(int)H0STCNT0.ACML_TR_PBMN]),
 					},
 					Remark = plainTxt,
 					Broker = Brkr.KI
