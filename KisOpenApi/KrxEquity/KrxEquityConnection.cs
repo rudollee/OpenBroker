@@ -106,7 +106,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 						},
 						BasePrice = Convert.ToDecimal(data[(int)H0STCNT0.STCK_PRPR]) - Convert.ToDecimal(data[(int)H0STCNT0.PRDY_VRSS]),
 						VolumeAcc = Convert.ToDecimal(data[(int)H0STCNT0.ACML_VOL]),
-						MoneyAcc = Convert.ToDecimal(data[(int)H0STCNT0.ACML_TR_PBMN]),
+						MoneyAcc = Convert.ToDecimal(data[(int)H0STCNT0.ACML_TR_PBMN]) / 1_000_000,
 					},
 					Remark = plainTxt,
 					Broker = Brkr.KI
