@@ -309,12 +309,6 @@ public class ConnectionBase
 				}
 			}
 
-			Message(this, new ResponseCore
-			{
-				Code = $"{trCode} / {key}",
-				Message = connecting ? "Subscribed" : "Unsubscribed",
-			});
-
 			if (!needsAction) return new ResponseCore
 			{
 				Typ = MessageType.SUB,
@@ -413,6 +407,7 @@ public class ConnectionBase
 
 		Message(this, new ResponseCore
 		{
+			Typ = MessageType.SYS,
 			Code = "Reconnected",
 			Message = info.Type.ToString(),
 		});
@@ -459,6 +454,7 @@ public class ConnectionBase
 
 			Message(this, new ResponseCore
 			{
+				Typ = MessageType.SUB,
 				Code = $"{messageInfo.Body.ResultCode}.{messageInfo.Body.MessageCode}",
 				Message = messageInfo.Body.Message,
 				Remark = $"{messageInfo.Header.ID}: {messageInfo.Header.Key}"
