@@ -5,7 +5,6 @@ using OpenBroker.Models;
 using OpenBroker;
 using Websocket.Client;
 using OpenBroker.Extensions;
-using System.Reflection;
 
 namespace LsOpenApi.KrxEquity;
 public partial class LsKrxEquity : ConnectionBase, IConnection
@@ -72,14 +71,28 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 			case nameof(JIF):
 				var resJif = JsonSerializer.Deserialize<LsSubscriptionCallback<JIFOutBlock>>(message.Text);
 				if (resJif is null || resJif.Body is null) return;
+				if (message is null) return;
 
-				Message(this, new ResponseCore
+				try
 				{
-					Typ = MessageType.MKTS,
-					Code = $"{resJif.Body.jangubun}.{resJif.Body.jstatus}",
-					Message = $"{CodeRef.MarketSectionDic[resJif.Body.jangubun]} {CodeRef.MarketStatusDic[resJif.Body.jstatus]}",
-					Broker = Brkr.LS
-				});
+					Message(this, new ResponseCore
+					{
+						Typ = MessageType.MKTS,
+						Code = $"{resJif.Body.jangubun}.{resJif.Body.jstatus}",
+						Message = $"{CodeRef.MarketSectionDic[resJif.Body.jangubun]} {CodeRef.MarketStatusDic[resJif.Body.jstatus]}",
+						Broker = Brkr.LS
+					});
+				}
+				catch (Exception ex)
+				{
+					Message(this, new ResponseCore
+					{
+						Typ = MessageType.MKTS,
+						Code = "JIF",
+						Message = ex.Message,
+						Broker = Brkr.LS
+					});
+				}
 				break;
 			#endregion
 			#region S3_/K3_ 시장 체결
