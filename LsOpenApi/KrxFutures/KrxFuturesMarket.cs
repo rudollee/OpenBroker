@@ -2,7 +2,7 @@
 using OpenBroker.Models;
 
 namespace LsOpenApi.KrxFutures;
-public partial class KrxFutures : ConnectionBase, IMarket
+public partial class LsKrxFutures : ConnectionBase, IMarket
 {
 	public Dictionary<string, Instrument> Instruments { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 	public EventHandler<ResponseResult<MarketContract>>? MarketContracted { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
