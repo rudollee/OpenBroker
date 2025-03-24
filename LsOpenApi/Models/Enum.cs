@@ -72,4 +72,22 @@ internal enum LsEndpoint
 
 	[Description("stock/order")]
 	EquityOrder,
+
+	[Description("futureoption/market-data")]
+	FuturesMarketData,
+
+	[Description("futureoption/investor")]
+	FuturesInvestor,
+
+	[Description("futureoption/chart")]
+	FuturesChart,
+
+	[Description("futureoption/accno")]
+	FuturesAccount,
+
+	[Description("futureoption/order")]
+	FuturesOrder,
+
+	[Description("futureoption/etc")]
+	FuturesEtc
 }
