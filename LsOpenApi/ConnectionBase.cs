@@ -502,7 +502,7 @@ public class ConnectionBase
 		{
 			StatusCode = Status.SUCCESS,
 			Code = trCode,
-			Message = $"request forcely delayed {delaying.TotalMilliseconds * 0.001} sec."
+			Message = $"request forcely delayed {(delaying.TotalMilliseconds * 0.001).ToString("N3")} sec."
 		});
 		Thread.Sleep(delaying);
 		Requests.Add(new Request { TrCode = trCode });
