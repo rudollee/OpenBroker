@@ -1,5 +1,6 @@
 ﻿using LsOpenApi.Models;
 using OpenBroker;
+using OpenBroker.Extensions;
 using OpenBroker.Models;
 
 namespace LsOpenApi.KrxFutures;
@@ -32,14 +33,27 @@ public partial class LsKrxFutures : ConnectionBase, IMarket
 				Dic = new Dictionary<string, Instrument>(),
 			};
 
+			var responseMargin = await RequestStandardAsync<MMDAQ91200>(LsEndpoint.FuturesEtc.ToDescription(), new
+			{
+				MMDAQ91200InBlock1 = new MMDAQ91200InBlock1 { },
+			});
+
+			var hasMargins = responseMargin.MMDAQ91200OutBlock2.Any();
+
 			Instruments.Clear();
 			response.t8401OutBlock.ForEach(instrument =>
 			{
+				var id = instrument.shcode.ToKrxProductCode();
+				var marginInfo = hasMargins ? responseMargin.MMDAQ91200OutBlock2.FirstOrDefault(f => $"{f.IsuSmclssCode.Substring(1)}" == id) : null;
+
 				Instruments.Add(instrument.shcode, new Instrument
 				{
 					Symbol = instrument.shcode,
+					Product = id,
 					InstrumentName = instrument.hname,
 					SymbolUnderlying = instrument.basecode.Substring(1),
+					Margin = marginInfo is null ? 0 : marginInfo.OnePrcntrOrdMgn * 0.1m,
+					MarginRate = marginInfo is null ? 0.00m : marginInfo.CsgnMgnrt * 0.01m,
 				});
 			});
 

@@ -4,7 +4,7 @@ public static class KrxExtension
 {
 	public static string ToKrxProductCode(this string symbol) => symbol.Length switch
 	{
-		> 4 => symbol.Substring(0, 3),
+		> 4 => symbol.Substring(1, 2),
 		_ => string.Empty,
 	};
 	
