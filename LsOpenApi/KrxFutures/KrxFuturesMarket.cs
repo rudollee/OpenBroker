@@ -33,19 +33,24 @@ public partial class LsKrxFutures : ConnectionBase, IMarket
 				Dic = new Dictionary<string, Instrument>(),
 			};
 
-			var responseMargin = await RequestStandardAsync<MMDAQ91200>(LsEndpoint.FuturesEtc.ToDescription(), new
+			List<MMDAQ91200OutBlock2> margins = new();
+			var nextKey = string.Empty;
+			do
 			{
-				MMDAQ91200InBlock1 = new MMDAQ91200InBlock1 { },
-			});
+				var responseMargin = await RequestContinuousAsync<MMDAQ91200>(LsEndpoint.FuturesEtc.ToDescription(), new
+				{
+					MMDAQ91200InBlock1 = new MMDAQ91200InBlock1 { },
+				}, nextKey);
 
-			var hasMargins = responseMargin.MMDAQ91200OutBlock2.Any();
+				margins.AddRange(responseMargin.MMDAQ91200OutBlock2);
+				nextKey = responseMargin.NextKey;
+			} while (!string.IsNullOrEmpty(nextKey));
 
 			Instruments.Clear();
 			response.t8401OutBlock.ForEach(instrument =>
 			{
 				var id = instrument.shcode.ToKrxProductCode();
-				var marginInfo = hasMargins ? responseMargin.MMDAQ91200OutBlock2.FirstOrDefault(f => $"{f.IsuSmclssCode.Substring(1)}" == id) : null;
-
+				var marginInfo = margins.FirstOrDefault(f => $"{f.IsuSmclssCode.Substring(1)}" == id);
 				Instruments.Add(instrument.shcode, new Instrument
 				{
 					Symbol = instrument.shcode,
