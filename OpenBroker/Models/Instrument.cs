@@ -18,19 +18,19 @@ public class InstrumentCore
     public string Symbol { get; set; } = string.Empty;
 
     /// <summary>
-    /// Instrument Code (part of Symbol)
+    /// Asset/Product Code (part of Symbol)
     /// </summary>
-    public string Sym { get; set; } = string.Empty;
+    public string Product { get; set; } = string.Empty;
 
     /// <summary>
     /// Expiration Code (part of Symbol)
     /// </summary>
-    public string SymD { get; set; } = string.Empty;
+    public string Expiry { get; set; } = string.Empty;
 
     /// <summary>
     /// Strike Price Code (part of Symbol) (for options)
     /// </summary>
-    public string SymStrike { get; set; } = string.Empty;
+    public string Strike { get; set; } = string.Empty;
 
     /// <summary>
     /// Instrument Name

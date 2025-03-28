@@ -2,6 +2,12 @@
 
 public static class KrxExtension
 {
+	public static string ToKrxProductCode(this string symbol) => symbol.Length switch
+	{
+		> 4 => symbol.Substring(0, 3),
+		_ => string.Empty,
+	};
+	
 	public static decimal ToUpTick(this decimal price)
 		=> price switch
 		{
@@ -43,4 +49,5 @@ public static class KrxExtension
 
 		return normalizedPrice -= needsOnlyNormalizing ? 0 : downtick;
 	}
+
 }

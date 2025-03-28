@@ -63,10 +63,10 @@ public static class CmeService
 		return DateTime.Parse($"{2000 + Convert.ToInt32(fiscalMonth.Substring(0, 2))}-{month}-02");
 	}
 
-	public static string ToSym(this string symbol)
+	public static string ToCmeProductCode(this string symbol) => symbol.Length switch
 	{
-		if (symbol.Length < 5) return string.Empty;
-
-		return symbol.Substring(0, 2);
-	}
+		< 2 => string.Empty,
+		_ => symbol.Substring(0, 2)
+	};
+	
 }
