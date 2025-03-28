@@ -14,7 +14,7 @@ internal class t8401 : LsResponseCore
 internal class t8401InBlock
 {
 	/// <summary>Dummy</summary>
-	public string dummy { get; set; } = string.Empty;
+	public string dummy { get; set; } = "0";
 }
 
 /// <summary>

@@ -21,10 +21,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket
 		{
 			var response = await RequestStandardAsync<t8401>(LsEndpoint.FuturesMarketData.ToDescription(), new
 			{
-				t8401InBlock = new t8401InBlock
-				{
-					dummy = "0",
-				}
+				t8401InBlock = new t8401InBlock { }
 			});
 
 			if (!response.t8401OutBlock.Any()) return new ResponseDictionary<string, Instrument>
