@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace LsOpenApi.Models;
 internal class LsResponseCore
@@ -16,4 +11,9 @@ internal class LsResponseCore
 
 	[JsonPropertyName("rsp_msg")]
 	public string Message { get; set; } = string.Empty;
+
+	/// <summary>
+	/// key for continuous request
+	/// </summary>
+	internal string NextKey { get; set; } = string.Empty;
 }

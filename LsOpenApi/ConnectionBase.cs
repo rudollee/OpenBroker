@@ -450,15 +450,15 @@ public class ConnectionBase
 	/// </summary>
 	/// <param name="tr"></param>
 	/// <returns></returns>
-	protected Dictionary<string, string> GenerateHeaders(string tr)
+	protected Dictionary<string, string> GenerateHeaders(string tr, string nextKey = "")
 	{
 		return new Dictionary<string, string>
 		{
 			{ "content-type", "application/json; charset=utf-8" },
 			{ "authorization", $"Bearer {KeyInfo.AccessToken}"},
 			{ "tr_cd", tr},
-			{ "tr_cont", "N" },
-			{ "tr_cont_key", "" },
+			{ "tr_cont", string.IsNullOrEmpty(nextKey) ? "N" : "Y" },
+			{ "tr_cont_key", nextKey },
 			{ "mac_address", ""}
 		};
 	}
@@ -473,8 +473,8 @@ public class ConnectionBase
 		GenerateHeaders(tr, additionalOption.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(additionalOption, null)?.ToString()));
 	#endregion
 
-	#region Request Standard
-	internal bool DelayRequest(string trCode)
+	#region Request Standard & Continue Option
+	internal bool DelayRequest(string trCode, bool needsMessage = true)
 	{
 		var requestsOld = Requests.Where(w => w.TrCode == trCode && w.RequestTime < DateTime.UtcNow.AddSeconds(-1)).ToList();
 		try
@@ -498,12 +498,17 @@ public class ConnectionBase
 		}
 
 		var delaying = requests[0].RequestTime.Subtract(DateTime.UtcNow.AddSeconds(-1));
-		Message(this, new ResponseCore
+
+		if (needsMessage)
 		{
-			StatusCode = Status.SUCCESS,
-			Code = trCode,
-			Message = $"request forcely delayed {(delaying.TotalMilliseconds * 0.001).ToString("N3")} sec."
-		});
+			Message(this, new ResponseCore
+			{
+				StatusCode = Status.SUCCESS,
+				Code = trCode,
+				Message = $"request forcely delayed {(delaying.TotalMilliseconds * 0.001).ToString("N3")} sec."
+			}); 
+		}
+
 		Thread.Sleep(delaying);
 		Requests.Add(new Request { TrCode = trCode });
 
@@ -540,7 +545,55 @@ public class ConnectionBase
 			TrCode = nameof(T),
 		};
 
+		response.TrCode = nameof(T);
 		return response;
-	} 
+	}
+	
+	internal async Task<T> RequestContinuousAsync<T>(string endpoint, object parameter, string nextKey) where T : LsResponseCore
+	{
+		var client = new RestClient($"{host}/{endpoint}");
+		var request = new RestRequest().AddHeaders(GenerateHeaders(typeof(T).Name, nextKey));
+		request.AddBody(JsonSerializer.Serialize(parameter));
+		var delaying = DelayRequest(typeof(T).Name, false);
+		if (!delaying)
+		{
+			Message(this, new ResponseCore
+			{
+				StatusCode = Status.INTERNALSERVERERROR,
+				Message = "delaying calculation failed"
+			});
+			return (T)new LsResponseCore
+			{
+				Code = "ERR",
+				Message = "delaying calculation failed",
+				TrCode = nameof(T)
+			};
+		}
+
+		var response = await client.PostAsync(request);
+		if (response is null || !response.IsSuccessful) return (T)new LsResponseCore
+		{
+			Code = "ERR",
+			Message = response?.ErrorMessage ?? "failed to response",
+			TrCode = nameof(T),
+		};
+
+		var responseDeserialized = client.Serializers.DeserializeContent<T>(response);
+		if (responseDeserialized is null) return (T)new LsResponseCore
+		{
+			Code = "ERR",
+			Message = "failed to response",
+			TrCode = nameof(T),
+		};
+
+		var continueOption = response.Headers?.FirstOrDefault(f => f.Name == "tr_cont");
+		if (continueOption is not null && continueOption.Value == "Y")
+		{
+			responseDeserialized.NextKey = response.Headers?.First(f => f.Name == "tr_cont_key").Value ?? "";
+			responseDeserialized.TrCode = nameof(T);
+		}
+
+		return responseDeserialized;
+	}
 	#endregion
 }
