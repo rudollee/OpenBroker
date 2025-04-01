@@ -19,7 +19,7 @@ internal class t2301InBlock
 	public string yyyymm { get; set; } = string.Empty;
 
 	/// <summary>미니구분(M:미니G:정규)</summary>
-	public string gubun { get; set; } = string.Empty;
+	public string gubun { get; set; } = "G";
 }
 
 /// <summary>
