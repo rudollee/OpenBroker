@@ -148,6 +148,7 @@ internal static class CodeRef
 		{ nameof(t8411), 1 },
 		{ nameof(t8412), 1 },
 		{ nameof(t8401), 2 },
-		{ nameof(MMDAQ91200), 1 }
+		{ nameof(MMDAQ91200), 1 },
+		{ nameof(t2301), 2 }
 	};
 }
