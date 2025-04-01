@@ -64,4 +64,17 @@ public static class DateExtension
     public static DateTime ToDateTimeMicro(this string datetimeTxt863) =>
         DateTime.ParseExact(datetimeTxt863.Substring(0,17), "yyyyMMddHHmmssfff", null);
 
+	public static int ToOrdinalDay(this DateOnly date, DayOfWeek dayOfWeek, int order)
+	{
+		var firstDay = date.AddDays(-date.Day + 1);
+		var formulaToAdd = (int)dayOfWeek - (int)firstDay.DayOfWeek + 7 * (order - ((int)firstDay.DayOfWeek > (int)dayOfWeek ? 0 : 1));
+		var d = firstDay.AddDays(formulaToAdd);
+		return d.Month == date.Month ? d.Day : 0;
+	}
+
+	public static DateOnly ToOrdinalDate(this DateOnly date, DayOfWeek dayOfWeek, int order)
+    {
+        int day = date.ToOrdinalDay(dayOfWeek, order);
+        return DateOnly.Parse($"{date.Year}-{date.Month}-{day}");
+	}
 }
