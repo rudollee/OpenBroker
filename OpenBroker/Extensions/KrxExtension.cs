@@ -50,4 +50,35 @@ public static class KrxExtension
 		return normalizedPrice -= needsOnlyNormalizing ? 0 : downtick;
 	}
 
+	public static DateOnly ToKrxExpiry(this DateOnly date, bool quarterly = false)
+	{
+		var monthAdding = quarterly && date.Month % 3 > 0 ? -(date.Month % 3) : 0;
+		var dateFin = date.AddMonths(monthAdding).ToOrdinalDate(DayOfWeek.Thursday, 2);
+		return dateFin.AddMonths(date > dateFin ? (quarterly ? 3 : 1) : 0);
+	}
+
+	public static string ToKrxExpiryCode(this DateOnly date, bool quarterly = false)
+	{
+		string getYearCode(int year)
+		{
+			int seq = ((year - 1996) % 30);
+
+			char c = seq switch
+			{
+				< 4 => (char)(seq + 54),
+				< 10 => (char)(seq + 44),
+				< 18 => (char)(seq + 55),
+				< 23 => (char)(seq + 56),
+				< 28 => (char)(seq + 57),
+				< 30 => (char)(seq + 58),
+				_ => '?'
+			};
+
+			return c.ToString();
+		}
+
+		var expiry = date.ToKrxExpiry(quarterly);
+		var monthCode = expiry.Month.ToString().Replace("10", "A").Replace("11", "B").Replace("12", "C");
+		return $"{getYearCode(expiry.Year)}{monthCode}";
+	}
 }
