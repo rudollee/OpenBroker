@@ -345,3 +345,28 @@ public enum InstrumentType
     Put,
     FuturesSpread,
 }
+
+public enum OptionsType
+{
+    NONE = 0,
+
+    /// <summary>
+    /// Regular Monthly
+    /// </summary>
+    G = 10,
+
+    /// <summary>
+    /// Mini Monthly
+    /// </summary>
+    M = 11,
+
+    /// <summary>
+    /// Weekly
+    /// </summary>
+    W = 20,
+
+    /// <summary>
+    /// Binary
+    /// </summary>
+    B = 30
+}
