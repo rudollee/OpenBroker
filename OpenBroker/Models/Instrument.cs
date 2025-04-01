@@ -13,6 +13,11 @@ public class InstrumentCore
     public Currency Currency { get; set; }
 
     /// <summary>
+    /// Instrument Type
+    /// </summary>
+    public InstrumentType InstrumentType { get; set; } = InstrumentType.Futures;
+
+    /// <summary>
     /// Symbol Code for Order
     /// </summary>
     public string Symbol { get; set; } = string.Empty;

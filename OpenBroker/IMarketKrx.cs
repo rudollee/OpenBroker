@@ -3,5 +3,5 @@
 namespace OpenBroker;
 public interface IMarketKrx
 {
-	Task<ResponseResults<PriceRate>> RequestOptions();
+	Task<ResponseResult<OptionPack>> RequestOptionPack();
 }

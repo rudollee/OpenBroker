@@ -333,3 +333,15 @@ public enum IntervalUnit
 	Week = 32,
 	Month = 33,
 }
+
+/// <summary>
+/// Instrument Type
+/// </summary>
+public enum InstrumentType
+{
+	Spot = 0,
+	Futures = 1,
+	Call,
+    Put,
+    FuturesSpread,
+}
