@@ -4,7 +4,7 @@ using OpenBroker.Extensions;
 using OpenBroker.Models;
 
 namespace LsOpenApi.KrxFutures;
-public partial class LsKrxFutures : ConnectionBase, IMarket
+public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 {
 	public Dictionary<string, Instrument> Instruments { get; set; } = new();
 
@@ -14,6 +14,11 @@ public partial class LsKrxFutures : ConnectionBase, IMarket
 	public EventHandler<ResponseResult<MarketPause>>? MarketPaused { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
 	public Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol) => throw new NotImplementedException();
+	public Task<ResponseResult<MarketContract>> RequestMarketContract(string symbol) => throw new NotImplementedException();
+	public Task<ResponseResults<MarketContract>> RequestMarketContract(IEnumerable<string> symbols) => throw new NotImplementedException();
+	public Task<ResponseResults<MarketContract>> RequestMarketContractHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
+	public Task<ResponseResult<News>> RequestNews(string id) => throw new NotImplementedException();
+	public Task<ResponseResult<PricePack>> RequestPricePack(PricePackRequest request) => throw new NotImplementedException();
 
 	#region request SSF instruments using t8401
 	public async Task<ResponseDictionary<string, Instrument>> RequestInstruments(int option = 0)
@@ -81,11 +86,110 @@ public partial class LsKrxFutures : ConnectionBase, IMarket
 	} 
 	#endregion
 
-	public Task<ResponseResult<MarketContract>> RequestMarketContract(string symbol) => throw new NotImplementedException();
-	public Task<ResponseResults<MarketContract>> RequestMarketContract(IEnumerable<string> symbols) => throw new NotImplementedException();
-	public Task<ResponseResults<MarketContract>> RequestMarketContractHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
-	public Task<ResponseResult<News>> RequestNews(string id) => throw new NotImplementedException();
-	public Task<ResponseResult<PricePack>> RequestPricePack(PricePackRequest request) => throw new NotImplementedException();
+	#region request Option Pack using t2301
+	public async Task<ResponseResult<OptionPack>> RequestOptionPack(string expiry6 = "", OptionsType typ = OptionsType.G)
+	{
+		try
+		{
+			var expiry = expiry6.Length == 6 ? expiry6 : DateOnly.FromDateTime(DateTime.Now).ToKrxExpiry().ToString("yyyyMM");
+			var response = await RequestStandardAsync<t2301>(LsEndpoint.FuturesMarketData.ToDescription(), new
+			{
+				t2301InBlock = new t2301InBlock
+				{
+					yyyymm = expiry,
+					gubun = typ.ToString(),
+				},
+			});
+
+			if (!response.t2301OutBlock1.Any()) return new ResponseResult<OptionPack>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = "no data",
+				Code = response.Code,
+			};
+
+			var calls = new List<OptionsInfo>();
+			response.t2301OutBlock1.ForEach(option => calls.Add(new OptionsInfo
+			{
+				Currency = Currency.KRW,
+				Symbol = option.optcode,
+				Product = option.optcode.ToKrxProductCode(),
+				InstrumentType = InstrumentType.Call,
+				PriceInfo = new()
+				{
+					Symbol = option.optcode,
+					C = option.price,
+					O = option.open,
+					H = option.high,
+					L = option.low,
+					V = option.volume,
+					BasePrice = option.price + option.change * (Convert.ToInt32(option.sign) > 3 ? 1 : -1),
+					HighLimit = option.iv,
+					MoneyAcc = option.value,
+				},
+				OI = option.mgjv,
+				Precision = 2,
+				Greek = new()
+				{
+					Delta = option.delt,
+					Gamma = option.gama,
+					Theta = option.ceta,
+				}
+			}));
+
+			var puts = new List<OptionsInfo>();
+			response.t2301OutBlock2.ForEach(option => puts.Add(new OptionsInfo
+			{
+				Currency = Currency.KRW,
+				Symbol = option.optcode,
+				Product = option.optcode.ToKrxProductCode(),
+				InstrumentType = InstrumentType.Put,
+				PriceInfo = new()
+				{
+					Symbol = option.optcode,
+					C = option.price,
+					O = option.open,
+					H = option.high,
+					L = option.low,
+					V = option.volume,
+					BasePrice = option.price + option.change * (Convert.ToInt32(option.sign) > 3 ? 1 : -1),
+					HighLimit = option.iv,
+					MoneyAcc = option.value,
+				},
+				OI = option.mgjv,
+				Precision = 2,
+				Greek = new()
+				{
+					Delta = option.delt,
+					Gamma = option.gama,
+					Theta = option.ceta,
+				}
+			}));
+
+			return new ResponseResult<OptionPack>
+			{
+				Broker = Brkr.LS,
+				Info = new OptionPack
+				{
+					ExpiryLeft = Convert.ToInt32(response.t2301OutBlock.jandatecnt),
+					Calls = calls,
+					Puts = puts,
+				}
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResult<OptionPack>
+			{
+				Broker = Brkr.LS,
+				Code = "OPENAPI-ERR",
+				Message = ex.Message,
+			};
+		}
+	}
+
+	#endregion
+
 	public Task<ResponseCore> SubscribeMarketContract(string symbol, bool connecting = true, string subscriber = "") => throw new NotImplementedException();
 	public Task<ResponseCore> SubscribeMarketDepth(string symbol, bool connecting = true, string subscriber = "") => throw new NotImplementedException();
 	public Task<ResponseCore> SubscribeMarketPause(string symbol = "000000") => throw new NotImplementedException();
