@@ -82,7 +82,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 			{
 				Info = new News
 				{
-					Code = nameof(NWS),
+					Code = response.Body.realkey,
 					TimePosted = DateTime.Now,
 					PublisherId = publisherId,
 					Publisher = CodeRef.NewsPublishers.ContainsKey(publisherId) ? CodeRef.NewsPublishers[publisherId] : response.Body.id,
