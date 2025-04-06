@@ -115,6 +115,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				Symbol = option.optcode,
 				Product = option.optcode.ToKrxProductCode(),
 				InstrumentType = InstrumentType.Call,
+				Strike = Math.Floor(option.actprice).ToString(),
 				PriceInfo = new()
 				{
 					Symbol = option.optcode,
@@ -144,6 +145,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				Symbol = option.optcode,
 				Product = option.optcode.ToKrxProductCode(),
 				InstrumentType = InstrumentType.Put,
+				Strike = Math.Floor(option.actprice).ToString(),
 				PriceInfo = new()
 				{
 					Symbol = option.optcode,
