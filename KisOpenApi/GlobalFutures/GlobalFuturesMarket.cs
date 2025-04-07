@@ -68,7 +68,7 @@ public partial class KisGlobalFutures : ConnectionBase, IMarket
 		}
 	}
 
-	public async Task<ResponseDictionary<string, Instrument>> RequestInstruments(int option)
+	public async Task<ResponseDictionary<string, Instrument>> RequestInstruments(int option = 0)
 	{
 		Instruments.Clear();
 
