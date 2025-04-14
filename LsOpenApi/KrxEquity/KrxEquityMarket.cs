@@ -894,7 +894,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			{
 				Group = filter.group_name,
 				ID = filter.query_index,
-				Qeury = filter.query_name
+				Query = filter.query_name
 			}));
 
 			return new ResponseResults<SearchFilter> { List = filters };
