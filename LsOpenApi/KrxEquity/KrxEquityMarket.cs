@@ -65,7 +65,8 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		var estimation = await SubscribeAsync(subscriber, Equities[symbol].Section == ExchangeSection.KOSPI ? "YS3" : "YK3", symbol, connecting);
 		if (estimation.StatusCode != Status.SUCCESS) return estimation;
 
-		return await SubscribeAsync(subscriber, Equities[symbol].Section == ExchangeSection.KOSPI ? "H1_" : "HA_", symbol, connecting);
+		//return await SubscribeAsync(subscriber, Equities[symbol].Section == ExchangeSection.KOSPI ? "H1_" : "HA_", symbol, connecting);
+		return await SubscribeAsync(subscriber, "UH1", symbol, connecting);
 	}
 
 	public async Task<ResponseCore> SubscribeMarketPause(string symbol = "000000") => await SubscribeAsync("SYS", "VI_", symbol);

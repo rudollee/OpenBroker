@@ -52,6 +52,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 			nameof(MK2) => CallbackMK2(message.Text), // MK2 US지수
 			nameof(H1_) => CallbackHX(message.Text, trCode), // H1_ 전체 호가
 			nameof(HA_) => CallbackHX(message.Text, trCode), // HA_ 전체 호가
+			nameof(UH1) => CallbackUH1(message.Text), // UH1 전체 호가(장전장후)
 			nameof(VI_) => CallbackVI(message.Text), // VI_ 주식 VI 발동/해제
 			nameof(SC0) => CallbackSC0(message.Text), // SC0 주식주문접수
 			nameof(SC2) => CallbackSCX(message.Text, trCode), // SC2 주문 정정
@@ -413,6 +414,69 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				Broker = Brkr.LS,
 				StatusCode = Status.ERROR_OPEN_API,
 				Code = trCode,
+				Message = ex.Message
+			});
+			return false;
+		}
+	}
+
+	private bool CallbackUH1(string message)
+	{
+		if (OrderBookTaken is null) return false;
+
+		try
+		{
+			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<UH1OutBlock>>(message);
+			if (response is null || response.Body is null) return false;
+
+			var asks = new List<MarketOrder>();
+			for (int i = 0; i < 10; i++)
+			{
+				asks.Add(new MarketOrder
+				{
+					Seq = Convert.ToByte(i + 1),
+					Price = Convert.ToDecimal(response.Body.GetPropValue($"unt_offerho{(i + 1)}")),
+					Amount = Convert.ToDecimal(response.Body.GetPropValue($"unt_offerrem{(i + 1)}")),
+				});
+			}
+
+			var bids = new List<MarketOrder>();
+			for (int i = 0; i < 10; i++)
+			{
+				bids.Add(new MarketOrder
+				{
+					Seq = Convert.ToByte(i + 1),
+					Price = Convert.ToDecimal(response.Body.GetPropValue($"unt_bidho{(i + 1)}")),
+					Amount = Convert.ToDecimal(response.Body.GetPropValue($"unt_bidrem{(i + 1)}"))
+				});
+			}
+
+			OrderBookTaken(this, new ResponseResult<OrderBook>
+			{
+				Typ = MessageType.MKT,
+				Code = nameof(UH1),
+				Info = new OrderBook
+				{
+					Symbol = response.Body.shcode,
+					TimeTaken = response.Body.hotime.ToTime(),
+					Ask = asks,
+					Bid = bids,
+					AskAgg = Convert.ToDecimal(response.Body.unt_totofferrem),
+					BidAgg = Convert.ToDecimal(response.Body.unt_totbidrem),
+				},
+				Remark = message,
+				Broker = Brkr.LS
+			});
+
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Message(this, new ResponseCore
+			{
+				Broker = Brkr.LS,
+				StatusCode = Status.ERROR_OPEN_API,
+				Code = "UH1",
 				Message = ex.Message
 			});
 			return false;
