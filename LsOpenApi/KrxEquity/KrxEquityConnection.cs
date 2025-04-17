@@ -435,7 +435,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				asks.Add(new MarketOrder
 				{
 					Seq = Convert.ToByte(i + 1),
-					Price = Convert.ToDecimal(response.Body.GetPropValue($"unt_offerho{(i + 1)}")),
+					Price = Convert.ToDecimal(response.Body.GetPropValue($"offerho{(i + 1)}")),
 					Amount = Convert.ToDecimal(response.Body.GetPropValue($"unt_offerrem{(i + 1)}")),
 				});
 			}
@@ -446,7 +446,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				bids.Add(new MarketOrder
 				{
 					Seq = Convert.ToByte(i + 1),
-					Price = Convert.ToDecimal(response.Body.GetPropValue($"unt_bidho{(i + 1)}")),
+					Price = Convert.ToDecimal(response.Body.GetPropValue($"bidho{(i + 1)}")),
 					Amount = Convert.ToDecimal(response.Body.GetPropValue($"unt_bidrem{(i + 1)}"))
 				});
 			}
