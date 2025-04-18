@@ -420,6 +420,11 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		}
 	}
 
+	/// <summary>
+	/// KRX/NXT 통합 전체 호가 callback
+	/// </summary>
+	/// <param name="message"></param>
+	/// <returns></returns>
 	private bool CallbackUH1(string message)
 	{
 		if (OrderBookTaken is null) return false;
@@ -476,7 +481,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 			{
 				Broker = Brkr.LS,
 				StatusCode = Status.ERROR_OPEN_API,
-				Code = "UH1",
+				Code = nameof(UH1),
 				Message = ex.Message
 			});
 			return false;
