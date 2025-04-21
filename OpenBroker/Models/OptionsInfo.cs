@@ -1,7 +1,7 @@
 ﻿namespace OpenBroker.Models;
 public class OptionsInfo : InstrumentCore
 {
-	public required PriceRate PriceInfo { get; set; }
+	public required QuoteRate QuoteInfo { get; set; }
 
 	public OptionGreek? Greek { get; set; }
 

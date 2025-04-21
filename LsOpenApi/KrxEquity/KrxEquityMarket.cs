@@ -299,7 +299,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				Symbol = response.t1102OutBlock.shcode,
 				NameOfficial = response.t1102OutBlock.hname,
 				Section = response.t1102OutBlock.janginfo.Contains("KOSPI") ? ExchangeSection.KOSPI : ExchangeSection.KOSDAQ,
-				PriceInfo = new PriceRate
+				PriceInfo = new QuoteRate
 				{
 					Symbol = response.t1102OutBlock.shcode,
 					TimeContract = DateTime.Now,
@@ -598,7 +598,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#endregion
 
 	#region request equities by sector using t1537
-	public async Task<ResponseResults<PriceOHLC>> RequestEquitiesBySector(string sectorCode)
+	public async Task<ResponseResults<Quote>> RequestEquitiesBySector(string sectorCode)
 	{
 		try
 		{
@@ -610,17 +610,17 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				}
 			});
 
-			if (!response.t1537OutBlock1.Any()) return new ResponseResults<PriceOHLC>
+			if (!response.t1537OutBlock1.Any()) return new ResponseResults<Quote>
 			{
 				StatusCode = Status.NODATA,
 				Message = response.Message,
 				Code = response.Code,
 				Remark = "no data",
-				List = new List<PriceOHLC>()
+				List = new List<Quote>()
 			};
 
-			var equities = new List<PriceOHLC>();
-			response.t1537OutBlock1.ForEach(equity => equities.Add(new PriceOHLC
+			var equities = new List<Quote>();
+			response.t1537OutBlock1.ForEach(equity => equities.Add(new Quote
 			{
 				Symbol = equity.shcode,
 				O = Convert.ToDecimal(equity.open),
@@ -631,15 +631,15 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				BasePrice = Convert.ToDecimal(equity.price) - Convert.ToDecimal(equity.change) * (new string[] { "4", "5" }.Contains(equity.sign) ? -1 : 1)
 			}));
 
-			return new ResponseResults<PriceOHLC> { List = equities };
+			return new ResponseResults<Quote> { List = equities };
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<PriceOHLC>
+			return new ResponseResults<Quote>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = ex.Message,
-				List = new List<PriceOHLC>()
+				List = new List<Quote>()
 			};
 		}
 	}
@@ -678,7 +678,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				Remark = "no data"
 			};
 
-			var priceInfo = new PriceRate
+			var priceInfo = new QuoteRate
 			{
 				Symbol = response.t8411OutBlock.shcode,
 				TimeContract = DateTime.UtcNow.AddHours(9),
@@ -691,8 +691,8 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				LowLimit = response.t8411OutBlock.lowend,
 			};
 
-			var prices = new List<PriceOHLC>();
-			response.t8411OutBlock1.ForEach(price => prices.Add(new PriceOHLC
+			var prices = new List<Quote>();
+			response.t8411OutBlock1.ForEach(price => prices.Add(new Quote
 			{
 				TimeContract = (price.date + price.time).ToDateTime(),
 				O = Convert.ToDecimal(price.open),
@@ -752,7 +752,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				Remark = "no data"
 			};
 
-			var priceInfo = new PriceRate
+			var priceInfo = new QuoteRate
 			{
 				Symbol = response.t8412OutBlock.shcode,
 				TimeContract = DateTime.UtcNow.AddHours(9),
@@ -765,8 +765,8 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				LowLimit = response.t8412OutBlock.lowend,
 			};
 
-			var prices = new List<PriceOHLC>();
-			response.t8412OutBlock1.ForEach(price => prices.Add(new PriceOHLC
+			var prices = new List<Quote>();
+			response.t8412OutBlock1.ForEach(price => prices.Add(new Quote
 			{
 				TimeContract = (price.date + price.time).ToDateTime(),
 				O = Convert.ToDecimal(price.open),
@@ -832,8 +832,8 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				Remark = "no data"
 			};
 
-			var prices = new List<PriceOHLC>();
-			response.t8410OutBlock1.ForEach(price => prices.Add(new PriceOHLC
+			var prices = new List<Quote>();
+			response.t8410OutBlock1.ForEach(price => prices.Add(new Quote
 			{
 				TimeContract = price.date.ToDateTime(),
 				O = Convert.ToDecimal(price.open),

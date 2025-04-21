@@ -8,8 +8,8 @@ public class PricePack
 	public string Symbol { get; set; } = string.Empty;
 	public IntervalUnit TimeIntervalUnit { get; set; } = IntervalUnit.Day;
 	public int TimeInterval { get; set; } = 1;
-	public required List<PriceOHLC> PrimaryList { get; set; } = new List<PriceOHLC>();
-	public PriceRate SecondaryInfo { get; set; } = new();
+	public required List<Quote> PrimaryList { get; set; } = new List<Quote>();
+	public QuoteRate SecondaryInfo { get; set; } = new();
 }
 
 /// <summary>

@@ -26,7 +26,7 @@ public class MarketOrder
 /// <summary>
 /// 시고저종
 /// </summary>
-public class PriceOHLC : MarketContract
+public class Quote : MarketContract
 {
     public decimal O { get; set; }
     public decimal H { get; set; }
@@ -36,7 +36,7 @@ public class PriceOHLC : MarketContract
 /// <summary>
 /// 시고저종 + 비율 + 상한가/하한가
 /// </summary>
-public class PriceRate : PriceOHLC
+public class QuoteRate : Quote
 {
     public decimal ORate { get => BasePrice == 0 ? 0 : (O - BasePrice) / BasePrice; }
 
@@ -58,7 +58,7 @@ public class PriceRate : PriceOHLC
 /// <summary>
 /// 거래량, 미결제약정
 /// </summary>
-public class PriceExt(decimal underlyingAssetPrice) : PriceOHLC
+public class QuoteExt(decimal underlyingAssetPrice) : Quote
 {
     /// <summary>
     /// Open Interest
