@@ -53,6 +53,9 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 	public async Task<ResponseCore> SubscribeMarketDepth(string symbol, bool connecting = true, string subscriber = "")
 	{
+		var isUnified = symbol.StartsWith("U");
+		if (isUnified) symbol = symbol.Substring(1);
+
 		if (!Equities.ContainsKey(symbol)) return new ResponseCore
 		{
 			Code = "NOT-FOUND",
@@ -65,8 +68,8 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		var estimation = await SubscribeAsync(subscriber, Equities[symbol].Section == ExchangeSection.KOSPI ? "YS3" : "YK3", symbol, connecting);
 		if (estimation.StatusCode != Status.SUCCESS) return estimation;
 
-		var realtimeCode = symbol.StartsWith("U") ? nameof(UH1) : Equities[symbol].Section == ExchangeSection.KOSPI ? "H1_" : "HA_";
-		var symbolAdjusted = symbol.StartsWith("U") ? $"U{symbol}   " : symbol;
+		var realtimeCode = isUnified ? nameof(UH1) : Equities[symbol].Section == ExchangeSection.KOSPI ? "H1_" : "HA_";
+		var symbolAdjusted = isUnified ? $"U{symbol}   " : symbol;
 
 		return await SubscribeAsync(subscriber, realtimeCode, symbolAdjusted, connecting);
 	}
