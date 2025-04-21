@@ -75,7 +75,7 @@ public interface IMarket
 	/// </summary>
 	/// <param name="request"></param>
 	/// <returns></returns>
-	Task<ResponseResult<PricePack>> RequestPricePack(PricePackRequest request);
+	Task<ResponseResult<QuotePack>> RequestPricePack(QuoteRequest request);
 	
 	/// <summary>
 	/// 뉴스 상세 정보

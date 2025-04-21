@@ -646,7 +646,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#endregion
 
 	#region request chart data by t8410, t8411, t8412
-	public async Task<ResponseResult<PricePack>> RequestPricePack(PricePackRequest request) =>
+	public async Task<ResponseResult<QuotePack>> RequestPricePack(QuoteRequest request) =>
 		request.TimeIntervalUnit switch
 		{
 			IntervalUnit.Tick => await RequestPricePackTick(request),
@@ -654,7 +654,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			_ => await RequestPricePackX(request)
 		};
 
-	private async Task<ResponseResult<PricePack>> RequestPricePackTick(PricePackRequest request)
+	private async Task<ResponseResult<QuotePack>> RequestPricePackTick(QuoteRequest request)
 	{
 		try
 		{
@@ -670,7 +670,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				}
 			});
 
-			if (!response.t8411OutBlock1.Any()) return new ResponseResult<PricePack>
+			if (!response.t8411OutBlock1.Any()) return new ResponseResult<QuotePack>
 			{
 				StatusCode = Status.NODATA,
 				Message = response.Message,
@@ -705,9 +705,9 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 			// TODO : 수정주가 적용 여부
 
-			return new ResponseResult<PricePack>
+			return new ResponseResult<QuotePack>
 			{
-				Info = new PricePack
+				Info = new QuotePack
 				{
 					Symbol = request.Symbol,
 					TimeIntervalUnit = request.TimeIntervalUnit,
@@ -719,7 +719,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResult<PricePack>
+			return new ResponseResult<QuotePack>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = ex.Message,
@@ -728,7 +728,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 	}
 
-	private async Task<ResponseResult<PricePack>> RequestPricePackMinute(PricePackRequest request)
+	private async Task<ResponseResult<QuotePack>> RequestPricePackMinute(QuoteRequest request)
 	{
 		try
 		{
@@ -744,7 +744,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				}
 			});
 
-			if (!response.t8412OutBlock1.Any()) return new ResponseResult<PricePack>
+			if (!response.t8412OutBlock1.Any()) return new ResponseResult<QuotePack>
 			{
 				StatusCode = Status.NODATA,
 				Message = response.Message,
@@ -779,9 +779,9 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 			// TODO : 수정주가 적용 여부
 
-			return new ResponseResult<PricePack>
+			return new ResponseResult<QuotePack>
 			{
-				Info = new PricePack
+				Info = new QuotePack
 				{
 					Symbol = request.Symbol,
 					TimeIntervalUnit = request.TimeIntervalUnit,
@@ -793,7 +793,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResult<PricePack>
+			return new ResponseResult<QuotePack>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = ex.Message,
@@ -802,7 +802,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 	}
 
-	private async Task<ResponseResult<PricePack>> RequestPricePackX(PricePackRequest request)
+	private async Task<ResponseResult<QuotePack>> RequestPricePackX(QuoteRequest request)
 	{
 		try
 		{
@@ -824,7 +824,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				}
 			});
 
-			if (!response.t8410OutBlock1.Any()) return new ResponseResult<PricePack>
+			if (!response.t8410OutBlock1.Any()) return new ResponseResult<QuotePack>
 			{
 				StatusCode = Status.NODATA,
 				Message = response.Message,
@@ -846,9 +846,9 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 			// TODO : 수정주가 적용 여부
 
-			return new ResponseResult<PricePack>
+			return new ResponseResult<QuotePack>
 			{
-				Info = new PricePack
+				Info = new QuotePack
 				{
 					PrimaryList = prices,
 				}
@@ -856,7 +856,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResult<PricePack>
+			return new ResponseResult<QuotePack>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = ex.Message,

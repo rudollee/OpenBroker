@@ -3,7 +3,7 @@
 /// <summary>
 /// Price package
 /// </summary>
-public class PricePack
+public class QuotePack
 {
 	public string Symbol { get; set; } = string.Empty;
 	public IntervalUnit TimeIntervalUnit { get; set; } = IntervalUnit.Day;
@@ -15,7 +15,7 @@ public class PricePack
 /// <summary>
 /// Price Package Request
 /// </summary>
-public class PricePackRequest
+public class QuoteRequest
 {
 	public string Symbol { get; set; } = string.Empty;
 	public IntervalUnit TimeIntervalUnit { get; set; } = IntervalUnit.Day;

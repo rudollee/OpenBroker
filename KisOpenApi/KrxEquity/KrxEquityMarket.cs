@@ -18,7 +18,7 @@ public partial class KisKrxEquity : ConnectionBase, IMarket
 	public Task<ResponseDictionary<string, Instrument>> RequestInstruments(int option) => throw new NotImplementedException();
 	public Task<ResponseResults<MarketContract>> RequestMarketContract(IEnumerable<string> symbols) => throw new NotImplementedException();
 	public Task<ResponseResults<MarketContract>> RequestMarketContractHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
-	public Task<ResponseResult<PricePack>> RequestPricePack(PricePackRequest request) => throw new NotImplementedException();
+	public Task<ResponseResult<QuotePack>> RequestPricePack(QuoteRequest request) => throw new NotImplementedException();
 
 	public async Task<ResponseCore> SubscribeMarketContract(string symbol = "", bool connecting = true, string subscriber = "") =>
 		await SubscribeAsync(subscriber, nameof(H0STCNT0), symbol, connecting);

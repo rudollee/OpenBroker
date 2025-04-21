@@ -18,7 +18,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	public Task<ResponseResults<MarketContract>> RequestMarketContract(IEnumerable<string> symbols) => throw new NotImplementedException();
 	public Task<ResponseResults<MarketContract>> RequestMarketContractHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
 	public Task<ResponseResult<News>> RequestNews(string id) => throw new NotImplementedException();
-	public Task<ResponseResult<PricePack>> RequestPricePack(PricePackRequest request) => throw new NotImplementedException();
+	public Task<ResponseResult<QuotePack>> RequestPricePack(QuoteRequest request) => throw new NotImplementedException();
 
 	#region request SSF instruments using t8401
 	public async Task<ResponseDictionary<string, Instrument>> RequestInstruments(int option = 0)
