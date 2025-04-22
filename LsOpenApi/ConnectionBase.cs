@@ -499,7 +499,7 @@ public class ConnectionBase
 
 		var delaying = requests[0].RequestTime.Subtract(DateTime.UtcNow.AddSeconds(-1));
 
-		if (needsMessage)
+		if (needsMessage && delaying.TotalMilliseconds > 250)
 		{
 			Message(this, new ResponseCore
 			{
