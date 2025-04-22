@@ -310,7 +310,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 					L = response.t1102OutBlock.low,
 					V = response.t1102OutBlock.volume,
 					VolumeAcc = response.t1102OutBlock.volume,
-					MoneyAcc = response.t1102OutBlock.value,
+					Turnover = response.t1102OutBlock.value,
 					HighLimit = response.t1102OutBlock.uplmtprice,
 					LowLimit = response.t1102OutBlock.dnlmtprice,
 				},
@@ -433,7 +433,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 					BasePrice = f.jnilclose,
 					V = f.cvolume,
 					VolumeAcc = f.volume,
-					MoneyAcc = f.value
+					Turnover = f.value
 				});
 			});
 

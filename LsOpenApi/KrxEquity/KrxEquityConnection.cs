@@ -184,7 +184,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					ContractSide = response.Body.cgubun == "+" ? ContractSide.ASK : ContractSide.BID,
 					BasePrice = Convert.ToDecimal(response.Body.price) - Convert.ToDecimal((new string[] { "4", "5" }.Contains(response.Body.sign) ? "-" : "") + response.Body.change),
 					VolumeAcc = Convert.ToDecimal(response.Body.volume),
-					MoneyAcc = Convert.ToDecimal(response.Body.value),
+					Turnover = Convert.ToDecimal(response.Body.value),
 				},
 				Remark = message,
 				Broker = Brkr.LS
