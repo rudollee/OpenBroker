@@ -155,6 +155,7 @@ public enum Exchange
 	SGX = 650,
 	OSE = 810,
 	KRX = 820,
+    NXT = 825,
 	HNX = 840,
 	HKEx = 8520,
 	FTX = 8860,
