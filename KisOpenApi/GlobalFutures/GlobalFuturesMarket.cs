@@ -157,10 +157,10 @@ public partial class KisGlobalFutures : ConnectionBase, IMarket
 	public async Task<ResponseCore> SubscribeMarketDepth(string symbol, bool connecting = true, string subscriber = "SYS") =>
 		await SubscribeAsync(subscriber, nameof(HDFFF010), symbol, connecting);
 
-	public Task<ResponseResult<MarketContract>> RequestMarketContract(string symbol) => throw new NotImplementedException();
-	public Task<ResponseResult<News>> RequestNews(string id) => throw new NotImplementedException();
-	public Task<ResponseResults<MarketContract>> RequestMarketContract(IEnumerable<string> symbols) => throw new NotImplementedException();
+	public Task<ResponseResult<Quote>> RequestMarketContract(string symbol) => throw new NotImplementedException();
+	public Task<ResponseResults<Quote>> RequestMarketContract(IEnumerable<string> symbols) => throw new NotImplementedException();
 	public Task<ResponseResults<MarketContract>> RequestMarketContractHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
+	public Task<ResponseResult<News>> RequestNews(string id) => throw new NotImplementedException();
 	public Task<ResponseResult<QuotePack>> RequestPricePack(QuoteRequest request) => throw new NotImplementedException();
 	public Task<ResponseCore> SubscribeNews(bool connecting = true) => throw new NotImplementedException();
 	public Task<ResponseCore> SubscribeMarketPause(string symbol = "000000") => throw new NotImplementedException();

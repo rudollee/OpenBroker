@@ -13,10 +13,10 @@ public partial class KisKrxEquity : ConnectionBase, IMarket
 	public EventHandler<ResponseResult<MarketPause>>? MarketPaused { get; set; }
 
 	public Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol = "") => throw new NotImplementedException();
-	public Task<ResponseResult<MarketContract>> RequestMarketContract(string symbol = "") => throw new NotImplementedException();
+	public Task<ResponseResult<Quote>> RequestMarketContract(string symbol = "") => throw new NotImplementedException();
+	public Task<ResponseResults<Quote>> RequestMarketContract(IEnumerable<string> symbols) => throw new NotImplementedException();
 	public Task<ResponseResult<News>> RequestNews(string id = "") => throw new NotImplementedException();
 	public Task<ResponseDictionary<string, Instrument>> RequestInstruments(int option) => throw new NotImplementedException();
-	public Task<ResponseResults<MarketContract>> RequestMarketContract(IEnumerable<string> symbols) => throw new NotImplementedException();
 	public Task<ResponseResults<MarketContract>> RequestMarketContractHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
 	public Task<ResponseResult<QuotePack>> RequestPricePack(QuoteRequest request) => throw new NotImplementedException();
 

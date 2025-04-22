@@ -51,14 +51,14 @@ public interface IMarket
 	/// </summary>
 	/// <param name="symbol"></param>
 	/// <returns></returns>
-	Task<ResponseResult<MarketContract>> RequestMarketContract(string symbol);
+	Task<ResponseResult<Quote>> RequestMarketContract(string symbol);
 
 	/// <summary>
 	/// 현재가 Multiple
 	/// </summary>
 	/// <param name="symbols"></param>
 	/// <returns></returns>
-	Task<ResponseResults<MarketContract>> RequestMarketContract(IEnumerable<string> symbols);
+	Task<ResponseResults<Quote>> RequestMarketContract(IEnumerable<string> symbols);
 
 	/// <summary>
 	/// 기간별 체결 내역
