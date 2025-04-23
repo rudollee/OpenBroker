@@ -1,5 +1,4 @@
-﻿using System.Reflection.Metadata.Ecma335;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 using KisOpenApi.Models;
 using OpenBroker;
@@ -39,6 +38,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 		{
 			nameof(H0STASP0) => CallbackH0STASP0(data),
 			nameof(H0STCNT0) => CallbackH0STCNT0(data),
+			nameof(H0UNCNT0) => CallbackH0UNCNT0(data),
 			nameof(H0STCNI0) => CallbackH0STCNI0(data),
 			_ => false
 		};
@@ -159,6 +159,58 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 			return false;
 		}
 	}
+	#endregion
+
+	#region 실시간 체결가(통합) H0UNCNT0 - callback
+	private bool CallbackH0UNCNT0(string[] data)
+	{
+		if (MarketContracted is null) return false;
+		try
+		{
+			MarketContracted(this, new ResponseResult<MarketContract>
+			{
+				Typ = MessageType.MKT,
+				Code = "001",
+				Info = new MarketContract
+				{
+					MarketSessionInfo = data[(int)H0UNCNT0.NEW_MKOP_CLS_CODE].Substring(0, 1) switch
+					{
+						"1" => MarketSession.PRE,
+						"2" => MarketSession.REGULAR,
+						"3" => MarketSession.CLOSED,
+						"4" => MarketSession.AFTER,
+						_ => MarketSession.REGULAR
+					},
+					Symbol = data[(int)H0UNCNT0.MKSC_SHRN_ISCD],
+					TimeContract = (DateTime.Now.ToString("yyyyMMdd") + data[(int)H0UNCNT0.STCK_CNTG_HOUR]).ToDateTime(),
+					C = Convert.ToDecimal(data[(int)H0UNCNT0.STCK_PRPR]),
+					V = Convert.ToDecimal(data[(int)H0UNCNT0.CNTG_VOL]),
+					ContractSide = data[(int)H0UNCNT0.CNTG_CLS_CODE] switch
+					{
+						"1" => ContractSide.ASK,
+						"5" => ContractSide.BID,
+						_ => ContractSide.NONE
+					},
+					BasePrice = Convert.ToDecimal(data[(int)H0UNCNT0.STCK_PRPR]) - Convert.ToDecimal(data[(int)H0UNCNT0.PRDY_VRSS]),
+					VolumeAcc = Convert.ToDecimal(data[(int)H0UNCNT0.ACML_VOL]),
+					Turnover = Convert.ToDecimal(data[(int)H0UNCNT0.ACML_TR_PBMN]) / 1_000_000,
+				},
+				Broker = Brkr.KI
+			});
+			return true;
+		}
+		catch (Exception ex)
+		{
+			MarketContracted(this, new ResponseResult<MarketContract>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Typ = MessageType.SYSERR,
+				Code = "ERR",
+				Message = ex.Message,
+			});
+			return false;
+		}
+	} 
 	#endregion
 
 	#region 실시간 체결 통보 H0STCNI0 - callback
