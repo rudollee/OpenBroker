@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace KisOpenApi;
-internal class AccessTokenResponse : ResponseCommon
+internal class AccessTokenResponse : KisResponseBase
 {
     [JsonPropertyName("access_token")]
     public string AccessToken { get; set; } = string.Empty;

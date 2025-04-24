@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace KisOpenApi;
-internal class ResponseCommon
+internal class KisResponseBase
 {
 	/// <summary>
 	/// return code
@@ -13,7 +13,7 @@ internal class ResponseCommon
 	/// MSG Code
 	/// </summary>
 	[JsonPropertyName("msg_cd")]
-	public string Code { get; set; } = string.Empty;
+	public string MessageCode { get; set; } = string.Empty;
 
 	/// <summary>
 	/// Error Message

@@ -9,7 +9,7 @@ namespace KisOpenApi.Models.GlobalFutures;
 /// <summary>
 /// 해외선물종목상세 response
 /// </summary>
-internal class HHDFC55010100 : ResponseCommon
+internal class HHDFC55010100 : KisResponseBase
 {
 	public HHDFC55010100Output Output1 { get; set; } = new();
 

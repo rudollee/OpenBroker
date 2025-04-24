@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace KisOpenApi.Models.GlobalFutures;
 internal class OrderHistory
@@ -14,7 +9,7 @@ internal class OrderHistory
 /// OTFM3116R :
 /// 해외선물옵션 당일주문내역조회
 /// </summary>
-internal class OTFM3116R : ExecutionBaseResponse
+internal class OTFM3116R : KisResponseBase
 {
     public List<OTFM3116ROutput> Output { get; set; } = new List<OTFM3116ROutput>();
 
@@ -91,7 +86,7 @@ internal class OTFM3116R : ExecutionBaseResponse
 /// OTFM3120R: 
 /// 해외선물옵션 일별 주문내역
 /// </summary>
-internal class OTFM3120R : ExecutionBaseResponse
+internal class OTFM3120R : KisResponseBase
 {
     public List<OTFM3120ROutput> Output { get; set; } = new();
 

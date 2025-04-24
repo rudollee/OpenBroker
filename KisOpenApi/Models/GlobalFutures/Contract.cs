@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace KisOpenApi.Models.GlobalFutures;
 internal class ContractRequeasst
@@ -16,7 +11,7 @@ internal class ContractRequeasst
 /// <summary>
 /// 일별 체결내역 - OTFM3122R
 /// </summary>
-internal class OTFM3122R : ExecutionBaseResponse
+internal class OTFM3122R : KisResponseBase
 {
     public string ctx_area_fk200 { get; set; } = string.Empty;
     public string ctx_area_nk200 { get; set; } = string.Empty;

@@ -64,18 +64,18 @@ public partial class KisKrxEquity : ConnectionBase, IExecution
 		try
 		{
 			var response = await client.PostAsync<TTTC080XU>(request);
-			if (response is null || response.Output is null || response.ResultCode != "0") return new ResponseCore
+			if (response is null || response.Output is null || response.ReturnCode != "0") return new ResponseCore
 			{
 				StatusCode = Status.ERROR_OPEN_API,
-				Code = response?.ResponseCode ?? "NULL",
-				Message = response?.ResponseMessage ?? "response is null",
+				Code = response?.MessageCode ?? "NULL",
+				Message = response?.Message ?? "response is null",
 			};
 
 			return new ResponseCore
 			{
 				StatusCode = Status.SUCCESS,
-				Code = response.ResponseCode,
-				Message = response.ResponseMessage,
+				Code = response.MessageCode,
+				Message = response.Message,
 				Remark = $"{response.Output.OrderTime6}-{response.Output.OrderNumber}"
 			};
 		}

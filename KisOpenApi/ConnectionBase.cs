@@ -75,7 +75,7 @@ public class ConnectionBase
 			if (string.IsNullOrEmpty(response.AccessToken)) return new ResponseResult<KeyPack>
 			{
 				StatusCode = Status.UNAUTHORIZED,
-				Code = response.Code,
+				Code = response.MessageCode,
 				Message = response.Message,
 				Remark = response.ReturnCode
 			};
@@ -138,7 +138,7 @@ public class ConnectionBase
 			if (string.IsNullOrEmpty(response.ApprovalKey)) return new ResponseResult<KeyPack>
 			{
 				StatusCode = Status.UNAUTHORIZED,
-				Code = response.Code,
+				Code = response.MessageCode,
 				Message = response.Message,
 				Remark = response.ReturnCode
 			};
@@ -146,7 +146,7 @@ public class ConnectionBase
 			return new ResponseResult<KeyPack>
 			{
 				StatusCode = Status.SUCCESS,
-				Code = response.Code,
+				Code = response.MessageCode,
 				Message = response.Message,
 				Remark = response.ReturnCode,
 				Info = new KeyPack { WebsocketCode = response.ApprovalKey },

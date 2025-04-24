@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace KisOpenApi.Models.GlobalFutures;
 public class BalanceRequest : ExecutionBaseRequest
@@ -14,7 +9,7 @@ public class BalanceRequest : ExecutionBaseRequest
 /// <summary>
 /// OTFM1411R.해외선물옵션 예수금현황
 /// </summary>
-internal class OTFM1411R : ExecutionBaseResponse
+internal class OTFM1411R : KisResponseBase
 {
     public Output output { get; set; } = new Output();
 

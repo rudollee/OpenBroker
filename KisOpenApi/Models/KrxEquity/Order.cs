@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace KisOpenApi.Models.KrxEquity;
 /// <summary>
 /// 국내주식 - 주문 신규/정정/취소 공통
 /// </summary>
-internal class TTTC080XU : ExecutionBaseResponse
+internal class TTTC080XU : KisResponseBase
 {
 	public TTTC080XUOutput Output { get; set; } = new();
 }

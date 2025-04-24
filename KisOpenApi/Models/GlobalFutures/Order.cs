@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace KisOpenApi.Models.GlobalFutures;
 
 /// <summary>
 /// 해외선물옵션 - 주문 신규/정정/취소 공통
 /// </summary>
-internal class OTFM300XU : ExecutionBaseResponse
+internal class OTFM300XU : KisResponseBase
 {
     public OTFM300XUOutput Output { get; set; } = new OTFM300XUOutput();
 }

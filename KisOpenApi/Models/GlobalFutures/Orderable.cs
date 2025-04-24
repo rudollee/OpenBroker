@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace KisOpenApi.Models.GlobalFutures;
 /// <summary>
 /// OTFM3304R : 해외선물 주문가능조회
 /// </summary>
-internal class OTFM3304R : ExecutionBaseResponse
+internal class OTFM3304R : KisResponseBase
 {
     public OTFM3304ROutput Output { get; set; } = new();
 
