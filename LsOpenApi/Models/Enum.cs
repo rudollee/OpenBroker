@@ -3,20 +3,6 @@ using System.Reflection;
 
 namespace LsOpenApi.Models;
 
-internal static class EnumHelper
-{
-	internal static string ToDescription(this Enum source)
-	{
-		var info = source.GetType().GetField(source.ToString());
-
-		if (info is null) return string.Empty;
-
-		var attribute = info.GetCustomAttribute(typeof(DescriptionAttribute)) as DescriptionAttribute;
-		
-		return attribute is null ? source.ToString() : attribute.Description;
-	}
-}
-
 internal enum LsEndpoint
 {
 	[Description("")]
