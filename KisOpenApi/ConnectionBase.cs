@@ -612,7 +612,7 @@ public class ConnectionBase
 	#endregion
 
 	#region Request Standard
-	internal async Task<T> RequestStandardAsync<T>(string endpoint, Dictionary<string, string> parameters) where T : KisResponseBase
+	internal async Task<T> RequestStandardAsync<T>(string endpoint, Dictionary<string, string?> parameters) where T : KisResponseBase
 	{
 		var delaying = DelayRequest(typeof(T).Name);
 		if (!delaying)
