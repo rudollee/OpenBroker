@@ -37,6 +37,8 @@ public class ConnectionBase
 
 	private Dictionary<string, SubscriptionPack> _subscriptions = new();
 
+	private List<Request> Requests = [];
+
 	#region Request Access Token using appkey & secret
 	/// <summary>
 	/// Request Access Token using appkey & secret
@@ -559,6 +561,54 @@ public class ConnectionBase
 	/// <param name="additionalOption"></param>
 	/// <returns></returns>
 	protected Dictionary<string, string> GenerateHeaders(string tr, object additionalOption) =>
-		GenerateHeaders(tr, additionalOption.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(additionalOption, null)?.ToString())); 
+		GenerateHeaders(tr, additionalOption.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(additionalOption, null)?.ToString()));
 	#endregion
+
+	#region Delay Request
+	protected bool DelayRequest(string trCode, bool needsMessage = true)
+	{
+		var requestsOld = Requests.Where(w => w.RequestTime < DateTime.UtcNow.AddSeconds(-1));
+		try
+		{
+			foreach (var request in requestsOld)
+			{
+				Requests.Remove(request);
+			}
+		}
+		catch (Exception ex)
+		{
+			Message(this, new ResponseCore
+			{
+				Code = "OPENAPI_ERR",
+				Message = $"{ex.Message}",
+			});
+
+			return false;
+		}
+
+		if (Requests.Count() < 20)
+		{
+			Requests.Add(new Request { TrCode = trCode });
+			return true;
+		}
+
+		var delaying = Requests[0].RequestTime.Subtract(DateTime.UtcNow.AddMilliseconds(-1001));
+
+		if (needsMessage)
+		{
+			Message(this, new ResponseCore
+			{
+				StatusCode = Status.SUCCESS,
+				Code = trCode,
+				Message = $"request to KIS forcely delayed {(delaying.TotalMilliseconds * 0.001).ToString("N3")} sec."
+			});
+		}
+
+		Thread.Sleep(delaying);
+		Requests.Add(new Request { TrCode = trCode });
+
+		return true;
+	}
+	#endregion
+
 }
