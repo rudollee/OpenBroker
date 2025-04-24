@@ -180,17 +180,9 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 			CTX_AREA_NK200 = ""
 		});
 
-		var client = new RestClient($"{host}/uapi/overseas-futureoption/v1/trading/inquire-ccld");
-		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(OTFM3116R)));
-
-		foreach (var parameters in queryParameters)
-		{
-			request.AddQueryParameter(parameters.Key, parameters.Value?.ToString());
-		}
-
 		try
 		{
-			var response = await client.GetAsync<OTFM3116R>(request);
+			var response = await RequestStandardAsync<OTFM3116R>("uapi/overseas-futureoption/v1/trading/inquire-ccld", queryParameters);
 
 			if (response is null) return new ResponseResults<Order>
 			{
