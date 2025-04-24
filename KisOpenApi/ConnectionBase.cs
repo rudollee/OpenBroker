@@ -635,7 +635,7 @@ public class ConnectionBase
 		var response = await client.GetAsync<T>(request) ?? (T)new KisResponseBase();
 		if (response is null) return (T)new KisResponseBase
 		{
-			ReturnCode = "ERR"
+			ReturnCode = "ERR",
 			MessageCode = $"{typeof(T).Name}-ERR",
 			Message = "failed to response",
 		};
