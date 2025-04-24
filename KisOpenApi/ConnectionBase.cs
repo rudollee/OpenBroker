@@ -611,4 +611,36 @@ public class ConnectionBase
 	}
 	#endregion
 
+	#region Request Standard
+	internal async Task<T> RequestStandardAsync<T>(string endpoint, Dictionary<string, string> parameters) where T : KisResponseBase
+	{
+		var delaying = DelayRequest(typeof(T).Name);
+		if (!delaying)
+		{
+			return (T)new KisResponseBase
+			{
+				ReturnCode = "ERR",
+				MessageCode = $"{typeof(T).Name}-ERR",
+				Message = "delaying calculation failed",
+			};
+		}
+
+		var client = new RestClient($"{host}/{endpoint}");
+		var request = new RestRequest().AddHeaders(GenerateHeaders(typeof(T).Name));
+		foreach (var parameter in parameters)
+		{
+			request.AddQueryParameter(parameter.Key, parameter.Value?.ToString());
+		}
+
+		var response = await client.GetAsync<T>(request) ?? (T)new KisResponseBase();
+		if (response is null) return (T)new KisResponseBase
+		{
+			ReturnCode = "ERR"
+			MessageCode = $"{typeof(T).Name}-ERR",
+			Message = "failed to response",
+		};
+
+		return response;
+	} 
+	#endregion
 }
