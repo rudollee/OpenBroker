@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace KisOpenApi;
 internal class ResponseCommon
@@ -11,7 +6,7 @@ internal class ResponseCommon
 	/// <summary>
 	/// return code
 	/// </summary>
-	[JsonPropertyName("rt-cd")]
+	[JsonPropertyName("rt_cd")]
 	public string ReturnCode { get; set; } = string.Empty;
 
 	/// <summary>
