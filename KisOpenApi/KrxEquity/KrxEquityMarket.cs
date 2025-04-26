@@ -24,7 +24,7 @@ public partial class KisKrxEquity : ConnectionBase, IMarket
 	#region 국내주식기간별시세(일,주,월,년) - FHKST03010100
 	public async Task<ResponseResult<QuotePack>> RequestPricePack(QuoteRequest request)
 	{
-		var parameters = new
+		var parameters = GenerateParameters(new
 		{
 			FID_COND_MRKT_DIV_CODE = "J",
 			FID_INPUT_ISCD = request.Symbol,
@@ -38,11 +38,9 @@ public partial class KisKrxEquity : ConnectionBase, IMarket
 				_ => "D"
 			},
 			FID_ORG_ADJ_PRC = "1",
-		};
+		});
 
-		var parameterDictionary = parameters.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(parameters, null)?.ToString());
-
-		var response = await RequestStandardAsync<FHKST03010100>(EndpointRef.EndpointDic[TrId.FHKST03010100], parameterDictionary);
+		var response = await RequestStandardAsync<FHKST03010100>(EndpointRef.EndpointDic[TrId.FHKST03010100], parameters);
 		if (response is null) return new ResponseResult<QuotePack>
 		{
 			StatusCode = Status.ERROR_OPEN_API,
