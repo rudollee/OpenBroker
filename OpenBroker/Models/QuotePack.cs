@@ -23,4 +23,5 @@ public class QuoteRequest
 	public int Amount { get; set; } = 0;
 	public DateTime DateTimeBegin { get; set; }
 	public DateTime DateTimeEnd { get; set; }
+	public Exchange Exchange { get; set; } = Exchange.NONE;
 }
