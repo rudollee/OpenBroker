@@ -1,22 +1,6 @@
 ﻿using System.ComponentModel;
-using System.Reflection;
 
 namespace OpenBroker.Models;
-
-public static class EnumHelper
-{
-	public static string ToDescription(this Enum source)
-	{
-		var info = source.GetType().GetField(source.ToString());
-
-		if (info is null) return string.Empty;
-
-		var attribute = info.GetCustomAttribute(typeof(DescriptionAttribute)) as DescriptionAttribute;
-
-		return attribute is null ? source.ToString() : attribute.Description;
-	}
-}
-
 public enum Status
 {
     SUCCESS = 200,
