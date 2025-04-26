@@ -489,15 +489,20 @@ public class ConnectionBase
 	/// </summary>
 	/// <param name="additionalOption"></param>
 	/// <returns></returns>
-	protected Dictionary<string, string?> GenerateParameters(Dictionary<string, string?> additionalOption)
+	protected Dictionary<string, string?> GenerateParameters(Dictionary<string, string?> additionalOption, bool needsAccountInfo = false)
 	{
-		var basicParameters = new
+		var parameters = new Dictionary<string, string?>();
+		if (needsAccountInfo && !string.IsNullOrEmpty(BankAccountInfo.AccountNumber))
 		{
-			CANO = BankAccountInfo.AccountNumber.Substring(0, 8),
-			ACNT_PRDT_CD = BankAccountInfo.AccountNumber.Substring(8),
-		};
+			var accountInfo = new
+			{
+				CANO = BankAccountInfo.AccountNumber.Substring(0, 8),
+				ACNT_PRDT_CD = BankAccountInfo.AccountNumber.Substring(8),
+			};
 
-		var parameters = basicParameters.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(basicParameters, null)?.ToString());
+			parameters = accountInfo.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(accountInfo, null)?.ToString());
+		}
+
 		foreach (var parameter in additionalOption)
 		{
 			parameters.Add(parameter.Key, parameter.Value?.ToString());
@@ -511,8 +516,8 @@ public class ConnectionBase
 	/// </summary>
 	/// <param name="additionalOption"></param>
 	/// <returns></returns>
-	protected Dictionary<string, string?> GenerateParameters(object additionalOption) =>
-		GenerateParameters(additionalOption.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(additionalOption, null)?.ToString()));
+	protected Dictionary<string, string?> GenerateParameters(object additionalOption, bool needsAccountInfo = false) =>
+		GenerateParameters(additionalOption.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(additionalOption, null)?.ToString()), needsAccountInfo);
 	#endregion
 
 	#region Generate Headers

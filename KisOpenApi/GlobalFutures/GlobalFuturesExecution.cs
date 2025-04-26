@@ -27,7 +27,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 			SLL_BUY_DVSN_CD = order.IsLong ? "02" : "01",
 			FM_ORD_PRIC = "N",
 			ECIS_RSVN_ORD_YN = "N"
-		});
+		}, true);
 
 		var client = new RestClient($"{host}/uapi/overseas-futureoption/v1/trading/inquire-psamount");
 		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(OTFM3116R)));
@@ -96,7 +96,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 			CPLX_ORD_DVSN_CD = "0", // 복합주문구분코드
 			ECIS_RSVN_ORD_YN = "N", // 행사예약주문여부
 			FM_HDGE_ORD_SCRN_YN = "N" // FM_HEDGE주문화면여부
-		});
+		}, true);
 
 		return await RequestOrderAsync("OTFM3001U", parameters);
 	}
@@ -122,7 +122,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 			ORGN_ODNO = order.IdOrigin.ToString().PadLeft(8, '0'),
 			FM_HDGE_ORD_SCRN_YN = "N",
 			FM_MKPR_CVSN_YN = "N"
-		});
+		}, true);
 
 		return await RequestOrderAsync("OTFM3003U", parameters);
 	}
@@ -178,7 +178,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 			FUOP_DVSN = "00",
 			CTX_AREA_FK200 = "",
 			CTX_AREA_NK200 = ""
-		});
+		}, true);
 
 		try
 		{
@@ -264,7 +264,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 			FUOP_DVSN = "00",
 			CTX_AREA_FK200 = "",
 			CTX_AREA_NK200 = ""
-		});
+		}, true);
 
 		var client = new RestClient($"{host}/uapi/overseas-futureoption/v1/trading/inquire-daily-order");
 		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(OTFM3120R)));
@@ -372,7 +372,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 			SLL_BUY_DVSN_CD = "%%",
 			CTX_AREA_FK200 = "",
 			CTX_AREA_NK200 = ""
-		});
+		}, true);
 
 		var client = new RestClient($"{host}/uapi/overseas-futureoption/v1/trading/inquire-daily-ccld");
 		var request = new RestRequest().AddHeaders(GenerateHeaders(nameof(OTFM3122R)));
@@ -448,7 +448,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 		{
 			CRCY_CD = currency.ToString(),
 			INQR_DT = (date is null ? DateTime.Now : date)?.ToString("yyyyMMdd")
-		});
+		}, true);
 
 		foreach (var parameter in body)
 		{

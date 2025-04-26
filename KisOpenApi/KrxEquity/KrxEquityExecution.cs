@@ -26,7 +26,7 @@ public partial class KisKrxEquity : ConnectionBase, IExecution
 			ORD_DVSN = order.OrderType == OrderType.MARKET ? "01" : "00",
 			ORD_QTY = order.VolumeOrdered,
 			ORD_UNPR = order.OrderType == OrderType.MARKET ? "0" : order.PriceOrdered.ToString(),
-		});
+		}, true);
 
 		return await RequestOrderAsync(order.IsLong ? "TTTC0802U" : "TTTC0801U", parameters);
 	}
@@ -51,7 +51,7 @@ public partial class KisKrxEquity : ConnectionBase, IExecution
 			ORD_QTY = "0",
 			ORD_UNPR = "0",
 			QTY_ALL_ORD_YN = "Y"
-		});
+		}, true);
 
 		return await RequestOrderAsync("TTTC0803U", parameters);
 	}
