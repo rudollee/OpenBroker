@@ -1,6 +1,7 @@
 ﻿using System.Net.WebSockets;
 using System.Text.Json;
 using KisOpenApi.Models;
+using OpenBroker.Extensions;
 using OpenBroker.Models;
 using RestSharp;
 using Websocket.Client;
@@ -641,6 +642,44 @@ public class ConnectionBase
 		};
 
 		return response;
-	} 
+	}
+	
+	internal async Task<T> RequestStandardAsync<T>(EndpointPack ep, Dictionary<string, string?> parameters) where T : KisResponseBase
+	{
+		var delaying = DelayRequest(typeof(T).Name);
+		if (!delaying)
+		{
+			return (T)new KisResponseBase
+			{
+				ReturnCode = "ERR",
+				MessageCode = $"{typeof(T).Name}-ERR",
+				Message = "delaying calculation failed",
+			};
+		}
+
+		var client = new RestClient($"{host}/uapi/{ep.Prefix.ToDescription()}/{ep.Type.ToDescription()}/{ep.Endpoint}");
+		var request = new RestRequest().AddHeaders(GenerateHeaders(typeof(T).Name));
+		foreach (var parameter in parameters)
+		{
+			request.AddQueryParameter(parameter.Key, parameter.Value?.ToString());
+		}
+		var responseRaw = await client.ExecuteAsync<T>(request, ep.HttpMethod);
+		if (responseRaw is null || !responseRaw.IsSuccessful) return (T)new KisResponseBase
+		{
+			ReturnCode = "ERR",
+			MessageCode = $"{typeof(T).Name}-ERR",
+			Message = "failed to response",
+		};
+
+		var response = client.Serializers.DeserializeContent<T>(responseRaw);
+		if (response is null) return (T)new KisResponseBase
+		{
+			ReturnCode = "ERR",
+			MessageCode = $"{typeof(T).Name}-ERR",
+			Message = "failed to serialize",
+		};
+
+		return response;
+	}
 	#endregion
 }

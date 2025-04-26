@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using RestSharp;
 
 namespace KisOpenApi.Models;
 internal class EndpointPack
@@ -7,6 +8,7 @@ internal class EndpointPack
 	public EndpointPrefix Prefix { get; set; }
 	public EndpointType Type { get; set; }
 	public string Endpoint { get; set; } = string.Empty;
+	public Method HttpMethod { get; set; } = Method.Get;
 }
 
 /// <summary>
