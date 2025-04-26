@@ -1,5 +1,7 @@
 ﻿using KisOpenApi.Models;
+using KisOpenApi.Models.KrxEquity;
 using OpenBroker;
+using OpenBroker.Extensions;
 using OpenBroker.Models;
 
 namespace KisOpenApi.KrxEquity;
@@ -18,7 +20,65 @@ public partial class KisKrxEquity : ConnectionBase, IMarket
 	public Task<ResponseResult<News>> RequestNews(string id = "") => throw new NotImplementedException();
 	public Task<ResponseDictionary<string, Instrument>> RequestInstruments(int option) => throw new NotImplementedException();
 	public Task<ResponseResults<MarketContract>> RequestMarketContractHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
-	public Task<ResponseResult<QuotePack>> RequestPricePack(QuoteRequest request) => throw new NotImplementedException();
+
+	#region 국내주식기간별시세(일,주,월,년) - FHKST03010100
+	public async Task<ResponseResult<QuotePack>> RequestPricePack(QuoteRequest request)
+	{
+		var parameters = new
+		{
+			FID_COND_MRKT_DIV_CODE = "J",
+			FID_INPUT_ISCD = request.Symbol,
+			FID_INPUT_DATE_1 = request.DateTimeBegin.ToString("yyyyMMdd"),
+			FID_INPUT_DATE_2 = request.DateTimeEnd.ToString("yyyyMMdd"),
+			FID_PERIOD_DIV_CODE = request.TimeIntervalUnit switch
+			{
+				IntervalUnit.Day => "D",
+				IntervalUnit.Week => "W",
+				IntervalUnit.Month => "M",
+				_ => "D"
+			},
+			FID_ORG_ADJ_PRC = "1",
+		};
+
+		var parameterDictionary = parameters.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(parameters, null)?.ToString());
+
+		var response = await RequestStandardAsync<FHKST03010100>(EndpointRef.EndpointDic[TrId.FHKST03010100], parameterDictionary);
+		if (response is null) return new ResponseResult<QuotePack>
+		{
+			StatusCode = Status.ERROR_OPEN_API,
+			Info = new QuotePack { PrimaryList = [] },
+			Message = "response is null"
+		};
+
+		var quotes = new List<Quote>();
+		response.Output2.ForEach(f =>
+		{
+			var close = Convert.ToDecimal(f.stck_clpr);
+			quotes.Add(new Quote
+			{
+				TimeContract = f.stck_bsop_date.ToDateTime(),
+				C = close,
+				H = Convert.ToDecimal(f.stck_hgpr),
+				L = Convert.ToDecimal(f.stck_lwpr),
+				O = Convert.ToDecimal(f.stck_oprc),
+				V = Convert.ToDecimal(f.acml_vol),
+				BasePrice = close - Convert.ToDecimal(f.prdy_vrss),
+				Turnover = Convert.ToDecimal(f.acml_tr_pbmn) / 1_000_000,
+			});
+		});
+
+		return new ResponseResult<QuotePack>
+		{
+			Info = new QuotePack
+			{
+				Symbol = request.Symbol,
+				TimeIntervalUnit = request.TimeIntervalUnit,
+				TimeInterval = request.TimeInterval,
+				PrimaryList = quotes
+			},
+		};
+	} 
+	#endregion
 
 	public async Task<ResponseCore> SubscribeMarketContract(string symbol = "", bool connecting = true, string subscriber = "")
 	{
