@@ -37,9 +37,10 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 		var result = rawData[1] switch
 		{
 			nameof(H0STASP0) => CallbackH0STASP0(data),
-			nameof(H0STCNT0) => CallbackH0STCNT0(data),
+			nameof(H0STCNT0) => CallbackH0STCNT0(data, rawData[1]),
 			nameof(H0UNCNT0) => CallbackH0UNCNT0(data),
 			nameof(H0STCNI0) => CallbackH0STCNI0(data),
+			nameof(H0NXCNT0) => CallbackH0STCNT0(data, rawData[1]),
 			_ => false
 		};
 	}
@@ -108,7 +109,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 	#endregion
 
 	#region 실시간 체결가 H0STCNT0 - callback
-	private bool CallbackH0STCNT0(string[] data)
+	private bool CallbackH0STCNT0(string[] data, string trId)
 	{
 		if (MarketContracted is null) return false;
 		try
@@ -119,6 +120,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 				Code = "001",
 				Info = new MarketContract
 				{
+					Exchange = trId == nameof(H0STCNT0) ? Exchange.KRX : Exchange.NXT,
 					MarketSessionInfo = data[(int)H0STCNT0.NEW_MKOP_CLS_CODE].Substring(0, 1) switch
 					{
 						"1" => MarketSession.PRE,

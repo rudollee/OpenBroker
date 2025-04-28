@@ -80,10 +80,10 @@ public partial class KisKrxEquity : ConnectionBase, IMarket
 
 	public async Task<ResponseCore> SubscribeMarketContract(string symbol = "", bool connecting = true, string subscriber = "")
 	{
-		var realtimeCode = symbol.StartsWith("U") ? nameof(H0UNCNT0) : nameof(H0STCNT0);
-		if (symbol.StartsWith("U")) symbol = symbol.Substring(1);
+		var krx = await SubscribeAsync(subscriber, nameof(H0STCNT0), symbol, connecting);
+		var nxt = await SubscribeAsync(subscriber, nameof(H0NXCNT0), symbol, connecting);
 
-		return await SubscribeAsync(subscriber, realtimeCode, symbol, connecting);
+		return krx;
 	}
 
 	public async Task<ResponseCore> SubscribeMarketDepth(string symbol = "", bool connecting = true, string subscriber = "") =>

@@ -142,3 +142,9 @@ internal enum H0STCNT0
 	/// <summary>정적VI발동기준가</summary>
 	VI_STND_PRC = 45,
 }
+
+/// <summary>
+/// 국내주식 실시간체결가 (NXT)
+/// </summary>
+internal enum H0NXCNT0 { };
+
