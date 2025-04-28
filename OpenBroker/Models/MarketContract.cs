@@ -11,6 +11,11 @@ public class MarketContract
     public MarketSession MarketSessionInfo { get; set; } = MarketSession.REGULAR;
 
     /// <summary>
+    /// 거래소 구분
+    /// </summary>
+    public Exchange Exchange { get; set; } = Exchange.NONE;
+
+    /// <summary>
     /// 예상치 여부
     /// </summary>
     public bool IsEstimated { get; set; } = false;
