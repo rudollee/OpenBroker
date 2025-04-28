@@ -125,7 +125,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	}
 	#endregion
 
-	#region request equity dictionary using t8436
+	#region request equity dictionary using t8436 / t9945
 	public async Task<ResponseResults<Equity>> RequestEquityList(int option = 0)
 	{
 		try
@@ -160,10 +160,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				Equities.Add(instrument.shcode, equity);
 			}
 
-			return new ResponseResults<Equity>
-			{
-				List = equities,
-			};
+			return new ResponseResults<Equity> { List = equities, };
 		}
 		catch (Exception ex)
 		{
@@ -171,7 +168,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = ex.Message,
-				List = new List<Equity>(),
+				List = []
 			};
 		}
 	}
@@ -180,36 +177,38 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	{
 		try
 		{
-			var response = await RequestStandardAsync<t8436>(LsEndpoint.EquityEtc.ToDescription(), new
+			foreach (var code in new string[] { "1", "2" })
 			{
-				t8436InBlock = new t8436InBlock
+				var response = await RequestStandardAsync<t9945>(LsEndpoint.EquityMarketData.ToDescription(), new
 				{
-					gubun = "0"
-				}
-			});
-
-			if (!response.t8436OutBlock.Any()) return new ResponseDictionary<string, Equity>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Code = response.Code,
-				Message = "no data",
-			};
-
-			foreach (var instrument in response.t8436OutBlock.Where(w => new string[] { "01", "03" }.Contains(w.bu12gubun)))
-			{
-				Equities.Add(instrument.shcode, new Equity
-				{
-					Symbol = instrument.shcode,
-					Section = instrument.gubun == "1" ? ExchangeSection.KOSPI : ExchangeSection.KOSDAQ,
-					NameOfficial = instrument.hname,
+					t9945InBlock = new t9945InBlock { gubun = code }
 				});
+
+				if (!response.t9945OutBlock.Any()) return new ResponseDictionary<string, Equity>
+				{
+					StatusCode = Status.ERROR_OPEN_API,
+					Message = "no data",
+					Code = response.Code,
+					Dic = new Dictionary<string, Equity>()
+				};
+
+				foreach (var instrument in response.t9945OutBlock.Where(w => w.etfchk == "0"))
+				{
+					var equity = new Equity
+					{
+						Symbol = instrument.shcode,
+						Section = code == "1" ? ExchangeSection.KOSPI : ExchangeSection.KOSDAQ,
+						NameOfficial = instrument.hname,
+					};
+
+					equity.Exchanges.Add(Exchange.KRX);
+					if (instrument.nxt_chk == "1") equity.Exchanges.Add(Exchange.NXT);
+
+					Equities.Add(instrument.shcode, equity);
+				}
 			}
 
-			return new ResponseDictionary<string, Equity>
-			{
-				Dic = Equities
-			};
-
+			return new ResponseDictionary<string, Equity> { Dic = Equities };
 		}
 		catch (Exception ex)
 		{
