@@ -435,24 +435,62 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 			if (response is null || response.Body is null) return false;
 
 			var asks = new List<MarketOrder>();
+			var asksKrx = new List<MarketOrder>();
+			var asksNxt = new List<MarketOrder>();
 			for (int i = 0; i < 10; i++)
 			{
+				var seq = Convert.ToByte(i + 1);
+				var price = Convert.ToDecimal(response.Body.GetPropValue($"offerho{(i + 1)}"));
+
 				asks.Add(new MarketOrder
 				{
-					Seq = Convert.ToByte(i + 1),
-					Price = Convert.ToDecimal(response.Body.GetPropValue($"offerho{(i + 1)}")),
+					Seq = seq,
+					Price = price,
 					Amount = Convert.ToDecimal(response.Body.GetPropValue($"unt_offerrem{(i + 1)}")),
+				});
+
+				asksKrx.Add(new MarketOrder
+				{
+					Seq = seq,
+					Price = price,
+					Amount = Convert.ToDecimal(response.Body.GetPropValue($"krx_offerrem{(i + 1)}")),
+				});
+
+				asksNxt.Add(new MarketOrder
+				{
+					Seq = seq,
+					Price = price,
+					Amount = Convert.ToDecimal(response.Body.GetPropValue($"nxt_offerrem{(i + 1)}")),
 				});
 			}
 
 			var bids = new List<MarketOrder>();
+			var bidsKrx = new List<MarketOrder>();
+			var bidsNxt = new List<MarketOrder>();
 			for (int i = 0; i < 10; i++)
 			{
+				var seq = Convert.ToByte(i + 1);
+				var price = Convert.ToDecimal(response.Body.GetPropValue($"bidho{(i + 1)}"));
+
 				bids.Add(new MarketOrder
 				{
-					Seq = Convert.ToByte(i + 1),
-					Price = Convert.ToDecimal(response.Body.GetPropValue($"bidho{(i + 1)}")),
+					Seq = seq,
+					Price = price,
 					Amount = Convert.ToDecimal(response.Body.GetPropValue($"unt_bidrem{(i + 1)}"))
+				});
+
+				bidsKrx.Add(new MarketOrder
+				{
+					Seq = seq,
+					Price = price,
+					Amount = Convert.ToDecimal(response.Body.GetPropValue($"krx_bidrem{(i + 1)}"))
+				});
+
+				bidsNxt.Add(new MarketOrder
+				{
+					Seq = seq,
+					Price = price,
+					Amount = Convert.ToDecimal(response.Body.GetPropValue($"nxt_bidrem{(i + 1)}"))
 				});
 			}
 
@@ -462,12 +500,49 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				Code = nameof(UH1),
 				Info = new OrderBook
 				{
+					Exchange = Exchange.NONE,
 					Symbol = response.Body.shcode,
 					TimeTaken = response.Body.hotime.ToTime(),
 					Ask = asks,
 					Bid = bids,
 					AskAgg = Convert.ToDecimal(response.Body.unt_totofferrem),
 					BidAgg = Convert.ToDecimal(response.Body.unt_totbidrem),
+				},
+				Remark = message,
+				Broker = Brkr.LS
+			});
+
+			OrderBookTaken(this, new ResponseResult<OrderBook>
+			{
+				Typ = MessageType.MKT,
+				Code = nameof(UH1),
+				Info = new OrderBook
+				{
+					Exchange = Exchange.KRX,
+					Symbol = response.Body.shcode,
+					TimeTaken = response.Body.hotime.ToTime(),
+					Ask = asksKrx,
+					Bid = bidsNxt,
+					AskAgg = Convert.ToDecimal(response.Body.krx_totofferrem),
+					BidAgg = Convert.ToDecimal(response.Body.krx_totbidrem),
+				},
+				Remark = message,
+				Broker = Brkr.LS
+			});
+
+			OrderBookTaken(this, new ResponseResult<OrderBook>
+			{
+				Typ = MessageType.MKT,
+				Code = nameof(UH1),
+				Info = new OrderBook
+				{
+					Exchange = Exchange.NXT,
+					Symbol = response.Body.shcode,
+					TimeTaken = response.Body.hotime.ToTime(),
+					Ask = asksNxt,
+					Bid = bidsNxt,
+					AskAgg = Convert.ToDecimal(response.Body.nxt_totofferrem),
+					BidAgg = Convert.ToDecimal(response.Body.nxt_totbidrem),
 				},
 				Remark = message,
 				Broker = Brkr.LS
