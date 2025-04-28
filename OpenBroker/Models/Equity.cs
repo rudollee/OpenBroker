@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OpenBroker.Models;
+﻿namespace OpenBroker.Models;
 
 public class Equity
 {
@@ -17,6 +11,8 @@ public class Equity
 	public string NameAlt { get; set; } = string.Empty;
 
 	public DiscardStatus DiscardStatus { get; set; } = DiscardStatus.TRADABLE;
+
+	public List<Exchange> Exchanges { get; set; } = [];
 }
 
 public class EquityPack : Equity
