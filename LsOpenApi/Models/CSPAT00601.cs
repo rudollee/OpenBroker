@@ -129,16 +129,19 @@ internal class CSPAT00601InBlock1 : LsOrderInBlockCommon
 	public string BnsTpCode { get; set; } = string.Empty;
 
 	/// <summary>호가유형코드</summary>
-	public string OrdprcPtnCode { get; set; } = string.Empty;
+	public string OrdprcPtnCode { get; set; } = "03";
 
 	/// <summary>신용거래코드</summary>
-	public string MgntrnCode { get; set; } = string.Empty;
+	public string MgntrnCode { get; set; } = "000";
 
 	/// <summary>대출일</summary>
 	public string LoanDt { get; set; } = string.Empty;
 
 	/// <summary>주문조건구분</summary>
-	public string OrdCndiTpCode { get; set; } = string.Empty;
+	public string OrdCndiTpCode { get; set; } = "0";
+
+	/// <summary>회원사번호</summary>
+	public string MbrNo { get; set; } = "KRX";
 }
 
 

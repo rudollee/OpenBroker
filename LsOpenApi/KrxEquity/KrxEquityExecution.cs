@@ -29,9 +29,11 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 					OrderType.MID => "12",
 					_ => "03"
 				},
-				MgntrnCode = "000",
-				LoanDt = "",
-				OrdCndiTpCode = "0"
+				MbrNo = order.ExchangeCode switch
+				{
+					Exchange.NXT => "NXT",
+					_ => "KRX"
+				}
 			}
 		});
 
