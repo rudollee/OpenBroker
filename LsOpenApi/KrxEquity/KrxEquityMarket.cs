@@ -272,9 +272,16 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	}
 	#endregion
 
-	#region request equity complex using t1101 & t1102
+	#region request equity complex using t8450 & t1102
 	public async Task<ResponseResult<EquityPack>> RequestEquityInfo(string symbol, bool needsOrderBook = false, Exchange exchange = Exchange.NONE)
 	{
+		var exchangeCode = exchange switch
+		{
+			Exchange.KRX => "K",
+			Exchange.NXT => "N",
+			_ => "U"
+		};
+
 		try
 		{
 			var response = await RequestStandardAsync<t1102>(LsEndpoint.EquityMarketData.ToDescription(), new
@@ -282,12 +289,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				t1102InBlock = new t1102InBlock
 				{
 					shcode = symbol,
-					exchgubun = exchange switch
-					{
-						Exchange.KRX => "K",
-						Exchange.NXT => "N",
-						_ => "U"
-					}
+					exchgubun = exchangeCode
 				}
 			});
 
@@ -328,43 +330,52 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 			if (needsOrderBook)
 			{
-				var responseOrderbook = await RequestStandardAsync<t1101>(LsEndpoint.EquityMarketData.ToDescription(), new
+				var responseOrderbook = await RequestStandardAsync<t8450>(LsEndpoint.EquityMarketData.ToDescription(), new
 				{
-					t1101InBlock = new t1101InBlock
+					t8450InBlock = new t8450InBlock
 					{
-						shcode = symbol
+						shcode = symbol,
+						exchgubun = exchangeCode
 					}
 				});
 
-				if (responseOrderbook.t1101OutBlock is not null)
+				if (responseOrderbook.t8450OutBlock is not null)
 				{
 					var orderbook = new OrderBook();
 					var asks = new List<MarketOrder>();
 					var bids = new List<MarketOrder>();
+
+					var exchangePrefix = exchange switch
+					{
+						Exchange.KRX => "",
+						Exchange.NXT => "nxt_",
+						_ => "unx_"
+					};
+
 					for (int i = 0; i < 10; i++)
 					{
 						asks.Add(new MarketOrder
 						{
 							Seq = Convert.ToByte(i + 1),
-							Price = Convert.ToDecimal(responseOrderbook.t1101OutBlock.GetPropValue($"offerho{(i + 1)}")),
-							Amount = Convert.ToDecimal(responseOrderbook.t1101OutBlock.GetPropValue($"offerrem{(i + 1)}"))
+							Price = Convert.ToDecimal(responseOrderbook.t8450OutBlock.GetPropValue($"offerho{(i + 1)}")),
+							Amount = Convert.ToDecimal(responseOrderbook.t8450OutBlock.GetPropValue($"{exchangePrefix}offerrem{(i + 1)}"))
 						});
 
 						bids.Add(new MarketOrder
 						{
 							Seq = Convert.ToByte(i + 1),
-							Price = Convert.ToDecimal(responseOrderbook.t1101OutBlock.GetPropValue($"bidho{(i + 1)}")),
-							Amount = Convert.ToDecimal(responseOrderbook.t1101OutBlock.GetPropValue($"bidrem{(i + 1)}"))
+							Price = Convert.ToDecimal(responseOrderbook.t8450OutBlock.GetPropValue($"bidho{(i + 1)}")),
+							Amount = Convert.ToDecimal(responseOrderbook.t8450OutBlock.GetPropValue($"{exchangePrefix}bidrem{(i + 1)}"))
 						});
 					}
 
 					equity.OrderBook = new OrderBook
 					{
+						TimeTaken = responseOrderbook.t8450OutBlock.hotime.ToTime(),
 						Ask = asks,
 						Bid = bids,
-						AskAgg = responseOrderbook.t1101OutBlock.offer,
-						BidAgg = responseOrderbook.t1101OutBlock.bid,
-						TimeTaken = responseOrderbook.t1101OutBlock.hotime.ToTime()
+						AskAgg = Convert.ToDecimal(responseOrderbook.t8450OutBlock.GetPropValue($"{exchangePrefix}offer")),
+						BidAgg = Convert.ToDecimal(responseOrderbook.t8450OutBlock.GetPropValue($"{exchangePrefix}bid")),
 					};
 				}
 			}
@@ -372,6 +383,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			return new ResponseResult<EquityPack>
 			{
 				Info = equity,
+				Broker = Brkr.LS,
 				Remark = "MoneyAgg multiple: M"
 			};
 		}
