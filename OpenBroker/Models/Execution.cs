@@ -23,15 +23,16 @@ public class Order : InstrumentCore
 
 public class OrderCore
 {
-    public OrderMode Mode { get; set; }
+    public Exchange ExchangeCode { get; set; } = Exchange.NONE;
+    public OrderMode Mode { get; set; } = OrderMode.PLACE;
     public DateOnly DateOrdered { get; set; } = DateOnly.FromDateTime(DateTime.Now);
     public long IdOrigin { get; set; }
 	public string Symbol { get; set; } = string.Empty;
 	public decimal VolumeOrdered { get; set; }
 	public decimal PriceOrdered { get; set; }
-	public bool IsLong { get; set; }
-    public OrderType OrderType { get; set; }
-    public OrderDuration OrderDuration { get; set; }
+    public bool IsLong { get; set; } = true;
+    public OrderType OrderType { get; set; } = OrderType.AUTO;
+    public OrderDuration OrderDuration { get; set; } = OrderDuration.AUTO;
 }
 
 public class Contract : Order
