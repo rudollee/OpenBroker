@@ -21,7 +21,7 @@ public interface IMarketKrxEquity
 	/// <param name="symbol"></param>
 	/// <param name="needsOrderBook"></param>
 	/// <returns></returns>
-	Task<ResponseResult<EquityPack>> RequestEquityInfo(string symbol, bool needsOrderBook = false);
+	Task<ResponseResult<EquityPack>> RequestEquityInfo(string symbol, bool needsOrderBook = false, Exchange exchange = Exchange.NONE);
 
 	/// <summary>
 	/// 신규 상장 종목 리스트

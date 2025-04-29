@@ -16,7 +16,7 @@ internal class t1102InBlock
 	public string shcode { get; set; } = string.Empty;
 
 	/// <summary>거래소구분코드 - K/N/U</summary>
-	public string exchgubun { get; set; } = "K";
+	public string exchgubun { get; set; } = "U";
 }
 
 /// <summary>

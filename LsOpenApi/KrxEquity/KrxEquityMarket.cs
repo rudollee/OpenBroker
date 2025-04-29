@@ -273,7 +273,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#endregion
 
 	#region request equity complex using t1101 & t1102
-	public async Task<ResponseResult<EquityPack>> RequestEquityInfo(string symbol, bool needsOrderBook = false)
+	public async Task<ResponseResult<EquityPack>> RequestEquityInfo(string symbol, bool needsOrderBook = false, Exchange exchange = Exchange.NONE)
 	{
 		try
 		{
@@ -281,7 +281,13 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			{
 				t1102InBlock = new t1102InBlock
 				{
-					shcode = symbol
+					shcode = symbol,
+					exchgubun = exchange switch
+					{
+						Exchange.KRX => "K",
+						Exchange.NXT => "N",
+						_ => "U"
+					}
 				}
 			});
 
