@@ -411,83 +411,6 @@ internal enum HDFFF2C0
 }
 #endregion
 
-#region 국내주식 실시간체결통보
-/// <summary>
-/// 국내주식 실시간체결통보
-/// </summary>
-internal enum H0STCNI0
-{
-	/// <summary>고객 ID</summary>
-	CUST_ID = 0,
-
-	/// <summary>계좌번호</summary>
-	ACNT_NO = 1,
-
-	/// <summary>주문번호</summary>
-	ODER_NO = 2,
-
-	/// <summary>원주문번호</summary>
-	OODER_NO = 3,
-
-	/// <summary>매도매수구분</summary>
-	SELN_BYOV_CLS = 4,
-
-	/// <summary>정정구분</summary>
-	RCTF_CLS = 5,
-
-	/// <summary>주문종류</summary>
-	ODER_KIND = 6,
-
-	/// <summary>주문조건</summary>
-	ODER_COND = 7,
-
-	/// <summary>주식 단축 종목코드</summary>
-	STCK_SHRN_ISCD = 8,
-
-	/// <summary>체결 수량</summary>
-	CNTG_QTY = 9,
-
-	/// <summary>체결단가</summary>
-	CNTG_UNPR = 10,
-
-	/// <summary>주식 체결 시간</summary>
-	STCK_CNTG_HOUR = 11,
-
-	/// <summary>거부여부</summary>
-	RFUS_YN = 12,
-
-	/// <summary>체결여부</summary>
-	CNTG_YN = 13,
-
-	/// <summary>접수여부</summary>
-	ACPT_YN = 14,
-
-	/// <summary>지점번호</summary>
-	BRNC_NO = 15,
-
-	/// <summary>주문수량</summary>
-	ODER_QTY = 16,
-
-	/// <summary>계좌명</summary>
-	ACNT_NAME = 17,
-
-	/// <summary>체결종목명</summary>
-	CNTG_ISNM = 18,
-
-	/// <summary>신용구분</summary>
-	CRDT_CLS = 19,
-
-	/// <summary>신용대출일자</summary>
-	CRDT_LOAN_DATE = 20,
-
-	/// <summary>체결종목명40</summary>
-	CNTG_ISNM40 = 21,
-
-	/// <summary>주문가격</summary>
-	ODER_PRC = 22,
-}
-#endregion
-
 #region 국내주식 실시간 호가
 /// <summary>
 /// 국내주식 실시간 호가
@@ -671,11 +594,4 @@ internal enum H0STASP0
 	/// <summary>주식 매매 구분 코드</summary>
 	STCK_DEAL_CLS_CODE = 58,
 }
-#endregion
-
-#region 국내주식 실시간 체결가
-/// <summary>
-/// 국내주식 실시간 체결가
-/// </summary>
-
 #endregion

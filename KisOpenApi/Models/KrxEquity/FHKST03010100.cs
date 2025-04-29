@@ -1,6 +1,9 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace KisOpenApi.Models.KrxEquity;
+/// <summary>
+/// 국내주식기간별시세(일_주_월_년)
+/// </summary>
 internal class FHKST03010100 : KisResponseBase
 {
 	public FHKST03010100Output1 Output1 { get; set; } = new();
