@@ -57,11 +57,49 @@ public static class KrxExtension
 		return dateFin.AddMonths(date > dateFin ? (quarterly ? 3 : 1) : 0);
 	}
 
+	public static DateOnly ToKrxExpiry(this string expiryCode, int cycle = 0, bool quarterly = false)
+	{
+		int getYear(string yearString)
+		{
+			char y = Convert.ToChar(yearString);
+			if (y > 'W') return 1996 - cycle * 30;
+			if (y < '0') return 1996 + cycle * 30;
+			
+			int seq = y switch
+			{
+				> 'U' => y - 58,
+				> 'O' => y - 57,
+				> 'I' => y - 56,
+				>= 'A' => y - 55,
+				> '5' => y - 54,
+				> '0' => y - 44,
+				'0' => 4,
+				_ => 0
+			};
+
+			return 1996 + seq - cycle * 30; ;
+		}
+
+		int month = expiryCode.Substring(1) switch
+		{
+			"A" => 10,
+			"B" => 11,
+			"C" => 12,
+			_ => int.Parse(expiryCode.Substring(1))
+		};
+
+		return DateOnly.ParseExact($"{getYear(expiryCode.Substring(0, 1))}{month.ToString().PadLeft(2, '0')}01", "yyyyMMdd");
+	}
+
 	public static string ToKrxExpiryCode(this DateOnly date, bool quarterly = false)
 	{
+		int minValue = new DateOnly(1995, 12, 14).DayNumber;
+		int maxValue = new DateOnly(2025, 12, 11).DayNumber;
+		int cycle = date.DayNumber <= minValue ? -1 : date.DayNumber > maxValue ? 1 : 0;
+
 		string getYearCode(int year)
 		{
-			int seq = ((year - 1996) % 30);
+			int seq = ((year - 1996 - cycle * 30) % 30);
 
 			char c = seq switch
 			{
