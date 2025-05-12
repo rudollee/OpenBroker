@@ -216,10 +216,50 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 				List = new List<Order>(),
 			};
 		}
+	}
+	#endregion
+
+	#region request positions - CFOAQ50600
+	public async Task<ResponseResults<Position>> RequestPositionsAsync()
+	{
+		try
+		{
+			var response = await RequestStandardAsync<CFOAQ50600>(LsEndpoint.FuturesAccount.ToDescription(), new
+			{
+				CFOAQ50600InBlock1 = new CFOAQ50600InBlock1() 
+			});
+
+			if (response is null || !response.CFOAQ50600OutBlock3.Any()) return new ResponseResults<Position>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = "response or CFOAQ50600OutBlock3 is null",
+				List = new List<Position>(),
+			};
+
+			List<Position> positions = new();
+			response.CFOAQ50600OutBlock3.ForEach(f => positions.Add(new Position
+			{
+				Symbol = f.FnoIsuNo,
+				InstrumentName = f.IsuNm,
+				PriceEntry = f.FnoAvrPrc,
+				Price = f.FnoNowPrc,
+				Volume = f.UnsttQty,
+			}));
+
+			return new ResponseResults<Position> { List = positions };
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResults<Position>
+			{
+				StatusCode = Status.INTERNALSERVERERROR,
+				Message = ex.Message,
+				List = new List<Position>()
+			};
+		}
 	} 
 	#endregion
 
-	public Task<ResponseResults<Position>> RequestPositionsAsync() => throw new NotImplementedException();
 	public Task<ResponseCore> SubscribeContractAsync(bool connecting = true) => throw new NotImplementedException();
 	public Task<ResponseCore> SubscribeOrderAsync(bool connecting = true) => throw new NotImplementedException();
 	public Task<ResponseCore> UpdateOrderAsync(OrderCore order) => throw new NotImplementedException();
