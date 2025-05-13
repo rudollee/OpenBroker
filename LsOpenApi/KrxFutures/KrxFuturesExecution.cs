@@ -137,14 +137,28 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 			{
 				orders.Add(new Order
 				{
+					DateBiz = DateOnly.FromDateTime(DateTime.UtcNow.AddHours(9)),
 					BrokerCo = "LS",
 					OID = f.ordno,
 					IdOrigin = f.orgordno,
+					Mode = f.orgordno == 0 ? OrderMode.PLACE : f.medosu.Substring(2,2) switch
+					{
+						"정정" => OrderMode.UPDATE,
+						"취소" => OrderMode.CANCEL,
+						_ => OrderMode.PLACE
+					},
 					Symbol = f.expcode,
-					IsLong = f.medosu == "매수",
+					IsLong = f.medosu.Contains("매수"),
 					VolumeOrdered = f.qty,
 					VolumeUpdatable = f.ordrem,
 					PriceOrdered = f.price,
+					Precision = !new string[] { "1", "A" }.Contains(f.expcode.Substring(0, 1)) ? 2 : f.expcode.Substring(1, 2) switch
+					{
+						"01" => 2,
+						"05" => 2,
+						"07" => 2,
+						_ => 0
+					},
 					TimeOrdered = $"{DateTime.UtcNow.AddHours(9).ToString("yyyyMMdd")}{f.ordtime.PadRight(9, '0')}".ToDateTimeMicro(),
 				});
 			});
@@ -198,12 +212,19 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 
 				orders.Add(new Order
 				{
+					DateBiz = order.OrdDt.ToDate(),
 					BrokerCo = "LS",
 					OID = order.OrdNo,
 					IdOrigin = order.OrgOrdNo,
 					Symbol = order.FnoIsuNo,
 					InstrumentName = order.IsuNm,
 					IsLong = order.BnsTpNm == "매수",
+					Mode = order.OrdTpNm switch
+					{
+						"정정" => OrderMode.UPDATE,
+						"취소" => OrderMode.CANCEL,
+						_ => OrderMode.PLACE
+					},
 					VolumeOrdered = order.OrdQty,
 					PriceOrdered = order.OrdPrc,
 					TimeOrdered = $"{order.OrdDt}{order.OrdTime}".ToDateTimeMicro(),
