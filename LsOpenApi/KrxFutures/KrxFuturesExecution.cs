@@ -1,4 +1,5 @@
-﻿using LsOpenApi.Models;
+﻿using System.ComponentModel;
+using LsOpenApi.Models;
 using OpenBroker;
 using OpenBroker.Extensions;
 using OpenBroker.Models;
@@ -55,22 +56,23 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 			{
 				if (contract.OrdNo == 0)
 				{
-					previousContract.TimeContracted = $"{previousContract.TimeContracted.ToString("yyyyMMdd")}{contract.CtrctTime}".ToDateTimeMicro();
-					previousContract.CID = contract.CtrctNo;
-					previousContract.Volume = contract.ExecQty;
-					previousContract.Price = contract.ExecPrc;
+					var contractFromPrevious = (Contract)previousContract.Clone();
+					contractFromPrevious.TimeContracted = $"{contractFromPrevious.TimeContracted.ToString("yyyyMMdd")}{contract.CtrctTime}".ToDateTimeMicro();
+					contractFromPrevious.CID = contract.CtrctNo;
+					contractFromPrevious.Volume = contract.ExecQty;
+					contractFromPrevious.Price = contract.ExecPrc;
 
-					contracts.Add(previousContract);
+					contracts.Add(contractFromPrevious);
 					continue;
 				}
 
 				contracts.Add(new Contract
-				{
+				{ 
 					DateBiz = contract.OrdDt.ToDate(),
 					BrokerCo = "LS",
 					OID = contract.OrdNo,
 					IdOrigin = contract.OrgOrdNo,
-					CID = contract.ExecNo,
+					CID = contract.CtrctNo,
 					Symbol = contract.FnoIsuNo,
 					InstrumentName = contract.IsuNm,
 					IsLong = contract.BnsTpNm == "매수",

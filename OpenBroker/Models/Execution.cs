@@ -35,7 +35,7 @@ public class OrderCore
     public OrderDuration OrderDuration { get; set; } = OrderDuration.AUTO;
 }
 
-public class Contract : Order
+public class Contract : Order, ICloneable
 {
     public Exchange ExchangeCode { get; set; } = Exchange.CME;
     public long CID { get; set; }
@@ -43,6 +43,8 @@ public class Contract : Order
     public decimal Price { get; set; }
     public decimal VolumeLeft { get; set; }
     public DateTime TimeContracted { get; set; }
+
+    public object Clone() => this.MemberwiseClone();
 }
 
 public class Balance
