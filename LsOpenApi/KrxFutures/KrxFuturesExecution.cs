@@ -66,6 +66,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 
 				contracts.Add(new Contract
 				{
+					DateBiz = contract.OrdDt.ToDate(),
 					BrokerCo = "LS",
 					OID = contract.OrdNo,
 					IdOrigin = contract.OrgOrdNo,
@@ -79,6 +80,13 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 					Volume = contract.ExecQty,
 					PriceOrdered = contract.OrdPrc,
 					Price = contract.ExecPrc,
+					Precision = !new string[] { "1", "A" }.Contains(contract.FnoIsuNo.Substring(0, 1)) ? 2 : contract.FnoIsuNo.Substring(1, 2) switch 
+					{
+						"01" => 2,
+						"05" => 2,
+						"07" => 2,
+						_ => 0
+					},
 					TimeOrdered = $"{contract.OrdDt}{contract.OrdTime}".ToDateTimeMicro(),
 					TimeContracted = $"{contract.OrdDt}{contract.CtrctTime}".ToDateTimeMicro(),
 					ExchangeCode = Exchange.KRX,
