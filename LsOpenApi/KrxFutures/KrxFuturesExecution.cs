@@ -253,6 +253,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 	#region request positions - CFOAQ50600
 	public async Task<ResponseResults<Position>> RequestPositionsAsync()
 	{
+		List<Position> positions = new();
 		try
 		{
 			var response = await RequestStandardAsync<CFOAQ50600>(LsEndpoint.FuturesAccount.ToDescription(), new
@@ -260,14 +261,15 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 				CFOAQ50600InBlock1 = new CFOAQ50600InBlock1() 
 			});
 
-			if (response is null || !response.CFOAQ50600OutBlock3.Any()) return new ResponseResults<Position>
+			if (response is null) return new ResponseResults<Position>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = "response or CFOAQ50600OutBlock3 is null",
-				List = new List<Position>(),
+				List = positions,
 			};
 
-			List<Position> positions = new();
+			positions.Capacity = response.CFOAQ50600OutBlock3.Count;
+
 			response.CFOAQ50600OutBlock3.ForEach(f => positions.Add(new Position
 			{
 				Symbol = f.FnoIsuNo,
@@ -277,7 +279,10 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 				Volume = f.UnsttQty,
 			}));
 
-			return new ResponseResults<Position> { List = positions };
+			return new ResponseResults<Position> { List = positions, ExtraData = new Dictionary<string, decimal>
+			{
+				{ "FEE", response.CFOAQ50600OutBlock2.CmsnAmt }
+			}};
 		}
 		catch (Exception ex)
 		{
@@ -285,7 +290,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 			{
 				StatusCode = Status.INTERNALSERVERERROR,
 				Message = ex.Message,
-				List = new List<Position>()
+				List = positions,
 			};
 		}
 	} 
