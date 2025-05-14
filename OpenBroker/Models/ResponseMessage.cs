@@ -1,7 +1,4 @@
-﻿using System.Collections;
-
-namespace OpenBroker.Models;
-
+﻿namespace OpenBroker.Models;
 public class ResponseCore
 {
     /// <summary>
@@ -19,15 +16,20 @@ public class ResponseCore
     /// </summary>
     public string Code { get; set; } = string.Empty;
 
-    /// <summary>
-    /// 상태 메시지
-    /// </summary>
-    public string Message { get; set; } = string.Empty;
+	/// <summary>
+	/// 상태 메시지
+	/// </summary>
+	public string Message { get; set; } = string.Empty;
 
-    /// <summary>
-    /// 비고
-    /// </summary>
-    public string Remark { get; set; } = string.Empty;
+	/// <summary>
+	/// 추가 데이터
+	/// </summary>
+	public Dictionary<string, decimal> ExtraData { get; set; } = new();
+
+	/// <summary>
+	/// 비고
+	/// </summary>
+	public string Remark { get; set; } = string.Empty;
 
 	/// <summary>
 	/// 증권사/Broker
