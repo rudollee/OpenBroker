@@ -18,7 +18,86 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	public Task<ResponseResults<Quote>> RequestMarketContract(IEnumerable<string> symbols) => throw new NotImplementedException();
 	public Task<ResponseResults<MarketContract>> RequestMarketContractHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
 	public Task<ResponseResult<News>> RequestNews(string id) => throw new NotImplementedException();
-	public Task<ResponseResult<QuotePack>> RequestPricePack(QuoteRequest request) => throw new NotImplementedException();
+
+	#region request Price Pack using t8415
+	public async Task<ResponseResult<QuotePack>> RequestPricePack(QuoteRequest request)
+	{
+		// TODO : daily data 
+
+		if (request.TimeIntervalUnit != IntervalUnit.Minute) return new ResponseResult<QuotePack>
+		{
+			Broker = Brkr.LS,
+			Message = "Only minute data is supported",
+			StatusCode = Status.BAD_REQUEST,
+		};
+
+		List<Quote> quotes = new();
+		try
+		{
+			List<t8415OutBlock1> list = new();
+			var nextKey = string.Empty;
+			var ctsDate = string.Empty;
+			do
+			{
+				var response = await RequestContinuousAsync<t8415>(LsEndpoint.FuturesChart.ToDescription(), new
+				{
+					t8415InBlock = new t8415InBlock
+					{
+						shcode = request.Symbol,
+						ncnt = request.TimeInterval,
+						sdate = request.Amount < 500 ? request.DateTimeBegin.ToString("yyyyMMdd") : " ",
+						edate = request.DateTimeEnd.ToString("yyyyMMdd"),
+						cts_date = ctsDate
+					}
+				}, nextKey);
+
+				if (response is null || !response.t8415OutBlock1.Any())
+				{
+					nextKey = string.Empty;
+					break;
+				}
+
+				list.AddRange(response.t8415OutBlock1);
+				nextKey = response.NextKey;
+				ctsDate = response.t8415OutBlock.cts_date;
+			} while (!string.IsNullOrEmpty(nextKey));
+
+			quotes.Capacity = list.Count;
+			list.ForEach(f =>
+			{
+				quotes.Add(new Quote
+				{
+					Symbol = request.Symbol,
+					TimeContract = $"{f.date}{f.time}".ToDateTime(),
+					O = f.open,
+					H = f.high,
+					L = f.low,
+					C = f.close,
+					V = f.jdiff_vol,
+				});
+			});
+
+			return new ResponseResult<QuotePack>
+			{
+				Info = new QuotePack
+				{
+					Symbol = request.Symbol,
+					PrimaryList = quotes,
+					TimeInterval = request.TimeInterval,
+					TimeIntervalUnit = request.TimeIntervalUnit,
+				},
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResult<QuotePack>
+			{
+				StatusCode = Status.INTERNALSERVERERROR,
+				Message = ex.Message,
+			};
+		}
+	} 
+	#endregion
 
 	#region request SSF instruments using t8401
 	public async Task<ResponseDictionary<string, Instrument>> RequestInstruments(int option = 0)
