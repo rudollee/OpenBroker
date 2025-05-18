@@ -8,7 +8,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 {
 	public Dictionary<string, Instrument> Instruments { get; set; } = new();
 
-	public EventHandler<ResponseResult<MarketContract>>? MarketContracted { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+	public EventHandler<ResponseResult<MarketContract>>? MarketContracted { get; set; }
 	public EventHandler<ResponseResult<OrderBook>>? OrderBookTaken { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 	public EventHandler<ResponseResult<News>>? NewsPosted { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 	public EventHandler<ResponseResult<MarketPause>>? MarketPaused { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
@@ -271,7 +271,27 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 
 	#endregion
 
-	public Task<ResponseCore> SubscribeMarketContract(string symbol, bool connecting = true, string subscriber = "") => throw new NotImplementedException();
+	public async Task<ResponseCore> SubscribeMarketContract(string symbol, bool connecting = true, string subscriber = "")
+	{
+		if (string.IsNullOrWhiteSpace(subscriber)) subscriber = "SYS";
+
+		string trCode = string.Empty;
+		if (new string[] { "1", "A" }.Contains(symbol.Substring(0, 1)))
+		{
+			trCode = symbol.Substring(1, 2) switch
+			{
+				"01" => "FC0",
+				"05" => "FC0",
+				"07" => "EU1",
+				"75" => "FC0",
+				_ => "JC0"
+			};
+		}
+		else trCode = "OC0";
+
+		return await SubscribeAsync(subscriber, trCode, symbol, connecting);
+	}
+
 	public Task<ResponseCore> SubscribeMarketDepth(string symbol, bool connecting = true, string subscriber = "") => throw new NotImplementedException();
 	public Task<ResponseCore> SubscribeMarketPause(string symbol = "000000") => throw new NotImplementedException();
 	public Task<ResponseCore> SubscribeNews(bool connecting = true) => throw new NotImplementedException();

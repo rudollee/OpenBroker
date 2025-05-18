@@ -1,6 +1,8 @@
 ﻿using System.Net.WebSockets;
 using System.Text.Json;
+using LsOpenApi.Models;
 using OpenBroker;
+using OpenBroker.Extensions;
 using OpenBroker.Models;
 using Websocket.Client;
 
@@ -40,10 +42,70 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 
 		var trCode = root.GetProperty("header").GetProperty("tr_cd").GetString();
 
-		switch (trCode)
+		var callbackResult = trCode switch
 		{
-			default:
-				break;
+			nameof(FC0) => CallbackXC0(message.Text, trCode),
+			nameof(JC0) => CallbackXC0(message.Text, trCode),
+			_ => false
+		};
+	}
+
+	private bool CallbackXC0(string message, string trCode)
+	{
+		if (MarketContracted is null) return false;
+
+		try
+		{
+			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<JC0OutBlock>>(message);
+			if (response is null || response.Body is null) return false;
+
+			MarketContracted(this, new ResponseResult<MarketContract>
+			{
+				Typ = MessageType.MKT,
+				Code = trCode,
+				Info = new MarketContract
+				{
+					MarketSessionInfo = response.Body.jgubun switch
+					{
+						"07" => MarketSession.CLOSED,
+						"13" => MarketSession.CLOSED,
+						_ => MarketSession.REGULAR,
+					},
+					Symbol = response.Body.futcode,
+					TimeContract = response.Body.chetime.ToDateTime(),
+					C = Convert.ToDecimal(response.Body.price),
+					V = Convert.ToDecimal(response.Body.cvolume),
+					ContractSide = response.Body.cgubun == "+" ? ContractSide.ASK : ContractSide.BID,
+					BasePrice = Convert.ToDecimal(response.Body.price) - Convert.ToDecimal((new string[] { "4", "5" }.Contains(response.Body.sign) ? "-" : "") + response.Body.change),
+					VolumeAcc = Convert.ToDecimal(response.Body.volume),
+					Turnover = Convert.ToDecimal(response.Body.value),
+				},
+				Remark = message,
+				Broker = Brkr.LS,
+				ExtraData = new Dictionary<string, decimal>
+				{
+					{ "KOSPI200", Convert.ToDecimal(response.Body.k200jisu) },
+					{ "BASIS", Convert.ToDecimal(response.Body.sbasis) },
+					{ "OI", Convert.ToDecimal(response.Body.openyak) },
+				}
+			});
+
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Message(this, new ResponseCore
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Typ = MessageType.MKTS,
+				Code = trCode,
+				Message = ex.Message,
+				Broker = Brkr.LS
+			});
+
+			return false;
 		}
 	}
+
+
 }
