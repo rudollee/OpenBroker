@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using LsOpenApi.Models;
+﻿using LsOpenApi.Models;
 using OpenBroker;
 using OpenBroker.Extensions;
 using OpenBroker.Models;
@@ -7,9 +6,9 @@ using OpenBroker.Models;
 namespace LsOpenApi.KrxFutures;
 public partial class LsKrxFutures : ConnectionBase, IExecution
 {
-	public EventHandler<ResponseResult<Contract>> Contracted { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-	public EventHandler<ResponseResult<Order>> Executed { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-	public EventHandler<ResponseResult<Balance>>? BalanceAggregated { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+	public required EventHandler<ResponseResult<Contract>> Contracted { get; set; }
+	public required EventHandler<ResponseResult<Order>> Executed { get; set; }
+	public EventHandler<ResponseResult<Balance>>? BalanceAggregated { get; set; }
 
 	public Task<ResponseCore> AddOrderAsync(OrderCore order) => throw new NotImplementedException();
 	public Task<ResponseCore> CancelOrderAsync(OrderCore order) => throw new NotImplementedException();
