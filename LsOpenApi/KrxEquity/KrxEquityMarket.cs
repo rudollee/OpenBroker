@@ -824,45 +824,58 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 	private async Task<ResponseResult<QuotePack>> RequestPricePackX(QuoteRequest request)
 	{
+		List<Quote> quotes = new();
 		try
 		{
-			var response = await RequestStandardAsync<t8410>(LsEndpoint.EquityChart.ToDescription(), new
+			List<t8410OutBlock1> list = new();
+			var nextKey = string.Empty;
+			var ctsDate = string.Empty;
+			do
 			{
-				t8410InBlock = new t8410InBlock
+				var response = await RequestContinuousAsync<t8410>(LsEndpoint.EquityChart.ToDescription(), new
 				{
-					shcode = request.Symbol,
-					gubun = request.TimeIntervalUnit switch
+					t8410InBlock = new t8410InBlock
 					{
-						IntervalUnit.Day => "2",
-						IntervalUnit.Week => "3",
-						IntervalUnit.Month => "4",
-						_ => "5"
-					},
-					qrycnt = 500,
-					sdate = request.DateTimeBegin.ToString("yyyyMMdd"),
-					edate = request.DateTimeEnd.ToString("yyyyMMdd"),
+						shcode = request.Symbol,
+						gubun = request.TimeIntervalUnit switch
+						{
+							IntervalUnit.Day => "2",
+							IntervalUnit.Week => "3",
+							IntervalUnit.Month => "4",
+							_ => "5"
+						},
+						qrycnt = 500,
+						sdate = request.DateTimeBegin.ToString("yyyyMMdd"),
+						edate = request.DateTimeEnd.ToString("yyyyMMdd"),
+					}
+				}, nextKey);
+
+				if (response is null || !response.t8410OutBlock1.Any())
+				{
+					nextKey = string.Empty;
+					break;
 				}
+
+				list.AddRange(response.t8410OutBlock1);
+				nextKey = response.NextKey;
+				ctsDate = response.t8410OutBlock.cts_date;
+			} while (true);
+
+			quotes.Capacity = list.Count;
+			list.ForEach(f =>
+			{
+				quotes.Add(new Quote
+				{
+					Symbol = request.Symbol,
+					TimeContract = $"{f.date}".ToDateTime(),
+					O = f.open,
+					H = f.high,
+					L = f.low,
+					C = f.close,
+					V = f.jdiff_vol,
+				});
 			});
 
-			if (!response.t8410OutBlock1.Any()) return new ResponseResult<QuotePack>
-			{
-				StatusCode = Status.NODATA,
-				Message = response.Message,
-				Code = response.Code,
-				Remark = "no data"
-			};
-
-			var prices = new List<Quote>();
-			response.t8410OutBlock1.ForEach(price => prices.Add(new Quote
-			{
-				TimeContract = price.date.ToDateTime(),
-				O = Convert.ToDecimal(price.open),
-				C = Convert.ToDecimal(price.close),
-				H = Convert.ToDecimal(price.high),
-				L = Convert.ToDecimal(price.low),
-				V = Convert.ToDecimal(price.jdiff_vol),
-				BasePrice = Convert.ToDecimal(response.t8410OutBlock.jiclose),
-			}));
 
 			// TODO : 수정주가 적용 여부
 
@@ -870,8 +883,11 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			{
 				Info = new QuotePack
 				{
-					PrimaryList = prices,
-				}
+					Symbol = request.Symbol,
+					PrimaryList = quotes,
+					TimeInterval = request.TimeInterval,
+					TimeIntervalUnit = request.TimeIntervalUnit,
+				},
 			};
 		}
 		catch (Exception ex)
