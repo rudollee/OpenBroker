@@ -847,6 +847,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 						qrycnt = 500,
 						sdate = request.DateTimeBegin.ToString("yyyyMMdd"),
 						edate = request.DateTimeEnd.ToString("yyyyMMdd"),
+						cts_date = ctsDate,
 					}
 				}, nextKey);
 
@@ -859,7 +860,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				list.AddRange(response.t8410OutBlock1);
 				nextKey = response.NextKey;
 				ctsDate = response.t8410OutBlock.cts_date;
-			} while (true);
+			} while (!string.IsNullOrEmpty(nextKey));
 
 			quotes.Capacity = list.Count;
 			list.ForEach(f =>
