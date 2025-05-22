@@ -596,4 +596,42 @@ public class ConnectionBase
 		return responseDeserialized;
 	}
 	#endregion
+
+	#region JIF 장운영정보
+	/// <summary>
+	/// JIF 장운영정보 callback
+	/// </summary>
+	/// <param name="message"></param>
+	/// <returns></returns>
+	protected bool CallbackJIF(string message)
+	{
+		if (Message is null) return false;
+
+		try
+		{
+			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<JIFOutBlock>>(message);
+			if (response is null || response.Body is null) return false;
+			Message(this, new ResponseCore
+			{
+				Typ = MessageType.MKTS,
+				Code = $"{response.Body.jangubun}.{response.Body.jstatus}",
+				Message = $"{CodeRef.MarketSectionDic[response.Body.jangubun]} {CodeRef.MarketStatusDic[response.Body.jstatus]}",
+				Broker = Brkr.LS
+			});
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Message(this, new ResponseCore
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Typ = MessageType.MKTS,
+				Code = nameof(JIF),
+				Message = ex.Message,
+				Broker = Brkr.LS
+			});
+			return false;
+		}
+	}
+	#endregion
 }

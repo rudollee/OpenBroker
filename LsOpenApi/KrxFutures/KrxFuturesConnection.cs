@@ -44,6 +44,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 
 		var callbackResult = trCode switch
 		{
+			nameof(JIF) => CallbackJIF(message.Text), // JIF 장운영정보
 			nameof(FC0) => CallbackXC0(message.Text, trCode),
 			nameof(JC0) => CallbackXC0(message.Text, trCode),
 			_ => false
