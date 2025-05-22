@@ -857,7 +857,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 					break;
 				}
 
-				list.AddRange(response.t8410OutBlock1);
+				list.InsertRange(0, response.t8410OutBlock1);
 				nextKey = response.NextKey;
 				ctsDate = response.t8410OutBlock.cts_date;
 			} while (!string.IsNullOrEmpty(nextKey));
