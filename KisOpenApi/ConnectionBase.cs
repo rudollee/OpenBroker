@@ -573,7 +573,7 @@ public class ConnectionBase
 	#region Delay Request
 	protected bool DelayRequest(string trCode, bool needsMessage = true)
 	{
-		var requestsOld = Requests.Where(w => w.RequestTime < DateTime.UtcNow.AddSeconds(-1));
+		var requestsOld = Requests.Where(w => w.RequestTime < DateTime.UtcNow.AddSeconds(-1)).ToList();
 		try
 		{
 			foreach (var request in requestsOld)
@@ -585,8 +585,9 @@ public class ConnectionBase
 		{
 			Message(this, new ResponseCore
 			{
+				StatusCode = Status.ERROR_OPEN_API,
 				Code = "OPENAPI_ERR",
-				Message = $"{ex.Message}",
+				Message = $"delayRequest.remove: {ex.Message}",
 			});
 
 			return false;
