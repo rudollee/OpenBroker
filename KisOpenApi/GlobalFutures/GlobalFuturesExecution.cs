@@ -473,7 +473,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 				DepositInit = response.output.fm_dnca_rmnd,
 				ProfitLiquidated = response.output.fm_lqd_pfls_amt,
 				ProfitEst = response.output.fm_fuop_evlu_pfls_amt,
-				TotalFee = response.output.fm_fee,
+				CommissionAgg = response.output.fm_fee,
 				DepositEst = response.output.fm_tot_asst_evlu_amt,  //fm_nxdy_dncl_amt,
 				Margin = response.output.fm_mntn_mgn_amt,
 				MarginInitial = response.output.fm_brkg_mgn_amt,
@@ -503,7 +503,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 		throw new NotImplementedException();
 	}
 
-	public Task<ResponseResults<Earning>> RequestEarningAsync(DateTime dateBegin, DateTime dateFin, Exchange exchange = Exchange.KRX)
+	public Task<ResponseResults<Pnl>> RequestPnlAsync(DateTime dateBegin, DateTime dateFin, Exchange exchange = Exchange.KRX)
 	{
 		throw new NotImplementedException();
 	}

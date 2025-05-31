@@ -113,7 +113,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 	} 
 	#endregion
 
-	public Task<ResponseResults<Earning>> RequestEarningAsync(DateTime dateBegin, DateTime dateFin, Exchange exchange = Exchange.KRX) => throw new NotImplementedException();
+	public Task<ResponseResults<Pnl>> RequestPnlAsync(DateTime dateBegin, DateTime dateFin, Exchange exchange = Exchange.KRX) => throw new NotImplementedException();
 	public Task<ResponseCore> RequestOrderableAsync(Order order) => throw new NotImplementedException();
 
 	#region request Orders - t0434 / CFOAQ00600

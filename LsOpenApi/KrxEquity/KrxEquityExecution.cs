@@ -294,7 +294,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 	} 
 	#endregion
 
-	public Task<ResponseResults<Earning>> RequestEarningAsync(DateTime dateBegin, DateTime dateFin, Exchange exchange = Exchange.KRX) => throw new NotImplementedException();
+	public Task<ResponseResults<Pnl>> RequestPnlAsync(DateTime dateBegin, DateTime dateFin, Exchange exchange = Exchange.KRX) => throw new NotImplementedException();
 
 	#region 주문가능금액 - CSPBQ00200 / CSPAQ12300
 	public async Task<ResponseCore> RequestOrderableAsync(Order order)
@@ -460,7 +460,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 					Volume = position.janqty,
 					Tradable = true,
 					Tax = position.tax,
-					Fee = position.fee,
+					Commission = position.fee,
 				});
 			});
 

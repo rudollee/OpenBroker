@@ -121,5 +121,5 @@ public interface IExecution
     /// <param name="dateBegin"></param>
     /// <param name="dateFin"></param>
     /// <returns></returns>
-    Task<ResponseResults<Earning>> RequestEarningAsync(DateTime dateBegin, DateTime dateFin, Exchange exchange = Exchange.KRX);
+    Task<ResponseResults<Pnl>> RequestPnlAsync(DateTime dateBegin, DateTime dateFin, Exchange exchange = Exchange.KRX);
 }

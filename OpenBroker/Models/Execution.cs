@@ -112,7 +112,7 @@ public class Balance
     /// <summary>
     /// 수수료 총액
     /// </summary>
-    public decimal TotalFee { get; set; }
+    public decimal CommissionAgg { get; set; }
 
     /// <summary>
     /// 보유 포지션
@@ -135,14 +135,14 @@ public class Position : InstrumentCore
     public decimal Price { get; set; }
     public DateTime DateEntry { get; set; }
     public decimal Tax { get; set; }
-    public decimal Fee { get; set; }
+    public decimal Commission { get; set; }
 }
 
-public class Earning
+public class Pnl
 {
     public DateTime Date { get; set; }
-    public decimal EarningAgg { get; set; }
-    public decimal Brokerage { get; set; }
+    public decimal PnlAgg { get; set; }
+    public decimal Commission { get; set; }
 }
 
 internal class Execution { }
