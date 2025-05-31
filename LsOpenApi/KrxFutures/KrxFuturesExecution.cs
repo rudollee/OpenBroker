@@ -280,7 +280,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 
 			return new ResponseResults<Position> { List = positions, ExtraData = new Dictionary<string, decimal>
 			{
-				{ "FEE", response.CFOAQ50600OutBlock2.CmsnAmt }
+				{ "COMMISSION", response.CFOAQ50600OutBlock2.CmsnAmt }
 			}};
 		}
 		catch (Exception ex)
