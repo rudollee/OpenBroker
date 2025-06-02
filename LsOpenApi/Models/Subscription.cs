@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace LsOpenApi.Models;
 /// <summary>
@@ -27,7 +22,7 @@ internal class LsSubscriptionRequest(string token, string trCode, string key, bo
 		public string Token { get; set; } = token;
 
 		[JsonPropertyName("tr_type")]
-		public string TrType { get; set; } = ((connecting ? 3 : 4) - (new string[] { "SC0", "SC1" }.Contains(trCode) ? 2 : 0)).ToString();
+		public string TrType { get; set; } = ((connecting ? 3 : 4) - (CodeRef.ExecutionRTs.Contains(trCode) ? 2 : 0)).ToString();
 	}
 
 	public class LsBody(string trCode, string key)

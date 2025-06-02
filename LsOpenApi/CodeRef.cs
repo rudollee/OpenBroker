@@ -159,4 +159,19 @@ internal static class CodeRef
 		{ nameof(CEXAQ31200), 1 },
 		{ nameof(t8415), 1 }
 	};
+
+	/// <summary>
+	/// Execution Realtime TrCode list
+	/// </summary>
+	internal static string[] ExecutionRTs { get; } =
+	{
+		nameof(SC0),
+		nameof(SC1),
+		nameof(SC2),
+		nameof(SC3),
+		nameof(SC4),
+		nameof(C01),
+		nameof(H01)
+	};
+
 }
