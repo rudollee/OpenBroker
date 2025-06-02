@@ -297,6 +297,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 
 	public async Task<ResponseCore> SubscribeContractAsync(bool connecting = true) => await SubscribeAsync("SYS", nameof(C01), "", connecting);
 
-	public Task<ResponseCore> SubscribeOrderAsync(bool connecting = true) => throw new NotImplementedException();
+	public async Task<ResponseCore> SubscribeOrderAsync(bool connecting = true) => await SubscribeAsync("SYS", nameof(H01), "", connecting);
+
 	public Task<ResponseCore> UpdateOrderAsync(OrderCore order) => throw new NotImplementedException();
 }

@@ -47,6 +47,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			nameof(JIF) => CallbackJIF(message.Text),
 			nameof(FC0) => CallbackXC0(message.Text, trCode),
 			nameof(JC0) => CallbackXC0(message.Text, trCode),
+			nameof(H01) => CallbackH01(message.Text, trCode),
 			nameof(C01) => CallbackC01(message.Text, trCode),
 			_ => false
 		};
@@ -153,6 +154,60 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 
 			return false;
 		}
+	}
+
+	private bool CallbackH01(string message, string trCode)
+	{
+		if (Executed is null) return false;
+
+		try
+		{
+			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<H01OutBlock>>(message);
+			if (response is null || response.Body is null) return false;
+
+			Executed(this, new ResponseResult<Order>
+			{
+				Typ = MessageType.EXECUTION,
+				Code = trCode,
+				Info = new Order
+				{
+					DateBiz = response.Body.orddate.ToDate(),
+					TimeOrdered = $"{response.Body.orddate}{response.Body.ordacpttm}".ToDateTimeMicro(),
+					OID = Convert.ToInt64(response.Body.ordno),
+					IdOrigin = Convert.ToInt64(response.Body.ordordno),
+					Symbol = response.Body.expcode,
+					IsLong = response.Body.dosugb == "2",
+					VolumeOrdered = Convert.ToDecimal(response.Body.qty),
+					PriceOrdered = Convert.ToDecimal(response.Body.price),
+					Mode = response.Body.mocagb switch
+					{
+						"1" => OrderMode.PLACE,
+						"2" => OrderMode.UPDATE,
+						"3" => OrderMode.CANCEL,
+						_ => OrderMode.PLACE
+					},
+					Aggregation = Convert.ToDecimal(response.Body.price) * Convert.ToDecimal(response.Body.qty),
+				},
+				Remark = message,
+				Broker = Brkr.LS,
+			});
+
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Message(this, new ResponseCore
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Typ = MessageType.EXECUTION,
+				Code = trCode,
+				Message = ex.Message,
+				Broker = Brkr.LS
+			});
+
+			return false;
+		}
+
 	}
 
 }
