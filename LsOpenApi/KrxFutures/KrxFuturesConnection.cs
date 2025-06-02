@@ -44,9 +44,10 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 
 		var callbackResult = trCode switch
 		{
-			nameof(JIF) => CallbackJIF(message.Text), // JIF 장운영정보
+			nameof(JIF) => CallbackJIF(message.Text),
 			nameof(FC0) => CallbackXC0(message.Text, trCode),
 			nameof(JC0) => CallbackXC0(message.Text, trCode),
+			nameof(C01) => CallbackC01(message.Text, trCode),
 			_ => false
 		};
 	}
@@ -108,5 +109,50 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 		}
 	}
 
+	private bool CallbackC01(string message, string trCode)
+	{
+		if (Contracted is null) return false;
+
+		try
+		{
+			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<C01OutBlock>>(message);
+			if (response is null || response.Body is null) return false;
+
+			Contracted(this, new ResponseResult<Contract>
+			{
+				Typ = MessageType.CONTRACT,
+				Code = trCode,
+				Info = new Contract
+				{
+					TimeContracted = $"{response.Body.chedate}{response.Body.chetime}".ToDateTimeMicro(),
+					OID = Convert.ToInt64(response.Body.ordno),
+					IdOrigin = Convert.ToInt64(response.Body.ordordno),
+					CID = Convert.ToInt64(response.Body.seq),
+					Symbol = response.Body.expcode,
+					Price = Convert.ToDecimal(response.Body.cheprice),
+					Volume = Convert.ToDecimal(response.Body.chevol),
+					DateBiz = response.Body.chedate.ToDate(),
+					IsLong = response.Body.dosugb == "2",
+				},
+				Remark = message,
+				Broker = Brkr.LS,
+			});
+
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Message(this, new ResponseCore
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Typ = MessageType.CONTRACT,
+				Code = trCode,
+				Message = ex.Message,
+				Broker = Brkr.LS
+			});
+
+			return false;
+		}
+	}
 
 }

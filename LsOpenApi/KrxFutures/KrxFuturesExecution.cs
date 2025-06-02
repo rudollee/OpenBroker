@@ -292,10 +292,11 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 				List = positions,
 			};
 		}
-	} 
+	}
 	#endregion
 
-	public Task<ResponseCore> SubscribeContractAsync(bool connecting = true) => throw new NotImplementedException();
+	public async Task<ResponseCore> SubscribeContractAsync(bool connecting = true) => await SubscribeAsync("SYS", nameof(C01), "", connecting);
+
 	public Task<ResponseCore> SubscribeOrderAsync(bool connecting = true) => throw new NotImplementedException();
 	public Task<ResponseCore> UpdateOrderAsync(OrderCore order) => throw new NotImplementedException();
 }
