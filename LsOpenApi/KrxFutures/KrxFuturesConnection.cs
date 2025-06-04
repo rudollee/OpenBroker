@@ -149,6 +149,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 				Typ = MessageType.CONTRACT,
 				Code = trCode,
 				Message = ex.Message,
+				Remark = message,
 				Broker = Brkr.LS
 			});
 
