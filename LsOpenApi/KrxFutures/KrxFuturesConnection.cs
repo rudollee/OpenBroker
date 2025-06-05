@@ -175,7 +175,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 				Info = new Order
 				{
 					DateBiz = DateOnly.FromDateTime(DateTime.Now),
-					TimeOrdered = $"{DateOnly.FromDateTime(DateTime.Now)}{response.Body.trxtime}".ToDateTimeMicro(),
+					TimeOrdered = $"{DateTime.Now.ToString("yyyyMMdd")}{response.Body.trxtime}".ToDateTimeMicro(),
 					OID = Convert.ToInt64(response.Body.ordno),
 					IdOrigin = Convert.ToInt64(response.Body.orgordno),
 					Symbol = response.Body.isuno,
