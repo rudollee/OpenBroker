@@ -119,6 +119,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<C01OutBlock>>(message);
 			if (response is null || response.Body is null) return false;
 
+			Int64.TryParse(response.Body.ordordno, out long idOrigin);
 			Contracted(this, new ResponseResult<Contract>
 			{
 				Typ = MessageType.CONTRACT,
@@ -127,8 +128,8 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 				{
 					TimeContracted = $"{response.Body.chedate}{response.Body.chetime}".ToDateTimeMicro(),
 					OID = Convert.ToInt64(response.Body.ordno),
-					IdOrigin = Convert.ToInt64(response.Body.ordordno),
-					CID = Convert.ToInt64(response.Body.seq),
+					IdOrigin = idOrigin,
+					CID = Convert.ToInt64(response.Body.yakseq),
 					Symbol = response.Body.expcode,
 					Price = Convert.ToDecimal(response.Body.cheprice),
 					Volume = Convert.ToDecimal(response.Body.chevol),
