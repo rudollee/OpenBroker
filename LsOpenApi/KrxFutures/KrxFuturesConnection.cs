@@ -47,8 +47,9 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			nameof(JIF) => CallbackJIF(message.Text),
 			nameof(FC0) => CallbackXC0(message.Text, trCode),
 			nameof(JC0) => CallbackXC0(message.Text, trCode),
-			nameof(H01) => CallbackH01(message.Text, trCode),
-			nameof(C01) => CallbackC01(message.Text, trCode),
+			nameof(O01) => CallbackO01(message.Text),
+			nameof(H01) => CallbackH01(message.Text),
+			nameof(C01) => CallbackC01(message.Text),
 			_ => false
 		};
 	}
@@ -65,7 +66,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			MarketContracted(this, new ResponseResult<MarketContract>
 			{
 				Typ = MessageType.MKT,
-				Code = trCode,
+				Code = response.Header.Code,
 				Info = new MarketContract
 				{
 					MarketSessionInfo = response.Body.jgubun switch
@@ -110,7 +111,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 		}
 	}
 
-	private bool CallbackC01(string message, string trCode)
+	private bool CallbackC01(string message)
 	{
 		if (Contracted is null) return false;
 
@@ -123,7 +124,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			Contracted(this, new ResponseResult<Contract>
 			{
 				Typ = MessageType.CONTRACT,
-				Code = trCode,
+				Code = response.Header.TrCode,
 				Info = new Contract
 				{
 					TimeContracted = $"{response.Body.chedate}{response.Body.chetime}".ToDateTimeMicro(),
@@ -148,7 +149,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Typ = MessageType.CONTRACT,
-				Code = trCode,
+				Code = nameof(C01),
 				Message = ex.Message,
 				Remark = message,
 				Broker = Brkr.LS
@@ -158,7 +159,55 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 		}
 	}
 
-	private bool CallbackH01(string message, string trCode)
+	private bool CallbackO01(string message)
+	{
+		if (Executed is null) return false;
+
+		try
+		{
+			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<O01OutBlock>>(message);
+			if (response is null || response.Body is null) return false;
+
+			Executed(this, new ResponseResult<Order>
+			{
+				Typ = MessageType.EXECUTION,
+				Code = response.Header.TrCode,
+				Info = new Order
+				{
+					DateBiz = DateOnly.FromDateTime(DateTime.Now),
+					TimeOrdered = $"{DateOnly.FromDateTime(DateTime.Now)}{response.Body.trxtime}".ToDateTimeMicro(),
+					OID = Convert.ToInt64(response.Body.ordno),
+					IdOrigin = Convert.ToInt64(response.Body.orgordno),
+					Symbol = response.Body.isuno,
+					IsLong = response.Body.bnstp == "2",
+					VolumeOrdered = Convert.ToDecimal(response.Body.ordqty),
+					PriceOrdered = Convert.ToDecimal(response.Body.ordprc),
+					Mode = OrderMode.PLACE,
+					Aggregation = Convert.ToDecimal(response.Body.ordprc) * Convert.ToDecimal(response.Body.ordqty),
+				},
+				Remark = message,
+				Broker = Brkr.LS,
+			});
+
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Message(this, new ResponseCore
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Typ = MessageType.EXECUTION,
+				Code = nameof(O01),
+				Message = ex.Message,
+				Remark = message,
+				Broker = Brkr.LS
+			});
+
+			return false;
+		}
+	}
+
+	private bool CallbackH01(string message)
 	{
 		if (Executed is null) return false;
 
@@ -170,7 +219,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			Executed(this, new ResponseResult<Order>
 			{
 				Typ = MessageType.EXECUTION,
-				Code = trCode,
+				Code = response.Header.TrCode,
 				Info = new Order
 				{
 					DateBiz = response.Body.orddate.ToDate(),
@@ -202,14 +251,13 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Typ = MessageType.EXECUTION,
-				Code = trCode,
+				Code = nameof(H01),
 				Message = ex.Message,
+				Remark = message,
 				Broker = Brkr.LS
 			});
 
 			return false;
 		}
-
 	}
-
 }

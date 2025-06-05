@@ -171,6 +171,7 @@ internal static class CodeRef
 		nameof(SC3),
 		nameof(SC4),
 		nameof(C01),
+		nameof(O01),
 		nameof(H01)
 	};
 
