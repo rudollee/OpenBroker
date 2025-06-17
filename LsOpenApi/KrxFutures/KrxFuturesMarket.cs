@@ -2,6 +2,7 @@
 using OpenBroker;
 using OpenBroker.Extensions;
 using OpenBroker.Models;
+using RestSharp;
 
 namespace LsOpenApi.KrxFutures;
 public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
@@ -14,7 +15,70 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	public EventHandler<ResponseResult<MarketPause>>? MarketPaused { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
 	public Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol) => throw new NotImplementedException();
-	public Task<ResponseResult<Quote>> RequestMarketContract(string symbol) => throw new NotImplementedException();
+	
+	public async Task<ResponseResult<Quote>> RequestMarketContract(string symbol)
+	{
+		if (symbol.Substring(1, 2) == "01") return new ResponseResult<Quote>
+		{
+			Broker = Brkr.LS,
+			StatusCode = Status.ERROR_OPEN_API,
+			Message = "not implemented yet",
+		};
+
+		try
+		{
+			var response = await RequestStandardAsync<t8402>(LsEndpoint.FuturesMarketData.ToDescription(), new
+			{
+				t8402InBlock = new t8402InBlock
+				{
+					focode = symbol,
+				}
+			});
+
+			if (response is null || response.t8402OutBlock is null) return new ResponseResult<Quote>
+			{
+				Broker = Brkr.LS,
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = "no data",
+			};
+
+			var quote = new Quote
+			{
+				Symbol = symbol,
+				TimeContract = DateTime.Now,
+				C = response.t8402OutBlock.price,
+				O = response.t8402OutBlock.open,
+				H = response.t8402OutBlock.high,
+				L = response.t8402OutBlock.low,
+				BasePrice = response.t8402OutBlock.jnilclose,
+				VolumeAcc = response.t8402OutBlock.volume,
+				Turnover = response.t8402OutBlock.value,
+			};
+
+			return new ResponseResult<Quote>
+			{
+				Broker = Brkr.LS,
+				Info = quote,
+				StatusCode = Status.SUCCESS,
+				Message = "success",
+				ExtraData = new Dictionary<string, decimal>
+				{
+					{ "OI", response.t8402OutBlock.mgjv }, // open interest
+					{ "UNDERLYINGPRICE", response.t8402OutBlock.baseprice }, // Underlying Asset Price
+				}
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResult<Quote>
+			{
+				Broker = Brkr.LS,
+				StatusCode = Status.INTERNALSERVERERROR,
+				Message = ex.Message
+			};
+		}
+	}
+
 	public Task<ResponseResults<Quote>> RequestMarketContract(IEnumerable<string> symbols) => throw new NotImplementedException();
 	public Task<ResponseResults<MarketContract>> RequestMarketContractHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
 	public Task<ResponseResult<News>> RequestNews(string id) => throw new NotImplementedException();
