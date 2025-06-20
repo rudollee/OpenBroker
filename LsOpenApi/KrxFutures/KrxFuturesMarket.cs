@@ -15,24 +15,76 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	public EventHandler<ResponseResult<MarketPause>>? MarketPaused { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
 	public Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol) => throw new NotImplementedException();
-	
+
+	#region request market contract - t2101, t8402
 	public async Task<ResponseResult<Quote>> RequestMarketContract(string symbol)
 	{
-		if (symbol.Substring(1, 2) == "01") return new ResponseResult<Quote>
+		if (new string[] { "1", "A" }.Contains(symbol.Substring(0, 1)) && symbol.Substring(1, 2) == "01")
 		{
-			Broker = Brkr.LS,
-			StatusCode = Status.ERROR_OPEN_API,
-			Message = "not implemented yet",
-		};
+			return await RequestMarketContractSsf(symbol);
+		}
 
 		try
 		{
-			var response = await RequestStandardAsync<t8402>(LsEndpoint.FuturesMarketData.ToDescription(), new
+			var response = await RequestStandardAsync<t2101>(LsEndpoint.FuturesMarketData.ToDescription(), new
 			{
 				t8402InBlock = new t8402InBlock
 				{
 					focode = symbol,
 				}
+			});
+
+			if (response is null || response.t2101OutBlock is null) return new ResponseResult<Quote>
+			{
+				Broker = Brkr.LS,
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = "no data",
+			};
+
+			var quote = new Quote
+			{
+				Symbol = symbol,
+				TimeContract = DateTime.Now,
+				C = response.t2101OutBlock.price,
+				O = response.t2101OutBlock.open,
+				H = response.t2101OutBlock.high,
+				L = response.t2101OutBlock.low,
+				BasePrice = response.t2101OutBlock.jnilclose,
+				VolumeAcc = response.t2101OutBlock.volume,
+				Turnover = response.t2101OutBlock.value,
+			};
+
+			return new ResponseResult<Quote>
+			{
+				Broker = Brkr.LS,
+				Info = quote,
+				StatusCode = Status.SUCCESS,
+				Message = "success",
+				ExtraData = new Dictionary<string, decimal>
+				{
+					{ "OI", response.t2101OutBlock.mgjv }, // open interest
+					{ "UNDERLYINGPRICE", response.t2101OutBlock.kospijisu }, // Underlying Asset Price
+				}
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResult<Quote>
+			{
+				Broker = Brkr.LS,
+				StatusCode = Status.INTERNALSERVERERROR,
+				Message = ex.Message
+			};
+		}
+	}
+
+	private async Task<ResponseResult<Quote>> RequestMarketContractSsf(string symbol)
+	{
+		try
+		{
+			var response = await RequestStandardAsync<t8402>(LsEndpoint.FuturesMarketData.ToDescription(), new
+			{
+				t8402InBlock = new t8402InBlock { focode = symbol }
 			});
 
 			if (response is null || response.t8402OutBlock is null) return new ResponseResult<Quote>
@@ -78,6 +130,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			};
 		}
 	}
+	#endregion
 
 	public Task<ResponseResults<Quote>> RequestMarketContract(IEnumerable<string> symbols) => throw new NotImplementedException();
 	public Task<ResponseResults<MarketContract>> RequestMarketContractHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
