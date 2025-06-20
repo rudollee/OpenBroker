@@ -19,7 +19,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	#region request market contract - t2101, t8402
 	public async Task<ResponseResult<Quote>> RequestMarketContract(string symbol)
 	{
-		if (new string[] { "1", "A" }.Contains(symbol.Substring(0, 1)) && symbol.Substring(1, 2) == "01")
+		if (new string[] { "1", "A" }.Contains(symbol.Substring(0, 1)) && symbol.Substring(1, 2) != "01")
 		{
 			return await RequestMarketContractSsf(symbol);
 		}
