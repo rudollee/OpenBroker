@@ -57,6 +57,14 @@ public static class KrxExtension
 		return dateFin.AddMonths(date > dateFin ? (quarterly ? 3 : 1) : 0);
 	}
 
+	public static DateOnly ToKrxExpiry(this DateOnly date, string instrumentCode)
+	{
+		if (instrumentCode != "75") return date.ToKrxExpiry();
+
+		var dateFin = date.ToOrdinalDate(DayOfWeek.Monday, 3);
+		return dateFin.AddMonths(date > dateFin ? 1 : 0);
+	}
+
 	public static DateOnly ToKrxExpiry(this string expiryCode, int cycle = 0, bool quarterly = false)
 	{
 		int getYear(string yearString)
@@ -97,26 +105,39 @@ public static class KrxExtension
 		int maxValue = new DateOnly(2025, 12, 11).DayNumber;
 		int cycle = date.DayNumber <= minValue ? -1 : date.DayNumber > maxValue ? 1 : 0;
 
-		string getYearCode(int year)
-		{
-			int seq = ((year - 1996 - cycle * 30) % 30);
-
-			char c = seq switch
-			{
-				< 4 => (char)(seq + 54),
-				< 10 => (char)(seq + 44),
-				< 18 => (char)(seq + 55),
-				< 23 => (char)(seq + 56),
-				< 28 => (char)(seq + 57),
-				< 30 => (char)(seq + 58),
-				_ => '?'
-			};
-
-			return c.ToString();
-		}
-
 		var expiry = date.ToKrxExpiry(quarterly);
 		var monthCode = expiry.Month.ToString().Replace("10", "A").Replace("11", "B").Replace("12", "C");
-		return $"{getYearCode(expiry.Year)}{monthCode}";
+		return $"{expiry.Year.ToYearCode(cycle)}{monthCode}";
+	}
+
+	public static string ToKrxExpiryCode(this DateOnly date, string instrumentCode)
+	{
+		if (instrumentCode != "75") return date.ToKrxExpiryCode();
+
+		int minValue = new DateOnly(1995, 12, 18).DayNumber;
+		int maxValue = new DateOnly(2025, 12, 15).DayNumber;
+		int cycle = date.DayNumber <= minValue ? -1 : date.DayNumber > maxValue ? 1 : 0;
+
+		var expiry = date.ToKrxExpiry(instrumentCode);
+		var monthCode = expiry.Month.ToString().Replace("10", "A").Replace("11", "B").Replace("12", "C");
+		return $"{expiry.Year.ToYearCode(cycle)}{monthCode}";
+	}
+
+	public static string ToYearCode(this int year, int cycle)
+	{
+		int seq = ((year - 1996 - cycle * 30) % 30);
+
+		char c = seq switch
+		{
+			< 4 => (char)(seq + 54),
+			< 10 => (char)(seq + 44),
+			< 18 => (char)(seq + 55),
+			< 23 => (char)(seq + 56),
+			< 28 => (char)(seq + 57),
+			< 30 => (char)(seq + 58),
+			_ => '?'
+		};
+
+		return c.ToString();
 	}
 }
