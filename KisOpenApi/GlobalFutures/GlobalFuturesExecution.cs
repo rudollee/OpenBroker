@@ -64,7 +64,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 	#endregion
 
 	#region 해외선물 주문/정정/취소 - OTFM3001U/OTFM3002U/OTFM3003U
-	public async Task<ResponseCore> AddOrderAsync(OrderCore order)
+	public async Task<ResponseCore> PlaceOrderAsync(OrderCore order)
 	{
 		if (string.IsNullOrEmpty(BankAccountInfo.AccountNumber)) return new ResponseCore
 		{

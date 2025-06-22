@@ -10,7 +10,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 	public required EventHandler<ResponseResult<Order>> Executed { get; set; }
 	public EventHandler<ResponseResult<Balance>>? BalanceAggregated { get; set; }
 
-	public Task<ResponseCore> AddOrderAsync(OrderCore order) => throw new NotImplementedException();
+	public Task<ResponseCore> PlaceOrderAsync(OrderCore order) => throw new NotImplementedException();
 	public Task<ResponseCore> CancelOrderAsync(OrderCore order) => throw new NotImplementedException();
 	public Task<ResponseResult<Balance>> RequestBalancesAsync(DateTime? date = null, Currency currency = Currency.TUS) => throw new NotImplementedException();
 

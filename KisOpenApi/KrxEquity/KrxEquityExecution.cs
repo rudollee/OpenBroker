@@ -11,7 +11,7 @@ public partial class KisKrxEquity : ConnectionBase, IExecution
 	public EventHandler<ResponseResult<Balance>>? BalanceAggregated { get; set; }
 
 	#region 국내주식 주문 매수/매도/정정/취소 TTTC0802U/TTTC0801U/TTTC0803U 
-	public async Task<ResponseCore> AddOrderAsync(OrderCore order)
+	public async Task<ResponseCore> PlaceOrderAsync(OrderCore order)
 	{
 		if (string.IsNullOrEmpty(BankAccountInfo.AccountNumber)) return new ResponseCore
 		{

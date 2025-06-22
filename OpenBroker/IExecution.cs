@@ -39,7 +39,7 @@ public interface IExecution
     /// </summary>
     /// <param name="order"></param>
     /// <returns></returns>
-    Task<ResponseCore> AddOrderAsync(OrderCore order);
+    Task<ResponseCore> PlaceOrderAsync(OrderCore order);
 
     /// <summary>
     /// 주문 수정

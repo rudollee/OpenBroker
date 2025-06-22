@@ -13,7 +13,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 	public EventHandler<ResponseResult<Balance>>? BalanceAggregated { get; set; }
 
 	#region 주문/정정/취소 - CSPAT00601/CSPAT00701/CSPAT00801
-	public async Task<ResponseCore> AddOrderAsync(OrderCore order) =>
+	public async Task<ResponseCore> PlaceOrderAsync(OrderCore order) =>
 		await RequestOrderAsync<CSPAT00601>(new
 		{
 			CSPAT00601InBlock1 = new CSPAT00601InBlock1
