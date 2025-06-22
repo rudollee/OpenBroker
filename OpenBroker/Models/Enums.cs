@@ -308,9 +308,9 @@ public enum MessageType
     CONTRACT,
 
     /// <summary>
-    /// Order execution
+    /// Order
     /// </summary>
-    EXECUTION,
+    ORDER,
 
     /// <summary>
     /// Subscribe / Unsubscribe Realtime Data

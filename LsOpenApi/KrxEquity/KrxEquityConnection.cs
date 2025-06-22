@@ -590,7 +590,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 
 			OrderReceived(this, new ResponseResult<Order>
 			{
-				Typ = MessageType.EXECUTION,
+				Typ = MessageType.ORDER,
 				StatusCode = Status.SUCCESS,
 				Code = nameof(SC0),
 				Info = new Order
@@ -649,7 +649,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 
 			OrderReceived(this, new ResponseResult<Order>
 			{
-				Typ = MessageType.EXECUTION,
+				Typ = MessageType.ORDER,
 				StatusCode = Status.SUCCESS,
 				Code = trCode,
 				Info = new Order

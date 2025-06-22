@@ -170,7 +170,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 
 			OrderReceived(this, new ResponseResult<Order>
 			{
-				Typ = MessageType.EXECUTION,
+				Typ = MessageType.ORDER,
 				Code = response.Header.TrCode,
 				Info = new Order
 				{
@@ -202,7 +202,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			Message(this, new ResponseCore
 			{
 				StatusCode = Status.ERROR_OPEN_API,
-				Typ = MessageType.EXECUTION,
+				Typ = MessageType.ORDER,
 				Code = nameof(O01),
 				Message = ex.Message,
 				Remark = message,

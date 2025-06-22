@@ -99,7 +99,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 			case nameof(HDFFF1C0):
 				OrderReceived(this, new ResponseResult<Order>
 				{
-					Typ = MessageType.EXECUTION,
+					Typ = MessageType.ORDER,
 					StatusCode = Status.SUCCESS,
 					Code = rawData[2],
 					Info = new Order
