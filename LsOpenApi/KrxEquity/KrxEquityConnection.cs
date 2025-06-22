@@ -588,7 +588,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<SC0OutBlock>>(message);
 			if (response is null || response.Body is null) return false;
 
-			Executed(this, new ResponseResult<Order>
+			OrderReceived(this, new ResponseResult<Order>
 			{
 				Typ = MessageType.EXECUTION,
 				StatusCode = Status.SUCCESS,
@@ -647,7 +647,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<SC2OutBlock>>(message);
 			if (response is null || response.Body is null) return false;
 
-			Executed(this, new ResponseResult<Order>
+			OrderReceived(this, new ResponseResult<Order>
 			{
 				Typ = MessageType.EXECUTION,
 				StatusCode = Status.SUCCESS,

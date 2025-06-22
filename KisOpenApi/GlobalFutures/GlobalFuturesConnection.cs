@@ -97,7 +97,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 			#endregion
 			#region 실시간 주문 HDFFF1C0
 			case nameof(HDFFF1C0):
-				Executed(this, new ResponseResult<Order>
+				OrderReceived(this, new ResponseResult<Order>
 				{
 					Typ = MessageType.EXECUTION,
 					StatusCode = Status.SUCCESS,

@@ -161,14 +161,14 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 
 	private bool CallbackO01(string message)
 	{
-		if (Executed is null) return false;
+		if (OrderReceived is null) return false;
 
 		try
 		{
 			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<O01OutBlock>>(message);
 			if (response is null || response.Body is null) return false;
 
-			Executed(this, new ResponseResult<Order>
+			OrderReceived(this, new ResponseResult<Order>
 			{
 				Typ = MessageType.EXECUTION,
 				Code = response.Header.TrCode,

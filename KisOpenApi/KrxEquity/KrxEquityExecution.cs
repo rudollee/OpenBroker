@@ -7,7 +7,7 @@ namespace KisOpenApi.KrxEquity;
 public partial class KisKrxEquity : ConnectionBase, IExecution
 {
 	public required EventHandler<ResponseResult<Contract>> Contracted { get; set; }
-	public required EventHandler<ResponseResult<Order>> Executed { get; set; }
+	public required EventHandler<ResponseResult<Order>> OrderReceived { get; set; }
 	public EventHandler<ResponseResult<Balance>>? BalanceAggregated { get; set; }
 
 	#region 국내주식 주문 매수/매도/정정/취소 TTTC0802U/TTTC0801U/TTTC0803U 
