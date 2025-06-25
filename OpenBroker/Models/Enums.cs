@@ -185,40 +185,45 @@ public enum Brkr
 {
     NONE = 0,
 
-    /// <summary>
-    /// LS증권
-    /// </summary>
-    LS = 1,
+	/// <summary>
+	/// 교보증권
+	/// </summary>
+	KY = 100,
+
+	/// <summary>
+	/// 한국투자증권
+	/// </summary>
+	KI = 300,
 
     /// <summary>
-    /// 유안타증권
+    /// 미래에셋증권
     /// </summary>
-    YU,
+    MR = 500,
+
+	/// <summary>
+	/// 유안타증권
+	/// </summary>
+	YU = 2400,
 
     /// <summary>
     /// SK증권
     /// </summary>
-    SK,
-
-    /// <summary>
-    /// 키움증권
-    /// </summary>
-    KW,
-
-    /// <summary>
-    /// DB금융투자
-    /// </summary>
-    DB,
-
-    /// <summary>
-    /// 한국투자증권
-    /// </summary>
-    KI,
+    SK = 2500,
 
 	/// <summary>
-	/// 교보증권
+	/// DB증권
 	/// </summary>
-	KY,
+	DB = 3100,
+
+	/// <summary>
+	/// 키움증권
+	/// </summary>
+	KW = 5000,
+
+	/// <summary>
+	/// LS증권
+	/// </summary>
+	LS = 75200,
 }
 
 public enum MarketSession
