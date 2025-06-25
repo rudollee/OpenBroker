@@ -218,10 +218,10 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 	#region 실시간 체결 통보 H0STCNI0 - callback
 	private bool CallbackH0STCNI0(string[] data)
 	{
-		if (Contracted is null) return false;
+		if (Executed is null) return false;
 		try
 		{
-			Contracted(this, new ResponseResult<Contract>
+			Executed(this, new ResponseResult<Contract>
 			{
 				Typ = MessageType.CONTRACT,
 				StatusCode = Status.SUCCESS,
@@ -245,7 +245,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			Contracted(this, new ResponseResult<Contract>
+			Executed(this, new ResponseResult<Contract>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Typ = MessageType.SYSERR,

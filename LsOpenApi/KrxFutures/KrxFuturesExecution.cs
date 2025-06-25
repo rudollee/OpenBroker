@@ -6,7 +6,7 @@ using OpenBroker.Models;
 namespace LsOpenApi.KrxFutures;
 public partial class LsKrxFutures : ConnectionBase, IExecution
 {
-	public required EventHandler<ResponseResult<Contract>> Contracted { get; set; }
+	public required EventHandler<ResponseResult<Contract>> Executed { get; set; }
 	public required EventHandler<ResponseResult<Order>> OrderReceived { get; set; }
 	public EventHandler<ResponseResult<Balance>>? BalanceAggregated { get; set; }
 

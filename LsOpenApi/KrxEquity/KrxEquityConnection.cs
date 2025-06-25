@@ -711,7 +711,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<SC1OutBlock>>(message);
 			if (response is null || response.Body is null) return false;
 
-			Contracted(this, new ResponseResult<Contract>
+			Executed(this, new ResponseResult<Contract>
 			{
 				Typ = MessageType.CONTRACT,
 				Code = nameof(SC1),

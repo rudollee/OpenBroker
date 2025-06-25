@@ -113,7 +113,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 
 	private bool CallbackC01(string message)
 	{
-		if (Contracted is null) return false;
+		if (Executed is null) return false;
 
 		try
 		{
@@ -121,7 +121,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			if (response is null || response.Body is null) return false;
 
 			Int64.TryParse(response.Body.ordordno, out long idOrigin);
-			Contracted(this, new ResponseResult<Contract>
+			Executed(this, new ResponseResult<Contract>
 			{
 				Typ = MessageType.CONTRACT,
 				Code = response.Header.TrCode,

@@ -129,7 +129,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 			#endregion
 			#region 실시간 체결 HDFFF2C0
 			case nameof(HDFFF2C0):
-				Contracted(this, new ResponseResult<Contract>
+				Executed(this, new ResponseResult<Contract>
 				{
 					Typ = MessageType.CONTRACT,
 					StatusCode = Status.SUCCESS,
