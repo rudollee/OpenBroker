@@ -6,7 +6,7 @@ using OpenBroker.Extensions;
 using RestSharp;
 
 namespace LsOpenApi.KrxEquity;
-public partial class LsKrxEquity : ConnectionBase, IExecution
+public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEquity
 {
 	public required EventHandler<ResponseResult<Contract>> Executed { get; set; }
 	public required EventHandler<ResponseResult<Order>> OrderReceived { get; set; }
@@ -480,6 +480,71 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 				List = positions,
 			};
 		}
+	}
+	#endregion
+
+
+	#region 일간 거래내역 집계 - t0150/t0151
+	public async Task<ResponseResults<Position>> RequestExecutionAgg(DateOnly date)
+	{
+		try
+		{
+			var response = await RequestStandardAsync<t0151>(LsEndpoint.EquityAccount.ToDescription(), new
+			{
+				t0151InBlock = new t0151InBlock { date = date.ToString("yyyyMMdd") }
+			});
+
+			if (response is null) return new ResponseResults<Position>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = $"{nameof(t0151)} is null",
+				List = []
+			};
+
+			if (!response.t0151OutBlock1.Any()) return new ResponseResults<Position>
+			{
+				Message = $"no executed",
+				List = []
+			};
+
+			List<Position> positions = [];
+			var symbol = string.Empty;
+			var isLong = true;
+			foreach (var execution in response.t0151OutBlock1)
+			{
+				if (execution.medosu == "종목소계")
+				{
+					positions.Add(new Position
+					{
+						DateEntry = date.ToString("yyyyMMdd").ToDateTime(),
+						Symbol = symbol,
+						InstrumentName = Equities[symbol].NameOfficial,
+						IsLong = isLong,
+						Commission = execution.fee,
+						Tax = execution.tax + execution.argtax,
+					});
+				}
+				else
+				{
+					symbol = execution.expcode;
+					isLong = execution.medosu == "매수";
+				}
+			}
+
+			return new ResponseResults<Position>
+			{
+				List = positions
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResults<Position>
+			{
+				StatusCode = Status.INTERNALSERVERERROR,
+				Message = ex.Message,
+				List = []
+			};
+		}
 	} 
 	#endregion
 
@@ -503,4 +568,6 @@ public partial class LsKrxEquity : ConnectionBase, IExecution
 			StatusCode = Status.SUCCESS,
 		};
 	}
+
+	
 }
