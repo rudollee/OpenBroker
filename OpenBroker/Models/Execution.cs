@@ -141,7 +141,8 @@ public class Position : InstrumentCore
 public class Pnl
 {
     public DateTime Date { get; set; }
-    public decimal PnlAgg { get; set; }
+    public string Symbol { get; set; } = string.Empty;
+	public decimal PnlAgg { get; set; }
     public decimal Commission { get; set; }
     public decimal Tax { get; set; }
 }
