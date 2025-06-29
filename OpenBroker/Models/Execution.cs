@@ -129,6 +129,7 @@ public class AssetCashable
 
 public class Position : InstrumentCore
 {
+    public bool IsLong { get; set; }
     public decimal VolumeEntry { get; set; }
     public decimal PriceEntry { get; set; }
     public decimal Volume { get; set; }
