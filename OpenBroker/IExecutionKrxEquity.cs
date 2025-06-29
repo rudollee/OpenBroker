@@ -8,5 +8,5 @@ public interface IExecutionKrxEquity
 	/// </summary>
 	/// <param name="date"></param>
 	/// <returns></returns>
-	Task<ResponseResults<Pnl>> RequestExecutionAgg(DateOnly date);
+	Task<ResponseResults<Position>> RequestExecutionAgg(DateOnly date);
 }
