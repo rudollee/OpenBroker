@@ -143,6 +143,7 @@ public class Pnl
     public DateTime Date { get; set; }
     public decimal PnlAgg { get; set; }
     public decimal Commission { get; set; }
+    public decimal Tax { get; set; }
 }
 
 internal class Execution { }
