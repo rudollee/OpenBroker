@@ -4,6 +4,7 @@ using OpenBroker.Models;
 using OpenBroker;
 using OpenBroker.Extensions;
 using RestSharp;
+using System;
 
 namespace LsOpenApi.KrxEquity;
 public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEquity
@@ -225,9 +226,6 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 			{
 				CSPAQ13700InBlock1 = new CSPAQ13700InBlock1
 				{
-					OrdMktCode = "00",
-					BnsTpCode = "0",
-					IsuNo = string.Empty,
 					ExecYn = status switch
 					{
 						ContractStatus.All => "0",
@@ -236,29 +234,55 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 						_ => "0"
 					},
 					OrdDt = dateBegun.ToString("yyyyMMdd"),
-					SrtOrdNo2 = 0,
-					BkseqTpCode = "1",
-					OrdPtnCode = "00"
 				}
 			});
 
 			var executions = new List<Contract>() { Capacity = response.CSPAQ13700OutBlock3.Count };
 
+			var date = DateOnly.FromDateTime(DateTime.Now);
+			var symbol = string.Empty;
+			var instrumentName = string.Empty;
+			long oid = 0;
+			long idOrigin = 0;
+			var seq = 1;
+			decimal qtyOrdered = 0;
+			decimal priceOrdered = 0;
+			DateTime timeOrdered = DateTime.Now;
+			ExchangeSection section = ExchangeSection.NONE;
 			response.CSPAQ13700OutBlock3.ForEach(execution =>
 			{
+				if (!string.IsNullOrEmpty(execution.OrdDt))
+				{
+					date = execution.OrdDt.ToDate();
+					symbol = execution.IsuNo;
+					instrumentName = execution.IsuNm;
+					oid = execution.OrdNo;
+					idOrigin = execution.OrgOrdNo;
+					seq = 1;
+					qtyOrdered = execution.OrdQty;
+					priceOrdered = execution.OrdPrc;
+					timeOrdered = (execution.OrdDt + execution.OrdTime).ToDateTimeMicro();
+					section = execution.OrdMktCode == "10" ? ExchangeSection.KOSPI : ExchangeSection.KOSDAQ;
+				}
+				else
+				{
+					seq++;
+				}
+				
 				executions.Add(new Contract
 				{
 					BrokerCo = "LS",
-					DateBiz = execution.OrdDt.ToDate(),
-					TimeContracted = (DateTime.Now.ToString("yyyyMMdd") + execution.ExecTrxTime).ToDateTimeMicro(),
+					DateBiz = date,
+					TimeOrdered = timeOrdered,
+					TimeContracted = (date.ToString("yyyyMMdd") + execution.ExecTrxTime).ToDateTimeMicro(),
 					Currency = Currency.KRW,
 					Precision = 0,
 					NumeralSystem = 10,
-					Symbol = execution.IsuNo,
-					InstrumentName = execution.IsuNm,
-					OID = execution.OrdNo,
-					IdOrigin = execution.OrgOrdNo,
-					CID = execution.OrdNo,
+					Symbol = symbol,
+					InstrumentName = instrumentName,
+					OID = oid,
+					IdOrigin = idOrigin,
+					CID = seq,
 					IsLong = execution.BnsTpCode == "2",
 					Mode = execution.MrcTpCode switch
 					{
@@ -267,12 +291,12 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 						"2" => OrderMode.CANCEL,
 						_ => OrderMode.NONE,
 					},
-					PriceOrdered = execution.OrdPrc,
-					VolumeOrdered = execution.OrdQty,
+					PriceOrdered = priceOrdered,
+					VolumeOrdered = qtyOrdered,
 					Price = execution.ExecPrc,
 					Volume = execution.ExecQty,
 					Aggregation = execution.OrdPrc * execution.OrdQty,
-					Section = execution.OrdMktCode == "10" ? ExchangeSection.KOSPI : ExchangeSection.KOSDAQ
+					Section = section
 				});
 			});
 
@@ -364,14 +388,8 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 			{
 				CSPAQ13700InBlock1 = new CSPAQ13700InBlock1
 				{
-					OrdMktCode = "00",
-					BnsTpCode = "0",
-					IsuNo = string.Empty,
 					ExecYn = "0",
 					OrdDt = dateBegun.ToString("yyyyMMdd"),
-					SrtOrdNo2 = 0,
-					BkseqTpCode = "1",
-					OrdPtnCode = "00"
 				}
 			});
 
@@ -379,31 +397,34 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 
 			response.CSPAQ13700OutBlock3.ForEach(order =>
 			{
-				orders.Add(new Order
+				if (!string.IsNullOrEmpty(order.OrdDt))
 				{
-					BrokerCo = "LS",
-					DateBiz = order.OrdDt.ToDate(),
-					TimeOrdered = (DateTime.Now.ToString("yyyyMMdd") + order.OrdTime).ToDateTimeMicro(),
-					Symbol = order.IsuNo.Substring(1),
-					InstrumentName = order.IsuNm,
-					OID = order.OrdNo,
-					IdOrigin = order.OrgOrdNo,
-					Currency = Currency.KRW,
-					NumeralSystem = 10,
-					Precision = 0,
-					IsLong = order.BnsTpCode.Equals("2"),
-					Mode = order.MrcTpCode switch
+					orders.Add(new Order
 					{
-						"0" => OrderMode.PLACE,
-						"1" => OrderMode.UPDATE,
-						"2" => OrderMode.CANCEL,
-						_ => OrderMode.NONE,
-					},
-					PriceOrdered = order.OrdPrc,
-					VolumeOrdered = order.OrdQty,
-					Aggregation = order.OrdPrc * order.OrdQty,
-					Section = order.OrdMktCode == "10" ? ExchangeSection.KOSPI : ExchangeSection.KOSDAQ
-				});
+						BrokerCo = "LS",
+						DateBiz = order.OrdDt.ToDate(),
+						TimeOrdered = (DateTime.Now.ToString("yyyyMMdd") + order.OrdTime).ToDateTimeMicro(),
+						Symbol = order.IsuNo.Substring(1),
+						InstrumentName = order.IsuNm,
+						OID = order.OrdNo,
+						IdOrigin = order.OrgOrdNo,
+						Currency = Currency.KRW,
+						NumeralSystem = 10,
+						Precision = 0,
+						IsLong = order.BnsTpCode.Equals("2"),
+						Mode = order.MrcTpCode switch
+						{
+							"0" => OrderMode.PLACE,
+							"1" => OrderMode.UPDATE,
+							"2" => OrderMode.CANCEL,
+							_ => OrderMode.NONE,
+						},
+						PriceOrdered = order.OrdPrc,
+						VolumeOrdered = order.OrdQty,
+						Aggregation = order.OrdPrc * order.OrdQty,
+						Section = order.OrdMktCode == "10" ? ExchangeSection.KOSPI : ExchangeSection.KOSDAQ
+					}); 
+				}
 			});
 
 			return new ResponseResults<Order>
@@ -483,12 +504,13 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 	}
 	#endregion
 
-
 	#region 일간 거래내역 집계 - t0150/t0151
 	public async Task<ResponseResults<Position>> RequestExecutionAgg(DateOnly date)
 	{
 		try
 		{
+			if (date == DateOnly.FromDateTime(DateTime.Now)) return await RequestExecutionAggToday();
+
 			var response = await RequestStandardAsync<t0151>(LsEndpoint.EquityAccount.ToDescription(), new
 			{
 				t0151InBlock = new t0151InBlock { date = date.ToString("yyyyMMdd") }
@@ -507,34 +529,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 				List = []
 			};
 
-			List<Position> positions = [];
-			var symbol = string.Empty;
-			var isLong = true;
-			foreach (var execution in response.t0151OutBlock1)
-			{
-				if (execution.medosu == "종목소계")
-				{
-					positions.Add(new Position
-					{
-						DateEntry = date.ToString("yyyyMMdd").ToDateTime(),
-						Symbol = symbol,
-						InstrumentName = Equities[symbol].NameOfficial,
-						IsLong = isLong,
-						Commission = execution.fee,
-						Tax = execution.tax + execution.argtax,
-					});
-				}
-				else
-				{
-					symbol = execution.expcode;
-					isLong = execution.medosu == "매수";
-				}
-			}
-
-			return new ResponseResults<Position>
-			{
-				List = positions
-			};
+			return GeneratePositions(date, response.t0151OutBlock1);
 		}
 		catch (Exception ex)
 		{
@@ -545,7 +540,62 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 				List = []
 			};
 		}
-	} 
+	}
+
+	private async Task<ResponseResults<Position>> RequestExecutionAggToday()
+	{
+		var response = await RequestStandardAsync<t0150>(LsEndpoint.EquityAccount.ToDescription(), new
+		{
+			t0150InBlock = new t0150InBlock { }
+		});
+
+		if (response is null) return new ResponseResults<Position>
+		{
+			StatusCode = Status.ERROR_OPEN_API,
+			Message = $"{nameof(t0150)} is null",
+			List = []
+		};
+
+		if (!response.t0150OutBlock1.Any()) return new ResponseResults<Position>
+		{
+			Message = $"no executed",
+			List = []
+		};
+
+		return GeneratePositions(DateOnly.FromDateTime(DateTime.Now), response.t0150OutBlock1);
+	}
+	
+	private ResponseResults<Position> GeneratePositions(DateOnly date, List<t0150OutBlock1> outblock)
+	{
+		List<Position> positions = [];
+		var symbol = string.Empty;
+		var isLong = true;
+		foreach (var execution in outblock)
+		{
+			if (execution.medosu == "종목소계")
+			{
+				positions.Add(new Position
+				{
+					DateEntry = date.ToString("yyyyMMdd").ToDateTime(),
+					Symbol = symbol,
+					InstrumentName = Equities[symbol].NameOfficial,
+					IsLong = isLong,
+					Commission = execution.fee,
+					Tax = execution.tax + execution.argtax,
+				});
+			}
+			else
+			{
+				symbol = execution.expcode;
+				isLong = execution.medosu == "매수";
+			}
+		}
+
+		return new ResponseResults<Position>
+		{
+			List = positions
+		};
+	}
 	#endregion
 
 	public async Task<ResponseCore> SubscribeContractAsync(bool connecting = true) => await SubscribeAsync("SYS", "SC1", "", connecting);

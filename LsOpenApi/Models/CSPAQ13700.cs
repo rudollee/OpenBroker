@@ -15,10 +15,11 @@ internal class CSPAQ13700 : LsResponseCore
 /// </summary>
 internal class CSPAQ13700InBlock1
 {
-	public string OrdMktCode { get; set; } = string.Empty;
+	/// <summary>주문시장코드</summary>
+	public string OrdMktCode { get; set; } = "00";
 
 	/// <summary>매매구분</summary>
-	public string BnsTpCode { get; set; } = string.Empty;
+	public string BnsTpCode { get; set; } = "0";
 
 	/// <summary>종목번호</summary>
 	public string IsuNo { get; set; } = string.Empty;
@@ -33,10 +34,10 @@ internal class CSPAQ13700InBlock1
 	public long SrtOrdNo2 { get; set; }
 
 	/// <summary>역순구분</summary>
-	public string BkseqTpCode { get; set; } = string.Empty;
+	public string BkseqTpCode { get; set; } = "1";
 
 	/// <summary>주문유형코드</summary>
-	public string OrdPtnCode { get; set; } = string.Empty;
+	public string OrdPtnCode { get; set; } = "00";
 }
 
 /// <summary>

@@ -144,8 +144,8 @@ internal class t0150OutBlock1
 internal class t0151 : LsResponseCore
 {
 	public t0151InBlock t0151InBlock { get; set; } = new();
-	public t0151OutBlock t0151OutBlock { get; set; } = new();
-	public List<t0151OutBlock1> t0151OutBlock1 { get; set; } = [];
+	public t0150OutBlock t0151OutBlock { get; set; } = new();
+	public List<t0150OutBlock1> t0151OutBlock1 { get; set; } = [];
 }
 
 /// <summary>
@@ -156,13 +156,3 @@ internal class t0151InBlock : t0150InBlock
 	/// <summary>일자</summary>
 	public string date { get; set; } = string.Empty;
 }
-
-/// <summary>
-/// 주식당일매매일지/수수료(t0150) - OutBlock
-/// </summary>
-internal class t0151OutBlock : t0150OutBlock { }
-
-/// <summary>
-/// 주식당일매매일지/수수료(t0150) - OutBlock1
-/// </summary>
-internal class t0151OutBlock1 : t0150OutBlock1 { }
