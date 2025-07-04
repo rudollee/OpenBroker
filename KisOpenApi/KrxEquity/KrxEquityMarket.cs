@@ -22,7 +22,7 @@ public partial class KisKrxEquity : ConnectionBase, IMarket
 	public Task<ResponseResults<MarketContract>> RequestMarketContractHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
 
 	#region 국내주식기간별시세(일,주,월,년) - FHKST03010100
-	public async Task<ResponseResult<QuotePack>> RequestPricePack(QuoteRequest request)
+	public async Task<ResponseResult<QuotePack<T>>> RequestPricePack<T>(QuoteRequest request) where T : Quote
 	{
 		var parameters = GenerateParameters(new
 		{
@@ -41,10 +41,10 @@ public partial class KisKrxEquity : ConnectionBase, IMarket
 		});
 
 		var response = await RequestStandardAsync<FHKST03010100>(EndpointRef.EndpointDic[TrId.FHKST03010100], parameters);
-		if (response is null) return new ResponseResult<QuotePack>
+		if (response is null) return new ResponseResult<QuotePack<T>>
 		{
 			StatusCode = Status.ERROR_OPEN_API,
-			Info = new QuotePack { PrimaryList = [] },
+			Info = new QuotePack<T> { PrimaryList = [] },
 			Message = "response is null"
 		};
 
@@ -65,14 +65,14 @@ public partial class KisKrxEquity : ConnectionBase, IMarket
 			});
 		});
 
-		return new ResponseResult<QuotePack>
+		return new ResponseResult<QuotePack<T>>
 		{
-			Info = new QuotePack
+			Info = new QuotePack<T>
 			{
 				Symbol = request.Symbol,
 				TimeIntervalUnit = request.TimeIntervalUnit,
 				TimeInterval = request.TimeInterval,
-				PrimaryList = quotes
+				PrimaryList = quotes as List<T>,
 			},
 		};
 	} 

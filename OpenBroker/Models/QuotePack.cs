@@ -8,7 +8,15 @@ public class QuotePack
 	public string Symbol { get; set; } = string.Empty;
 	public IntervalUnit TimeIntervalUnit { get; set; } = IntervalUnit.Day;
 	public int TimeInterval { get; set; } = 1;
-	public required List<Quote> PrimaryList { get; set; } = new List<Quote>();
+	public required List<Quote> PrimaryList { get; set; } = [];
+	public QuoteRate SecondaryInfo { get; set; } = new();
+}
+
+public class QuotePack<T> where T : Quote { 
+	public string Symbol { get; set; } = string.Empty;
+	public IntervalUnit TimeIntervalUnit { get; set; } = IntervalUnit.Day;
+	public int TimeInterval { get; set; } = 1;
+	public required List<T> PrimaryList { get; set; } = [];
 	public QuoteRate SecondaryInfo { get; set; } = new();
 }
 

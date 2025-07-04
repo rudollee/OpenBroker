@@ -666,15 +666,15 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#endregion
 
 	#region request chart data by t8410, t8411, t8412
-	public async Task<ResponseResult<QuotePack>> RequestPricePack(QuoteRequest request) =>
+	public async Task<ResponseResult<QuotePack<T>>> RequestPricePack<T>(QuoteRequest request) where T : Quote =>
 		request.TimeIntervalUnit switch
 		{
-			IntervalUnit.Tick => await RequestPricePackTick(request),
-			IntervalUnit.Minute => await RequestPricePackMinute(request),
-			_ => await RequestPricePackX(request)
+			IntervalUnit.Tick => await RequestPricePackTick<T>(request),
+			IntervalUnit.Minute => await RequestPricePackMinute<T>(request),
+			_ => await RequestPricePackX<T>(request)
 		};
 
-	private async Task<ResponseResult<QuotePack>> RequestPricePackTick(QuoteRequest request)
+	private async Task<ResponseResult<QuotePack<T>>> RequestPricePackTick<T>(QuoteRequest request) where T : Quote
 	{
 		try
 		{
@@ -690,7 +690,15 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				}
 			});
 
-			if (!response.t8411OutBlock1.Any()) return new ResponseResult<QuotePack>
+			if (typeof(T) != typeof(Quote)) return new ResponseResult<QuotePack<T>>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = "Invalid type parameter for RequestPricePackTick",
+				Code = response.Code,
+				Remark = "type mismatch"
+			};
+
+			if (!response.t8411OutBlock1.Any()) return new ResponseResult<QuotePack<T>>
 			{
 				StatusCode = Status.NODATA,
 				Message = response.Message,
@@ -725,21 +733,21 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 			// TODO : 수정주가 적용 여부
 
-			return new ResponseResult<QuotePack>
+			return new ResponseResult<QuotePack<T>>
 			{
-				Info = new QuotePack
+				Info = new QuotePack<T>
 				{
 					Symbol = request.Symbol,
 					TimeIntervalUnit = request.TimeIntervalUnit,
 					TimeInterval = request.TimeInterval,
-					PrimaryList = prices,
+					PrimaryList = prices as List<T>,
 					SecondaryInfo = priceInfo
 				}
 			};
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResult<QuotePack>
+			return new ResponseResult<QuotePack<T>>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = ex.Message,
@@ -748,7 +756,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 	}
 
-	private async Task<ResponseResult<QuotePack>> RequestPricePackMinute(QuoteRequest request)
+	private async Task<ResponseResult<QuotePack<T>>> RequestPricePackMinute<T>(QuoteRequest request) where T : Quote
 	{
 		try
 		{
@@ -764,7 +772,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				}
 			});
 
-			if (!response.t8412OutBlock1.Any()) return new ResponseResult<QuotePack>
+			if (!response.t8412OutBlock1.Any()) return new ResponseResult<QuotePack<T>>
 			{
 				StatusCode = Status.NODATA,
 				Message = response.Message,
@@ -799,21 +807,21 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 			// TODO : 수정주가 적용 여부
 
-			return new ResponseResult<QuotePack>
+			return new ResponseResult<QuotePack<T>>
 			{
-				Info = new QuotePack
+				Info = new QuotePack<T> 
 				{
 					Symbol = request.Symbol,
 					TimeIntervalUnit = request.TimeIntervalUnit,
 					TimeInterval = request.TimeInterval,
-					PrimaryList = prices,
+					PrimaryList = prices as List<T>,
 					SecondaryInfo = priceInfo
 				}
 			};
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResult<QuotePack>
+			return new ResponseResult<QuotePack<T>>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = ex.Message,
@@ -822,7 +830,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 	}
 
-	private async Task<ResponseResult<QuotePack>> RequestPricePackX(QuoteRequest request)
+	private async Task<ResponseResult<QuotePack<T>>> RequestPricePackX<T>(QuoteRequest request) where T : Quote
 	{
 		List<Quote> quotes = new();
 		try
@@ -880,12 +888,12 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 			// TODO : 수정주가 적용 여부
 
-			return new ResponseResult<QuotePack>
+			return new ResponseResult<QuotePack<T>>
 			{
-				Info = new QuotePack
+				Info = new QuotePack<T>
 				{
 					Symbol = request.Symbol,
-					PrimaryList = quotes,
+					PrimaryList = quotes as List<T>,
 					TimeInterval = request.TimeInterval,
 					TimeIntervalUnit = request.TimeIntervalUnit,
 				},
@@ -893,7 +901,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResult<QuotePack>
+			return new ResponseResult<QuotePack<T>>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = ex.Message,

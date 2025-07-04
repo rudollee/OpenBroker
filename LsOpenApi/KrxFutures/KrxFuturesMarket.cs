@@ -137,17 +137,17 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	public Task<ResponseResult<News>> RequestNews(string id) => throw new NotImplementedException();
 
 	#region request Price Pack using t8415
-	public async Task<ResponseResult<QuotePack>> RequestPricePack(QuoteRequest request)
+	public async Task<ResponseResult<QuotePack<T>>> RequestPricePack<T>(QuoteRequest request) where T : Quote
 	{
 		if (request.TimeIntervalUnit == IntervalUnit.Minute)
 		{
 			try
 			{
-				return await RequestPricePackMinutes(request);
+				return await RequestPricePackMinutes<T>(request);
 			}
 			catch (Exception ex)
 			{
-				return new ResponseResult<QuotePack>
+				return new ResponseResult<QuotePack<T>>
 				{
 					Broker = Brkr.LS,
 					StatusCode = Status.INTERNALSERVERERROR,
@@ -156,7 +156,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			}
 		}
 
-		List<Quote> quotes = [];
+		List<QuoteExt> quotes = [];
 		try
 		{
 			List<t8416OutBlock1> list = [];
@@ -193,7 +193,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			quotes.Capacity = list.Count;
 			list.ForEach(f =>
 			{
-				quotes.Add(new Quote
+				quotes.Add(new QuoteExt(f.close)
 				{
 					Symbol = request.Symbol,
 					TimeContract = $"{f.date}000000".ToDateTime(),
@@ -202,15 +202,16 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 					L = f.low,
 					C = f.close,
 					V = f.jdiff_vol,
+					OI = f.openyak,
 				});
 			});
 
-			return new ResponseResult<QuotePack>
+			return new ResponseResult<QuotePack<T>>
 			{
-				Info = new QuotePack
+				Info = new QuotePack<T>
 				{
 					Symbol = request.Symbol,
-					PrimaryList = quotes,
+					PrimaryList = quotes as List<T>,
 					TimeInterval = request.TimeInterval,
 					TimeIntervalUnit = request.TimeIntervalUnit,
 				},
@@ -218,7 +219,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResult<QuotePack>
+			return new ResponseResult<QuotePack<T>>
 			{
 				StatusCode = Status.INTERNALSERVERERROR,
 				Message = ex.Message,
@@ -226,7 +227,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		}
 	}
 
-	private async Task<ResponseResult<QuotePack>> RequestPricePackMinutes(QuoteRequest request)
+	private async Task<ResponseResult<QuotePack<T>>> RequestPricePackMinutes<T>(QuoteRequest request) where T : Quote
 	{
 		List<Quote> quotes = [];
 		List<t8415OutBlock1> list = [];
@@ -268,12 +269,12 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			});
 		});
 
-		return new ResponseResult<QuotePack>
+		return new ResponseResult<QuotePack<T>>
 		{
-			Info = new QuotePack
+			Info = new QuotePack<T>
 			{
 				Symbol = request.Symbol,
-				PrimaryList = quotes,
+				PrimaryList = quotes as List<T>,
 				TimeInterval = request.TimeInterval,
 				TimeIntervalUnit = request.TimeIntervalUnit,
 			},
