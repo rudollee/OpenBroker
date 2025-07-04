@@ -2,11 +2,11 @@
 using OpenBroker;
 using OpenBroker.Extensions;
 using OpenBroker.Models;
-using RestSharp;
 
 namespace LsOpenApi.KrxFutures;
 public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 {
+	private readonly string _date8txt = "yyyyMMdd";
 	public Dictionary<string, Instrument> Instruments { get; set; } = new();
 
 	public EventHandler<ResponseResult<MarketContract>>? MarketContracted { get; set; }
@@ -139,44 +139,55 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	#region request Price Pack using t8415
 	public async Task<ResponseResult<QuotePack>> RequestPricePack(QuoteRequest request)
 	{
-		// TODO : daily data 
-
-		if (request.TimeIntervalUnit != IntervalUnit.Minute) return new ResponseResult<QuotePack>
+		if (request.TimeIntervalUnit == IntervalUnit.Minute)
 		{
-			Broker = Brkr.LS,
-			Message = "Only minute data is supported",
-			StatusCode = Status.BAD_REQUEST,
-		};
+			try
+			{
+				return await RequestPricePackMinutes(request);
+			}
+			catch (Exception ex)
+			{
+				return new ResponseResult<QuotePack>
+				{
+					Broker = Brkr.LS,
+					StatusCode = Status.INTERNALSERVERERROR,
+					Message = ex.Message,
+				};
+			}
+		}
 
-		List<Quote> quotes = new();
+		List<Quote> quotes = [];
 		try
 		{
-			List<t8415OutBlock1> list = new();
+			List<t8416OutBlock1> list = [];
 			var nextKey = string.Empty;
 			var ctsDate = string.Empty;
 			do
 			{
-				var response = await RequestContinuousAsync<t8415>(LsEndpoint.FuturesChart.ToDescription(), new
+				var response = await RequestContinuousAsync<t8416>(LsEndpoint.FuturesChart.ToDescription(), new
 				{
-					t8415InBlock = new t8415InBlock
+					t8416InBlock = new t8416InBlock
 					{
 						shcode = request.Symbol,
-						ncnt = request.TimeInterval,
-						sdate = request.Amount < 500 ? request.DateTimeBegin.ToString("yyyyMMdd") : " ",
-						edate = request.DateTimeEnd.ToString("yyyyMMdd"),
+						gubun = request.TimeIntervalUnit switch
+						{
+							IntervalUnit.Day => "2",
+							IntervalUnit.Week => "3",
+							IntervalUnit.Month => "4",
+							_ => "2"
+						},
+						qrycnt = request.TimeInterval,
+						sdate = request.Amount < 500 ? request.DateTimeBegin.ToString(_date8txt) : " ",
+						edate = request.DateTimeEnd.ToString(_date8txt),
 						cts_date = ctsDate
 					}
 				}, nextKey);
 
-				if (response is null || !response.t8415OutBlock1.Any())
-				{
-					nextKey = string.Empty;
-					break;
-				}
+				if (response is null || !response.t8416OutBlock1.Any()) break;
 
-				list.AddRange(response.t8415OutBlock1);
+				list.AddRange(response.t8416OutBlock1);
 				nextKey = response.NextKey;
-				ctsDate = response.t8415OutBlock.cts_date;
+				ctsDate = response.t8416OutBlock.cts_date;
 			} while (!string.IsNullOrEmpty(nextKey));
 
 			quotes.Capacity = list.Count;
@@ -185,7 +196,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				quotes.Add(new Quote
 				{
 					Symbol = request.Symbol,
-					TimeContract = $"{f.date}{f.time}".ToDateTime(),
+					TimeContract = $"{f.date}000000".ToDateTime(),
 					O = f.open,
 					H = f.high,
 					L = f.low,
@@ -213,7 +224,61 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				Message = ex.Message,
 			};
 		}
-	} 
+	}
+
+	private async Task<ResponseResult<QuotePack>> RequestPricePackMinutes(QuoteRequest request)
+	{
+		List<Quote> quotes = [];
+		List<t8415OutBlock1> list = [];
+		var nextKey = string.Empty;
+		var ctsDate = string.Empty;
+		do
+		{
+			var response = await RequestContinuousAsync<t8415>(LsEndpoint.FuturesChart.ToDescription(), new
+			{
+				t8415InBlock = new t8415InBlock
+				{
+					shcode = request.Symbol,
+					ncnt = request.TimeInterval,
+					sdate = request.Amount < 500 ? request.DateTimeBegin.ToString(_date8txt) : " ",
+					edate = request.DateTimeEnd.ToString(_date8txt),
+					cts_date = ctsDate
+				}
+			}, nextKey);
+
+			if (response is null || !response.t8415OutBlock1.Any()) break;
+
+			list.AddRange(response.t8415OutBlock1);
+			nextKey = response.NextKey;
+			ctsDate = response.t8415OutBlock.cts_date;
+		} while (!string.IsNullOrEmpty(nextKey));
+
+		quotes.Capacity = list.Count;
+		list.ForEach(f =>
+		{
+			quotes.Add(new Quote
+			{
+				Symbol = request.Symbol,
+				TimeContract = $"{f.date}{f.time}".ToDateTime(),
+				O = f.open,
+				H = f.high,
+				L = f.low,
+				C = f.close,
+				V = f.jdiff_vol,
+			});
+		});
+
+		return new ResponseResult<QuotePack>
+		{
+			Info = new QuotePack
+			{
+				Symbol = request.Symbol,
+				PrimaryList = quotes,
+				TimeInterval = request.TimeInterval,
+				TimeIntervalUnit = request.TimeIntervalUnit,
+			},
+		};
+	}
 	#endregion
 
 	#region request SSF instruments using t8401
