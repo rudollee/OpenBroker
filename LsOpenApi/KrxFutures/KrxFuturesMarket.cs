@@ -139,6 +139,13 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	#region request Price Pack using t8415
 	public async Task<ResponseResult<QuotePack<T>>> RequestPricePack<T>(QuoteRequest request) where T : Quote
 	{
+		if (request.DateTimeBegin > request.DateTimeEnd) return new ResponseResult<QuotePack<T>>
+		{
+			Broker = Brkr.LS,
+			StatusCode = Status.BAD_REQUEST,
+			Message = "period error"
+		};
+
 		if (request.TimeIntervalUnit == IntervalUnit.Minute)
 		{
 			try
