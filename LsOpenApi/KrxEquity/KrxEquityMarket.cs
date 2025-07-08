@@ -21,7 +21,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 	}
 
-	public EventHandler<ResponseResult<MarketContract>>? MarketContracted { get; set; }
+	public EventHandler<ResponseResult<MarketExecution>>? MarketExecuted { get; set; }
 	public EventHandler<ResponseResult<OrderBook>>? OrderBookTaken { get; set; }
 
 	public EventHandler<ResponseResult<News>>? NewsPosted { get; set; }
@@ -397,10 +397,10 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#endregion
 
 	#region request marketContract using t8407
-	public async Task<ResponseResult<Quote>> RequestMarketContract(string symbol)
+	public async Task<ResponseResult<MarketExecution>> RequestMarketExecution(string symbol)
 	{
-		var response = await RequestMarketContract(new string[] { symbol });
-		if (!response.List.Any()) return new ResponseResult<Quote>
+		var response = await RequestMarketExecution(new string[] { symbol });
+		if (!response.List.Any()) return new ResponseResult<MarketExecution>
 		{
 			StatusCode = Status.NODATA,
 			Message = response.Message,
@@ -408,14 +408,14 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			Remark = "no data"
 		};
 
-		return new ResponseResult<Quote>
+		return new ResponseResult<MarketExecution>
 		{
 			Code = response.Code,
 			Info = response.List.FirstOrDefault()
 		};
 	}
 
-	public async Task<ResponseResults<Quote>> RequestMarketContract(IEnumerable<string> symbols)
+	public async Task<ResponseResults<MarketExecution>> RequestMarketExecution(IEnumerable<string> symbols)
 	{
 		try
 		{
@@ -428,32 +428,37 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				}
 			});
 
-			if (response.t8407OutBlock1 is null) return new ResponseResults<Quote>
+			if (response.t8407OutBlock1 is null) return new ResponseResults<MarketExecution>
 			{
 				StatusCode = Status.NODATA,
-				List = new List<Quote>(),
+				List = [],
 				Code = response.Code,
 				Message = response.Message,
 				Remark = "no data"
 			};
 
-			var contracts = new List<Quote>();
+			var contracts = new List<MarketExecution>();
 			response.t8407OutBlock1.ForEach(f =>
 			{
-				contracts.Add(new Quote
+				contracts.Add(new MarketExecution
 				{
-					T = DateTime.Now,
-					BasePrice = f.jnilclose,
+					TimeContract = DateTime.Now,
+					Symbol = f.shcode,
 					C = f.price,
-					O = f.open,
-					H = f.high,
-					L = f.low,
-					V = f.cvolume,
-					Turnover = f.value
+					BasePrice = f.jnilclose,
+					QuoteDaily = new Quote
+					{
+						C = f.price,
+						O = f.open,
+						H = f.high,
+						L = f.low,
+						V = f.cvolume,
+						Turnover = f.value
+					}
 				});
 			});
 
-			return new ResponseResults<Quote>
+			return new ResponseResults<MarketExecution>
 			{
 				Code = response.Code,
 				List = contracts,
@@ -461,10 +466,10 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<Quote>
+			return new ResponseResults<MarketExecution>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
-				List = new List<Quote>(),
+				List = [],
 				Code = "ERROR",
 				Message = ex.Message,
 			};
@@ -473,7 +478,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#endregion
 
 	#region request marketContractHistory using t1301
-	public async Task<ResponseResults<MarketContract>> RequestMarketContractHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0)
+	public async Task<ResponseResults<MarketExecution>> RequestMarketExecutiontHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0)
 	{
 		try
 		{
@@ -488,17 +493,17 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				}
 			});
 
-			if (!response.t1301OutBlock1.Any()) return new ResponseResults<MarketContract>
+			if (!response.t1301OutBlock1.Any()) return new ResponseResults<MarketExecution>
 			{
 				StatusCode = Status.NODATA,
 				Message = response.Message,
 				Code = response.Code,
 				Remark = "no data",
-				List = new List<MarketContract>()
+				List = new List<MarketExecution>()
 			};
 
-			var marketContracts = new List<MarketContract>();
-			response.t1301OutBlock1.ForEach(contract => marketContracts.Add(new MarketContract
+			var marketContracts = new List<MarketExecution>();
+			response.t1301OutBlock1.ForEach(contract => marketContracts.Add(new MarketExecution
 			{
 				TimeContract = (DateTime.Now.ToString("yyyyMMdd") + contract.chetime).ToDateTime(),
 				C = contract.price,
@@ -510,18 +515,18 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				},
 			}));
 
-			return new ResponseResults<MarketContract>
+			return new ResponseResults<MarketExecution>
 			{
 				List = marketContracts,
 			};
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<MarketContract>
+			return new ResponseResults<MarketExecution>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = ex.Message,
-				List = new List<MarketContract>()
+				List = new List<MarketExecution>()
 			};
 		}
 	}
@@ -955,7 +960,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 	}
 
-	public async Task<ResponseResults<MarketContract>> RequestEquitiesByFilter(string query)
+	public async Task<ResponseResults<MarketExecution>> RequestEquitiesByFilter(string query)
 	{
 		try
 		{
@@ -967,17 +972,17 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				}
 			});
 
-			if (!response.t1859OutBlock1.Any()) return new ResponseResults<MarketContract>
+			if (!response.t1859OutBlock1.Any()) return new ResponseResults<MarketExecution>
 			{
 				StatusCode = Status.NODATA,
 				Message = response.Message,
 				Code = response.Code,
 				Remark = "no data",
-				List = new List<MarketContract>()
+				List = new List<MarketExecution>()
 			};
 
-			var contracts = new List<MarketContract>();
-			response.t1859OutBlock1.ForEach(contract => contracts.Add(new MarketContract
+			var contracts = new List<MarketExecution>();
+			response.t1859OutBlock1.ForEach(contract => contracts.Add(new MarketExecution
 			{
 				Symbol = contract.shcode,
 				C = contract.price,
@@ -985,15 +990,15 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				V = contract.volume,
 			}));
 
-			return new ResponseResults<MarketContract> { List = contracts };
+			return new ResponseResults<MarketExecution> { List = contracts };
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<MarketContract>
+			return new ResponseResults<MarketExecution>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = ex.Message,
-				List = new List<MarketContract>()
+				List = new List<MarketExecution>()
 			};
 		}
 	} 

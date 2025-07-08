@@ -15,7 +15,7 @@ public interface IMarket
 	/// <summary>
 	/// Marekt Contracted callback
 	/// </summary>
-	EventHandler<ResponseResult<MarketContract>>? MarketContracted { get; set; }
+	EventHandler<ResponseResult<MarketExecution>>? MarketExecuted { get; set; }
 
 	/// <summary>
 	/// Order Book callback
@@ -51,14 +51,14 @@ public interface IMarket
 	/// </summary>
 	/// <param name="symbol"></param>
 	/// <returns></returns>
-	Task<ResponseResult<Quote>> RequestMarketContract(string symbol);
+	Task<ResponseResult<MarketExecution>> RequestMarketExecution(string symbol);
 
 	/// <summary>
 	/// 현재가 Multiple
 	/// </summary>
 	/// <param name="symbols"></param>
 	/// <returns></returns>
-	Task<ResponseResults<Quote>> RequestMarketContract(IEnumerable<string> symbols);
+	Task<ResponseResults<MarketExecution>> RequestMarketExecution(IEnumerable<string> symbols);
 
 	/// <summary>
 	/// 기간별 체결 내역
@@ -68,7 +68,7 @@ public interface IMarket
 	/// <param name="end"></param>
 	/// <param name="baseVolume"></param>
 	/// <returns></returns>
-	Task<ResponseResults<MarketContract>> RequestMarketContractHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0);
+	Task<ResponseResults<MarketExecution>> RequestMarketExecutiontHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0);
 
 	/// <summary>
 	/// 차트 데이터

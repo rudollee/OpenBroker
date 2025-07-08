@@ -78,13 +78,13 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 			#endregion
 			#region 실시간 체결가 HDFFF020
 			case nameof(HDFFF020):
-				if (MarketContracted is null) return;
+				if (MarketExecuted is null) return;
 
-				MarketContracted(this, new ResponseResult<MarketContract>
+				MarketExecuted(this, new ResponseResult<MarketExecution>
 				{
 					Typ = MessageType.MKT,
 					Code = rawData[2],
-					Info = new MarketContract
+					Info = new MarketExecution
 					{
 						Symbol = data[(int)HDFFF020.series_cd],
 						V = Convert.ToDecimal(data[(int)HDFFF020.last_qntt]),

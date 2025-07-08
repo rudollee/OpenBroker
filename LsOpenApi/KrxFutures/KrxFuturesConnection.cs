@@ -56,18 +56,18 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 
 	private bool CallbackXC0(string message, string trCode)
 	{
-		if (MarketContracted is null) return false;
+		if (MarketExecuted is null) return false;
 
 		try
 		{
 			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<JC0OutBlock>>(message);
 			if (response is null || response.Body is null) return false;
 
-			MarketContracted(this, new ResponseResult<MarketContract>
+			MarketExecuted(this, new ResponseResult<MarketExecution>
 			{
 				Typ = MessageType.MKT,
 				Code = response.Header.Code,
-				Info = new MarketContract
+				Info = new MarketExecution
 				{
 					MarketSessionInfo = response.Body.jgubun switch
 					{

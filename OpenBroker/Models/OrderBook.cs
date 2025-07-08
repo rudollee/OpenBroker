@@ -3,7 +3,7 @@
 /// <summary>
 /// 호가 전체 정보
 /// </summary>
-public class OrderBook : MarketContract
+public class OrderBook : MarketExecution
 {
     public TimeOnly TimeTaken { get; set; }
     public IList<MarketOrder> Ask { get; set; } = [];

@@ -3,7 +3,7 @@
 /// <summary>
 /// 시장 체결
 /// </summary>
-public class MarketContract
+public class MarketExecution
 {
     /// <summary>
     /// 시장 세션 구분

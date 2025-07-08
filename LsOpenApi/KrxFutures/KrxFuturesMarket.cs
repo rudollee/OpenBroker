@@ -9,7 +9,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	private readonly string _date8txt = "yyyyMMdd";
 	public Dictionary<string, Instrument> Instruments { get; set; } = new();
 
-	public EventHandler<ResponseResult<MarketContract>>? MarketContracted { get; set; }
+	public EventHandler<ResponseResult<MarketExecution>>? MarketExecuted { get; set; }
 	public EventHandler<ResponseResult<OrderBook>>? OrderBookTaken { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 	public EventHandler<ResponseResult<News>>? NewsPosted { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 	public EventHandler<ResponseResult<MarketPause>>? MarketPaused { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
@@ -17,7 +17,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	public Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol) => throw new NotImplementedException();
 
 	#region request market contract - t2101, t8402
-	public async Task<ResponseResult<Quote>> RequestMarketContract(string symbol)
+	public async Task<ResponseResult<MarketExecution>> RequestMarketExecution(string symbol)
 	{
 		if (new string[] { "1", "A" }.Contains(symbol.Substring(0, 1)) && symbol.Substring(1, 2) != "01")
 		{
@@ -34,26 +34,32 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				}
 			});
 
-			if (response is null || response.t2101OutBlock is null) return new ResponseResult<Quote>
+			if (response is null || response.t2101OutBlock is null) return new ResponseResult<MarketExecution>
 			{
 				Broker = Brkr.LS,
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = "no data",
 			};
 
-			var quote = new Quote
+			var quote = new MarketExecution
 			{
-				T = DateTime.Now,
+				Symbol = symbol,
 				C = response.t2101OutBlock.price,
-				O = response.t2101OutBlock.open,
-				H = response.t2101OutBlock.high,
-				L = response.t2101OutBlock.low,
+				QuoteDaily = new Quote
+				{
+					T = DateTime.Now,
+					C = response.t2101OutBlock.price,
+					O = response.t2101OutBlock.open,
+					H = response.t2101OutBlock.high,
+					L = response.t2101OutBlock.low,
+					V = response.t2101OutBlock.volume,
+					Turnover = response.t2101OutBlock.value,
+				},
 				BasePrice = response.t2101OutBlock.jnilclose,
 				V = response.t2101OutBlock.volume,
-				Turnover = response.t2101OutBlock.value,
 			};
 
-			return new ResponseResult<Quote>
+			return new ResponseResult<MarketExecution>
 			{
 				Broker = Brkr.LS,
 				Info = quote,
@@ -68,7 +74,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResult<Quote>
+			return new ResponseResult<MarketExecution>
 			{
 				Broker = Brkr.LS,
 				StatusCode = Status.INTERNALSERVERERROR,
@@ -77,7 +83,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		}
 	}
 
-	private async Task<ResponseResult<Quote>> RequestMarketContractSsf(string symbol)
+	private async Task<ResponseResult<MarketExecution>> RequestMarketContractSsf(string symbol)
 	{
 		try
 		{
@@ -86,26 +92,30 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				t8402InBlock = new t8402InBlock { focode = symbol }
 			});
 
-			if (response is null || response.t8402OutBlock is null) return new ResponseResult<Quote>
+			if (response is null || response.t8402OutBlock is null) return new ResponseResult<MarketExecution>
 			{
 				Broker = Brkr.LS,
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = "no data",
 			};
 
-			var quote = new Quote
+			var quote = new MarketExecution
 			{
-				T = DateTime.Now,
+				TimeContract = DateTime.Now,
 				C = response.t8402OutBlock.price,
-				O = response.t8402OutBlock.open,
-				H = response.t8402OutBlock.high,
-				L = response.t8402OutBlock.low,
+				QuoteDaily = new Quote
+				{
+					O = response.t8402OutBlock.open,
+					H = response.t8402OutBlock.high,
+					L = response.t8402OutBlock.low,
+					V = response.t8402OutBlock.volume,
+					BasePrice = response.t8402OutBlock.jnilclose,
+					Turnover = response.t8402OutBlock.value,
+				},
 				BasePrice = response.t8402OutBlock.jnilclose,
-				V = response.t8402OutBlock.volume,
-				Turnover = response.t8402OutBlock.value,
 			};
 
-			return new ResponseResult<Quote>
+			return new ResponseResult<MarketExecution>
 			{
 				Broker = Brkr.LS,
 				Info = quote,
@@ -120,7 +130,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResult<Quote>
+			return new ResponseResult<MarketExecution>
 			{
 				Broker = Brkr.LS,
 				StatusCode = Status.INTERNALSERVERERROR,
@@ -130,8 +140,8 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	}
 	#endregion
 
-	public Task<ResponseResults<Quote>> RequestMarketContract(IEnumerable<string> symbols) => throw new NotImplementedException();
-	public Task<ResponseResults<MarketContract>> RequestMarketContractHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
+	public Task<ResponseResults<MarketExecution>> RequestMarketExecution(IEnumerable<string> symbols) => throw new NotImplementedException();
+	public Task<ResponseResults<MarketExecution>> RequestMarketExecutiontHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
 	public Task<ResponseResult<News>> RequestNews(string id) => throw new NotImplementedException();
 
 	#region request Price Pack using t8415

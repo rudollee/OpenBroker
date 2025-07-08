@@ -14,7 +14,7 @@ public partial class KisGlobalFutures : ConnectionBase, IMarket
 
 	public required EventHandler<ResponseResult<OrderBook>>? OrderBookTaken { get; set; }
 	public EventHandler<ResponseResult<News>>? NewsPosted { get; set; }
-	public required EventHandler<ResponseResult<MarketContract>>? MarketContracted { get; set; }
+	public required EventHandler<ResponseResult<MarketExecution>>? MarketExecuted { get; set; }
 	public EventHandler<ResponseResult<MarketPause>>? MarketPaused { get; set; }
 
 	public async Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol)
@@ -157,9 +157,9 @@ public partial class KisGlobalFutures : ConnectionBase, IMarket
 	public async Task<ResponseCore> SubscribeMarketDepth(string symbol, bool connecting = true, string subscriber = "SYS") =>
 		await SubscribeAsync(subscriber, nameof(HDFFF010), symbol, connecting);
 
-	public Task<ResponseResult<Quote>> RequestMarketContract(string symbol) => throw new NotImplementedException();
-	public Task<ResponseResults<Quote>> RequestMarketContract(IEnumerable<string> symbols) => throw new NotImplementedException();
-	public Task<ResponseResults<MarketContract>> RequestMarketContractHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
+	public Task<ResponseResult<MarketExecution>> RequestMarketExecution(string symbol) => throw new NotImplementedException();
+	public Task<ResponseResults<MarketExecution>> RequestMarketExecution(IEnumerable<string> symbols) => throw new NotImplementedException();
+	public Task<ResponseResults<MarketExecution>> RequestMarketExecutiontHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
 	public Task<ResponseResult<News>> RequestNews(string id) => throw new NotImplementedException();
 	public Task<ResponseResult<QuotePack<T>>> RequestPricePack<T>(QuoteRequest request) where T : Quote => throw new NotImplementedException();
 	public Task<ResponseCore> SubscribeNews(bool connecting = true) => throw new NotImplementedException();
