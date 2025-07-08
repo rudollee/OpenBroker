@@ -188,7 +188,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				list.AddRange(response.t8416OutBlock1);
 				nextKey = response.NextKey;
 				ctsDate = response.t8416OutBlock.cts_date;
-			} while (!string.IsNullOrEmpty(nextKey));
+			} while (!string.IsNullOrEmpty(nextKey) && nextKey != "0" && !string.IsNullOrEmpty(ctsDate));
 
 			quotes.Capacity = list.Count;
 			list.ForEach(f =>
