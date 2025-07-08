@@ -622,7 +622,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#endregion
 
 	#region request equities by sector using t1537
-	public async Task<ResponseResults<Quote>> RequestEquitiesBySector(string sectorCode)
+	public async Task<ResponseResults<MarketExecution>> RequestEquitiesBySector(string sectorCode)
 	{
 		try
 		{
@@ -634,34 +634,39 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				}
 			});
 
-			if (!response.t1537OutBlock1.Any()) return new ResponseResults<Quote>
+			if (!response.t1537OutBlock1.Any()) return new ResponseResults<MarketExecution>
 			{
 				StatusCode = Status.NODATA,
 				Message = response.Message,
 				Code = response.Code,
 				Remark = "no data",
-				List = new List<Quote>()
+				List = []
 			};
 
-			var equities = new List<Quote>();
-			response.t1537OutBlock1.ForEach(equity => equities.Add(new Quote
+			var equities = new List<MarketExecution>();
+			response.t1537OutBlock1.ForEach(equity => equities.Add(new MarketExecution
 			{
-				O = Convert.ToDecimal(equity.open),
+				Symbol = equity.shcode,
+				QuoteDaily = new Quote
+				{
+					O = Convert.ToDecimal(equity.open),
+					C = Convert.ToDecimal(equity.price),
+					H = Convert.ToDecimal(equity.high),
+					L = Convert.ToDecimal(equity.low),
+				},
 				C = Convert.ToDecimal(equity.price),
-				H = Convert.ToDecimal(equity.high),
-				L = Convert.ToDecimal(equity.low),
 				BasePrice = Convert.ToDecimal(equity.price) - Convert.ToDecimal(equity.change) * (new string[] { "4", "5" }.Contains(equity.sign) ? -1 : 1)
 			}));
 
-			return new ResponseResults<Quote> { List = equities };
+			return new ResponseResults<MarketExecution> { List = equities };
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<Quote>
+			return new ResponseResults<MarketExecution>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = ex.Message,
-				List = new List<Quote>()
+				List = []
 			};
 		}
 	}

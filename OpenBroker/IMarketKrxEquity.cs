@@ -51,7 +51,7 @@ public interface IMarketKrxEquity
 	/// </summary>
 	/// <param name="sectorCode"></param>
 	/// <returns></returns>
-	Task<ResponseResults<Quote>> RequestEquitiesBySector(string sectorCode);
+	Task<ResponseResults<MarketExecution>> RequestEquitiesBySector(string sectorCode);
 
 	/// <summary>
 	/// 조건 검색 리스트
