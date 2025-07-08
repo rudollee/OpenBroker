@@ -81,8 +81,11 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 					V = Convert.ToDecimal(response.Body.cvolume),
 					ContractSide = response.Body.cgubun == "+" ? ContractSide.ASK : ContractSide.BID,
 					BasePrice = Convert.ToDecimal(response.Body.price) - Convert.ToDecimal((new string[] { "4", "5" }.Contains(response.Body.sign) ? "-" : "") + response.Body.change),
-					VolumeAcc = Convert.ToDecimal(response.Body.volume),
-					Turnover = Convert.ToDecimal(response.Body.value),
+					QuoteDaily = new Quote 
+					{ 
+						V = Convert.ToDecimal(response.Body.volume),
+						Turnover = Convert.ToDecimal(response.Body.value),
+					}
 				},
 				Remark = message,
 				Broker = Brkr.LS,

@@ -43,14 +43,13 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 
 			var quote = new Quote
 			{
-				Symbol = symbol,
-				TimeContract = DateTime.Now,
+				T = DateTime.Now,
 				C = response.t2101OutBlock.price,
 				O = response.t2101OutBlock.open,
 				H = response.t2101OutBlock.high,
 				L = response.t2101OutBlock.low,
 				BasePrice = response.t2101OutBlock.jnilclose,
-				VolumeAcc = response.t2101OutBlock.volume,
+				V = response.t2101OutBlock.volume,
 				Turnover = response.t2101OutBlock.value,
 			};
 
@@ -96,14 +95,13 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 
 			var quote = new Quote
 			{
-				Symbol = symbol,
-				TimeContract = DateTime.Now,
+				T = DateTime.Now,
 				C = response.t8402OutBlock.price,
 				O = response.t8402OutBlock.open,
 				H = response.t8402OutBlock.high,
 				L = response.t8402OutBlock.low,
 				BasePrice = response.t8402OutBlock.jnilclose,
-				VolumeAcc = response.t8402OutBlock.volume,
+				V = response.t8402OutBlock.volume,
 				Turnover = response.t8402OutBlock.value,
 			};
 
@@ -200,10 +198,9 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			quotes.Capacity = list.Count;
 			list.ForEach(f =>
 			{
-				quotes.Add(new QuoteExt(f.close)
+				quotes.Add(new QuoteExt
 				{
-					Symbol = request.Symbol,
-					TimeContract = $"{f.date}000000".ToDateTime(),
+					T = $"{f.date}000000".ToDateTime(),
 					O = f.open,
 					H = f.high,
 					L = f.low,
@@ -218,7 +215,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				Info = new QuotePack<T>
 				{
 					Symbol = request.Symbol,
-					PrimaryList = quotes as List<T>,
+					PrimaryList = quotes as List<T> ?? [],
 					TimeInterval = request.TimeInterval,
 					TimeIntervalUnit = request.TimeIntervalUnit,
 				},
@@ -266,8 +263,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		{
 			quotes.Add(new Quote
 			{
-				Symbol = request.Symbol,
-				TimeContract = $"{f.date}{f.time}".ToDateTime(),
+				T = $"{f.date}{f.time}".ToDateTime(),
 				O = f.open,
 				H = f.high,
 				L = f.low,
@@ -281,7 +277,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			Info = new QuotePack<T>
 			{
 				Symbol = request.Symbol,
-				PrimaryList = quotes as List<T>,
+				PrimaryList = quotes as List<T> ?? [],
 				TimeInterval = request.TimeInterval,
 				TimeIntervalUnit = request.TimeIntervalUnit,
 			},
@@ -387,7 +383,6 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				Strike = Math.Floor(option.actprice).ToString(),
 				QuoteInfo = new()
 				{
-					Symbol = option.optcode,
 					C = option.price,
 					O = option.open,
 					H = option.high,
@@ -417,7 +412,6 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				Strike = Math.Floor(option.actprice).ToString(),
 				QuoteInfo = new()
 				{
-					Symbol = option.optcode,
 					C = option.price,
 					O = option.open,
 					H = option.high,

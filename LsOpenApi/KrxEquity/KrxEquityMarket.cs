@@ -308,15 +308,13 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				Section = response.t1102OutBlock.janginfo.Contains("KOSPI") ? ExchangeSection.KOSPI : ExchangeSection.KOSDAQ,
 				PriceInfo = new QuoteRate
 				{
-					Symbol = response.t1102OutBlock.shcode,
-					TimeContract = DateTime.Now,
+					T = DateTime.Now,
 					BasePrice = response.t1102OutBlock.recprice,
 					C = response.t1102OutBlock.price,
 					O = response.t1102OutBlock.open,
 					H = response.t1102OutBlock.high,
 					L = response.t1102OutBlock.low,
 					V = response.t1102OutBlock.volume,
-					VolumeAcc = response.t1102OutBlock.volume,
 					Turnover = response.t1102OutBlock.value,
 					HighLimit = response.t1102OutBlock.uplmtprice,
 					LowLimit = response.t1102OutBlock.dnlmtprice,
@@ -444,15 +442,13 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			{
 				contracts.Add(new Quote
 				{
-					TimeContract = DateTime.Now,
-					Symbol = f.shcode,
+					T = DateTime.Now,
 					BasePrice = f.jnilclose,
 					C = f.price,
 					O = f.open,
 					H = f.high,
 					L = f.low,
 					V = f.cvolume,
-					VolumeAcc = f.volume,
 					Turnover = f.value
 				});
 			});
@@ -508,7 +504,10 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				C = contract.price,
 				BasePrice = contract.price + contract.change * (Convert.ToInt32(contract.sign) > 3 ? 1 : -1),
 				V = contract.cvolume,
-				VolumeAcc = contract.volume,
+				QuoteDaily = new Quote
+				{
+					V = contract.volume,
+				},
 			}));
 
 			return new ResponseResults<MarketContract>
@@ -642,12 +641,10 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			var equities = new List<Quote>();
 			response.t1537OutBlock1.ForEach(equity => equities.Add(new Quote
 			{
-				Symbol = equity.shcode,
 				O = Convert.ToDecimal(equity.open),
 				C = Convert.ToDecimal(equity.price),
 				H = Convert.ToDecimal(equity.high),
 				L = Convert.ToDecimal(equity.low),
-				VolumeAcc = Convert.ToDecimal(equity.volume),
 				BasePrice = Convert.ToDecimal(equity.price) - Convert.ToDecimal(equity.change) * (new string[] { "4", "5" }.Contains(equity.sign) ? -1 : 1)
 			}));
 
@@ -708,8 +705,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 			var priceInfo = new QuoteRate
 			{
-				Symbol = response.t8411OutBlock.shcode,
-				TimeContract = DateTime.UtcNow.AddHours(9),
+				T = DateTime.UtcNow.AddHours(9),
 				BasePrice = response.t8411OutBlock.jiclose,
 				C = response.t8411OutBlock.diclose,
 				O = response.t8411OutBlock.disiga,
@@ -722,7 +718,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			var prices = new List<Quote>();
 			response.t8411OutBlock1.ForEach(price => prices.Add(new Quote
 			{
-				TimeContract = (price.date + price.time).ToDateTime(),
+				T = (price.date + price.time).ToDateTime(),
 				O = Convert.ToDecimal(price.open),
 				C = Convert.ToDecimal(price.close),
 				H = Convert.ToDecimal(price.high),
@@ -740,7 +736,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 					Symbol = request.Symbol,
 					TimeIntervalUnit = request.TimeIntervalUnit,
 					TimeInterval = request.TimeInterval,
-					PrimaryList = prices as List<T>,
+					PrimaryList = prices as List<T> ?? [],
 					SecondaryInfo = priceInfo
 				}
 			};
@@ -782,8 +778,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 			var priceInfo = new QuoteRate
 			{
-				Symbol = response.t8412OutBlock.shcode,
-				TimeContract = DateTime.UtcNow.AddHours(9),
+				T = DateTime.UtcNow.AddHours(9),
 				BasePrice = response.t8412OutBlock.jiclose,
 				C = response.t8412OutBlock.diclose,
 				O = response.t8412OutBlock.disiga,
@@ -796,7 +791,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			var prices = new List<Quote>();
 			response.t8412OutBlock1.ForEach(price => prices.Add(new Quote
 			{
-				TimeContract = (price.date + price.time).ToDateTime(),
+				T = (price.date + price.time).ToDateTime(),
 				O = Convert.ToDecimal(price.open),
 				C = Convert.ToDecimal(price.close),
 				H = Convert.ToDecimal(price.high),
@@ -814,7 +809,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 					Symbol = request.Symbol,
 					TimeIntervalUnit = request.TimeIntervalUnit,
 					TimeInterval = request.TimeInterval,
-					PrimaryList = prices as List<T>,
+					PrimaryList = prices as List<T> ?? [],
 					SecondaryInfo = priceInfo
 				}
 			};
@@ -875,8 +870,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			{
 				quotes.Add(new Quote
 				{
-					Symbol = request.Symbol,
-					TimeContract = $"{f.date}".ToDateTime(),
+					T = $"{f.date}".ToDateTime(),
 					O = f.open,
 					H = f.high,
 					L = f.low,
@@ -893,7 +887,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				Info = new QuotePack<T>
 				{
 					Symbol = request.Symbol,
-					PrimaryList = quotes as List<T>,
+					PrimaryList = quotes as List<T> ?? [],
 					TimeInterval = request.TimeInterval,
 					TimeIntervalUnit = request.TimeIntervalUnit,
 				},
@@ -989,7 +983,6 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				C = contract.price,
 				BasePrice = contract.price - contract.change * (new string[] { "4", "5" }.Contains(contract.sign) ? -1 : 1),
 				V = contract.volume,
-				VolumeAcc = contract.volume,
 			}));
 
 			return new ResponseResults<MarketContract> { List = contracts };

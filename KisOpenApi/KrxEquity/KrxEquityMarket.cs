@@ -54,7 +54,7 @@ public partial class KisKrxEquity : ConnectionBase, IMarket
 			var close = Convert.ToDecimal(f.stck_clpr);
 			quotes.Add(new Quote
 			{
-				TimeContract = f.stck_bsop_date.ToDateTime(),
+				T = f.stck_bsop_date.ToDateTime(),
 				C = close,
 				H = Convert.ToDecimal(f.stck_hgpr),
 				L = Convert.ToDecimal(f.stck_lwpr),
@@ -72,7 +72,7 @@ public partial class KisKrxEquity : ConnectionBase, IMarket
 				Symbol = request.Symbol,
 				TimeIntervalUnit = request.TimeIntervalUnit,
 				TimeInterval = request.TimeInterval,
-				PrimaryList = quotes as List<T>,
+				PrimaryList = quotes as List<T> ?? [],
 			},
 		};
 	} 

@@ -61,12 +61,7 @@ public class MarketContract
 	public decimal DiffRate { get => BasePrice == 0 ? 0 : (C - BasePrice) / BasePrice; }
 
     /// <summary>
-    /// 누적 거래량
+    /// 일간 데이터
     /// </summary>
-    public decimal VolumeAcc { get; set; }
-
-    /// <summary>
-    /// 누적 거래대금
-    /// </summary>
-    public decimal Turnover { get; set; }
+    public Quote QuoteDaily { get; set; } = new();
 }

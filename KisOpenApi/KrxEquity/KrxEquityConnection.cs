@@ -140,8 +140,11 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 						_ => ContractSide.NONE
 					},
 					BasePrice = Convert.ToDecimal(data[(int)H0STCNT0.STCK_PRPR]) - Convert.ToDecimal(data[(int)H0STCNT0.PRDY_VRSS]),
-					VolumeAcc = Convert.ToDecimal(data[(int)H0STCNT0.ACML_VOL]),
-					Turnover = Convert.ToDecimal(data[(int)H0STCNT0.ACML_TR_PBMN]) / 1_000_000,
+					QuoteDaily = new Quote
+					{
+						V = Convert.ToDecimal(data[(int)H0STCNT0.ACML_VOL]),
+						Turnover = Convert.ToDecimal(data[(int)H0STCNT0.ACML_TR_PBMN]) / 1_000_000,
+					}
 				},
 				Broker = Brkr.KI
 			});
@@ -194,8 +197,11 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 						_ => ContractSide.NONE
 					},
 					BasePrice = Convert.ToDecimal(data[(int)H0UNCNT0.STCK_PRPR]) - Convert.ToDecimal(data[(int)H0UNCNT0.PRDY_VRSS]),
-					VolumeAcc = Convert.ToDecimal(data[(int)H0UNCNT0.ACML_VOL]),
-					Turnover = Convert.ToDecimal(data[(int)H0UNCNT0.ACML_TR_PBMN]) / 1_000_000,
+					QuoteDaily = new Quote
+					{
+						V = Convert.ToDecimal(data[(int)H0UNCNT0.ACML_VOL]),
+						Turnover = Convert.ToDecimal(data[(int)H0UNCNT0.ACML_TR_PBMN]) / 1_000_000,
+					}
 				},
 				Broker = Brkr.KI
 			});
