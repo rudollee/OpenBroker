@@ -119,18 +119,18 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 	/// <returns></returns>
 	private bool CallbackX3(string message, string trCode)
 	{
-		if (MarketContracted is null) return false;
+		if (MarketExecuted is null) return false;
 
 		try
 		{
 			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<S3_OutBlock>>(message);
 			if (response is null || response.Body is null) return false;
 
-			MarketContracted(this, new ResponseResult<MarketContract>
+			MarketExecuted(this, new ResponseResult<MarketExecution>
 			{
 				Typ = MessageType.MKT,
 				Code = trCode,
-				Info = new MarketContract
+				Info = new MarketExecution
 				{
 					MarketSessionInfo = response.Body.status switch
 					{
@@ -145,8 +145,15 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					V = Convert.ToDecimal(response.Body.cvolume),
 					ContractSide = response.Body.cgubun == "+" ? ContractSide.ASK : ContractSide.BID,
 					BasePrice = Convert.ToDecimal(response.Body.price) - Convert.ToDecimal((new string[] { "4", "5" }.Contains(response.Body.sign) ? "-" : "") + response.Body.change),
-					VolumeAcc = Convert.ToDecimal(response.Body.volume),
-					Turnover = Convert.ToDecimal(response.Body.value),
+					QuoteDaily = new Quote
+					{
+						C = Convert.ToDecimal(response.Body.price),
+						O = Convert.ToDecimal(response.Body.open),
+						H = Convert.ToDecimal(response.Body.high),
+						L = Convert.ToDecimal(response.Body.low),
+						V = Convert.ToDecimal(response.Body.volume),
+						Turnover = Convert.ToDecimal(response.Body.value)
+					},
 				},
 				Remark = message,
 				Broker = Brkr.LS
@@ -179,18 +186,18 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 	/// <returns></returns>
 	private bool CallbackYX3(string message, string trCode)
 	{
-		if (MarketContracted is null) return false;
+		if (MarketExecuted is null) return false;
 
 		try
 		{
 			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<YS3OutBlock>>(message);
 			if (response is null || response.Body is null) return false;
 
-			MarketContracted(this, new ResponseResult<MarketContract>
+			MarketExecuted(this, new ResponseResult<MarketExecution>
 			{
 				Typ = MessageType.MKT,
 				Code = trCode,
-				Info = new MarketContract
+				Info = new MarketExecution
 				{
 					IsEstimated = true,
 					Symbol = response.Body.shcode,
@@ -230,17 +237,17 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 	/// <returns></returns>
 	private bool CallbackCUR(string message)
 	{
-		if (MarketContracted is null) return false;
+		if (MarketExecuted is null) return false;
 		if (message is null) return false;
 		try
 		{
 			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<CUROutBlock>>(message);
 			if (response is null || response.Body is null) return false;
-			MarketContracted(this, new ResponseResult<MarketContract>
+			MarketExecuted(this, new ResponseResult<MarketExecution>
 			{
 				Typ = MessageType.MKT,
 				Code = nameof(CUR),
-				Info = new MarketContract
+				Info = new MarketExecution
 				{
 					Symbol = response.Body.base_id,
 					TimeContract = (DateTime.UtcNow.AddHours(9).ToString("yyyyMMdd") + response.Body.ctime).ToDateTime(),
@@ -274,18 +281,18 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 	/// <returns></returns>
 	private bool CallbackMK2(string message)
 	{
-		if (MarketContracted is null) return false;
+		if (MarketExecuted is null) return false;
 
 		try
 		{
 			var mk2Res = JsonSerializer.Deserialize<LsSubscriptionCallback<MK2OutBlock>>(message);
 			if (mk2Res is null || mk2Res.Body is null) return false;
 
-			MarketContracted(this, new ResponseResult<MarketContract>
+			MarketExecuted(this, new ResponseResult<MarketExecution>
 			{
 				Typ = MessageType.MKT,
 				Code = nameof(MK2),
-				Info = new MarketContract
+				Info = new MarketExecution
 				{
 					Symbol = mk2Res.Body.xsymbol,
 					TimeContract = (mk2Res.Body.kodate + mk2Res.Body.kotime.PadLeft(6, '0')).ToDateTime(),

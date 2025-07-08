@@ -111,14 +111,14 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 	#region 실시간 체결가 H0STCNT0 - callback
 	private bool CallbackH0STCNT0(string[] data, string trId)
 	{
-		if (MarketContracted is null) return false;
+		if (MarketExecuted is null) return false;
 		try
 		{
-			MarketContracted(this, new ResponseResult<MarketContract>
+			MarketExecuted(this, new ResponseResult<MarketExecution>
 			{
 				Typ = MessageType.MKT,
 				Code = "001",
-				Info = new MarketContract
+				Info = new MarketExecution
 				{
 					Exchange = trId == nameof(H0STCNT0) ? Exchange.KRX : Exchange.NXT,
 					MarketSessionInfo = data[(int)H0STCNT0.NEW_MKOP_CLS_CODE].Substring(0, 1) switch
@@ -140,8 +140,11 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 						_ => ContractSide.NONE
 					},
 					BasePrice = Convert.ToDecimal(data[(int)H0STCNT0.STCK_PRPR]) - Convert.ToDecimal(data[(int)H0STCNT0.PRDY_VRSS]),
-					VolumeAcc = Convert.ToDecimal(data[(int)H0STCNT0.ACML_VOL]),
-					Turnover = Convert.ToDecimal(data[(int)H0STCNT0.ACML_TR_PBMN]) / 1_000_000,
+					QuoteDaily = new Quote
+					{
+						V = Convert.ToDecimal(data[(int)H0STCNT0.ACML_VOL]),
+						Turnover = Convert.ToDecimal(data[(int)H0STCNT0.ACML_TR_PBMN]) / 1_000_000,
+					}
 				},
 				Broker = Brkr.KI
 			});
@@ -150,7 +153,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			MarketContracted(this, new ResponseResult<MarketContract>
+			MarketExecuted(this, new ResponseResult<MarketExecution>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Typ = MessageType.SYSERR,
@@ -166,14 +169,14 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 	#region 실시간 체결가(통합) H0UNCNT0 - callback
 	private bool CallbackH0UNCNT0(string[] data)
 	{
-		if (MarketContracted is null) return false;
+		if (MarketExecuted is null) return false;
 		try
 		{
-			MarketContracted(this, new ResponseResult<MarketContract>
+			MarketExecuted(this, new ResponseResult<MarketExecution>
 			{
 				Typ = MessageType.MKT,
 				Code = "001",
-				Info = new MarketContract
+				Info = new MarketExecution
 				{
 					MarketSessionInfo = data[(int)H0UNCNT0.NEW_MKOP_CLS_CODE].Substring(0, 1) switch
 					{
@@ -194,8 +197,11 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 						_ => ContractSide.NONE
 					},
 					BasePrice = Convert.ToDecimal(data[(int)H0UNCNT0.STCK_PRPR]) - Convert.ToDecimal(data[(int)H0UNCNT0.PRDY_VRSS]),
-					VolumeAcc = Convert.ToDecimal(data[(int)H0UNCNT0.ACML_VOL]),
-					Turnover = Convert.ToDecimal(data[(int)H0UNCNT0.ACML_TR_PBMN]) / 1_000_000,
+					QuoteDaily = new Quote
+					{
+						V = Convert.ToDecimal(data[(int)H0UNCNT0.ACML_VOL]),
+						Turnover = Convert.ToDecimal(data[(int)H0UNCNT0.ACML_TR_PBMN]) / 1_000_000,
+					}
 				},
 				Broker = Brkr.KI
 			});
@@ -203,7 +209,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			MarketContracted(this, new ResponseResult<MarketContract>
+			MarketExecuted(this, new ResponseResult<MarketExecution>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Typ = MessageType.SYSERR,

@@ -9,17 +9,17 @@ public partial class KisKrxEquity : ConnectionBase, IMarket
 {
 	public Dictionary<string, Instrument> Instruments { get; set; } = new();
 
-	public required EventHandler<ResponseResult<MarketContract>>? MarketContracted { get; set; }
+	public required EventHandler<ResponseResult<MarketExecution>>? MarketExecuted { get; set; }
 	public required EventHandler<ResponseResult<OrderBook>>? OrderBookTaken { get; set; }
 	public EventHandler<ResponseResult<News>>? NewsPosted { get; set; }
 	public EventHandler<ResponseResult<MarketPause>>? MarketPaused { get; set; }
 
 	public Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol = "") => throw new NotImplementedException();
-	public Task<ResponseResult<Quote>> RequestMarketContract(string symbol = "") => throw new NotImplementedException();
-	public Task<ResponseResults<Quote>> RequestMarketContract(IEnumerable<string> symbols) => throw new NotImplementedException();
+	public Task<ResponseResult<MarketExecution>> RequestMarketExecution(string symbol = "") => throw new NotImplementedException();
+	public Task<ResponseResults<MarketExecution>> RequestMarketExecution(IEnumerable<string> symbols) => throw new NotImplementedException();
 	public Task<ResponseResult<News>> RequestNews(string id = "") => throw new NotImplementedException();
 	public Task<ResponseDictionary<string, Instrument>> RequestInstruments(int option) => throw new NotImplementedException();
-	public Task<ResponseResults<MarketContract>> RequestMarketContractHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
+	public Task<ResponseResults<MarketExecution>> RequestMarketExecutionHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
 
 	#region 국내주식기간별시세(일,주,월,년) - FHKST03010100
 	public async Task<ResponseResult<QuotePack<T>>> RequestPricePack<T>(QuoteRequest request) where T : Quote
@@ -54,7 +54,7 @@ public partial class KisKrxEquity : ConnectionBase, IMarket
 			var close = Convert.ToDecimal(f.stck_clpr);
 			quotes.Add(new Quote
 			{
-				TimeContract = f.stck_bsop_date.ToDateTime(),
+				T = f.stck_bsop_date.ToDateTime(),
 				C = close,
 				H = Convert.ToDecimal(f.stck_hgpr),
 				L = Convert.ToDecimal(f.stck_lwpr),
@@ -72,7 +72,7 @@ public partial class KisKrxEquity : ConnectionBase, IMarket
 				Symbol = request.Symbol,
 				TimeIntervalUnit = request.TimeIntervalUnit,
 				TimeInterval = request.TimeInterval,
-				PrimaryList = quotes as List<T>,
+				PrimaryList = quotes as List<T> ?? [],
 			},
 		};
 	} 

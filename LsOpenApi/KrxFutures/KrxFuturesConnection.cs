@@ -56,18 +56,18 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 
 	private bool CallbackXC0(string message, string trCode)
 	{
-		if (MarketContracted is null) return false;
+		if (MarketExecuted is null) return false;
 
 		try
 		{
 			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<JC0OutBlock>>(message);
 			if (response is null || response.Body is null) return false;
 
-			MarketContracted(this, new ResponseResult<MarketContract>
+			MarketExecuted(this, new ResponseResult<MarketExecution>
 			{
 				Typ = MessageType.MKT,
 				Code = response.Header.Code,
-				Info = new MarketContract
+				Info = new MarketExecution
 				{
 					MarketSessionInfo = response.Body.jgubun switch
 					{
@@ -81,8 +81,11 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 					V = Convert.ToDecimal(response.Body.cvolume),
 					ContractSide = response.Body.cgubun == "+" ? ContractSide.ASK : ContractSide.BID,
 					BasePrice = Convert.ToDecimal(response.Body.price) - Convert.ToDecimal((new string[] { "4", "5" }.Contains(response.Body.sign) ? "-" : "") + response.Body.change),
-					VolumeAcc = Convert.ToDecimal(response.Body.volume),
-					Turnover = Convert.ToDecimal(response.Body.value),
+					QuoteDaily = new Quote 
+					{ 
+						V = Convert.ToDecimal(response.Body.volume),
+						Turnover = Convert.ToDecimal(response.Body.value),
+					}
 				},
 				Remark = message,
 				Broker = Brkr.LS,
