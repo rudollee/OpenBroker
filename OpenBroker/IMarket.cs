@@ -68,7 +68,7 @@ public interface IMarket
 	/// <param name="end"></param>
 	/// <param name="baseVolume"></param>
 	/// <returns></returns>
-	Task<ResponseResults<MarketExecution>> RequestMarketExecutiontHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0);
+	Task<ResponseResults<MarketExecution>> RequestMarketExecutionHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0);
 
 	/// <summary>
 	/// 차트 데이터

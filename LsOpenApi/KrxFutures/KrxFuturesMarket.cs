@@ -141,7 +141,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	#endregion
 
 	public Task<ResponseResults<MarketExecution>> RequestMarketExecution(IEnumerable<string> symbols) => throw new NotImplementedException();
-	public Task<ResponseResults<MarketExecution>> RequestMarketExecutiontHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
+	public Task<ResponseResults<MarketExecution>> RequestMarketExecutionHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
 	public Task<ResponseResult<News>> RequestNews(string id) => throw new NotImplementedException();
 
 	#region request Price Pack using t8415

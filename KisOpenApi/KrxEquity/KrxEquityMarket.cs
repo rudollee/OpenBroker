@@ -19,7 +19,7 @@ public partial class KisKrxEquity : ConnectionBase, IMarket
 	public Task<ResponseResults<Quote>> RequestMarketContract(IEnumerable<string> symbols) => throw new NotImplementedException();
 	public Task<ResponseResult<News>> RequestNews(string id = "") => throw new NotImplementedException();
 	public Task<ResponseDictionary<string, Instrument>> RequestInstruments(int option) => throw new NotImplementedException();
-	public Task<ResponseResults<MarketExecution>> RequestMarketExecutiontHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
+	public Task<ResponseResults<MarketExecution>> RequestMarketExecutionHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
 
 	#region 국내주식기간별시세(일,주,월,년) - FHKST03010100
 	public async Task<ResponseResult<QuotePack<T>>> RequestPricePack<T>(QuoteRequest request) where T : Quote

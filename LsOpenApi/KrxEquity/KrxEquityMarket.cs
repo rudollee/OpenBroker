@@ -478,7 +478,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#endregion
 
 	#region request marketContractHistory using t1301
-	public async Task<ResponseResults<MarketExecution>> RequestMarketExecutiontHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0)
+	public async Task<ResponseResults<MarketExecution>> RequestMarketExecutionHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0)
 	{
 		try
 		{
