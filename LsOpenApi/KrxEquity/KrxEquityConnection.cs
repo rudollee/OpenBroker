@@ -145,7 +145,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					C = Convert.ToDecimal(response.Body.price),
 					V = Convert.ToDecimal(response.Body.cvolume),
 					ContractSide = response.Body.cgubun == "+" ? ContractSide.ASK : ContractSide.BID,
-					BasePrice = Convert.ToDecimal(response.Body.price) - Convert.ToDecimal((new string[] { "4", "5" }.Contains(response.Body.sign) ? "-" : "") + response.Body.change),
+					BasePrice = Convert.ToDecimal(response.Body.price) - Convert.ToDecimal((DeclineCodes.Contains(response.Body.sign) ? "-" : "") + response.Body.change),
 					QuoteDaily = new Quote
 					{
 						C = Convert.ToDecimal(response.Body.price),
@@ -206,7 +206,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					C = Convert.ToDecimal(response.Body.yeprice),
 					V = Convert.ToDecimal(response.Body.yevolume),
 					ContractSide = response.Body.yeprice == response.Body.ybidho0 ? ContractSide.ASK : ContractSide.BID,
-					BasePrice = Convert.ToDecimal(response.Body.yeprice) - Convert.ToDecimal((new string[] { "4", "5" }.Contains(response.Body.jnilysign) ? "-" : "") + response.Body.jnilchange),
+					BasePrice = Convert.ToDecimal(response.Body.yeprice) - Convert.ToDecimal((DeclineCodes.Contains(response.Body.jnilysign) ? "-" : "") + response.Body.jnilchange),
 				},
 				Remark = message,
 				Broker = Brkr.LS

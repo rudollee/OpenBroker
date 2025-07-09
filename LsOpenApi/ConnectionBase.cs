@@ -39,6 +39,8 @@ public class ConnectionBase
 		{ "JIF", new SubscriptionPack{ TrCode = "JIF", Key = "0", Subscriber = new List<string>(){ "INIT" }} },
 	};
 
+	protected readonly string[] DeclineCodes = new string[] { "4", "5" };
+
 	public async Task<ResponseResult<KeyPack>> RequestAccessTokenAsync(string appkey, string appsecret)
 	{
 		var client = new RestClient($"{host}/oauth2/token");

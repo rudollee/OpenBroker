@@ -80,7 +80,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 					C = Convert.ToDecimal(response.Body.price),
 					V = Convert.ToDecimal(response.Body.cvolume),
 					ContractSide = response.Body.cgubun == "+" ? ContractSide.ASK : ContractSide.BID,
-					BasePrice = Convert.ToDecimal(response.Body.price) - Convert.ToDecimal((new string[] { "4", "5" }.Contains(response.Body.sign) ? "-" : "") + response.Body.change),
+					BasePrice = Convert.ToDecimal(response.Body.price) - Convert.ToDecimal((DeclineCodes.Contains(response.Body.sign) ? "-" : "") + response.Body.change),
 					QuoteDaily = new Quote 
 					{ 
 						V = Convert.ToDecimal(response.Body.volume),

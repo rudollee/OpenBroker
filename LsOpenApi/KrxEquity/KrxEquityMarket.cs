@@ -655,7 +655,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 					L = Convert.ToDecimal(equity.low),
 				},
 				C = Convert.ToDecimal(equity.price),
-				BasePrice = Convert.ToDecimal(equity.price) - Convert.ToDecimal(equity.change) * (new string[] { "4", "5" }.Contains(equity.sign) ? -1 : 1)
+				BasePrice = Convert.ToDecimal(equity.price) - Convert.ToDecimal(equity.change) * (DeclineCodes.Contains(equity.sign) ? -1 : 1)
 			}));
 
 			return new ResponseResults<MarketExecution> { List = equities };
@@ -991,7 +991,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			{
 				Symbol = contract.shcode,
 				C = contract.price,
-				BasePrice = contract.price - contract.change * (new string[] { "4", "5" }.Contains(contract.sign) ? -1 : 1),
+				BasePrice = contract.price - contract.change * (DeclineCodes.Contains(contract.sign) ? -1 : 1),
 				V = contract.volume,
 			}));
 
