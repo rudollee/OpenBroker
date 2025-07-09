@@ -690,7 +690,7 @@ internal static class EndpointRef
 				ID = TrId.HHDFC5520000,
 				Prefix = EndpointPrefix.GlobalV1,
 				Type = EndpointType.Quote,
-				Endpoint = "market-contract-detail"
+				Endpoint = "market-execution-detail"
 			}
 		},
 		{

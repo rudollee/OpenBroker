@@ -15,7 +15,7 @@ public interface IExecution
     /// <summary>
     /// 체결 내역
     /// </summary>
-    EventHandler<ResponseResult<Contract>> Executed { get; set; }
+    EventHandler<ResponseResult<Execution>> Executed { get; set; }
 
     /// <summary>
     /// 체결/미체결 내역
@@ -81,7 +81,7 @@ public interface IExecution
 	/// </summary>
 	/// <param name="status"></param>
 	/// <returns></returns>
-	Task<ResponseResults<Contract>> RequestContractsAsync(ContractStatus status = ContractStatus.ContractedOnly, string symbol = "");
+	Task<ResponseResults<Execution>> RequestExecutionsAsync(ExecutionStatus status = ExecutionStatus.ExecutedOnly, string symbol = "");
 
     /// <summary>
     /// 체결내역 - 기간별
@@ -91,14 +91,14 @@ public interface IExecution
     /// <param name="status"></param>
     /// <param name="exchange"></param>
     /// <returns></returns>
-    Task<ResponseResults<Contract>> RequestContractsAsync(DateTime dateBegun, DateTime dateFin, ContractStatus status = ContractStatus.ContractedOnly);
+    Task<ResponseResults<Execution>> RequestExecutionsAsync(DateTime dateBegun, DateTime dateFin, ExecutionStatus status = ExecutionStatus.ExecutedOnly);
 
 	/// <summary>
 	/// 체결내역 통보 - realtime
 	/// </summary>
 	/// <param name="connecting"></param>
 	/// <returns></returns>
-	Task<ResponseCore> SubscribeContractAsync(bool connecting = true);
+	Task<ResponseCore> SubscribeExecutionAsync(bool connecting = true);
 
 	/// <summary>
 	/// 예탁금 및 Positions

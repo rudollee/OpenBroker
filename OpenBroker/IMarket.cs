@@ -13,7 +13,7 @@ public interface IMarket
 	Dictionary<string, Instrument> Instruments { get; set; }
 
 	/// <summary>
-	/// Marekt Contracted callback
+	/// Marekt Executed callback
 	/// </summary>
 	EventHandler<ResponseResult<MarketExecution>>? MarketExecuted { get; set; }
 
@@ -105,7 +105,7 @@ public interface IMarket
 	/// <param name="connecting"></param>
 	/// <param name="subscriber"></param>
 	/// <returns></returns>
-	Task<ResponseCore> SubscribeMarketContract(string symbol, bool connecting = true, string subscriber = "");
+	Task<ResponseCore> SubscribeMarketExecution(string symbol, bool connecting = true, string subscriber = "");
 
 	/// <summary>
 	/// 호가 - realtime

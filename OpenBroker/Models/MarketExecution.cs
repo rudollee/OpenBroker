@@ -28,7 +28,7 @@ public class MarketExecution
     /// <summary>
     /// 체결 시간
     /// </summary>
-    public DateTime TimeContract { get; set; }
+    public DateTime TimeExecuted { get; set; }
 
     /// <summary>
     /// 체결가/현재가
@@ -38,7 +38,7 @@ public class MarketExecution
     /// <summary>
     /// 체결 Side - Ask / Bid
     /// </summary>
-    public ContractSide ContractSide { get; set; } = ContractSide.NONE;
+    public ExecutionSide ExecutionSide { get; set; } = ExecutionSide.NONE;
 
     /// <summary>
     /// 체결 거래량

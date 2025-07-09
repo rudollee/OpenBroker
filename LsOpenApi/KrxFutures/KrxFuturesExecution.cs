@@ -6,7 +6,7 @@ using OpenBroker.Models;
 namespace LsOpenApi.KrxFutures;
 public partial class LsKrxFutures : ConnectionBase, IExecution
 {
-	public required EventHandler<ResponseResult<Contract>> Executed { get; set; }
+	public required EventHandler<ResponseResult<Execution>> Executed { get; set; }
 	public required EventHandler<ResponseResult<Order>> OrderReceived { get; set; }
 	public EventHandler<ResponseResult<Balance>>? BalanceAggregated { get; set; }
 
@@ -14,18 +14,18 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 	public Task<ResponseCore> CancelOrderAsync(OrderCore order) => throw new NotImplementedException();
 	public Task<ResponseResult<Balance>> RequestBalancesAsync(DateTime? date = null, Currency currency = Currency.TUS) => throw new NotImplementedException();
 
-	#region request contracts - CFOAQ00600
-	public Task<ResponseResults<Contract>> RequestContractsAsync(ContractStatus status = ContractStatus.ContractedOnly, string symbol = "")
+	#region request executions - CFOAQ00600
+	public Task<ResponseResults<Execution>> RequestExecutionsAsync(ExecutionStatus status = ExecutionStatus.ExecutedOnly, string symbol = "")
 	{
 		var date = DateTime.UtcNow.AddHours(9);
-		return RequestContractsAsync(date, date, status);
+		return RequestExecutionsAsync(date, date, status);
 	}
 
-	public async Task<ResponseResults<Contract>> RequestContractsAsync(DateTime dateBegun, DateTime dateFin, ContractStatus status = ContractStatus.ContractedOnly)
+	public async Task<ResponseResults<Execution>> RequestExecutionsAsync(DateTime dateBegun, DateTime dateFin, ExecutionStatus status = ExecutionStatus.ExecutedOnly)
 	{
 		try
 		{
-			List<CFOAQ00600OutBlock3> contractsRaw = new();
+			List<CFOAQ00600OutBlock3> executionsRaw = [];
 			var nextKey = string.Empty;
 			do
 			{
@@ -45,69 +45,69 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 					break;
 				}
 
-				contractsRaw.AddRange(response.CFOAQ00600OutBlock3);
+				executionsRaw.AddRange(response.CFOAQ00600OutBlock3);
 				nextKey = response.NextKey;
 			} while (!string.IsNullOrEmpty(nextKey));
 
-			List<Contract> contracts = new() { Capacity = contractsRaw.Count };
-			Contract previousContract = new();
-			foreach (var contract in contractsRaw)
+			List<Execution> executions = new() { Capacity = executionsRaw.Count };
+			Execution previousExecution = new();
+			foreach (var execution in executionsRaw)
 			{
-				if (contract.OrdNo == 0)
+				if (execution.OrdNo == 0)
 				{
-					var contractFromPrevious = (Contract)previousContract.Clone();
-					contractFromPrevious.TimeContracted = $"{contractFromPrevious.TimeContracted.ToString("yyyyMMdd")}{contract.CtrctTime}".ToDateTimeMicro();
-					contractFromPrevious.CID = contract.CtrctNo;
-					contractFromPrevious.Volume = contract.ExecQty;
-					contractFromPrevious.Price = contract.ExecPrc;
+					var executionFromPrevious = (Execution)previousExecution.Clone();
+					executionFromPrevious.TimeExecuted = $"{executionFromPrevious.TimeExecuted.ToString("yyyyMMdd")}{execution.CtrctTime}".ToDateTimeMicro();
+					executionFromPrevious.CID = execution.CtrctNo;
+					executionFromPrevious.Volume = execution.ExecQty;
+					executionFromPrevious.Price = execution.ExecPrc;
 
-					contracts.Add(contractFromPrevious);
+					executions.Add(executionFromPrevious);
 					continue;
 				}
 
-				contracts.Add(new Contract
+				executions.Add(new Execution
 				{ 
-					DateBiz = contract.OrdDt.ToDate(),
+					DateBiz = execution.OrdDt.ToDate(),
 					BrokerCo = "LS",
-					OID = contract.OrdNo,
-					IdOrigin = contract.OrgOrdNo,
-					CID = contract.CtrctNo,
-					Symbol = contract.FnoIsuNo,
-					InstrumentName = contract.IsuNm,
-					IsLong = contract.BnsTpNm == "매수",
-					VolumeOrdered = contract.OrdQty,
-					VolumeUpdatable = contract.UnercQty,
-					VolumeLeft = contract.UnercQty,
-					Volume = contract.ExecQty,
-					PriceOrdered = contract.OrdPrc,
-					Price = contract.ExecPrc,
-					Precision = !new string[] { "1", "A" }.Contains(contract.FnoIsuNo.Substring(0, 1)) ? 2 : contract.FnoIsuNo.Substring(1, 2) switch 
+					OID = execution.OrdNo,
+					IdOrigin = execution.OrgOrdNo,
+					CID = execution.CtrctNo,
+					Symbol = execution.FnoIsuNo,
+					InstrumentName = execution.IsuNm,
+					IsLong = execution.BnsTpNm == "매수",
+					VolumeOrdered = execution.OrdQty,
+					VolumeUpdatable = execution.UnercQty,
+					VolumeLeft = execution.UnercQty,
+					Volume = execution.ExecQty,
+					PriceOrdered = execution.OrdPrc,
+					Price = execution.ExecPrc,
+					Precision = !new string[] { "1", "A" }.Contains(execution.FnoIsuNo.Substring(0, 1)) ? 2 : execution.FnoIsuNo.Substring(1, 2) switch 
 					{
 						"01" => 2,
 						"05" => 2,
 						"07" => 2,
 						_ => 0
 					},
-					TimeOrdered = $"{contract.OrdDt}{contract.OrdTime}".ToDateTimeMicro(),
-					TimeContracted = $"{contract.OrdDt}{contract.CtrctTime}".ToDateTimeMicro(),
+					TimeOrdered = $"{execution.OrdDt}{execution.OrdTime}".ToDateTimeMicro(),
+					TimeExecuted = $"{execution.OrdDt}{execution.CtrctTime}".ToDateTimeMicro(),
 					ExchangeCode = Exchange.KRX,
-					Aggregation = contract.ExecQty * contract.ExecPrc,
+					Aggregation = execution.ExecQty * execution.ExecPrc,
 					NumeralSystem = 10,
 					Currency = Currency.KRW,
 				});
 
-				previousContract = contracts.Last();
+				previousExecution = executions.Last();
 			}
 
-			return new ResponseResults<Contract> { List = contracts };
+			return new ResponseResults<Execution> { List = executions };
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<Contract>
+			return new ResponseResults<Execution>
 			{
 				StatusCode = Status.INTERNALSERVERERROR,
 				Message = ex.Message,
-				List = new List<Contract>(),
+				List = new List<Execution>(),
 			};
 		}
 	} 
@@ -295,7 +295,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 	}
 	#endregion
 
-	public async Task<ResponseCore> SubscribeContractAsync(bool connecting = true) => await SubscribeAsync("SYS", nameof(C01), "", connecting);
+	public async Task<ResponseCore> SubscribeExecutionAsync(bool connecting = true) => await SubscribeAsync("SYS", nameof(C01), "", connecting);
 
 	public async Task<ResponseCore> SubscribeOrderAsync(bool connecting = true) => await SubscribeAsync("SYS", nameof(O01), "", connecting);
 

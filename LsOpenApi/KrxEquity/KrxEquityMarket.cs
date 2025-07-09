@@ -33,7 +33,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 	public Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol) => throw new NotImplementedException();
 
-	public async Task<ResponseCore> SubscribeMarketContract(string symbol, bool connecting = true, string subscriber = "")
+	public async Task<ResponseCore> SubscribeMarketExecution(string symbol, bool connecting = true, string subscriber = "")
 	{
 		if (string.IsNullOrWhiteSpace(subscriber)) subscriber = "SYS";
 
@@ -396,7 +396,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	}
 	#endregion
 
-	#region request marketContract using t8407
+	#region request marketExecution using t8407
 	public async Task<ResponseResult<MarketExecution>> RequestMarketExecution(string symbol)
 	{
 		var response = await RequestMarketExecution(new string[] { symbol });
@@ -437,12 +437,12 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				Remark = "no data"
 			};
 
-			var contracts = new List<MarketExecution>();
+			var executions = new List<MarketExecution>();
 			response.t8407OutBlock1.ForEach(f =>
 			{
-				contracts.Add(new MarketExecution
+				executions.Add(new MarketExecution
 				{
-					TimeContract = DateTime.Now,
+					TimeExecuted = DateTime.Now,
 					Symbol = f.shcode,
 					C = f.price,
 					BasePrice = f.jnilclose,
@@ -461,7 +461,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			return new ResponseResults<MarketExecution>
 			{
 				Code = response.Code,
-				List = contracts,
+				List = executions,
 			};
 		}
 		catch (Exception ex)
@@ -477,7 +477,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	}
 	#endregion
 
-	#region request marketContractHistory using t1301
+	#region request marketExecutionHistory using t1301
 	public async Task<ResponseResults<MarketExecution>> RequestMarketExecutionHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0)
 	{
 		try
@@ -502,22 +502,22 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				List = new List<MarketExecution>()
 			};
 
-			var marketContracts = new List<MarketExecution>();
-			response.t1301OutBlock1.ForEach(contract => marketContracts.Add(new MarketExecution
+			var marketExecutions = new List<MarketExecution>();
+			response.t1301OutBlock1.ForEach(execution => marketExecutions.Add(new MarketExecution
 			{
-				TimeContract = (DateTime.Now.ToString("yyyyMMdd") + contract.chetime).ToDateTime(),
-				C = contract.price,
-				BasePrice = contract.price + contract.change * (Convert.ToInt32(contract.sign) > 3 ? 1 : -1),
-				V = contract.cvolume,
+				TimeExecuted = (DateTime.Now.ToString("yyyyMMdd") + execution.chetime).ToDateTime(),
+				C = execution.price,
+				BasePrice = execution.price + execution.change * (Convert.ToInt32(execution.sign) > 3 ? 1 : -1),
+				V = execution.cvolume,
 				QuoteDaily = new Quote
 				{
-					V = contract.volume,
+					V = execution.volume,
 				},
 			}));
 
 			return new ResponseResults<MarketExecution>
 			{
-				List = marketContracts,
+				List = marketExecutions,
 			};
 		}
 		catch (Exception ex)
@@ -986,16 +986,16 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				List = new List<MarketExecution>()
 			};
 
-			var contracts = new List<MarketExecution>();
-			response.t1859OutBlock1.ForEach(contract => contracts.Add(new MarketExecution
+			var executions = new List<MarketExecution>();
+			response.t1859OutBlock1.ForEach(execution => executions.Add(new MarketExecution
 			{
-				Symbol = contract.shcode,
-				C = contract.price,
-				BasePrice = contract.price - contract.change * (DeclineCodes.Contains(contract.sign) ? -1 : 1),
-				V = contract.volume,
+				Symbol = execution.shcode,
+				C = execution.price,
+				BasePrice = execution.price - execution.change * (DeclineCodes.Contains(execution.sign) ? -1 : 1),
+				V = execution.volume,
 			}));
 
-			return new ResponseResults<MarketExecution> { List = contracts };
+			return new ResponseResults<MarketExecution> { List = executions };
 		}
 		catch (Exception ex)
 		{

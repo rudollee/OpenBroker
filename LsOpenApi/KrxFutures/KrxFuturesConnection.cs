@@ -76,10 +76,10 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 						_ => MarketSession.REGULAR,
 					},
 					Symbol = response.Body.futcode,
-					TimeContract = response.Body.chetime.ToDateTime(),
+					TimeExecuted = response.Body.chetime.ToDateTime(),
 					C = Convert.ToDecimal(response.Body.price),
 					V = Convert.ToDecimal(response.Body.cvolume),
-					ContractSide = response.Body.cgubun == "+" ? ContractSide.ASK : ContractSide.BID,
+					ExecutionSide = response.Body.cgubun == "+" ? ExecutionSide.ASK : ExecutionSide.BID,
 					BasePrice = Convert.ToDecimal(response.Body.price) - Convert.ToDecimal((DeclineCodes.Contains(response.Body.sign) ? "-" : "") + response.Body.change),
 					QuoteDaily = new Quote 
 					{ 
@@ -124,13 +124,13 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			if (response is null || response.Body is null) return false;
 
 			Int64.TryParse(response.Body.ordordno, out long idOrigin);
-			Executed(this, new ResponseResult<Contract>
+			Executed(this, new ResponseResult<Execution>
 			{
-				Typ = MessageType.CONTRACT,
+				Typ = MessageType.EXECUTION,
 				Code = response.Header.TrCode,
-				Info = new Contract
+				Info = new Execution
 				{
-					TimeContracted = $"{response.Body.chedate}{response.Body.chetime}".ToDateTimeMicro(),
+					TimeExecuted = $"{response.Body.chedate}{response.Body.chetime}".ToDateTimeMicro(),
 					OID = Convert.ToInt64(response.Body.ordno),
 					IdOrigin = idOrigin,
 					CID = Convert.ToInt64(response.Body.yakseq),
@@ -151,7 +151,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			Message(this, new ResponseCore
 			{
 				StatusCode = Status.ERROR_OPEN_API,
-				Typ = MessageType.CONTRACT,
+				Typ = MessageType.EXECUTION,
 				Code = nameof(C01),
 				Message = ex.Message,
 				Remark = message,

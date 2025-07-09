@@ -141,10 +141,10 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 						_ => MarketSession.REGULAR,
 					},
 					Symbol = response.Body.shcode,
-					TimeContract = response.Body.chetime.ToDateTime(),
+					TimeExecuted = response.Body.chetime.ToDateTime(),
 					C = Convert.ToDecimal(response.Body.price),
 					V = Convert.ToDecimal(response.Body.cvolume),
-					ContractSide = response.Body.cgubun == "+" ? ContractSide.ASK : ContractSide.BID,
+					ExecutionSide = response.Body.cgubun == "+" ? ExecutionSide.ASK : ExecutionSide.BID,
 					BasePrice = Convert.ToDecimal(response.Body.price) - Convert.ToDecimal((DeclineCodes.Contains(response.Body.sign) ? "-" : "") + response.Body.change),
 					QuoteDaily = new Quote
 					{
@@ -202,10 +202,10 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				{
 					IsEstimated = true,
 					Symbol = response.Body.shcode,
-					TimeContract = response.Body.hotime.ToDateTime(),
+					TimeExecuted = response.Body.hotime.ToDateTime(),
 					C = Convert.ToDecimal(response.Body.yeprice),
 					V = Convert.ToDecimal(response.Body.yevolume),
-					ContractSide = response.Body.yeprice == response.Body.ybidho0 ? ContractSide.ASK : ContractSide.BID,
+					ExecutionSide = response.Body.yeprice == response.Body.ybidho0 ? ExecutionSide.ASK : ExecutionSide.BID,
 					BasePrice = Convert.ToDecimal(response.Body.yeprice) - Convert.ToDecimal((DeclineCodes.Contains(response.Body.jnilysign) ? "-" : "") + response.Body.jnilchange),
 				},
 				Remark = message,
@@ -251,7 +251,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				Info = new MarketExecution
 				{
 					Symbol = response.Body.base_id,
-					TimeContract = (DateTime.UtcNow.AddHours(9).ToString("yyyyMMdd") + response.Body.ctime).ToDateTime(),
+					TimeExecuted = (DateTime.UtcNow.AddHours(9).ToString("yyyyMMdd") + response.Body.ctime).ToDateTime(),
 					C = Convert.ToDecimal(response.Body.price),
 					BasePrice = Convert.ToDecimal(response.Body.price) - Convert.ToDecimal(response.Body.change),
 				},
@@ -296,7 +296,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				Info = new MarketExecution
 				{
 					Symbol = mk2Res.Body.xsymbol,
-					TimeContract = (mk2Res.Body.kodate + mk2Res.Body.kotime.PadLeft(6, '0')).ToDateTime(),
+					TimeExecuted = (mk2Res.Body.kodate + mk2Res.Body.kotime.PadLeft(6, '0')).ToDateTime(),
 					C = Convert.ToDecimal(mk2Res.Body.price),
 					BasePrice = Convert.ToDecimal(mk2Res.Body.price) - Convert.ToDecimal(mk2Res.Body.change)
 				},
@@ -719,11 +719,11 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<SC1OutBlock>>(message);
 			if (response is null || response.Body is null) return false;
 
-			Executed(this, new ResponseResult<Contract>
+			Executed(this, new ResponseResult<Execution>
 			{
-				Typ = MessageType.CONTRACT,
+				Typ = MessageType.EXECUTION,
 				Code = nameof(SC1),
-				Info = new Contract
+				Info = new Execution
 				{
 					BrokerCo = Brkr.LS.ToDescription(),
 					DateBiz = DateOnly.FromDateTime(DateTime.Now),
@@ -736,7 +736,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					PriceOrdered = Convert.ToDecimal(response.Body.ordprc),
 					Volume = Convert.ToDecimal(response.Body.execqty),
 					VolumeLeft = Convert.ToDecimal(response.Body.secbalqty),
-					TimeContracted = (DateTime.Now.ToString("yyyyMMdd") + response.Body.exectime).ToDateTimeMicro(),
+					TimeExecuted = (DateTime.Now.ToString("yyyyMMdd") + response.Body.exectime).ToDateTimeMicro(),
 				},
 				Remark = message,
 				Broker = Brkr.LS

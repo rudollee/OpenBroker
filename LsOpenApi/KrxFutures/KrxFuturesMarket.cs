@@ -7,7 +7,7 @@ namespace LsOpenApi.KrxFutures;
 public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 {
 	private readonly string _date8txt = "yyyyMMdd";
-	public Dictionary<string, Instrument> Instruments { get; set; } = new();
+	public Dictionary<string, Instrument> Instruments { get; set; } = [];
 
 	public EventHandler<ResponseResult<MarketExecution>>? MarketExecuted { get; set; }
 	public EventHandler<ResponseResult<OrderBook>>? OrderBookTaken { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
@@ -16,12 +16,12 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 
 	public Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol) => throw new NotImplementedException();
 
-	#region request market contract - t2101, t8402
+	#region request market execution - t2101, t8402
 	public async Task<ResponseResult<MarketExecution>> RequestMarketExecution(string symbol)
 	{
 		if (new string[] { "1", "A" }.Contains(symbol.Substring(0, 1)) && symbol.Substring(1, 2) != "01")
 		{
-			return await RequestMarketContractSsf(symbol);
+			return await RequestMarketExecutionSsf(symbol);
 		}
 
 		try
@@ -83,7 +83,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		}
 	}
 
-	private async Task<ResponseResult<MarketExecution>> RequestMarketContractSsf(string symbol)
+	private async Task<ResponseResult<MarketExecution>> RequestMarketExecutionSsf(string symbol)
 	{
 		try
 		{
@@ -101,7 +101,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 
 			var quote = new MarketExecution
 			{
-				TimeContract = DateTime.Now,
+				TimeExecuted = DateTime.Now,
 				C = response.t8402OutBlock.price,
 				QuoteDaily = new Quote
 				{
@@ -465,7 +465,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 
 	#endregion
 
-	public async Task<ResponseCore> SubscribeMarketContract(string symbol, bool connecting = true, string subscriber = "")
+	public async Task<ResponseCore> SubscribeMarketExecution(string symbol, bool connecting = true, string subscriber = "")
 	{
 		if (string.IsNullOrWhiteSpace(subscriber)) subscriber = "SYS";
 

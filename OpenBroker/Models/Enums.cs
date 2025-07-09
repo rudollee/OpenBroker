@@ -80,15 +80,15 @@ public enum OrderDuration
     LIMIT = 6
 }
 
-public enum ContractStatus
+public enum ExecutionStatus
 {
     None = 0,
     All,
-    ContractedOnly,
-    UncontractedOnly
+    ExecutedOnly,
+    UnexecutedOnly
 }
 
-public enum ContractSide
+public enum ExecutionSide
 {
     ASK = 1,
     NONE = 0,
@@ -308,9 +308,9 @@ public enum MessageType
     MKTS,
 
     /// <summary>
-    /// Contract
+    /// Execution
     /// </summary>
-    CONTRACT,
+    EXECUTION,
 
     /// <summary>
     /// Order

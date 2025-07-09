@@ -151,7 +151,7 @@ public partial class KisGlobalFutures : ConnectionBase, IMarket
 		};
 	}
 
-	public async Task<ResponseCore> SubscribeMarketContract(string symbol, bool connecting = true, string subscriber = "SYS") =>
+	public async Task<ResponseCore> SubscribeMarketExecution(string symbol, bool connecting = true, string subscriber = "SYS") =>
 		await SubscribeAsync(subscriber, nameof(HDFFF020), symbol, connecting);
 
 	public async Task<ResponseCore> SubscribeMarketDepth(string symbol, bool connecting = true, string subscriber = "SYS") =>

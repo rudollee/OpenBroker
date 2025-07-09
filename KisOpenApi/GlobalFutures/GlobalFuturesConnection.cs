@@ -70,7 +70,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 						AskAgg = askList.Sum(x => x.Amount),
 						BidAgg = bidList.Sum(x => x.Amount),
 						Symbol = data[(int)HDFFF010.series_cd],
-						TimeContract = (data[(int)HDFFF010.recv_date] + data[(int)HDFFF010.recv_time]).ToDateTimeMicro(),
+						TimeExecuted = (data[(int)HDFFF010.recv_date] + data[(int)HDFFF010.recv_time]).ToDateTimeMicro(),
 					},
 					Remark = plainTxt
 				});
@@ -89,7 +89,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 						Symbol = data[(int)HDFFF020.series_cd],
 						V = Convert.ToDecimal(data[(int)HDFFF020.last_qntt]),
 						C = Convert.ToDecimal(data[(int)HDFFF020.last_price]),
-						TimeContract = (data[(int)HDFFF020.recv_date] + data[(int)HDFFF020.recv_time]).ToDateTime()
+						TimeExecuted = (data[(int)HDFFF020.recv_date] + data[(int)HDFFF020.recv_time]).ToDateTime()
 					},
 					Remark = plainTxt
 				});
@@ -129,12 +129,12 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 			#endregion
 			#region 실시간 체결 HDFFF2C0
 			case nameof(HDFFF2C0):
-				Executed(this, new ResponseResult<Contract>
+				Executed(this, new ResponseResult<Execution>
 				{
-					Typ = MessageType.CONTRACT,
+					Typ = MessageType.EXECUTION,
 					StatusCode = Status.SUCCESS,
 					Code = rawData[2],
-					Info = new Contract
+					Info = new Execution
 					{
 						BrokerCo = "KI",
 						DateBiz = data[(int)HDFFF2C0.ccld_dt].ToDate(),
@@ -143,7 +143,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 						IsLong = data[(int)HDFFF2C0.sll_buy_dvsn_cd] == "02",
 						Price = Convert.ToDecimal(data[(int)HDFFF2C0.fm_ccld_pric]),
 						Volume = Convert.ToInt32(data[(int)HDFFF2C0.ccld_qty]),
-						TimeContracted = data[(int)HDFFF2C0.ccld_dt].ToDateTime(),
+						TimeExecuted = data[(int)HDFFF2C0.ccld_dt].ToDateTime(),
 						Symbol = data[(int)HDFFF2C0.series],
 					},
 					Remark = plainTxt

@@ -86,7 +86,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 					AskAgg = askList.Sum(x => x.Amount),
 					BidAgg = bidList.Sum(x => x.Amount),
 					Symbol = data[(int)HDFFF010.series_cd],
-					TimeContract = (data[(int)HDFFF010.recv_date] + data[(int)HDFFF010.recv_time]).ToDateTimeMicro(),
+					TimeExecuted = (data[(int)HDFFF010.recv_date] + data[(int)HDFFF010.recv_time]).ToDateTimeMicro(),
 				},
 				Broker = Brkr.KI
 			});
@@ -130,14 +130,14 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 						_ => MarketSession.REGULAR
 					},
 					Symbol = data[(int)H0STCNT0.MKSC_SHRN_ISCD],
-					TimeContract = (DateTime.Now.ToString("yyyyMMdd") + data[(int)H0STCNT0.STCK_CNTG_HOUR]).ToDateTime(),
+					TimeExecuted = (DateTime.Now.ToString("yyyyMMdd") + data[(int)H0STCNT0.STCK_CNTG_HOUR]).ToDateTime(),
 					C = Convert.ToDecimal(data[(int)H0STCNT0.STCK_PRPR]),
 					V = Convert.ToDecimal(data[(int)H0STCNT0.CNTG_VOL]),
-					ContractSide = data[(int)H0STCNT0.CCLD_DVSN] switch
+					ExecutionSide = data[(int)H0STCNT0.CCLD_DVSN] switch
 					{
-						"1" => ContractSide.ASK,
-						"5" => ContractSide.BID,
-						_ => ContractSide.NONE
+						"1" => ExecutionSide.ASK,
+						"5" => ExecutionSide.BID,
+						_ => ExecutionSide.NONE
 					},
 					BasePrice = Convert.ToDecimal(data[(int)H0STCNT0.STCK_PRPR]) - Convert.ToDecimal(data[(int)H0STCNT0.PRDY_VRSS]),
 					QuoteDaily = new Quote
@@ -187,14 +187,14 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 						_ => MarketSession.REGULAR
 					},
 					Symbol = data[(int)H0UNCNT0.MKSC_SHRN_ISCD],
-					TimeContract = (DateTime.Now.ToString("yyyyMMdd") + data[(int)H0UNCNT0.STCK_CNTG_HOUR]).ToDateTime(),
+					TimeExecuted = (DateTime.Now.ToString("yyyyMMdd") + data[(int)H0UNCNT0.STCK_CNTG_HOUR]).ToDateTime(),
 					C = Convert.ToDecimal(data[(int)H0UNCNT0.STCK_PRPR]),
 					V = Convert.ToDecimal(data[(int)H0UNCNT0.CNTG_VOL]),
-					ContractSide = data[(int)H0UNCNT0.CNTG_CLS_CODE] switch
+					ExecutionSide = data[(int)H0UNCNT0.CNTG_CLS_CODE] switch
 					{
-						"1" => ContractSide.ASK,
-						"5" => ContractSide.BID,
-						_ => ContractSide.NONE
+						"1" => ExecutionSide.ASK,
+						"5" => ExecutionSide.BID,
+						_ => ExecutionSide.NONE
 					},
 					BasePrice = Convert.ToDecimal(data[(int)H0UNCNT0.STCK_PRPR]) - Convert.ToDecimal(data[(int)H0UNCNT0.PRDY_VRSS]),
 					QuoteDaily = new Quote
@@ -227,12 +227,12 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 		if (Executed is null) return false;
 		try
 		{
-			Executed(this, new ResponseResult<Contract>
+			Executed(this, new ResponseResult<Execution>
 			{
-				Typ = MessageType.CONTRACT,
+				Typ = MessageType.EXECUTION,
 				StatusCode = Status.SUCCESS,
 				Code = "001",
-				Info = new Contract
+				Info = new Execution
 				{
 					BrokerCo = "KI",
 					DateBiz = DateOnly.FromDateTime(DateTime.Now),
@@ -241,7 +241,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 					IsLong = data[(int)H0STCNI0.SELN_BYOV_CLS] == "02",
 					Price = Convert.ToDecimal(data[(int)H0STCNI0.CNTG_UNPR]),
 					Volume = Convert.ToInt32(data[(int)H0STCNI0.CNTG_QTY]),
-					TimeContracted = data[(int)H0STCNI0.STCK_CNTG_HOUR].ToDateTime(),
+					TimeExecuted = data[(int)H0STCNI0.STCK_CNTG_HOUR].ToDateTime(),
 					Symbol = data[(int)H0STCNI0.STCK_SHRN_ISCD],
 				},
 				Broker = Brkr.KI
@@ -251,7 +251,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			Executed(this, new ResponseResult<Contract>
+			Executed(this, new ResponseResult<Execution>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Typ = MessageType.SYSERR,

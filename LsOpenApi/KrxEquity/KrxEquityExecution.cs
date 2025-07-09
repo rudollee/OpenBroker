@@ -9,7 +9,7 @@ using System;
 namespace LsOpenApi.KrxEquity;
 public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEquity
 {
-	public required EventHandler<ResponseResult<Contract>> Executed { get; set; }
+	public required EventHandler<ResponseResult<Execution>> Executed { get; set; }
 	public required EventHandler<ResponseResult<Order>> OrderReceived { get; set; }
 	public EventHandler<ResponseResult<Balance>>? BalanceAggregated { get; set; }
 
@@ -152,7 +152,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 	#endregion
 
 	#region 체결/미체결 - t0425
-	public async Task<ResponseResults<Contract>> RequestContractsAsync(ContractStatus status = ContractStatus.ContractedOnly, string symbol = "")
+	public async Task<ResponseResults<Execution>> RequestExecutionsAsync(ExecutionStatus status = ExecutionStatus.ExecutedOnly, string symbol = "")
 	{
 		try
 		{
@@ -163,9 +163,9 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 					expcode = symbol,
 					chegb = status switch
 					{
-						ContractStatus.All => "0",
-						ContractStatus.ContractedOnly => "1",
-						ContractStatus.UncontractedOnly => "2",
+						ExecutionStatus.All => "0",
+						ExecutionStatus.ExecutedOnly => "1",
+						ExecutionStatus.UnexecutedOnly => "2",
 						_ => "0"
 					},
 					medosu = "0",
@@ -174,51 +174,51 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 				}
 			});
 
-			var contracts = new List<Contract>() { Capacity = response.t0425OutBlock1.Count };
-			response.t0425OutBlock1.ForEach(contract =>
+			var executions = new List<Execution>() { Capacity = response.t0425OutBlock1.Count };
+			response.t0425OutBlock1.ForEach(execution =>
 			{
-				contracts.Add(new Contract
+				executions.Add(new Execution
 				{
 					BrokerCo = "LS",
-					OID = contract.ordno,
-					CID = contract.sysprocseq,
+					OID = execution.ordno,
+					CID = execution.sysprocseq,
 					Currency = Currency.KRW,
 					DateBiz = DateOnly.FromDateTime(DateTime.Now),
 					ExchangeCode = Exchange.KRX,
-					Symbol = contract.expcode,
-					TimeOrdered = (DateTime.Now.ToString("yyyyMMdd") + contract.ordtime).ToDateTime(),
-					IdOrigin = contract.orgordno,
-					IsLong = contract.orggb == "02",
-					PriceOrdered = contract.price,
-					Price = contract.cheprice,
-					Volume = contract.cheqty,
-					VolumeLeft = contract.ordrem,
-					VolumeOrdered = contract.qty,
-					VolumeCancelable = contract.ordrem,
-					VolumeUpdatable = contract.ordrem,
-					VolumeOrderable = contract.ordrem,
+					Symbol = execution.expcode,
+					TimeOrdered = (DateTime.Now.ToString("yyyyMMdd") + execution.ordtime).ToDateTime(),
+					IdOrigin = execution.orgordno,
+					IsLong = execution.orggb == "02",
+					PriceOrdered = execution.price,
+					Price = execution.cheprice,
+					Volume = execution.cheqty,
+					VolumeLeft = execution.ordrem,
+					VolumeOrdered = execution.qty,
+					VolumeCancelable = execution.ordrem,
+					VolumeUpdatable = execution.ordrem,
+					VolumeOrderable = execution.ordrem,
 				});
 			});
 
-			return new ResponseResults<Contract>
+			return new ResponseResults<Execution>
 			{
-				List = contracts,
+				List = executions,
 			};
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<Contract>
+			return new ResponseResults<Execution>
 			{
 				StatusCode = Status.INTERNALSERVERERROR,
 				Message = ex.Message,
-				List = new List<Contract>()
+				List = new List<Execution>()
 			};
 		}
 	}
 	#endregion
 
 	#region 체결/미체결 기간 - CSPAQ13700
-	public async Task<ResponseResults<Contract>> RequestContractsAsync(DateTime dateBegun, DateTime dateFin, ContractStatus status = ContractStatus.ContractedOnly)
+	public async Task<ResponseResults<Execution>> RequestExecutionsAsync(DateTime dateBegun, DateTime dateFin, ExecutionStatus status = ExecutionStatus.ExecutedOnly)
 	{
 		try
 		{
@@ -228,16 +228,16 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 				{
 					ExecYn = status switch
 					{
-						ContractStatus.All => "0",
-						ContractStatus.ContractedOnly => "1",
-						ContractStatus.UncontractedOnly => "3",
+						ExecutionStatus.All => "0",
+						ExecutionStatus.ExecutedOnly => "1",
+						ExecutionStatus.UnexecutedOnly => "3",
 						_ => "0"
 					},
 					OrdDt = dateBegun.ToString("yyyyMMdd"),
 				}
 			});
 
-			var executions = new List<Contract>() { Capacity = response.CSPAQ13700OutBlock3.Count };
+			var executions = new List<Execution>() { Capacity = response.CSPAQ13700OutBlock3.Count };
 
 			var date = DateOnly.FromDateTime(DateTime.Now);
 			var symbol = string.Empty;
@@ -269,12 +269,12 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 					seq++;
 				}
 				
-				executions.Add(new Contract
+				executions.Add(new Execution
 				{
 					BrokerCo = "LS",
 					DateBiz = date,
 					TimeOrdered = timeOrdered,
-					TimeContracted = (date.ToString("yyyyMMdd") + execution.ExecTrxTime).ToDateTimeMicro(),
+					TimeExecuted = (date.ToString("yyyyMMdd") + execution.ExecTrxTime).ToDateTimeMicro(),
 					Currency = Currency.KRW,
 					Precision = 0,
 					NumeralSystem = 10,
@@ -300,19 +300,19 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 				});
 			});
 
-			return new ResponseResults<Contract>
+			return new ResponseResults<Execution>
 			{
 				List = executions
 			};
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<Contract>
+			return new ResponseResults<Execution>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = ex.Message,
 				Remark = "catch area",
-				List = new List<Contract>()
+				List = new List<Execution>()
 			};
 		}
 	} 
@@ -598,7 +598,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 	}
 	#endregion
 
-	public async Task<ResponseCore> SubscribeContractAsync(bool connecting = true) => await SubscribeAsync("SYS", "SC1", "", connecting);
+	public async Task<ResponseCore> SubscribeExecutionAsync(bool connecting = true) => await SubscribeAsync("SYS", "SC1", "", connecting);
 
 	public async Task<ResponseCore> SubscribeOrderAsync(bool connecting = true)
 	{

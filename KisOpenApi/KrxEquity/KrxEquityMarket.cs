@@ -78,7 +78,7 @@ public partial class KisKrxEquity : ConnectionBase, IMarket
 	} 
 	#endregion
 
-	public async Task<ResponseCore> SubscribeMarketContract(string symbol = "", bool connecting = true, string subscriber = "")
+	public async Task<ResponseCore> SubscribeMarketExecution(string symbol = "", bool connecting = true, string subscriber = "")
 	{
 		var krx = await SubscribeAsync(subscriber, nameof(H0STCNT0), symbol, connecting);
 		var nxt = await SubscribeAsync(subscriber, nameof(H0NXCNT0), symbol, connecting);

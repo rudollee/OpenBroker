@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace KisOpenApi.Models.GlobalFutures;
-internal class ContractRequeasst
+internal class ExecutionRequeasst
 {
     public DateTime DateBegin { get; set; }
 

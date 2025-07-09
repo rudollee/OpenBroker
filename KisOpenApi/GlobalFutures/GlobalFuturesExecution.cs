@@ -8,7 +8,7 @@ using RestSharp;
 namespace KisOpenApi;
 public partial class KisGlobalFutures : ConnectionBase, IExecution
 {
-	public required EventHandler<ResponseResult<Contract>> Executed { get; set; }
+	public required EventHandler<ResponseResult<Execution>> Executed { get; set; }
 	public required EventHandler<ResponseResult<Order>> OrderReceived { get; set; }
 	public EventHandler<ResponseResult<Balance>>? BalanceAggregated { get; set; }
 
@@ -210,7 +210,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 					DateBiz = f.ord_dt.ToDate(),
 					PriceOrdered = f.PriceOrdered,
 					VolumeOrdered = f.VolumeOrdered,
-					VolumeUpdatable = f.VolumeOrdered - f.VolumeContracted,
+					VolumeUpdatable = f.VolumeOrdered - f.VolumeExecuted,
 					Symbol = f.Symbol,
 					TimeOrdered = f.erlm_dtl_dtime.ToDateTimeMicro(),
 					IsLong = f.sll_buy_dvsn_cd == "02", //
@@ -304,7 +304,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 					DateBiz = f.ord_dt.ToDate(),
 					PriceOrdered = f.PriceOrdered,
 					VolumeOrdered = f.VolumeOrdered,
-					VolumeUpdatable = f.VolumeOrdered - f.VolumeContracted,
+					VolumeUpdatable = f.VolumeOrdered - f.VolumeExecuted,
 					Symbol = f.Symbol,
 					TimeOrdered = f.OrderDateTime863.ToDateTimeMicro(),
 					IsLong = f.sll_buy_dvsn_cd == "02", //
@@ -341,22 +341,22 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 	#endregion
 
 	#region 일별 체결내역 : OTFM3122R
-	public async Task<ResponseResults<Contract>> RequestContractsAsync(ContractStatus status = ContractStatus.ContractedOnly, string symbol = "")
+	public async Task<ResponseResults<Execution>> RequestExecutionsAsync(ExecutionStatus status = ExecutionStatus.ExecutedOnly, string symbol = "")
 	{
 		var date = DateTime.Now.ToNewYorkTime();
 
-		return await RequestContractsAsync(date, date, status);
+		return await RequestExecutionsAsync(date, date, status);
 	}
 
-	public async Task<ResponseResults<Contract>> RequestContractsAsync(DateTime dateBegun, ContractStatus status = ContractStatus.ContractedOnly) =>
-		await RequestContractsAsync(dateBegun, dateBegun, status);
+	public async Task<ResponseResults<Execution>> RequestExecutionsAsync(DateTime dateBegun, ExecutionStatus status = ExecutionStatus.ExecutedOnly) =>
+		await RequestExecutionsAsync(dateBegun, dateBegun, status);
 
-	public async Task<ResponseResults<Contract>> RequestContractsAsync(DateTime dateBegun, DateTime dateFin, ContractStatus status = ContractStatus.ContractedOnly)
+	public async Task<ResponseResults<Execution>> RequestExecutionsAsync(DateTime dateBegun, DateTime dateFin, ExecutionStatus status = ExecutionStatus.ExecutedOnly)
 	{
-		if (string.IsNullOrEmpty(BankAccountInfo.AccountNumber)) return new ResponseResults<Contract>
+		if (string.IsNullOrEmpty(BankAccountInfo.AccountNumber)) return new ResponseResults<Execution>
 		{
 			Code = "ANUMBER",
-			List = new List<Contract>(),
+			List = new List<Execution>(),
 			Message = "no accountNumber",
 			Remark = dateBegun.ToString("yyyyMMdd")
 		};
@@ -386,26 +386,26 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 		{
 			var response = await client.GetAsync<OTFM3122R>(request);
 
-			if (response is null) return new ResponseResults<Contract>
+			if (response is null) return new ResponseResults<Execution>
 			{
 				StatusCode = Status.INTERNALSERVERERROR,
-				List = new List<Contract>(),
+				List = new List<Execution>(),
 				Message = "response is null",
 				Remark = dateBegun.ToString("yyyyMMdd")
 			};
 
-			if (response.output1.Count == 0) return new ResponseResults<Contract>
+			if (response.output1.Count == 0) return new ResponseResults<Execution>
 			{
 				StatusCode = Status.NODATA,
-				List = new List<Contract>(),
+				List = new List<Execution>(),
 				Message = $"{BankAccountInfo.AccountNumber}: {BankAccountInfo.AccountNumberSuffix}",
 				Remark = $"{queryParameters["STRT_DT"]} - {queryParameters["END_DT"]}"
 			};
 
-			var contracts = new List<Contract>();
+			var executions = new List<Execution>();
 			response.output1.ForEach(f =>
 			{
-				contracts.Add(new Contract
+				executions.Add(new Execution
 				{
 					BrokerCo = "KI",
 					ExchangeCode = Exchange.CME,
@@ -415,22 +415,22 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 					Price = f.Price,
 					Volume = f.Volume,
 					Symbol = f.Symbol,
-					TimeContracted = f.ccld_dtl_dtime.ToDateTime(),
+					TimeExecuted = f.ccld_dtl_dtime.ToDateTime(),
 					IsLong = f.DirectionCode == "02", //
 				});
 			});
 
-			return new ResponseResults<Contract>
+			return new ResponseResults<Execution>
 			{
-				List = contracts,
+				List = executions,
 			};
 
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<Contract>
+			return new ResponseResults<Execution>
 			{
-				List = new List<Contract>(),
+				List = new List<Execution>(),
 				StatusCode = Status.INTERNALSERVERERROR,
 				Message = $"error catch: {ex.Message}",
 			};
@@ -514,7 +514,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 	#endregion
 
 	#region 체결내역 구독 : HDFFF2C0
-	public async Task<ResponseCore> SubscribeContractAsync(bool connecting = true) =>
+	public async Task<ResponseCore> SubscribeExecutionAsync(bool connecting = true) =>
 		await SubscribeAsync("SYS", nameof(HDFFF2C0), "", connecting);
 	#endregion
 }

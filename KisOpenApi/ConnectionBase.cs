@@ -166,7 +166,7 @@ public class ConnectionBase
 
 	#region Connect/disconnect Websocket
 	/// <summary>
-	/// Connect Websocket & subscribe Order/Contract
+	/// Connect Websocket & subscribe Order/Execution
 	/// </summary>
 	/// <returns></returns>
 	public async Task<ResponseCore> ConnectAsync()

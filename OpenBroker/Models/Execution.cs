@@ -35,14 +35,14 @@ public class OrderCore
     public OrderDuration OrderDuration { get; set; } = OrderDuration.AUTO;
 }
 
-public class Contract : Order, ICloneable
+public class Execution : Order, ICloneable
 {
     public Exchange ExchangeCode { get; set; } = Exchange.CME;
     public long CID { get; set; }
     public decimal Volume { get; set; }
     public decimal Price { get; set; }
     public decimal VolumeLeft { get; set; }
-    public DateTime TimeContracted { get; set; }
+    public DateTime TimeExecuted { get; set; }
 
     public object Clone() => this.MemberwiseClone();
 }
@@ -67,7 +67,7 @@ public class Balance
     /// <summary>
     /// 통화 별 예탁자산
     /// </summary>
-    public IList<AssetCashable> Deposit { get; set; } = new List<AssetCashable>();
+    public IList<AssetCashable> Deposit { get; set; } = [];
 
     /// <summary>
     /// 청산손익
@@ -117,7 +117,7 @@ public class Balance
     /// <summary>
     /// 보유 포지션
     /// </summary>
-    public IList<Position> Positions { get; set; } = new List<Position>();
+    public IList<Position> Positions { get; set; } = [];
 }
 
 public class AssetCashable
@@ -147,6 +147,3 @@ public class Pnl
     public decimal Commission { get; set; }
     public decimal Tax { get; set; }
 }
-
-internal class Execution { }
-

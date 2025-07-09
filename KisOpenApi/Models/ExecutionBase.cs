@@ -53,11 +53,11 @@ internal class OrderHistoryOutputBaseResponse : ExecutionHistoryOutputBaseRespon
 
 	/// <summary>FM체결수량</summary>
 	[JsonPropertyName("fm_ccld_qty")]
-	public int VolumeContracted { get; set; }
+	public int VolumeExecuted { get; set; }
 
 	/// <summary>FM체결가격</summary>
 	[JsonPropertyName("fm_ccld_pric")]
-	public decimal PriceContracted { get; set; }
+	public decimal PriceExecuted { get; set; }
 
 	/// <summary>FM주문잔여수량</summary>
 	[JsonPropertyName("fm_ord_rmn_qty")]
@@ -69,7 +69,7 @@ internal class OrderHistoryOutputBaseResponse : ExecutionHistoryOutputBaseRespon
 
 	/// <summary>체결상세일시</summary>
 	[JsonPropertyName("ccld_dtl_dtime")]
-	public string ContractDateTime863 { get; set; } = string.Empty;
+	public string ExecutionDateTime863 { get; set; } = string.Empty;
 
 
 }
