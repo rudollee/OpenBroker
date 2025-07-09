@@ -132,6 +132,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				Code = trCode,
 				Info = new MarketExecution
 				{
+					Exchange = response.Body.exchname == "KRX" ? Exchange.KRX : Exchange.NXT,
 					MarketSessionInfo = response.Body.status switch
 					{
 						"3" => MarketSession.CLOSED,
