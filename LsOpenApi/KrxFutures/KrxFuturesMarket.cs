@@ -1,4 +1,5 @@
-﻿using LsOpenApi.Models;
+﻿using System.Collections.Generic;
+using LsOpenApi.Models;
 using OpenBroker;
 using OpenBroker.Extensions;
 using OpenBroker.Models;
@@ -140,7 +141,77 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	}
 	#endregion
 
-	public Task<ResponseResults<MarketExecution>> RequestMarketExecution(IEnumerable<string> symbols) => throw new NotImplementedException();
+	public async Task<ResponseResults<MarketExecution>> RequestMarketExecution(IEnumerable<string> symbols)
+	{
+		if (!symbols.Any()) return new ResponseResults<MarketExecution>
+		{
+			StatusCode = Status.BAD_REQUEST,
+			Message = "no requested symbol",
+			List = []
+		};
+
+		if (symbols.Count() > 50) return new ResponseResults<MarketExecution>
+		{
+			StatusCode = Status.BAD_REQUEST,
+			Message = "Max request of symbols are 50",
+			List = []
+		};
+
+		try
+		{
+			var response = await RequestStandardAsync<t8434>(LsEndpoint.FuturesMarketData.ToDescription(), new
+			{
+				t8434InBlock = new t8434InBlock
+				{
+					qrycnt = symbols.Count(),
+					focode = string.Join("", symbols.Take(50))
+				}
+			});
+
+			if (response is null || !response.t8434OutBlock1.Any()) return new ResponseResults<MarketExecution>
+			{
+				StatusCode = Status.NODATA,
+				List = [],
+				Code = response?.Code ?? "ERR",
+				Message = response?.Message ?? "response is null",
+				Remark = "no data"
+			};
+
+			List<MarketExecution> executions = [];
+			response.t8434OutBlock1.ForEach(execution =>
+			{
+				executions.Add(new MarketExecution
+				{
+					TimeExecuted = DateTime.Now,
+					Symbol = execution.focode,
+					C = execution.price,
+					V = execution.checnt,
+					BasePrice = execution.price - execution.change * (DeclineCodes.Contains(execution.sign) ? -1 : 1),
+					QuoteDaily = new Quote
+					{
+						C = execution.price,
+						V = execution.volume,
+					}
+				});
+			});
+
+			return new ResponseResults<MarketExecution>
+			{
+				List = executions
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResults<MarketExecution>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Code = "ERR-CATCH",
+				Message = ex.Message,
+				List = []
+			};
+		}
+	}
+
 	public Task<ResponseResults<MarketExecution>> RequestMarketExecutionHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
 	public Task<ResponseResult<News>> RequestNews(string id) => throw new NotImplementedException();
 
