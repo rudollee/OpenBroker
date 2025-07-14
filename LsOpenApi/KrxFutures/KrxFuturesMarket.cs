@@ -20,7 +20,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	#region request market execution - t2101, t8402
 	public async Task<ResponseResult<MarketExecution>> RequestMarketExecution(string symbol)
 	{
-		if (new string[] { "1", "A" }.Contains(symbol.Substring(0, 1)) && symbol.Substring(1, 2) != "01")
+		if (new string[] { "1", "A" }.Contains(symbol.Substring(0, 1)) && !new string[] { "01", "75" }.Contains(symbol.Substring(1, 2)))
 		{
 			return await RequestMarketExecutionSsf(symbol);
 		}
@@ -29,7 +29,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		{
 			var response = await RequestStandardAsync<t2101>(LsEndpoint.FuturesMarketData.ToDescription(), new
 			{
-				t8402InBlock = new t8402InBlock
+				t2101InBlock = new t2101InBlock
 				{
 					focode = symbol,
 				}
@@ -49,7 +49,8 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				QuoteDaily = new Quote
 				{
 					T = DateTime.Now,
-					C = response.t2101OutBlock.price,
+					BasePrice = response.t2101OutBlock.jnilclose,
+                    C = response.t2101OutBlock.price,
 					O = response.t2101OutBlock.open,
 					H = response.t2101OutBlock.high,
 					L = response.t2101OutBlock.low,
@@ -69,7 +70,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				ExtraData = new Dictionary<string, decimal>
 				{
 					{ "OI", response.t2101OutBlock.mgjv }, // open interest
-					{ "UNDERLYINGPRICE", response.t2101OutBlock.kospijisu }, // Underlying Asset Price
+					{ "UNDERLYINGPRICE", response.t2101OutBlock.price - response.t2101OutBlock.sbasis }, // Underlying Asset Price
 				}
 			};
 		}
