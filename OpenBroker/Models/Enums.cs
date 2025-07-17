@@ -325,7 +325,12 @@ public enum MessageType
     /// <summary>
     /// Misc.
     /// </summary>
-    MISC
+    MISC,
+
+    /// <summary>
+    /// Watchlist
+    /// </summary>
+    WATCH,
 }
 
 public enum IntervalUnit
