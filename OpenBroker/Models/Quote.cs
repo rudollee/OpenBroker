@@ -38,7 +38,7 @@ public class QuoteRate : Quote
 }
 
 /// <summary>
-/// 거래량, 미결제약정
+/// 시고저종, 거래량, 미결제약정, 기초자산종가
 /// </summary>
 public class QuoteExt : Quote
 {
@@ -53,3 +53,12 @@ public class QuoteExt : Quote
 	public decimal CloseUnderlying { get; set; }
 }
 
+/// <summary>
+/// 시고저종, 거래량, 미결제약정, 행사가
+/// </summary>
+public class QuoteOption : Quote
+{
+	public string Strike { get; set; } = string.Empty;
+
+	public decimal OI { get; set; }
+}
