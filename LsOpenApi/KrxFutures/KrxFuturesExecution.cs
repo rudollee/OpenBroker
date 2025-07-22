@@ -17,7 +17,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 	#region request executions - CFOAQ00600
 	public Task<ResponseResults<Execution>> RequestExecutionsAsync(ExecutionStatus status = ExecutionStatus.ExecutedOnly, string symbol = "")
 	{
-		var date = DateTime.UtcNow.AddHours(9);
+		var date = DateTime.Now;
 		return RequestExecutionsAsync(date, date, status);
 	}
 
