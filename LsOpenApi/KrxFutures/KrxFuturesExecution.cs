@@ -17,7 +17,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 	#region request executions - CFOAQ00600
 	public Task<ResponseResults<Execution>> RequestExecutionsAsync(ExecutionStatus status = ExecutionStatus.ExecutedOnly, string symbol = "")
 	{
-		var date = DateTime.UtcNow.AddHours(9);
+		var date = DateTime.Now;
 		return RequestExecutionsAsync(date, date, status);
 	}
 
@@ -118,7 +118,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 
 			var response = await RequestStandardAsync<CFOEQ82600>(LsEndpoint.FuturesAccount.ToDescription(), new
 			{
-				CFOEQ82600InBlock = new CFOEQ82600InBlock1
+				CFOEQ82600InBlock1 = new CFOEQ82600InBlock1
 				{
 					QrySrtDt = dateBegun.ToString("yyyyMMdd"),
 					QryEndDt = dateFin.ToString("yyyyMMdd")
