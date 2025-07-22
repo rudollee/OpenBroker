@@ -23,6 +23,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 
 	public async Task<ResponseResults<Execution>> RequestExecutionsAsync(DateTime dateBegun, DateTime dateFin, ExecutionStatus status = ExecutionStatus.ExecutedOnly)
 	{
+		List<Execution> executions = [];
 		try
 		{
 			List<CFOAQ00600OutBlock3> executionsRaw = [];
@@ -49,8 +50,8 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 				nextKey = response.NextKey;
 			} while (!string.IsNullOrEmpty(nextKey));
 
-			List<Execution> executions = new() { Capacity = executionsRaw.Count };
 			Execution previousExecution = new();
+			executions.Capacity = executionsRaw.Count;
 			foreach (var execution in executionsRaw)
 			{
 				if (execution.OrdNo == 0)
@@ -99,7 +100,6 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 				previousExecution = executions.Last();
 			}
 
-			return new ResponseResults<Execution> { List = executions };
 		}
 		catch (Exception ex)
 		{
@@ -107,10 +107,52 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 			{
 				StatusCode = Status.INTERNALSERVERERROR,
 				Message = ex.Message,
-				List = new List<Execution>(),
+				List = [],
 			};
 		}
-	} 
+
+		if (dateBegun.Date != dateFin.Date) return new ResponseResults<Execution> { List = executions };
+
+		try
+		{
+
+			var response = await RequestStandardAsync<CFOEQ82600>(LsEndpoint.FuturesAccount.ToDescription(), new
+			{
+				CFOEQ82600InBlock = new CFOEQ82600InBlock1
+				{
+					QrySrtDt = dateBegun.ToString("yyyyMMdd"),
+					QryEndDt = dateFin.ToString("yyyyMMdd")
+				}
+			});
+
+			if (response is null || response.CFOEQ82600OutBlock3.Count == 0) return new ResponseResults<Execution>
+			{
+				StatusCode = Status.PARTIALLY_SUCCESS,
+				Message = response?.Message ?? "response or CFOEQ82600OutBlock3 is null",
+				List = executions,
+			};
+
+			return new ResponseResults<Execution>
+			{
+				StatusCode = Status.SUCCESS,
+				Message = response.Message,
+				List = executions,
+				ExtraData = new Dictionary<string, decimal>
+				{
+					{ "COMMISSION", response.CFOEQ82600OutBlock3.First().CmsnAmt },
+				}
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResults<Execution>
+			{
+				StatusCode = Status.PARTIALLY_SUCCESS,
+				Message = ex.Message,
+				List = executions,
+			};
+		}
+	}
 	#endregion
 
 	public Task<ResponseResults<Pnl>> RequestPnlAsync(DateTime dateBegin, DateTime dateFin, Exchange exchange = Exchange.KRX) => throw new NotImplementedException();

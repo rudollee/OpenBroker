@@ -7,7 +7,7 @@ internal class CFOEQ82600 : LsResponseCore
 	public CFOEQ82600InBlock1 CFOEQ82600InBlock { get; set; } = new();
 	public CFOEQ82600OutBlock1 CFOEQ82600OutBlock1 { get; set; } = new();
 	public CFOEQ82600OutBlock2 CFOEQ82600OutBlock2 { get; set; } = new();
-	public List<CFOEQ82600OutBlock3> CFOEQ82600OutBlock3 { get; set; } = new();
+	public List<CFOEQ82600OutBlock3> CFOEQ82600OutBlock3 { get; set; } = [];
 }
 
 /// <summary>
@@ -15,29 +15,20 @@ internal class CFOEQ82600 : LsResponseCore
 /// </summary>
 internal class CFOEQ82600InBlock1
 {
-	/// <summary>레코드갯수</summary>
-	public long RecCnt { get; set; }
-
-	/// <summary>계좌번호</summary>
-	public string AcntNo { get; set; } = string.Empty;
-
-	/// <summary>비밀번호</summary>
-	public string Pwd { get; set; } = string.Empty;
-
 	/// <summary>조회시작일</summary>
 	public string QrySrtDt { get; set; } = string.Empty;
 
 	/// <summary>조회종료일</summary>
 	public string QryEndDt { get; set; } = string.Empty;
 
-	/// <summary>조회구분</summary>
-	public string QryTp { get; set; } = string.Empty;
+	/// <summary>조회구분: 1.일자별, 2.월별, 3.주간별</summary>
+	public string QryTp { get; set; } = "1";
 
-	/// <summary>정렬순서구분</summary>
-	public string StnlnSeqTp { get; set; } = string.Empty;
+	/// <summary>정렬순서구분: 1.순, 2.역순</summary>
+	public string StnlnSeqTp { get; set; } = "1";
 
-	/// <summary>선물옵션잔고평가구분코드</summary>
-	public string FnoBalEvalTpCode { get; set; } = string.Empty;
+	/// <summary>선물옵션잔고평가구분코드: 0.기본적으로는 선입선출, 1.이동평균, 2.선입선출</summary>
+	public string FnoBalEvalTpCode { get; set; } = "2";
 }
 
 /// <summary>
