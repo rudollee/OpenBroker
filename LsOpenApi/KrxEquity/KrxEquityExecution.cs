@@ -359,11 +359,13 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 
 			return new ResponseCore
 			{
-				Code = response.CSPBQ00200OutBlock2.IsuMgnRat.ToString(),
+				Broker = Brkr.LS,
 				Remark = response.CSPBQ00200OutBlock2.OrdAbleQty.ToString(),
 				Message = bep.ToString(),
 				ExtraData = new Dictionary<string, decimal>
 				{
+					{ "MARGIN-RATE", response.CSPBQ00200OutBlock2.IsuMgnRat },
+					{ "QTY", response.CSPBQ00200OutBlock2.OrdAbleQty },
 					{ "BEP", bep }
 				},
 			};
