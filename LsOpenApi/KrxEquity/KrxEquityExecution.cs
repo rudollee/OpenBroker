@@ -361,7 +361,11 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 			{
 				Code = response.CSPBQ00200OutBlock2.IsuMgnRat.ToString(),
 				Remark = response.CSPBQ00200OutBlock2.OrdAbleQty.ToString(),
-				Message = bep.ToString()
+				Message = bep.ToString(),
+				ExtraData = new Dictionary<string, decimal>
+				{
+					{ "BEP", bep }
+				},
 			};
 		}
 		catch (Exception ex)
