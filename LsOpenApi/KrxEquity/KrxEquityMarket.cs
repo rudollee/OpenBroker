@@ -452,9 +452,10 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 						O = f.open,
 						H = f.high,
 						L = f.low,
-						V = f.cvolume,
+						V = f.volume,
 						Turnover = f.value
-					}
+					},
+					VolumeExecuted = f.cvolume,
 				});
 			});
 
