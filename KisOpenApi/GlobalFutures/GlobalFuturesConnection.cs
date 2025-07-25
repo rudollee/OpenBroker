@@ -87,7 +87,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 					Info = new MarketExecution
 					{
 						Symbol = data[(int)HDFFF020.series_cd],
-						V = Convert.ToDecimal(data[(int)HDFFF020.last_qntt]),
+						VolumeExecuted = Convert.ToDecimal(data[(int)HDFFF020.last_qntt]),
 						C = Convert.ToDecimal(data[(int)HDFFF020.last_price]),
 						TimeExecuted = (data[(int)HDFFF020.recv_date] + data[(int)HDFFF020.recv_time]).ToDateTime()
 					},

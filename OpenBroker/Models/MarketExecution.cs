@@ -43,7 +43,7 @@ public class MarketExecution
     /// <summary>
     /// 체결 거래량
     /// </summary>
-    public decimal V { get; set; }
+    public decimal VolumeExecuted { get; set; }
 
     /// <summary>
     /// 기준가격

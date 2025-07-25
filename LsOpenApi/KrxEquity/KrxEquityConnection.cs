@@ -143,7 +143,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					Symbol = response.Body.shcode,
 					TimeExecuted = response.Body.chetime.ToDateTime(),
 					C = Convert.ToDecimal(response.Body.price),
-					V = Convert.ToDecimal(response.Body.cvolume),
+					VolumeExecuted = Convert.ToDecimal(response.Body.cvolume),
 					ExecutionSide = response.Body.cgubun == "+" ? ExecutionSide.ASK : ExecutionSide.BID,
 					BasePrice = Convert.ToDecimal(response.Body.price) - Convert.ToDecimal((DeclineCodes.Contains(response.Body.sign) ? "-" : "") + response.Body.change),
 					QuoteDaily = new Quote
@@ -204,7 +204,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					Symbol = response.Body.shcode,
 					TimeExecuted = response.Body.hotime.ToDateTime(),
 					C = Convert.ToDecimal(response.Body.yeprice),
-					V = Convert.ToDecimal(response.Body.yevolume),
+					VolumeExecuted = Convert.ToDecimal(response.Body.yevolume),
 					ExecutionSide = response.Body.yeprice == response.Body.ybidho0 ? ExecutionSide.ASK : ExecutionSide.BID,
 					BasePrice = Convert.ToDecimal(response.Body.yeprice) - Convert.ToDecimal((DeclineCodes.Contains(response.Body.jnilysign) ? "-" : "") + response.Body.jnilchange),
 				},

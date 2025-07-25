@@ -58,7 +58,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 					Turnover = response.t2101OutBlock.value,
 				},
 				BasePrice = response.t2101OutBlock.jnilclose,
-				V = response.t2101OutBlock.volume,
+				VolumeExecuted = response.t2101OutBlock.volume,
 			};
 
 			return new ResponseResult<MarketExecution>
@@ -186,7 +186,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 					TimeExecuted = DateTime.Now,
 					Symbol = execution.focode,
 					C = execution.price,
-					V = execution.checnt,
+					VolumeExecuted = execution.checnt,
 					BasePrice = execution.price - execution.change * (DeclineCodes.Contains(execution.sign) ? -1 : 1),
 					QuoteDaily = new Quote
 					{

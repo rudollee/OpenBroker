@@ -508,7 +508,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				TimeExecuted = (DateTime.Now.ToString("yyyyMMdd") + execution.chetime).ToDateTime(),
 				C = execution.price,
 				BasePrice = execution.price + execution.change * (Convert.ToInt32(execution.sign) > 3 ? 1 : -1),
-				V = execution.cvolume,
+				VolumeExecuted = execution.cvolume,
 				QuoteDaily = new Quote
 				{
 					V = execution.volume,
@@ -992,7 +992,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				Symbol = execution.shcode,
 				C = execution.price,
 				BasePrice = execution.price - execution.change * (DeclineCodes.Contains(execution.sign) ? -1 : 1),
-				V = execution.volume,
+				VolumeExecuted = execution.volume,
 			}));
 
 			return new ResponseResults<MarketExecution> { List = executions };

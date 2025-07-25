@@ -78,7 +78,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 					Symbol = response.Body.futcode,
 					TimeExecuted = response.Body.chetime.ToDateTime(),
 					C = Convert.ToDecimal(response.Body.price),
-					V = Convert.ToDecimal(response.Body.cvolume),
+					VolumeExecuted = Convert.ToDecimal(response.Body.cvolume),
 					ExecutionSide = response.Body.cgubun == "+" ? ExecutionSide.ASK : ExecutionSide.BID,
 					BasePrice = Convert.ToDecimal(response.Body.price) - Convert.ToDecimal((DeclineCodes.Contains(response.Body.sign) ? "-" : "") + response.Body.change),
 					QuoteDaily = new Quote 

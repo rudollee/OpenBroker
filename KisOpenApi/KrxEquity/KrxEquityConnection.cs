@@ -132,7 +132,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 					Symbol = data[(int)H0STCNT0.MKSC_SHRN_ISCD],
 					TimeExecuted = (DateTime.Now.ToString("yyyyMMdd") + data[(int)H0STCNT0.STCK_CNTG_HOUR]).ToDateTime(),
 					C = Convert.ToDecimal(data[(int)H0STCNT0.STCK_PRPR]),
-					V = Convert.ToDecimal(data[(int)H0STCNT0.CNTG_VOL]),
+					VolumeExecuted = Convert.ToDecimal(data[(int)H0STCNT0.CNTG_VOL]),
 					ExecutionSide = data[(int)H0STCNT0.CCLD_DVSN] switch
 					{
 						"1" => ExecutionSide.ASK,
@@ -189,7 +189,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 					Symbol = data[(int)H0UNCNT0.MKSC_SHRN_ISCD],
 					TimeExecuted = (DateTime.Now.ToString("yyyyMMdd") + data[(int)H0UNCNT0.STCK_CNTG_HOUR]).ToDateTime(),
 					C = Convert.ToDecimal(data[(int)H0UNCNT0.STCK_PRPR]),
-					V = Convert.ToDecimal(data[(int)H0UNCNT0.CNTG_VOL]),
+					VolumeExecuted = Convert.ToDecimal(data[(int)H0UNCNT0.CNTG_VOL]),
 					ExecutionSide = data[(int)H0UNCNT0.CNTG_CLS_CODE] switch
 					{
 						"1" => ExecutionSide.ASK,
