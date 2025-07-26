@@ -79,6 +79,84 @@ internal enum TrId
 	/// <summary>국내주식 업종별 투자자 매매동향</summary>
 	FHPST02320000,
 
+	/// <summary>국내주식 상품기본조회</summary>
+	CTPF1604R,
+
+	/// <summary>국내주식 주식기본조회</summary>
+	CTPF1002R,
+
+	/// <summary>국내주식 대차대조표</summary>
+	FHKST66430100,
+
+	/// <summary>국내주식 손익계산서</summary>
+	FHKST66430200,
+
+	/// <summary>국내주식 재무비율</summary>
+	FHKST66430300,
+
+	/// <summary>국내주식 수익성비율</summary>
+	FHKST66430400,
+
+	/// <summary>국내주식 기타주요비율</summary>
+	FHKST66430500,
+
+	/// <summary>국내주식 안정성비율</summary>
+	FHKST66430600,
+
+	/// <summary>국내주식 성장성비율</summary>
+	FHKST66430800,
+
+	/// <summary>국내주식 당사 신용가능종목</summary>
+	FHPST04770000,
+
+	/// <summary>국내주식 예탁원정보(배당일정)</summary>
+	HHKDB669102C0,
+
+	/// <summary>국내주식 예탁원정보(주식매수청구일정)</summary>
+	HHKDB669103C0,
+
+	/// <summary>국내주식 예탁원정보(합병/분할일정)</summary>
+	HHKDB669104C0,
+
+	/// <summary>국내주식 예탁원정보(액면교체일정)</summary>
+	HHKDB669105C0,
+
+	/// <summary>국내주식 예탁원정보(자본감소일정)</summary>
+	HHKDB669106C0,
+
+	/// <summary>국내주식 예탁원정보(상장정보일정)</summary>
+	HHKDB669107C0,
+
+	/// <summary>국내주식 예탁원정보(공모주청약일정)</summary>
+	HHKDB669108C0,
+
+	/// <summary>국내주식 예탁원정보(실권주일정)</summary>
+	HHKDB669109C0,
+
+	/// <summary>국내주식 예탁원정보(의무예치일정)</summary>
+	HHKDB669110C0,
+
+	/// <summary>국내주식 예탁원정보(유상증자일정)</summary>
+	HHKDB669100C0,
+
+	/// <summary>국내주식 예탁원정보(무상증자일정)</summary>
+	HHKDB669101C0,
+
+	/// <summary>국내주식 예탁원정보(주주총회일정)</summary>
+	HHKDB669111C0,
+
+	/// <summary>국내주식 종목추정실적</summary>
+	HHKST668300C0,
+
+	/// <summary>국내주식 당사 대주가능 종목</summary>
+	CTSC2702R,
+
+	/// <summary>국내주식 종목투자의견</summary>
+	FHKST663300C0,
+
+	/// <summary>국내주식 증권사별 투자의견</summary>
+	FHKST663400C0,
+
 	/// <summary>장내채권 매수주문</summary>
 	TTTC0952U,
 

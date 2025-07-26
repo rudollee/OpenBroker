@@ -213,6 +213,18 @@ internal static class EndpointRef
 				Endpoint = "industry-investor"
 			}
 		},
+		#region 국내주식 종목 정보
+		{
+			TrId.CTPF1002R,
+			new EndpointPack
+			{
+				ID = TrId.CTPF1002R,
+				Prefix = EndpointPrefix.KrxEquityV1,
+				Type = EndpointType.Quote,
+				Endpoint = "search-stock-info"
+			}
+		}, 
+		#endregion
 		{
 			TrId.TTTC0952U,
 			new EndpointPack

@@ -24,6 +24,53 @@ public partial class KisKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	public Task<ResponseDictionary<string, Instrument>> RequestInstruments(int option) => throw new NotImplementedException();
 	public Task<ResponseResults<MarketExecution>> RequestMarketExecutionHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
 
+	#region Request EquityInfo - CTPF1002R (종목 정보)
+	public async Task<ResponseResult<EquityPack>> RequestEquityInfo(string symbol, bool needsOrderBook = false, Exchange exchange = Exchange.NONE)
+	{
+		var parameters = GenerateParameters(new
+		{
+			PRDT_TYPE_CD = "300",
+			PDNO = symbol
+		});
+
+		try
+		{
+			var response = await RequestStandardAsync<CTPF1002R>(EndpointRef.EndpointDic[TrId.CTPF1002R], parameters);
+			if (response is null) return new ResponseResult<EquityPack>
+			{
+				StatusCode = Status.NODATA,
+				Message = "response is null"
+			};
+
+			var equity = new EquityPack
+			{
+				Symbol = response.Output.Pdno,
+				NameOfficial = response.Output.PrdtName,
+				Section = response.Output.ExcgDvsnCd switch
+				{
+					"02" => ExchangeSection.KOSPI,
+					"03" => ExchangeSection.KOSDAQ,
+					_ => ExchangeSection.NONE
+				},
+				DiscardStatus = DiscardStatus.TRADABLE,
+			};
+
+			return new ResponseResult<EquityPack>
+			{
+				Info = equity,
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResult<EquityPack>
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = ex.Message
+			};
+		}
+	} 
+	#endregion
+
 	#region 국내주식기간별시세(일,주,월,년) - FHKST03010100
 	public async Task<ResponseResult<QuotePack<T>>> RequestPricePack<T>(QuoteRequest request) where T : Quote
 	{
@@ -96,7 +143,6 @@ public partial class KisKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	public Task<ResponseCore> SubscribeMarketPause(string symbol = "000000") => throw new NotImplementedException();
 
 	public Task<ResponseDictionary<string, Equity>> RequestEquityDictionary(int option = 0) => throw new NotImplementedException();
-	public Task<ResponseResult<EquityPack>> RequestEquityInfo(string symbol, bool needsOrderBook = false, Exchange exchange = Exchange.NONE) => throw new NotImplementedException();
 	public Task<ResponseResults<Equity>> RequestIPO(DateOnly begin, DateOnly end) => throw new NotImplementedException();
 	public Task<ResponseResults<Sector>> RequestSectors(string code = "", string name = "") => throw new NotImplementedException();
 	public Task<ResponseResults<Sector>> RequestSectorsByEquity(string symbol) => throw new NotImplementedException();
