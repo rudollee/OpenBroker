@@ -5,7 +5,7 @@ using OpenBroker.Extensions;
 using OpenBroker.Models;
 
 namespace KisOpenApi.KrxEquity;
-public partial class KisKrxEquity : ConnectionBase, IMarket
+public partial class KisKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 {
 	public Dictionary<string, Instrument> Instruments { get; set; } = new();
 
@@ -13,6 +13,9 @@ public partial class KisKrxEquity : ConnectionBase, IMarket
 	public required EventHandler<ResponseResult<OrderBook>>? OrderBookTaken { get; set; }
 	public EventHandler<ResponseResult<News>>? NewsPosted { get; set; }
 	public EventHandler<ResponseResult<MarketPause>>? MarketPaused { get; set; }
+	public Dictionary<string, Equity> Equities { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+	public bool AvailableToSubscribe => throw new NotImplementedException();
 
 	public Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol = "") => throw new NotImplementedException();
 	public Task<ResponseResult<MarketExecution>> RequestMarketExecution(string symbol = "") => throw new NotImplementedException();
@@ -91,4 +94,13 @@ public partial class KisKrxEquity : ConnectionBase, IMarket
 
 	public Task<ResponseCore> SubscribeNews(bool connecting = true) => throw new NotImplementedException();
 	public Task<ResponseCore> SubscribeMarketPause(string symbol = "000000") => throw new NotImplementedException();
+
+	public Task<ResponseDictionary<string, Equity>> RequestEquityDictionary(int option = 0) => throw new NotImplementedException();
+	public Task<ResponseResult<EquityPack>> RequestEquityInfo(string symbol, bool needsOrderBook = false, Exchange exchange = Exchange.NONE) => throw new NotImplementedException();
+	public Task<ResponseResults<Equity>> RequestIPO(DateOnly begin, DateOnly end) => throw new NotImplementedException();
+	public Task<ResponseResults<Sector>> RequestSectors(string code = "", string name = "") => throw new NotImplementedException();
+	public Task<ResponseResults<Sector>> RequestSectorsByEquity(string symbol) => throw new NotImplementedException();
+	public Task<ResponseResults<MarketExecution>> RequestEquitiesBySector(string sectorCode) => throw new NotImplementedException();
+	public Task<ResponseResults<SearchFilter>> RequestSearchFilters() => throw new NotImplementedException();
+	public Task<ResponseResults<MarketExecution>> RequestEquitiesByFilter(string query) => throw new NotImplementedException();
 }
