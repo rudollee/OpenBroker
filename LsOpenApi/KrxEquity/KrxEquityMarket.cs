@@ -272,7 +272,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	}
 	#endregion
 
-	#region request equity complex using t8450 & t1102
+	#region request equity info (& orderbook) using t1102 (& t1101/t8450)
 	public async Task<ResponseResult<EquityPack>> RequestEquityInfo(string symbol, bool needsOrderBook = false, Exchange exchange = Exchange.NONE)
 	{
 		var exchangeCode = exchange switch
@@ -328,54 +328,19 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 			if (needsOrderBook)
 			{
-				var responseOrderbook = await RequestStandardAsync<t8450>(LsEndpoint.EquityMarketData.ToDescription(), new
+				var responseOrderbook = exchange switch
 				{
-					t8450InBlock = new t8450InBlock
-					{
-						shcode = symbol,
-						exchgubun = exchangeCode
-					}
-				});
+					Exchange.KRX => await RequestOrderbookAsync(symbol),
+					_ => await RequestOrderbookAsync(symbol, exchange)
+				};
 
-				if (responseOrderbook.t8450OutBlock is not null)
+				if (responseOrderbook is null || responseOrderbook.Info is null) return new ResponseResult<EquityPack>
 				{
-					var orderbook = new OrderBook();
-					var asks = new List<MarketOrder>();
-					var bids = new List<MarketOrder>();
+					StatusCode = Status.ERROR_OPEN_API,
+					Message = responseOrderbook?.Message ?? "response orderbook is null"
+				};
 
-					var exchangePrefix = exchange switch
-					{
-						Exchange.KRX => "",
-						Exchange.NXT => "nxt_",
-						_ => "unx_"
-					};
-
-					for (int i = 0; i < 10; i++)
-					{
-						asks.Add(new MarketOrder
-						{
-							Seq = Convert.ToByte(i + 1),
-							Price = Convert.ToDecimal(responseOrderbook.t8450OutBlock.GetPropValue($"offerho{(i + 1)}")),
-							Amount = Convert.ToDecimal(responseOrderbook.t8450OutBlock.GetPropValue($"{exchangePrefix}offerrem{(i + 1)}"))
-						});
-
-						bids.Add(new MarketOrder
-						{
-							Seq = Convert.ToByte(i + 1),
-							Price = Convert.ToDecimal(responseOrderbook.t8450OutBlock.GetPropValue($"bidho{(i + 1)}")),
-							Amount = Convert.ToDecimal(responseOrderbook.t8450OutBlock.GetPropValue($"{exchangePrefix}bidrem{(i + 1)}"))
-						});
-					}
-
-					equity.OrderBook = new OrderBook
-					{
-						TimeTaken = responseOrderbook.t8450OutBlock.hotime.ToTime(),
-						Ask = asks,
-						Bid = bids,
-						AskAgg = Convert.ToDecimal(responseOrderbook.t8450OutBlock.GetPropValue($"{exchangePrefix}offer")),
-						BidAgg = Convert.ToDecimal(responseOrderbook.t8450OutBlock.GetPropValue($"{exchangePrefix}bid")),
-					};
-				}
+				equity.OrderBook = responseOrderbook.Info;
 			}
 
 			return new ResponseResult<EquityPack>
@@ -393,6 +358,118 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				Message = ex.Message
 			};
 		}
+	}
+
+	private async Task<ResponseResult<OrderBook>> RequestOrderbookAsync(string symbol)
+	{
+		var response = await RequestStandardAsync<t1101>(LsEndpoint.EquityMarketData.ToDescription(), new
+		{
+			t1101InBlock = new t1101InBlock { shcode = symbol }
+		});
+
+		if (response is null || response.t1101OutBlock is null) return new ResponseResult<OrderBook>
+		{
+			StatusCode = Status.ERROR_OPEN_API,
+			Message = response?.Message ?? "t1101 response is null"
+		};
+
+		List<MarketOrder> asks = [];
+		List<MarketOrder> bids = [];
+		for (int i = 0; i < 10; i++)
+		{
+			asks.Add(new MarketOrder
+			{
+				Seq = Convert.ToByte(i + 1),
+				Price = Convert.ToDecimal(response.t1101OutBlock.GetPropValue($"offerho{(i + 1)}")),
+				Amount = Convert.ToDecimal(response.t1101OutBlock.GetPropValue($"offerrem{(i + 1)}")),
+			});
+
+			bids.Add(new MarketOrder
+			{
+				Seq = Convert.ToByte(i + 1),
+				Price = Convert.ToDecimal(response.t1101OutBlock.GetPropValue($"bidho{(i + 1)}")),
+				Amount = Convert.ToDecimal(response.t1101OutBlock.GetPropValue($"bidrem{(i + 1)}"))
+			});
+		}
+
+		return new ResponseResult<OrderBook>
+		{
+			Broker = Brkr.LS,
+			Typ = MessageType.MKT,
+			Info = new OrderBook
+			{
+				TimeTaken = response.t1101OutBlock.hotime.ToTime(),
+				Ask = asks,
+				Bid = bids,
+				AskAgg = Convert.ToDecimal(response.t1101OutBlock.GetPropValue($"offer")),
+				BidAgg = Convert.ToDecimal(response.t1101OutBlock.GetPropValue($"bid")),
+			}
+		};
+	}
+
+	private async Task<ResponseResult<OrderBook>> RequestOrderbookAsync(string symbol, Exchange exchange)
+	{
+		var exchangeCode = exchange switch
+		{
+			Exchange.KRX => "K",
+			Exchange.NXT => "N",
+			_ => "U"
+		};
+
+		var response = await RequestStandardAsync<t8450>(LsEndpoint.EquityMarketData.ToDescription(), new
+		{
+			t8450InBlock = new t8450InBlock
+			{
+				shcode = symbol,
+				exchgubun = exchangeCode
+			}
+		});
+
+		if (response is null || response.t8450OutBlock is null) return new ResponseResult<OrderBook>
+		{
+			StatusCode = Status.ERROR_OPEN_API,
+			Message = response?.Message ?? "t8450 response is null"
+		};
+
+		List<MarketOrder> asks = [];
+		List<MarketOrder> bids = [];
+		var exchangePrefix = exchange switch
+		{
+			Exchange.KRX => "",
+			Exchange.NXT => "nxt_",
+			_ => "unx_"
+		};
+
+		for (int i = 0; i < 10; i++)
+		{
+			asks.Add(new MarketOrder
+			{
+				Seq = Convert.ToByte(i + 1),
+				Price = Convert.ToDecimal(response.t8450OutBlock.GetPropValue($"offerho{(i + 1)}")),
+				Amount = Convert.ToDecimal(response.t8450OutBlock.GetPropValue($"{exchangePrefix}offerrem{(i + 1)}"))
+			});
+
+			bids.Add(new MarketOrder
+			{
+				Seq = Convert.ToByte(i + 1),
+				Price = Convert.ToDecimal(response.t8450OutBlock.GetPropValue($"bidho{(i + 1)}")),
+				Amount = Convert.ToDecimal(response.t8450OutBlock.GetPropValue($"{exchangePrefix}bidrem{(i + 1)}"))
+			});
+		}
+
+		return new ResponseResult<OrderBook>
+		{
+			Broker = Brkr.LS,
+			Typ = MessageType.MKT,
+			Info = new OrderBook
+			{
+				TimeTaken = response.t8450OutBlock.hotime.ToTime(),
+				Ask = asks,
+				Bid = bids,
+				AskAgg = Convert.ToDecimal(response.t8450OutBlock.GetPropValue($"{exchangePrefix}offer")),
+				BidAgg = Convert.ToDecimal(response.t8450OutBlock.GetPropValue($"{exchangePrefix}bid")),
+			}
+		};
 	}
 	#endregion
 
