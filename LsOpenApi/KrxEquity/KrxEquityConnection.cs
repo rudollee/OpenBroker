@@ -364,6 +364,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				Code = trCode,
 				Info = new OrderBook
 				{
+					Exchange = Exchange.KRX,
 					Symbol = response.Body.shcode,
 					TimeTaken = response.Body.hotime.ToTime(),
 					Ask = asks,
