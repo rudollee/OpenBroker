@@ -243,6 +243,8 @@ public class ConnectionBase
 	{
 		if (Client is null) return new ResponseCore
 		{
+			Broker = Brkr.KI,
+			StatusCode = Status.ERROR_OPEN_API,
 			Code = "NULLERR",
 			Message = "Client is null",
 			Remark = subscriber
@@ -315,6 +317,7 @@ public class ConnectionBase
 
 			if (!needsAction) return new ResponseCore
 			{
+				Broker = Brkr.KI,
 				Typ = MessageType.SUB,
 				StatusCode = Status.SUCCESS,
 				Code = "NOACTION",
@@ -323,12 +326,7 @@ public class ConnectionBase
 
 			var result = await Task.Run(() => Client.Send(GenerateSubscriptionRequest(trCode, key, connecting)));
 
-			Message(this, new ResponseCore
-			{
-				Typ = MessageType.SUB,
-				Code = $"{trCode}({key})",
-				Message = $"Sent {(connecting ? "subscribe" : "unsubscribe")} request.",
-			});
+			SendMessage($"{trCode}({key})", $"Sent {(connecting ? "subscribe" : "unsubscribe")} request.", MessageType.SUB);
 
 			return new ResponseCore
 			{
@@ -339,6 +337,8 @@ public class ConnectionBase
 		{
 			return new ResponseCore
 			{
+				Broker = Brkr.KI,
+				Typ = MessageType.SUB,
 				StatusCode = Status.INTERNALSERVERERROR,
 				Message = $"catch error : {ex.Message}",
 				Remark = $"from {System.Reflection.MethodBase.GetCurrentMethod()?.Name} connecting is {connecting}"

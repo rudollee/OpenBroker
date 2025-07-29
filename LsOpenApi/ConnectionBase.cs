@@ -278,12 +278,7 @@ public class ConnectionBase
 
 			var result = await Task.Run(() => Client.Send(GenerateSubscriptionRequest(trCode, key, connecting)));
 
-			Message(this, new ResponseCore
-			{
-				Typ = MessageType.SUB,
-				Code = $"{trCode}({key})",
-				Message = $"Sent {(connecting ? "subscribe" : "unsubscribe")} request.",
-			});
+			SendMessage($"{trCode}({key})", $"Sent {(connecting ? "subscribe" : "unsubscribe")} request.", MessageType.SUB);
 
 			return new ResponseCore
 			{
@@ -312,23 +307,13 @@ public class ConnectionBase
 	{
 		if (message is null || message.MessageType != WebSocketMessageType.Text)
 		{
-			Message(this, new ResponseCore
-			{
-				Typ = MessageType.SYSERR,
-				Code = "BINARY",
-				Message = "binary message type"
-			});
+			SendErrorMessage("BINARY", "binary message type");
 			return;
 		}
 
 		if (message.Text is null)
 		{
-			Message(this, new ResponseCore
-			{
-				Typ = MessageType.SYSERR,
-				Code = "TEXTNULL",
-				Message = "message.Text is null"
-			});
+			SendErrorMessage("TEXTNULL", "message.Text is null");
 			return;
 		}
 
@@ -339,13 +324,7 @@ public class ConnectionBase
 		var trCode = root.GetProperty("header").GetProperty("tr_cd").GetString();
 		if (trCode is null)
 		{
-			Message(this, new ResponseCore
-			{
-				Typ = MessageType.SYSERR,
-				Code = "TRCODEERR",
-				Message = "failed to parse TR code"
-			});
-
+			SendErrorMessage("TRCODEERR", "failed to parse TR code");
 			return;
 		}
 
@@ -361,24 +340,12 @@ public class ConnectionBase
 			var response = await SubscribeAsync("RECONNECTION", subscirption.Key, subscirption.Value.Key);
 			if (response is null || response.StatusCode != Status.SUCCESS)
 			{
-				Message(this, new ResponseCore
-				{
-					Typ = MessageType.SYSERR,
-					Code = "RECON-FAIL",
-					Message = $"subscription {subscirption.Key} failed during reconnection",
-					Remark = subscirption.Value.Key
-				});
+				SendErrorMessage("RECON-FAIL", $"subscription {subscirption.Key} failed during reconnection", subscirption.Value.Key);
 				return;
 			}
 		}
 
-		Message(this, new ResponseCore
-		{
-			Typ = MessageType.SYSERR,
-			Broker = Brkr.LS,
-			Code = "RECONNECTION",
-			Message = $"LS {info.Type} and reconnected",
-		});
+		SendErrorMessage("RECONNECTION", "{info.Type} and reconnected");
 	}
 	#endregion
 
@@ -615,27 +582,33 @@ public class ConnectionBase
 		{
 			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<JIFOutBlock>>(message);
 			if (response is null || response.Body is null) return false;
-			Message(this, new ResponseCore
-			{
-				Typ = MessageType.MKTS,
-				Code = $"{response.Body.jangubun}.{response.Body.jstatus}",
-				Message = $"{CodeRef.MarketSectionDic[response.Body.jangubun]} {CodeRef.MarketStatusDic[response.Body.jstatus]}",
-				Broker = Brkr.LS
-			});
+			SendMessage($"{response.Body.jangubun}.{response.Body.jstatus}", $"{CodeRef.MarketSectionDic[response.Body.jangubun]} {CodeRef.MarketStatusDic[response.Body.jstatus]}", MessageType.MKTS);
 			return true;
 		}
 		catch (Exception ex)
 		{
-			Message(this, new ResponseCore
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Typ = MessageType.MKTS,
-				Code = nameof(JIF),
-				Message = ex.Message,
-				Broker = Brkr.LS
-			});
+			SendErrorMessage(nameof(JIF), ex.Message);
 			return false;
 		}
 	}
+	#endregion
+
+	#region simple response callback
+	protected void SendMessage(string code, string message, MessageType typ = MessageType.SYS, string remark = "") => Message(this, new ResponseCore
+	{
+		Broker = Brkr.LS,
+		Typ = typ,
+		Code = code,
+		Message = message,
+	});
+
+	protected void SendErrorMessage(string code, string message, string remark = "") => Message(this, new ResponseCore
+	{
+		StatusCode = Status.ERROR_OPEN_API,
+		Broker = Brkr.LS,
+		Typ = MessageType.SYSERR,
+		Code = code,
+		Message = message,
+	});
 	#endregion
 }
