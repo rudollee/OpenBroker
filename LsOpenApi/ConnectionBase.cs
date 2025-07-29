@@ -247,7 +247,7 @@ public class ConnectionBase
 
 			var result = await Task.Run(() => Client.Send(GenerateSubscriptionRequest(trCode, key, connecting)));
 
-			SendMessage($"{trCode}({key})", $"Sent {(connecting ? "subscribe" : "unsubscribe")} request.", MessageType.SUB);
+			SendMessage($"{trCode}:{key.Trim()}", $"Sent {(connecting ? "subscribe" : "unsubscribe")} request.", MessageType.SUB);
 
 			return new ResponseCore
 			{

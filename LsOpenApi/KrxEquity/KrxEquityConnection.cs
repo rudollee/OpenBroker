@@ -18,21 +18,13 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 	{
 		if (message is null || message.MessageType != WebSocketMessageType.Text)
 		{
-			Message(this, new ResponseCore
-			{
-				Code = "BINARY",
-				Message = "binary message type"
-			});
+			SendErrorMessage("BINARY", "binary message type");
 			return;
 		}
 
 		if (message.Text is null)
 		{
-			Message(this, new ResponseCore
-			{
-				Code = "TEXTNULL",
-				Message = "message.Text is null"
-			});
+			SendErrorMessage("TEXTNULL", "message.Text is null");
 			return;
 		}
 
@@ -79,14 +71,14 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 			if (response is null || response.Body is null) return false;
 
 			var publisherId = Convert.ToInt32(response.Body.id);
-			NewsPosted(this, new ResponseResult<News>
+			NewsPosted(this, new() 
 			{
 				Info = new News
 				{
 					Code = response.Body.realkey,
 					TimePosted = DateTime.Now,
 					PublisherId = publisherId,
-					Publisher = CodeRef.NewsPublishers.ContainsKey(publisherId) ? CodeRef.NewsPublishers[publisherId] : response.Body.id,
+					Publisher = CodeRef.NewsPublishers.TryGetValue(publisherId, out string? value) ? value : response.Body.id,
 					Title = response.Body.title,
 					Remark = response.Body.code,
 				},
@@ -97,14 +89,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			Message(this, new ResponseCore
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Broker = Brkr.LS,
-				Code = nameof(NWS),
-				Message = ex.Message
-			});
-
+			SendErrorMessage(nameof(NWS), ex.Message);
 			return false;
 		}
 	}
@@ -164,15 +149,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			Message(this, new ResponseCore
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Typ = MessageType.MKTS,
-				Code = trCode,
-				Message = ex.Message,
-				Broker = Brkr.LS
-			});
-
+			SendErrorMessage(trCode, ex.Message);
 			return false;
 		}
 	}
@@ -216,15 +193,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			Message(this, new ResponseCore
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Typ = MessageType.MKT,
-				Code = trCode,
-				Message = ex.Message,
-				Broker = Brkr.LS
-			});
-
+			SendErrorMessage(trCode, ex.Message);
 			return false;
 		}
 	}
@@ -262,13 +231,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			Message(this, new ResponseCore
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Broker = Brkr.LS,
-				Code = nameof(CUR),
-				Message = ex.Message
-			});
+			SendErrorMessage(nameof(CUR), ex.Message);
 			return false;
 		}
 	}
@@ -308,13 +271,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			Message(this, new ResponseCore
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Broker = Brkr.LS,
-				Code = nameof(MK2),
-				Message = ex.Message
-			});
+			SendErrorMessage(nameof(MK2), ex.Message);
 			return false;
 		}
 	}
@@ -523,13 +480,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			Message(this, new ResponseCore
-			{
-				Broker = Brkr.LS,
-				StatusCode = Status.ERROR_OPEN_API,
-				Code = nameof(UH1),
-				Message = ex.Message
-			});
+			SendErrorMessage(nameof(UH1), ex.Message);
 			return false;
 		}
 	}
@@ -572,13 +523,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			Message(this, new ResponseCore
-			{
-				Broker = Brkr.LS,
-				StatusCode = Status.ERROR_OPEN_API,
-				Code = nameof(VI_),
-				Message = ex.Message
-			});
+			SendErrorMessage(nameof(VI_), ex.Message);
 			return false;
 		}
 	}
@@ -629,14 +574,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			Message(this, new ResponseCore
-			{
-				Broker = Brkr.LS,
-				StatusCode = Status.ERROR_OPEN_API,
-				Code = nameof(SC0),
-				Message = ex.Message
-			});
-
+			SendErrorMessage(nameof(SC0), ex.Message);
 			return false;
 		}
 	}
@@ -694,14 +632,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			Message(this, new ResponseCore
-			{
-				Broker = Brkr.LS,
-				StatusCode = Status.ERROR_OPEN_API,
-				Code = trCode,
-				Message = ex.Message
-			});
-
+			SendErrorMessage(trCode, ex.Message);
 			return false;
 		}
 	}
@@ -747,14 +678,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			Message(this, new ResponseCore
-			{
-				Broker = Brkr.LS,
-				StatusCode = Status.ERROR_OPEN_API,
-				Code = nameof(SC1),
-				Message = ex.Message
-			});
-
+			SendErrorMessage(nameof(SC1), ex.Message);
 			return false;
 		}
 	} 
