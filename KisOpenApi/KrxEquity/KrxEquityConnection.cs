@@ -15,34 +15,46 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 	/// <param name="callbackTxt"></param>
 	protected override void ParseCallbackResponse(string callbackTxt)
 	{
-		string decrypt(string stringEncrypted)
+		try
 		{
-			var encryptedBin = Convert.FromBase64String(stringEncrypted);
-			using Aes aes = Aes.Create();
-			aes.IV = Encoding.UTF8.GetBytes(_iv);
-			aes.Key = Encoding.UTF8.GetBytes(_key);
+			string decrypt(string stringEncrypted)
+			{
+				var encryptedBin = Convert.FromBase64String(stringEncrypted);
+				using Aes aes = Aes.Create();
+				aes.IV = Encoding.UTF8.GetBytes(_iv);
+				aes.Key = Encoding.UTF8.GetBytes(_key);
 
-			using var decryptor = aes.CreateDecryptor();
-			var decryptedBin = decryptor.TransformFinalBlock(encryptedBin, 0, encryptedBin.Length);
+				using var decryptor = aes.CreateDecryptor();
+				var decryptedBin = decryptor.TransformFinalBlock(encryptedBin, 0, encryptedBin.Length);
 
-			return Encoding.UTF8.GetString(decryptedBin);
+				return Encoding.UTF8.GetString(decryptedBin);
+			}
+
+			var rawData = callbackTxt.Split('|');
+			var plainTxt = rawData[0] == "0" ? rawData[3] : decrypt(rawData[3]);
+
+			var data = plainTxt.Split("^");
+			if (data is null || !data.Any()) return;
+
+			var result = rawData[1] switch
+			{
+				nameof(H0STASP0) => CallbackH0STASP0(data),
+				nameof(H0STCNT0) => CallbackH0STCNT0(data, rawData[1]),
+				nameof(H0UNCNT0) => CallbackH0UNCNT0(data),
+				nameof(H0STCNI0) => CallbackH0STCNI0(data),
+				nameof(H0NXCNT0) => CallbackH0STCNT0(data, rawData[1]),
+				_ => false
+			};
 		}
-
-		var rawData = callbackTxt.Split('|');
-		var plainTxt = rawData[0] == "0" ? rawData[3] : decrypt(rawData[3]);
-
-		var data = plainTxt.Split("^");
-		if (data is null || !data.Any()) return;
-
-		var result = rawData[1] switch
+		catch (Exception ex)
 		{
-			nameof(H0STASP0) => CallbackH0STASP0(data),
-			nameof(H0STCNT0) => CallbackH0STCNT0(data, rawData[1]),
-			nameof(H0UNCNT0) => CallbackH0UNCNT0(data),
-			nameof(H0STCNI0) => CallbackH0STCNI0(data),
-			nameof(H0NXCNT0) => CallbackH0STCNT0(data, rawData[1]),
-			_ => false
-		};
+			Message(this, new ResponseCore
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Message = ex.Message,
+				Remark = callbackTxt,
+			});
+		}
 	}
 	#endregion
 
