@@ -603,6 +603,7 @@ public class ConnectionBase
 	protected ResponseResult<T> ReturnResult<T>(T info, string code = "", string message = "", MessageType typ = MessageType.SYS, string remark = "") where T : class => new()
 	{
 		Broker = Brkr.LS,
+		StatusCode = info is null ? Status.NODATA : Status.SUCCESS,
 		Typ = typ,
 		Code = code,
 		Message = message,

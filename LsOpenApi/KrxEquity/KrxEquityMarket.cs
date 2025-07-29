@@ -43,9 +43,10 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 		if (!Equities.ContainsKey(symbol)) return new ResponseCore
 		{
+			Broker = Brkr.LS,
+			StatusCode = Status.BAD_REQUEST,
 			Code = "NOT-FOUND",
 			Message = "A requested Symbol have not found",
-			StatusCode = Status.BAD_REQUEST,
 		};
 
 		return await SubscribeAsync(subscriber, Equities[symbol].Section == ExchangeSection.KOSPI ? "S3_" : "K3_", symbol, connecting);
@@ -58,9 +59,10 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 		if (!Equities.ContainsKey(symbol)) return new ResponseCore
 		{
+			Broker = Brkr.LS,
+			StatusCode = Status.BAD_REQUEST,
 			Code = "NOT-FOUND",
 			Message = "A requested Symbol have not found",
-			StatusCode = Status.BAD_REQUEST,
 		};
 
 		if (string.IsNullOrWhiteSpace(subscriber)) subscriber = "SYS";
@@ -92,35 +94,25 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				}
 			});
 
-			if (!response.t3102OutBlock1.Any()) return new ResponseResult<News>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Code = response.Code,
-				Message = response.Message,
-				Remark = $"{response.TrCode}: response failed"
-			};
+			if (!response.t3102OutBlock1.Any()) return ReturnResult<News>(new() 
+			{ 
+				Code = nameof(t3102), 
+				Title = string.Empty 
+			}, nameof(t3102), response.Message);
 
 			var htmlString = string.Join("", response.t3102OutBlock1.Select(s => s.sBody)).Replace("t3102OutBlock1", "");
 
-			return new ResponseResult<News>
+			return ReturnResult(new News
 			{
-				Info = new News
-				{
-					Code = id,
-					Title = response.t3102OutBlock2.sTitle,
-					Body = htmlString,
-					SymbolList = response.t3102OutBlock.Select(s => s.sJongcode).ToArray()
-				}
-			};
+				Code = id,
+				Title = response.t3102OutBlock2.sTitle,
+				Body = htmlString,
+				SymbolList = response.t3102OutBlock.Select(s => s.sJongcode).ToArray()
+			}, nameof(t3102));
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResult<News>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = ex.Message,
-				Remark = "exception catch area"
-			};
+			return ReturnErrorResult<News>(nameof(News), ex.Message);
 		}
 	}
 	#endregion
@@ -138,15 +130,9 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				}
 			});
 
-			if (!response.t8436OutBlock.Any()) return new ResponseResults<Equity>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = "no data",
-				Code = response.Code,
-				List = new List<Equity>()
-			};
+			if (response.t8436OutBlock.Count == 0) return ReturnResults<Equity>([], nameof(t8436), "no data");
 
-			var equities = new List<Equity>();
+			List<Equity> equities = [];
 			foreach (var instrument in response.t8436OutBlock.Where(w => new string[] { "01", "03" }.Contains(w.bu12gubun)))
 			{
 				var equity = new Equity
@@ -160,16 +146,11 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				Equities.Add(instrument.shcode, equity);
 			}
 
-			return new ResponseResults<Equity> { List = equities, };
+			return ReturnResults(equities, nameof(t8436));
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<Equity>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = ex.Message,
-				List = []
-			};
+			return ReturnErrorResults<Equity>(nameof(t8436), ex.Message);
 		}
 	}
 
@@ -236,13 +217,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				}
 			});
 
-			if (!response.t1403OutBlock1.Any()) return new ResponseResults<Equity>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = "no data",
-				Code = response.Code,
-				List = new List<Equity>()
-			};
+			if (response.t1403OutBlock1.Count == 0) return ReturnResults<Equity>([], nameof(t1403));
 
 			var equities = new List<Equity>();
 			foreach (var equity in response.t1403OutBlock1)
@@ -254,20 +229,11 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				});
 			}
 
-			return new ResponseResults<Equity>
-			{
-				List = equities,
-				Remark = response.t1403OutBlock1.Select(s => s.date).Max() ?? string.Empty
-			};
+			return ReturnResults(equities, nameof(t1403), string.Empty, MessageType.MKT, response.t1403OutBlock1.Select(s => s.date).Max() ?? string.Empty);
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<Equity>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = ex.Message,
-				List = new List<Equity>(),
-			};
+			return ReturnErrorResults<Equity>(nameof(t1403), ex.Message);
 		}
 	}
 	#endregion
@@ -293,13 +259,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				}
 			});
 
-			if (response.t1102OutBlock is null) return new ResponseResult<EquityPack>
-			{
-				StatusCode = Status.NODATA,
-				Message = response.Message,
-				Code = response.Code,
-				Remark = "no data"
-			};
+			if (response.t1102OutBlock is null) return ReturnResult<EquityPack>(new(), nameof(t1102), response.Message);
 
 			var equity = new EquityPack
 			{
@@ -334,29 +294,16 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 					_ => await RequestOrderbookAsync(symbol, exchange)
 				};
 
-				if (responseOrderbook is null || responseOrderbook.Info is null) return new ResponseResult<EquityPack>
-				{
-					StatusCode = Status.ERROR_OPEN_API,
-					Message = responseOrderbook?.Message ?? "response orderbook is null"
-				};
+				if (responseOrderbook.Info is null) return ReturnErrorResult<EquityPack>(nameof(t1102), responseOrderbook.Message);
 
 				equity.OrderBook = responseOrderbook.Info;
 			}
 
-			return new ResponseResult<EquityPack>
-			{
-				Info = equity,
-				Broker = Brkr.LS,
-				Remark = "MoneyAgg multiple: M"
-			};
+			return ReturnResult(equity, nameof(t1102), string.Empty, MessageType.MKT, "MoneyAgg multiple: M");
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResult<EquityPack>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = ex.Message
-			};
+			return ReturnErrorResult<EquityPack>(nameof(t1102), ex.Message);
 		}
 	}
 
@@ -367,11 +314,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			t1101InBlock = new t1101InBlock { shcode = symbol }
 		});
 
-		if (response is null || response.t1101OutBlock is null) return new ResponseResult<OrderBook>
-		{
-			StatusCode = Status.ERROR_OPEN_API,
-			Message = response?.Message ?? "t1101 response is null"
-		};
+		if (response is null || response.t1101OutBlock is null) return ReturnErrorResult<OrderBook>(nameof(t1101), "response is null");
 
 		List<MarketOrder> asks = [];
 		List<MarketOrder> bids = [];
@@ -425,11 +368,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			}
 		});
 
-		if (response is null || response.t8450OutBlock is null) return new ResponseResult<OrderBook>
-		{
-			StatusCode = Status.ERROR_OPEN_API,
-			Message = response?.Message ?? "t8450 response is null"
-		};
+		if (response.t8450OutBlock is null) return ReturnErrorResult<OrderBook>(nameof(t8450), response?.Message ?? "response is null");
 
 		List<MarketOrder> asks = [];
 		List<MarketOrder> bids = [];
@@ -505,14 +444,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				}
 			});
 
-			if (response.t8407OutBlock1 is null) return new ResponseResults<MarketExecution>
-			{
-				StatusCode = Status.NODATA,
-				List = [],
-				Code = response.Code,
-				Message = response.Message,
-				Remark = "no data"
-			};
+			if (response.t8407OutBlock1.Count == 0) return ReturnResults<MarketExecution>([], nameof(t8407), response.Message);
 
 			var executions = new List<MarketExecution>();
 			response.t8407OutBlock1.ForEach(f =>
@@ -536,21 +468,11 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				});
 			});
 
-			return new ResponseResults<MarketExecution>
-			{
-				Code = response.Code,
-				List = executions,
-			};
+			return ReturnResults(executions, nameof(t8407));
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<MarketExecution>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				List = [],
-				Code = "ERROR",
-				Message = ex.Message,
-			};
+			return ReturnErrorResults<MarketExecution>(nameof(t8407), ex.Message);
 		}
 	}
 	#endregion
@@ -571,14 +493,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				}
 			});
 
-			if (!response.t1301OutBlock1.Any()) return new ResponseResults<MarketExecution>
-			{
-				StatusCode = Status.NODATA,
-				Message = response.Message,
-				Code = response.Code,
-				Remark = "no data",
-				List = new List<MarketExecution>()
-			};
+			if (response.t1301OutBlock1.Count == 0) return ReturnResults<MarketExecution>([], nameof(t1301), response.Message);
 
 			var marketExecutions = new List<MarketExecution>();
 			response.t1301OutBlock1.ForEach(execution => marketExecutions.Add(new MarketExecution
@@ -593,19 +508,11 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				},
 			}));
 
-			return new ResponseResults<MarketExecution>
-			{
-				List = marketExecutions,
-			};
+			return ReturnResults(marketExecutions, nameof(t1301));
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<MarketExecution>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = ex.Message,
-				List = new List<MarketExecution>()
-			};
+			return ReturnErrorResults<MarketExecution>(nameof(t1301), ex.Message);
 		}
 	}
 	#endregion
@@ -624,14 +531,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				}
 			});
 
-			if (!response.t1531OutBlock.Any()) return new ResponseResults<Sector>
-			{
-				StatusCode = Status.NODATA,
-				Message = response.Message,
-				Code = response.Code,
-				Remark = "no data",
-				List = new List<Sector>()
-			};
+			if (response.t1531OutBlock.Count == 0) return ReturnResults<Sector>([], nameof(t1531), response.Message);
 
 			var sectors = new List<Sector>();
 			response.t1531OutBlock.ForEach(sector => sectors.Add(new Sector
@@ -641,16 +541,11 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				Diff = Convert.ToDecimal(sector.avgdiff)
 			}));
 
-			return new ResponseResults<Sector> { List = sectors };
+			return ReturnResults(sectors, nameof(t1531));
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<Sector>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = ex.Message,
-				List = new List<Sector>()
-			};
+			return ReturnErrorResults<Sector>(nameof(t1531), ex.Message);
 		}
 	}
 	#endregion
@@ -668,14 +563,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				}
 			});
 
-			if (!response.t1532OutBlock.Any()) return new ResponseResults<Sector>
-			{
-				StatusCode = Status.NODATA,
-				Message = response.Message,
-				Code = response.Code,
-				Remark = "no data",
-				List = new List<Sector>()
-			};
+			if (response.t1532OutBlock.Count == 0) return ReturnResults<Sector>([], nameof(t1532), response.Message);
 
 			var sectors = new List<Sector>();
 			response.t1532OutBlock.ForEach(sector => sectors.Add(new Sector
@@ -685,16 +573,11 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				Diff = Convert.ToDecimal(sector.avgdiff)
 			}));
 
-			return new ResponseResults<Sector> { List = sectors };
+			return ReturnResults(sectors, nameof(t1532));
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<Sector>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = ex.Message,
-				List = new List<Sector>()
-			};
+			return ReturnErrorResults<Sector>(nameof(t1532), ex.Message);
 		}
 	}
 	#endregion
@@ -712,14 +595,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				}
 			});
 
-			if (!response.t1537OutBlock1.Any()) return new ResponseResults<MarketExecution>
-			{
-				StatusCode = Status.NODATA,
-				Message = response.Message,
-				Code = response.Code,
-				Remark = "no data",
-				List = []
-			};
+			if (response.t1537OutBlock1.Count == 0) return ReturnResults<MarketExecution>([], nameof(t1537), response.Message);
 
 			var equities = new List<MarketExecution>();
 			response.t1537OutBlock1.ForEach(equity => equities.Add(new MarketExecution
@@ -736,260 +612,212 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				BasePrice = Convert.ToDecimal(equity.price) - Convert.ToDecimal(equity.change) * (DeclineCodes.Contains(equity.sign) ? -1 : 1)
 			}));
 
-			return new ResponseResults<MarketExecution> { List = equities };
+			return ReturnResults(equities, nameof(t1537));
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<MarketExecution>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = ex.Message,
-				List = []
-			};
+			return ReturnErrorResults<MarketExecution>(nameof(t1537), ex.Message);
 		}
 	}
 	#endregion
 
 	#region request chart data by t8410, t8411, t8412
-	public async Task<ResponseResult<QuotePack<T>>> RequestPricePack<T>(QuoteRequest request) where T : Quote =>
-		request.TimeIntervalUnit switch
-		{
-			IntervalUnit.Tick => await RequestPricePackTick<T>(request),
-			IntervalUnit.Minute => await RequestPricePackMinute<T>(request),
-			_ => await RequestPricePackX<T>(request)
-		};
-
-	private async Task<ResponseResult<QuotePack<T>>> RequestPricePackTick<T>(QuoteRequest request) where T : Quote
+	public async Task<ResponseResult<QuotePack<T>>> RequestPricePack<T>(QuoteRequest request) where T : Quote
 	{
 		try
 		{
-			var response = await RequestStandardAsync<t8411>(LsEndpoint.EquityChart.ToDescription(), new
+			return request.TimeIntervalUnit switch
 			{
-				t8411InBlock = new t841XInBlock
-				{
-					shcode = request.Symbol,
-					ncnt = request.TimeInterval,
-					qrycnt = 500,
-					sdate = request.DateTimeBegin.ToString("yyyyMMdd"),
-					edate = request.DateTimeEnd.ToString("yyyyMMdd"),
-				}
-			});
-
-			if (typeof(T) != typeof(Quote)) return new ResponseResult<QuotePack<T>>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = "Invalid type parameter for RequestPricePackTick",
-				Code = response.Code,
-				Remark = "type mismatch"
-			};
-
-			if (!response.t8411OutBlock1.Any()) return new ResponseResult<QuotePack<T>>
-			{
-				StatusCode = Status.NODATA,
-				Message = response.Message,
-				Code = response.Code,
-				Remark = "no data"
-			};
-
-			var priceInfo = new QuoteRate
-			{
-				T = DateTime.UtcNow.AddHours(9),
-				BasePrice = response.t8411OutBlock.jiclose,
-				C = response.t8411OutBlock.diclose,
-				O = response.t8411OutBlock.disiga,
-				H = response.t8411OutBlock.dihigh,
-				L = response.t8411OutBlock.dilow,
-				HighLimit = response.t8411OutBlock.highend,
-				LowLimit = response.t8411OutBlock.lowend,
-			};
-
-			var prices = new List<Quote>();
-			response.t8411OutBlock1.ForEach(price => prices.Add(new Quote
-			{
-				T = (price.date + price.time).ToDateTime(),
-				O = Convert.ToDecimal(price.open),
-				C = Convert.ToDecimal(price.close),
-				H = Convert.ToDecimal(price.high),
-				L = Convert.ToDecimal(price.low),
-				V = Convert.ToDecimal(price.jdiff_vol),
-				BasePrice = priceInfo.BasePrice,
-			}));
-
-			// TODO : 수정주가 적용 여부
-
-			return new ResponseResult<QuotePack<T>>
-			{
-				Info = new QuotePack<T>
-				{
-					Symbol = request.Symbol,
-					TimeIntervalUnit = request.TimeIntervalUnit,
-					TimeInterval = request.TimeInterval,
-					PrimaryList = prices as List<T> ?? [],
-					SecondaryInfo = priceInfo
-				}
+				IntervalUnit.Tick => await RequestPricePackTick<T>(request),
+				IntervalUnit.Minute => await RequestPricePackMinute<T>(request),
+				_ => await RequestPricePackX<T>(request)
 			};
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResult<QuotePack<T>>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = ex.Message,
-				Remark = "exception catch area"
-			};
+			return ReturnErrorResult<QuotePack<T>>("QUOTE", ex.Message);
 		}
+	}
+
+	private async Task<ResponseResult<QuotePack<T>>> RequestPricePackTick<T>(QuoteRequest request) where T : Quote
+	{
+		var response = await RequestStandardAsync<t8411>(LsEndpoint.EquityChart.ToDescription(), new
+		{
+			t8411InBlock = new t841XInBlock
+			{
+				shcode = request.Symbol,
+				ncnt = request.TimeInterval,
+				qrycnt = 500,
+				sdate = request.DateTimeBegin.ToString("yyyyMMdd"),
+				edate = request.DateTimeEnd.ToString("yyyyMMdd"),
+			}
+		});
+
+		if (typeof(T) != typeof(Quote)) return ReturnErrorResult<QuotePack<T>>(nameof(t8411), "Invalid type parameter for RequestPricePackTick", "type mismatch");
+
+		if (response.t8411OutBlock1.Count == 0) return ReturnResult<QuotePack<T>>(new() { PrimaryList = [] }, nameof(t8410), response.Message);
+
+		var priceInfo = new QuoteRate
+		{
+			T = DateTime.UtcNow.AddHours(9),
+			BasePrice = response.t8411OutBlock.jiclose,
+			C = response.t8411OutBlock.diclose,
+			O = response.t8411OutBlock.disiga,
+			H = response.t8411OutBlock.dihigh,
+			L = response.t8411OutBlock.dilow,
+			HighLimit = response.t8411OutBlock.highend,
+			LowLimit = response.t8411OutBlock.lowend,
+		};
+
+		var prices = new List<Quote>();
+		response.t8411OutBlock1.ForEach(price => prices.Add(new Quote
+		{
+			T = (price.date + price.time).ToDateTime(),
+			O = Convert.ToDecimal(price.open),
+			C = Convert.ToDecimal(price.close),
+			H = Convert.ToDecimal(price.high),
+			L = Convert.ToDecimal(price.low),
+			V = Convert.ToDecimal(price.jdiff_vol),
+			BasePrice = priceInfo.BasePrice,
+		}));
+
+		// TODO : 수정주가 적용 여부
+
+		return new ResponseResult<QuotePack<T>>
+		{
+			Broker = Brkr.LS,
+			Info = new QuotePack<T>
+			{
+				Symbol = request.Symbol,
+				TimeIntervalUnit = request.TimeIntervalUnit,
+				TimeInterval = request.TimeInterval,
+				PrimaryList = prices as List<T> ?? [],
+				SecondaryInfo = priceInfo
+			}
+		};
 	}
 
 	private async Task<ResponseResult<QuotePack<T>>> RequestPricePackMinute<T>(QuoteRequest request) where T : Quote
 	{
-		try
+		var response = await RequestStandardAsync<t8412>(LsEndpoint.EquityChart.ToDescription(), new
 		{
-			var response = await RequestStandardAsync<t8412>(LsEndpoint.EquityChart.ToDescription(), new
+			t8412InBlock = new t841XInBlock
 			{
-				t8412InBlock = new t841XInBlock
-				{
-					shcode = request.Symbol,
-					ncnt = request.TimeInterval,
-					qrycnt = 500,
-					sdate = request.DateTimeBegin.ToString("yyyyMMdd"),
-					edate = request.DateTimeEnd.ToString("yyyyMMdd"),
-				}
-			});
+				shcode = request.Symbol,
+				ncnt = request.TimeInterval,
+				qrycnt = 500,
+				sdate = request.DateTimeBegin.ToString("yyyyMMdd"),
+				edate = request.DateTimeEnd.ToString("yyyyMMdd"),
+			}
+		});
 
-			if (!response.t8412OutBlock1.Any()) return new ResponseResult<QuotePack<T>>
-			{
-				StatusCode = Status.NODATA,
-				Message = response.Message,
-				Code = response.Code,
-				Remark = "no data"
-			};
+		if (response.t8412OutBlock1.Count == 0) return ReturnResult<QuotePack<T>>(new() { PrimaryList = [] }, nameof(t8412), response.Message);
 
-			var priceInfo = new QuoteRate
-			{
-				T = DateTime.UtcNow.AddHours(9),
-				BasePrice = response.t8412OutBlock.jiclose,
-				C = response.t8412OutBlock.diclose,
-				O = response.t8412OutBlock.disiga,
-				H = response.t8412OutBlock.dihigh,
-				L = response.t8412OutBlock.dilow,
-				HighLimit = response.t8412OutBlock.highend,
-				LowLimit = response.t8412OutBlock.lowend,
-			};
-
-			var prices = new List<Quote>();
-			response.t8412OutBlock1.ForEach(price => prices.Add(new Quote
-			{
-				T = (price.date + price.time).ToDateTime(),
-				O = Convert.ToDecimal(price.open),
-				C = Convert.ToDecimal(price.close),
-				H = Convert.ToDecimal(price.high),
-				L = Convert.ToDecimal(price.low),
-				V = Convert.ToDecimal(price.jdiff_vol),
-				BasePrice = priceInfo.BasePrice,
-			}));
-
-			// TODO : 수정주가 적용 여부
-
-			return new ResponseResult<QuotePack<T>>
-			{
-				Info = new QuotePack<T> 
-				{
-					Symbol = request.Symbol,
-					TimeIntervalUnit = request.TimeIntervalUnit,
-					TimeInterval = request.TimeInterval,
-					PrimaryList = prices as List<T> ?? [],
-					SecondaryInfo = priceInfo
-				}
-			};
-		}
-		catch (Exception ex)
+		var priceInfo = new QuoteRate
 		{
-			return new ResponseResult<QuotePack<T>>
+			T = DateTime.UtcNow.AddHours(9),
+			BasePrice = response.t8412OutBlock.jiclose,
+			C = response.t8412OutBlock.diclose,
+			O = response.t8412OutBlock.disiga,
+			H = response.t8412OutBlock.dihigh,
+			L = response.t8412OutBlock.dilow,
+			HighLimit = response.t8412OutBlock.highend,
+			LowLimit = response.t8412OutBlock.lowend,
+		};
+
+		var prices = new List<Quote>();
+		response.t8412OutBlock1.ForEach(price => prices.Add(new Quote
+		{
+			T = (price.date + price.time).ToDateTime(),
+			O = Convert.ToDecimal(price.open),
+			C = Convert.ToDecimal(price.close),
+			H = Convert.ToDecimal(price.high),
+			L = Convert.ToDecimal(price.low),
+			V = Convert.ToDecimal(price.jdiff_vol),
+			BasePrice = priceInfo.BasePrice,
+		}));
+
+		// TODO : 수정주가 적용 여부
+
+		return new ResponseResult<QuotePack<T>>
+		{
+			Broker = Brkr.LS,
+			Info = new QuotePack<T>
 			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = ex.Message,
-				Remark = "exception catch area"
-			};
-		}
+				Symbol = request.Symbol,
+				TimeIntervalUnit = request.TimeIntervalUnit,
+				TimeInterval = request.TimeInterval,
+				PrimaryList = prices as List<T> ?? [],
+				SecondaryInfo = priceInfo
+			}
+		};
 	}
 
 	private async Task<ResponseResult<QuotePack<T>>> RequestPricePackX<T>(QuoteRequest request) where T : Quote
 	{
-		List<Quote> quotes = new();
-		try
+		List<Quote> quotes = [];
+		List<t8410OutBlock1> list = [];
+		var nextKey = string.Empty;
+		var ctsDate = string.Empty;
+		do
 		{
-			List<t8410OutBlock1> list = new();
-			var nextKey = string.Empty;
-			var ctsDate = string.Empty;
-			do
+			var response = await RequestContinuousAsync<t8410>(LsEndpoint.EquityChart.ToDescription(), new
 			{
-				var response = await RequestContinuousAsync<t8410>(LsEndpoint.EquityChart.ToDescription(), new
+				t8410InBlock = new t8410InBlock
 				{
-					t8410InBlock = new t8410InBlock
+					shcode = request.Symbol,
+					gubun = request.TimeIntervalUnit switch
 					{
-						shcode = request.Symbol,
-						gubun = request.TimeIntervalUnit switch
-						{
-							IntervalUnit.Day => "2",
-							IntervalUnit.Week => "3",
-							IntervalUnit.Month => "4",
-							_ => "5"
-						},
-						qrycnt = 500,
-						sdate = request.DateTimeBegin.ToString("yyyyMMdd"),
-						edate = request.DateTimeEnd.ToString("yyyyMMdd"),
-						cts_date = ctsDate,
-					}
-				}, nextKey);
-
-				if (response is null || !response.t8410OutBlock1.Any())
-				{
-					nextKey = string.Empty;
-					break;
+						IntervalUnit.Day => "2",
+						IntervalUnit.Week => "3",
+						IntervalUnit.Month => "4",
+						_ => "5"
+					},
+					qrycnt = 500,
+					sdate = request.DateTimeBegin.ToString("yyyyMMdd"),
+					edate = request.DateTimeEnd.ToString("yyyyMMdd"),
+					cts_date = ctsDate,
 				}
+			}, nextKey);
 
-				list.InsertRange(0, response.t8410OutBlock1);
-				nextKey = response.NextKey;
-				ctsDate = response.t8410OutBlock.cts_date;
-			} while (!string.IsNullOrEmpty(nextKey));
-
-			quotes.Capacity = list.Count;
-			list.ForEach(f =>
+			if (response.t8410OutBlock1.Count == 0)
 			{
-				quotes.Add(new Quote
-				{
-					T = $"{f.date}".ToDateTime(),
-					O = f.open,
-					H = f.high,
-					L = f.low,
-					C = f.close,
-					V = f.jdiff_vol,
-				});
-			});
+				nextKey = string.Empty;
+				break;
+			}
 
+			list.InsertRange(0, response.t8410OutBlock1);
+			nextKey = response.NextKey;
+			ctsDate = response.t8410OutBlock.cts_date;
+		} while (!string.IsNullOrEmpty(nextKey));
 
-			// TODO : 수정주가 적용 여부
-
-			return new ResponseResult<QuotePack<T>>
-			{
-				Info = new QuotePack<T>
-				{
-					Symbol = request.Symbol,
-					PrimaryList = quotes as List<T> ?? [],
-					TimeInterval = request.TimeInterval,
-					TimeIntervalUnit = request.TimeIntervalUnit,
-				},
-			};
-		}
-		catch (Exception ex)
+		quotes.Capacity = list.Count;
+		list.ForEach(f =>
 		{
-			return new ResponseResult<QuotePack<T>>
+			quotes.Add(new Quote
 			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = ex.Message,
-				Remark = "exception catch area"
-			};
-		}
+				T = $"{f.date}".ToDateTime(),
+				O = f.open,
+				H = f.high,
+				L = f.low,
+				C = f.close,
+				V = f.jdiff_vol,
+			});
+		});
+
+		// TODO : 수정주가 적용 여부
+
+		return new ResponseResult<QuotePack<T>>
+		{
+			Broker = Brkr.LS,
+			Info = new QuotePack<T>
+			{
+				Symbol = request.Symbol,
+				PrimaryList = quotes as List<T> ?? [],
+				TimeInterval = request.TimeInterval,
+				TimeIntervalUnit = request.TimeIntervalUnit,
+			},
+		};
 	}
 	#endregion
 
@@ -1013,14 +841,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				}
 			});
 
-			if (!response.t1866OutBlock1.Any()) return new ResponseResults<SearchFilter>
-			{
-				StatusCode = Status.NODATA,
-				Message = response.Message,
-				Code = response.Code,
-				Remark = "no data",
-				List = new List<SearchFilter>()
-			};
+			if (response.t1866OutBlock1.Count == 0) return ReturnResults<SearchFilter>([], nameof(t1866), response.Message);
 
 			var filters = new List<SearchFilter>();
 			response.t1866OutBlock1.ForEach(filter => filters.Add(new SearchFilter
@@ -1030,16 +851,11 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				Query = filter.query_name
 			}));
 
-			return new ResponseResults<SearchFilter> { List = filters };
+			return ReturnResults(filters, nameof(t1866));
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<SearchFilter>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = ex.Message,
-				List = new List<SearchFilter>()
-			};
+			return ReturnResults<SearchFilter>([], nameof(t1866), ex.Message);
 		}
 	}
 
@@ -1055,14 +871,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				}
 			});
 
-			if (!response.t1859OutBlock1.Any()) return new ResponseResults<MarketExecution>
-			{
-				StatusCode = Status.NODATA,
-				Message = response.Message,
-				Code = response.Code,
-				Remark = "no data",
-				List = new List<MarketExecution>()
-			};
+			if (response.t1859OutBlock1.Count == 0) return ReturnResults<MarketExecution>([], nameof(t1859), response.Message);
 
 			var executions = new List<MarketExecution>();
 			response.t1859OutBlock1.ForEach(execution => executions.Add(new MarketExecution
@@ -1073,16 +882,11 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				VolumeExecuted = execution.volume,
 			}));
 
-			return new ResponseResults<MarketExecution> { List = executions };
+			return ReturnResults(executions, nameof(t1859));
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<MarketExecution>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = ex.Message,
-				List = new List<MarketExecution>()
-			};
+			return ReturnErrorResults<MarketExecution>(nameof(t1859), ex.Message);
 		}
 	} 
 	#endregion
