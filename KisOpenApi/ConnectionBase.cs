@@ -410,9 +410,9 @@ public class ConnectionBase
 
 		Message(this, new ResponseCore
 		{
-			Typ = MessageType.SYS,
-			Code = "Reconnected",
-			Message = info.Type.ToString(),
+			Typ = MessageType.SYSERR,
+			Code = "RECONNECTION",
+			Message = $"KIS {info.Type} and reconnected",
 		});
 	}
 

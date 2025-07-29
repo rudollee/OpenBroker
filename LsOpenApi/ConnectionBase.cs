@@ -374,8 +374,10 @@ public class ConnectionBase
 
 		Message(this, new ResponseCore
 		{
-			Code = "Reconnected",
-			Message = info.Type.ToString(),
+			Typ = MessageType.SYSERR,
+			Broker = Brkr.LS,
+			Code = "RECONNECTION",
+			Message = $"LS {info.Type} and reconnected",
 		});
 	}
 	#endregion
