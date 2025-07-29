@@ -79,30 +79,15 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 		try
 		{
 			var response = await client.PostAsync<T>(request);
-			if (response is null) return new ResponseCore
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = "response is null",
-			};
+			if (response is null) return ReturnError(typeof(T).Name, "response is null");
 
-			return new ResponseCore
-			{
-				Code = response.Code,
-				Message = response.Message,
-				Remark = response.OrderNo.ToString()
-			};
+			return ReturnCore(response.Code, response.Message, MessageType.ORDER, response.OrderNo.ToString());
 		}
 		catch (Exception ex)
 		{
-			return new ResponseCore
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = ex.Message,
-				Remark = "exception"
-			};
+			return ReturnError(typeof(T).Name, ex.Message);
 		}
 	}
-
 	#endregion
 
 	#region 예수금 - CSPAQ22200
@@ -118,11 +103,10 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 				}
 			});
 
-			if (response is null || response.CSPAQ22200OutBlock2 is null) return new ResponseResult<Balance>
+			if (response is null || response.CSPAQ22200OutBlock2 is null)
 			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = "response or CSPAQ22200OutBlock2 is null"
-			};
+				return ReturnErrorResult<Balance>(nameof(CSPAQ22200), response?.Message ?? "response is null");
+			}
 
 			return new ResponseResult<Balance>
 			{
@@ -141,12 +125,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResult<Balance>
-			{
-				StatusCode = Status.INTERNALSERVERERROR,
-				Message = ex.Message,
-				Remark = "catch"
-			};
+			return ReturnErrorResult<Balance>(nameof(CSPAQ22200), ex.Message);
 		}
 	} 
 	#endregion
@@ -200,19 +179,11 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 				});
 			});
 
-			return new ResponseResults<Execution>
-			{
-				List = executions,
-			};
+			return ReturnResults<Execution>(executions, nameof(t0425));
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<Execution>
-			{
-				StatusCode = Status.INTERNALSERVERERROR,
-				Message = ex.Message,
-				List = new List<Execution>()
-			};
+			return ReturnErrorResults<Execution>(nameof(t0425), ex.Message);
 		}
 	}
 	#endregion
@@ -300,20 +271,11 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 				});
 			});
 
-			return new ResponseResults<Execution>
-			{
-				List = executions
-			};
+			return ReturnResults<Execution>(executions, nameof(CSPAQ13700));
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<Execution>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = ex.Message,
-				Remark = "catch area",
-				List = new List<Execution>()
-			};
+			return ReturnErrorResults<Execution>(nameof(CSPAQ13700), ex.Message);
 		}
 	} 
 	#endregion
@@ -372,12 +334,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 		}
 		catch (Exception ex)
 		{
-			return new ResponseCore
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = ex.Message,
-				Remark = "catch area"
-			};
+			return ReturnError(nameof(CSPBQ00200), ex.Message);
 		}
 	} 
 	#endregion
@@ -433,21 +390,11 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 				}
 			});
 
-			return new ResponseResults<Order>
-			{
-				List = orders,
-			};
+			return ReturnResults<Order>(orders, nameof(CSPAQ13700));
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<Order>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = ex.Message,
-				List = new List<Order>(),
-				Remark = "catch area"
-			};
-			throw;
+			return ReturnErrorResults<Order>(nameof(CSPAQ13700), ex.Message);
 		}
 	}
 	#endregion
@@ -491,21 +438,11 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 				});
 			});
 
-			return new ResponseResults<Position>
-			{
-				List = positions,
-				Remark = response.t0424OutBlock.dtsunik.ToString()
-			};
+			return ReturnResults<Position>(positions, nameof(t0424), string.Empty, MessageType.SYS, response.t0424OutBlock.dtsunik.ToString());
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<Position>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Code = "ERROR - T0424",
-				Message = ex.Message,
-				List = positions,
-			};
+			return ReturnErrorResults<Position>(nameof(t0424), ex.Message);
 		}
 	}
 	#endregion
@@ -522,29 +459,14 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 				t0151InBlock = new t0151InBlock { date = date.ToString("yyyyMMdd") }
 			});
 
-			if (response is null) return new ResponseResults<Position>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = $"{nameof(t0151)} is null",
-				List = []
-			};
-
-			if (!response.t0151OutBlock1.Any()) return new ResponseResults<Position>
-			{
-				Message = $"no executed",
-				List = []
-			};
+			if (response is null) return ReturnErrorResults<Position>(nameof(t0151), "response is null");
+			if (response.t0151OutBlock1.Count == 0) return ReturnResults<Position>([], nameof(t0151), "no execution");
 
 			return GeneratePositions(date, response.t0151OutBlock1);
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<Position>
-			{
-				StatusCode = Status.INTERNALSERVERERROR,
-				Message = ex.Message,
-				List = []
-			};
+			return ReturnErrorResults<Position>(nameof(t0151), ex.Message);
 		}
 	}
 
@@ -555,18 +477,8 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 			t0150InBlock = new t0150InBlock { }
 		});
 
-		if (response is null) return new ResponseResults<Position>
-		{
-			StatusCode = Status.ERROR_OPEN_API,
-			Message = $"{nameof(t0150)} is null",
-			List = []
-		};
-
-		if (!response.t0150OutBlock1.Any()) return new ResponseResults<Position>
-		{
-			Message = $"no executed",
-			List = []
-		};
+		if (response is null) return ReturnErrorResults<Position>(nameof(t0150), "response is null");
+		if (response.t0150OutBlock1.Count == 0) return ReturnResults<Position>([], nameof(t0150), "no execution");
 
 		return GeneratePositions(DateOnly.FromDateTime(DateTime.Now), response.t0150OutBlock1);
 	}
@@ -597,10 +509,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 			}
 		}
 
-		return new ResponseResults<Position>
-		{
-			List = positions
-		};
+		return ReturnResults<Position>(positions, nameof(t0150));
 	}
 	#endregion
 
@@ -619,11 +528,6 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 			if (response.StatusCode != Status.SUCCESS) return response;
 		}
 
-		return new ResponseCore
-		{
-			StatusCode = Status.SUCCESS,
-		};
+		return ReturnCore("ORDER");
 	}
-
-	
 }

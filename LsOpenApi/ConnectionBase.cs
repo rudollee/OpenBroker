@@ -624,7 +624,7 @@ public class ConnectionBase
 	protected ResponseResults<T> ReturnResults<T>(List<T> list, string code = "", string message = "", MessageType typ = MessageType.SYS, string remark = "") where T : class => new ResponseResults<T>
 	{
 		Broker = Brkr.LS,
-		StatusCode = Status.SUCCESS,
+		StatusCode = list.Count >0 ? Status.SUCCESS : Status.NODATA,
 		Typ = typ,
 		Code = code,
 		Message = message,
