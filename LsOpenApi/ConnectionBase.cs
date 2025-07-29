@@ -32,7 +32,7 @@ public class ConnectionBase
 
 	protected IWebsocketClient? Client;
 
-	private List<Request> Requests = new();
+	private List<Request> Requests = [];
 
 	private Dictionary<string, SubscriptionPack> _subscriptions = new()
 	{
@@ -67,17 +67,14 @@ public class ConnectionBase
 		{
 			var response = await client.PostAsync<AccessTokenResponse>(request);
 
-			if (response is null) return new ResponseResult<KeyPack>
-			{
-				Typ = MessageType.SYSERR,
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = "response is null"
-			};
+			if (response is null) return ReturnErrorResult<KeyPack>(string.Empty, "response is null");
 
 			if (string.IsNullOrEmpty(response.AccessToken)) return new ResponseResult<KeyPack>
 			{
+				Broker = Brkr.LS,
 				Typ = MessageType.SYSERR,
 				StatusCode = Status.UNAUTHORIZED,
+				Code = "ACCESS-TOKEN",
 				Message = "no token",
 			};
 
@@ -100,13 +97,7 @@ public class ConnectionBase
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResult<KeyPack>
-			{
-				Typ = MessageType.SYSERR,
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = ex.Message,
-				Remark = "error catch"
-			};
+			return ReturnErrorResult<KeyPack>("ACCESS-TOKEN", ex.Message, "error catch");
 		}
 	}
 
@@ -145,29 +136,20 @@ public class ConnectionBase
 
 			return new ResponseCore
 			{
+				Broker = Brkr.LS,
 				StatusCode = Status.SUCCESS,
 				Message = "Connected"
 			};
 		}
 		catch (Exception ex)
 		{
-			return new ResponseCore
-			{
-				Typ = MessageType.SYSERR,
-				StatusCode = Status.INTERNALSERVERERROR,
-				Message = ex.Message,
-				Remark = "during connect websocket"
-			};
+			return ReturnError("CONNECTION", ex.Message, "during connect websocket");
 		}
 	}
 
 	public async Task<ResponseCore> DisconnectAsync()
 	{
-		if (Client is null) return new ResponseCore
-		{
-			Code = "NOCONNECTION",
-			Message = "no connection to disconnect or already disconnected"
-		};
+		if (Client is null) return ReturnError("NOCONNECTION", "no connection to disconnect or already disconnected");
 
 		await Client.Stop(WebSocketCloseStatus.NormalClosure, "");
 		Client.Dispose();
@@ -178,10 +160,7 @@ public class ConnectionBase
 			await SubscribeAsync("SYS", subscription.Key, subscription.Value.Key, false);
 		}
 
-		return new ResponseCore
-		{
-			Message = "disconnected"
-		};
+		return ReturnCore("DISCONNECTION", "disconnected", MessageType.SYS);
 	}
 	#endregion
 
@@ -190,6 +169,8 @@ public class ConnectionBase
 	{
 		if (string.IsNullOrWhiteSpace(trCode)) return new ResponseCore
 		{
+			Broker = Brkr.LS,
+			Typ = MessageType.SYSERR,
 			StatusCode = Status.BAD_REQUEST,
 			Code = "NOTRCODE",
 			Remark = subscriber
@@ -202,13 +183,7 @@ public class ConnectionBase
 			return JsonSerializer.Serialize(new LsSubscriptionRequest(KeyInfo.AccessToken, id, key, connecting));
 		}
 
-		if (Client is null) return new ResponseCore
-		{
-			Typ = MessageType.SYSERR,
-			StatusCode = Status.ERROR_OPEN_API,
-			Code = "NOCONNECTION",
-			Message = "client is null"
-		};
+		if (Client is null) return ReturnError("NOCONNECTION", "client is null");
 
 		try
 		{
@@ -268,13 +243,7 @@ public class ConnectionBase
 				}
 			}
 
-			if (!needsAction) return new ResponseCore
-			{
-				Typ = MessageType.SUB,
-				StatusCode = Status.SUCCESS,
-				Code = "NOACTION",
-				Message = message
-			};
+			if (!needsAction) return ReturnCore("NOACTION", message);
 
 			var result = await Task.Run(() => Client.Send(GenerateSubscriptionRequest(trCode, key, connecting)));
 
@@ -283,17 +252,13 @@ public class ConnectionBase
 			return new ResponseCore
 			{
 				StatusCode = result ? Status.SUCCESS : Status.ERROR_OPEN_API,
+				Broker = Brkr.LS,
+				Typ = result ? MessageType.SUB : MessageType.SYSERR,
 			};
 		}
 		catch (Exception ex)
 		{
-			return new ResponseCore
-			{
-				Typ = MessageType.SYSERR,
-				StatusCode = Status.INTERNALSERVERERROR,
-				Message = $"catch error : {ex.Message}",
-				Remark = $"from {System.Reflection.MethodBase.GetCurrentMethod()?.Name} connecting is {connecting}"
-			};
+			return ReturnError($"{trCode}:{key}", $"{subscriber} : {ex.Message}", $"from {System.Reflection.MethodBase.GetCurrentMethod()?.Name} connecting is {connecting}");
 		};
 	}
 	#endregion
@@ -457,12 +422,12 @@ public class ConnectionBase
 		}
 		catch (Exception ex)
 		{
-			var x = ex.Message;
+			SendErrorMessage(trCode, ex.Message);
 			return false;
 		}
 
 		var requests = Requests.Where(request => request.TrCode == trCode).OrderByDescending(o => o.RequestTime).ToList();
-		if (requests.Count() < CodeRef.RequestIntervals[trCode])
+		if (requests.Count < CodeRef.RequestIntervals[trCode])
 		{
 			Requests.Add(new Request { TrCode = trCode });
 			return true;
@@ -472,12 +437,7 @@ public class ConnectionBase
 
 		if (needsMessage && delaying.TotalMilliseconds > 250)
 		{
-			Message(this, new ResponseCore
-			{
-				StatusCode = Status.SUCCESS,
-				Code = trCode,
-				Message = $"request forcely delayed {(delaying.TotalMilliseconds * 0.001).ToString("N3")} sec."
-			}); 
+			SendMessage(trCode, $"request forcely delayed {(delaying.TotalMilliseconds * 0.001).ToString("N3")} sec.");
 		}
 
 		Thread.Sleep(delaying);
@@ -593,7 +553,7 @@ public class ConnectionBase
 	}
 	#endregion
 
-	#region simple response callback
+	#region simple response callback or return
 	protected void SendMessage(string code, string message, MessageType typ = MessageType.SYS, string remark = "") => Message(this, new ResponseCore
 	{
 		Broker = Brkr.LS,
@@ -610,5 +570,66 @@ public class ConnectionBase
 		Code = code,
 		Message = message,
 	});
+
+	protected ResponseCore ReturnError(string code, string message, string remark = "") => new() 
+	{
+		Broker = Brkr.LS,
+		Typ = MessageType.SYSERR,
+		StatusCode = Status.ERROR_OPEN_API,
+		Code = code,
+		Message = message,
+		Remark = remark
+	};
+
+	protected ResponseCore ReturnCore(string code = "", string message = "", MessageType typ = MessageType.SYS, string remark = "") => new()
+	{
+		Broker = Brkr.LS,
+		Typ = typ,
+		Code = code,
+		Message = message,
+		Remark = remark
+	};
+
+	protected ResponseResult<T> ReturnErrorResult<T>(string code, string meesage, string remark = "") where T : class => new()
+	{
+		Broker = Brkr.LS,
+		Typ = MessageType.SYSERR,
+		Code = code,
+		StatusCode = Status.ERROR_OPEN_API,
+		Message = meesage,
+		Remark = remark
+	};
+
+	protected ResponseResult<T> ReturnResult<T>(T info, string code = "", string message = "", MessageType typ = MessageType.SYS, string remark = "") where T : class => new()
+	{
+		Broker = Brkr.LS,
+		Typ = typ,
+		Code = code,
+		Message = message,
+		Info = info,
+		Remark = remark
+	};
+
+	protected ResponseResults<T> ReturnErrorResults<T>(string code = "", string message = "", string remark = "") where T : class => new()
+	{
+		Broker = Brkr.LS,
+		StatusCode = Status.ERROR_OPEN_API,
+		Typ = MessageType.SYSERR,
+		Code = code,
+		Message = message,
+		Remark = remark,
+		List = []
+	};
+
+	protected ResponseResults<T> ReturnResults<T>(List<T> list, string code = "", string message = "", MessageType typ = MessageType.SYS, string remark = "") where T : class => new ResponseResults<T>
+	{
+		Broker = Brkr.LS,
+		StatusCode = Status.SUCCESS,
+		Typ = typ,
+		Code = code,
+		Message = message,
+		List = list,
+		Remark = remark
+	};
 	#endregion
 }
