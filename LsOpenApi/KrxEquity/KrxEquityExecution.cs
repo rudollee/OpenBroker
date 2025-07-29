@@ -103,25 +103,22 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 				}
 			});
 
-			if (response is null || response.CSPAQ22200OutBlock2 is null)
+			if (response.CSPAQ22200OutBlock2 is null)
 			{
-				return ReturnErrorResult<Balance>(nameof(CSPAQ22200), response?.Message ?? "response is null");
+				return ReturnErrorResult<Balance>($"{nameof(CSPAQ22200)}.{response.Code}", response?.Message ?? "response is null");
 			}
 
-			return new ResponseResult<Balance>
+			return ReturnResult<Balance>(new Balance
 			{
-				Info = new Balance
-				{
-					BrokerCode = "LS",
-					CurBased = Currency.KRW,
-					AccountNumber = response.CSPAQ22200OutBlock1.AcntNo,
-					DepositInit = Convert.ToDecimal(response.CSPAQ22200OutBlock2.Dps),
-					DepositD1 = Convert.ToDecimal(response.CSPAQ22200OutBlock2.D1Dps),
-					DepositEst = Convert.ToDecimal(response.CSPAQ22200OutBlock2.D2Dps),
-					CashTradable = Convert.ToDecimal(response.CSPAQ22200OutBlock2.D2Dps),
-					MarginInitial = Convert.ToDecimal(response.CSPAQ22200OutBlock2.MgnMny),
-				}
-			};
+				BrokerCode = "LS",
+				CurBased = Currency.KRW,
+				AccountNumber = response.CSPAQ22200OutBlock1.AcntNo,
+				DepositInit = Convert.ToDecimal(response.CSPAQ22200OutBlock2.Dps),
+				DepositD1 = Convert.ToDecimal(response.CSPAQ22200OutBlock2.D1Dps),
+				DepositEst = Convert.ToDecimal(response.CSPAQ22200OutBlock2.D2Dps),
+				CashTradable = Convert.ToDecimal(response.CSPAQ22200OutBlock2.D2Dps),
+				MarginInitial = Convert.ToDecimal(response.CSPAQ22200OutBlock2.MgnMny),
+			}, $"{nameof(CSPAQ22200)}.{response.Code}");
 		}
 		catch (Exception ex)
 		{
@@ -153,6 +150,8 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 				}
 			});
 
+			if (response.t0425OutBlock1.Count == 0) return ReturnResults<Execution>([], $"{nameof(t0425)}.{response.Code}", response.Message);
+
 			var executions = new List<Execution>() { Capacity = response.t0425OutBlock1.Count };
 			response.t0425OutBlock1.ForEach(execution =>
 			{
@@ -179,7 +178,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 				});
 			});
 
-			return ReturnResults<Execution>(executions, nameof(t0425));
+			return ReturnResults(executions, $"{nameof(t0425)}.{response.Code}");
 		}
 		catch (Exception ex)
 		{
@@ -207,6 +206,8 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 					OrdDt = dateBegun.ToString("yyyyMMdd"),
 				}
 			});
+
+			if (response.CSPAQ13700OutBlock3.Count == 0) return ReturnResults<Execution>([], $"{nameof(CSPAQ13700)}.{response.Code}", response.Message);
 
 			var executions = new List<Execution>() { Capacity = response.CSPAQ13700OutBlock3.Count };
 
@@ -271,7 +272,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 				});
 			});
 
-			return ReturnResults<Execution>(executions, nameof(CSPAQ13700));
+			return ReturnResults(executions, $"{nameof(CSPAQ13700)}.{response.Code}");
 		}
 		catch (Exception ex)
 		{
@@ -390,7 +391,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 				}
 			});
 
-			return ReturnResults<Order>(orders, nameof(CSPAQ13700));
+			return ReturnResults<Order>(orders, $"{nameof(CSPAQ13700)}.{response.Code}");
 		}
 		catch (Exception ex)
 		{
@@ -438,7 +439,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 				});
 			});
 
-			return ReturnResults<Position>(positions, nameof(t0424), string.Empty, MessageType.SYS, response.t0424OutBlock.dtsunik.ToString());
+			return ReturnResults<Position>(positions, $"{nameof(t0424)}.{response.Code}", string.Empty, MessageType.SYS, response.t0424OutBlock.dtsunik.ToString());
 		}
 		catch (Exception ex)
 		{
@@ -460,7 +461,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 			});
 
 			if (response is null) return ReturnErrorResults<Position>(nameof(t0151), "response is null");
-			if (response.t0151OutBlock1.Count == 0) return ReturnResults<Position>([], nameof(t0151), "no execution");
+			if (response.t0151OutBlock1.Count == 0) return ReturnResults<Position>([], $"{nameof(t0151)}.{response.Code}", "no execution");
 
 			return GeneratePositions(date, response.t0151OutBlock1);
 		}
@@ -478,7 +479,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 		});
 
 		if (response is null) return ReturnErrorResults<Position>(nameof(t0150), "response is null");
-		if (response.t0150OutBlock1.Count == 0) return ReturnResults<Position>([], nameof(t0150), "no execution");
+		if (response.t0150OutBlock1.Count == 0) return ReturnResults<Position>([], $"{nameof(t0150)}.{response.Code}", response.Message);
 
 		return GeneratePositions(DateOnly.FromDateTime(DateTime.Now), response.t0150OutBlock1);
 	}
