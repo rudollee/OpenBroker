@@ -168,12 +168,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 				t0434InBlock = new t0434InBlock { }
 			});
 
-			if (response is null || !response.t0434OutBlock1.Any()) return new ResponseResults<Order>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = "response or t0434OutBlock1 is null",
-				List = new List<Order>(),
-			};
+			if (response.t0434OutBlock1.Count == 0) return ReturnResults<Order>([], nameof(t0434), response.Message);
 
 			List<Order> orders = new() { Capacity = response.t0434OutBlock1.Count };
 			response.t0434OutBlock1.ForEach(f =>
@@ -237,7 +232,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 					}
 				}, nextKey);
 
-				if (response is null || !response.CFOAQ00600OutBlock3.Any())
+				if (response.CFOAQ00600OutBlock3.Count == 0)
 				{
 					nextKey = string.Empty;
 					break;
