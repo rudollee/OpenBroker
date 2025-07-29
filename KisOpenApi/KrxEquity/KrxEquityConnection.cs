@@ -48,12 +48,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			Message(this, new ResponseCore
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = ex.Message,
-				Remark = callbackTxt,
-			});
+			SendErrorMessage("PARSING-ERR", ex.Message, callbackTxt);
 		}
 	}
 	#endregion
@@ -107,14 +102,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			OrderBookTaken(this, new ResponseResult<OrderBook>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Typ = MessageType.SYSERR,
-				Code = "ERR",
-				Message = ex.Message,
-			});
-
+			SendErrorMessage("SUB-ERR", ex.Message);
 			return false;
 		}
 	}
@@ -165,14 +153,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			MarketExecuted(this, new ResponseResult<MarketExecution>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Typ = MessageType.SYSERR,
-				Code = "ERR",
-				Message = ex.Message,
-			});
-
+			SendErrorMessage("SUB-ERR", ex.Message);
 			return false;
 		}
 	}
@@ -221,13 +202,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			MarketExecuted(this, new ResponseResult<MarketExecution>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Typ = MessageType.SYSERR,
-				Code = "ERR",
-				Message = ex.Message,
-			});
+			SendErrorMessage("SUB-ERR", ex.Message);
 			return false;
 		}
 	} 
@@ -263,13 +238,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			Executed(this, new ResponseResult<Execution>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Typ = MessageType.SYSERR,
-				Code = "ERR",
-				Message = ex.Message,
-			});
+			SendErrorMessage("SUB-ERR", $"H0STCNI0 : {ex.Message}");
 			return false;
 		}
 	}

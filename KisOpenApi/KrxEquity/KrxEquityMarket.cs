@@ -64,6 +64,7 @@ public partial class KisKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		{
 			return new ResponseResult<EquityPack>
 			{
+				Broker = Brkr.KI,
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = ex.Message
 			};

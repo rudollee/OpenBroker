@@ -1,4 +1,5 @@
-﻿using System.Net.WebSockets;
+﻿using System;
+using System.Net.WebSockets;
 using System.Text.Json;
 using KisOpenApi.Models;
 using OpenBroker.Extensions;
@@ -36,7 +37,7 @@ public class ConnectionBase
 	protected string _iv = string.Empty;
 	protected string _key = string.Empty;
 
-	private Dictionary<string, SubscriptionPack> _subscriptions = new();
+	private Dictionary<string, SubscriptionPack> _subscriptions = [];
 
 	private List<Request> Requests = [];
 
@@ -353,39 +354,30 @@ public class ConnectionBase
 	/// <param name="message"></param>
 	protected void SubscribeCallback(ResponseMessage message)
 	{
-		if (message is null || message.MessageType != WebSocketMessageType.Text)
+		try
 		{
-			Message(this, new ResponseCore
+			if (message is null || message.MessageType != WebSocketMessageType.Text)
 			{
-				Typ = MessageType.SYSERR,
-				Code = "BINARY",
-				Message = "binary message type"
-			});
-			return;
-		}
+				SendErrorMessage("BINARY", "binary message type");
+				return;
+			}
 
-		if (message.Text is null)
-		{
-			Message(this, new ResponseCore
+			if (message.Text is null)
 			{
-				Typ = MessageType.SYSERR,
-				Code = "TEXTNULL",
-				Message = "message.Text is null"
-			});
-			return;
-		}
+				SendErrorMessage("TEXTNULL", "message.Text is null");
+				return;
+			}
 
-		if (message.Text.StartsWith("{")) ParseCallbackMessage(message.Text);
-		else if (new string[] { "0", "1" }.Contains(message.Text.Substring(0, 1))) ParseCallbackResponse(message.Text);
-		else
-		{
-			Message(this, new ResponseCore
+			if (message.Text.StartsWith("{")) ParseCallbackMessage(message.Text);
+			else if (new string[] { "0", "1" }.Contains(message.Text.Substring(0, 1))) ParseCallbackResponse(message.Text);
+			else
 			{
-				Typ = MessageType.SYSERR,
-				Code = "WEIRD_MESSAGE",
-				Message = "message format is weird",
-				Remark = message.Text
-			});
+				SendErrorMessage("WEIRD_MESSAGE", "message format is weird", message.Text);
+			}
+		}
+		catch (Exception ex)
+		{
+			SendErrorMessage("SUB-CALLBACK-ERR", ex.Message, message?.Text ?? string.Empty);
 		}
 	}
 
@@ -400,6 +392,7 @@ public class ConnectionBase
 			{
 				Message(this, new ResponseCore
 				{
+					Broker = Brkr.KI,
 					Typ = MessageType.SYSERR,
 					Code = "RECON-FAIL",
 					Message = $"subscription {subscirption.Key} failed during reconnection",
@@ -408,12 +401,7 @@ public class ConnectionBase
 			}
 		}
 
-		Message(this, new ResponseCore
-		{
-			Typ = MessageType.SYSERR,
-			Code = "RECONNECTION",
-			Message = $"KIS {info.Type} and reconnected",
-		});
+		SendErrorMessage("RECONNECTION", $"{info.Type} and reconnected");
 	}
 
 	#endregion
@@ -432,6 +420,7 @@ public class ConnectionBase
 			{
 				Message(this, new ResponseCore
 				{
+					Broker = Brkr.KI,
 					Typ= MessageType.SYSERR,
 					Code = "JSON_PARSING_ERR",
 					Message = $"messageInfo is null",
@@ -457,6 +446,7 @@ public class ConnectionBase
 
 			Message(this, new ResponseCore
 			{
+				Broker= Brkr.KI,
 				Typ = MessageType.SUB,
 				Code = $"{messageInfo.Body.ResultCode}.{messageInfo.Body.MessageCode}",
 				Message = messageInfo.Body.Message,
@@ -466,13 +456,7 @@ public class ConnectionBase
 		}
 		catch (Exception ex)
 		{
-			Message(this, new ResponseCore
-			{
-				Typ = MessageType.SYSERR,
-				Code = "JSON_PARSING_ERR",
-				Message = $"catch err: ${ex.Message}",
-				Remark = "from ParseCallbackMessage"
-			});
+			SendMessage("JSON_PARSING_ERR", $"catch err: ${ex.Message}", MessageType.SYSERR, "from ParseCallbackMessage");
 		}
 	}
 
@@ -687,5 +671,24 @@ public class ConnectionBase
 
 		return response;
 	}
+	#endregion
+
+	#region simple response callback
+	protected void SendMessage(string code, string message, MessageType typ = MessageType.SYS, string remark = "") => Message(this, new ResponseCore
+	{
+		Broker = Brkr.KI,
+		Typ = typ,
+		Code = code,
+		Message = message,
+	});
+
+	protected void SendErrorMessage(string code, string message, string remark = "") => Message(this, new ResponseCore
+	{
+		StatusCode = Status.ERROR_OPEN_API,
+		Broker = Brkr.KI,
+		Typ = MessageType.SYSERR,
+		Code = code,
+		Message = message,
+	});
 	#endregion
 }
