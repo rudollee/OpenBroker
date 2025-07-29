@@ -79,8 +79,8 @@ public partial class KisKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		{
 			FID_COND_MRKT_DIV_CODE = "J",
 			FID_INPUT_ISCD = request.Symbol,
-			FID_INPUT_DATE_1 = request.DateTimeBegin.ToString("yyyyMMdd"),
-			FID_INPUT_DATE_2 = request.DateTimeEnd.ToString("yyyyMMdd"),
+			FID_INPUT_DATE_1 = request.DateTimeBegin.ToDate8Txt(),
+			FID_INPUT_DATE_2 = request.DateTimeEnd.ToDate8Txt(),
 			FID_PERIOD_DIV_CODE = request.TimeIntervalUnit switch
 			{
 				IntervalUnit.Day => "D",

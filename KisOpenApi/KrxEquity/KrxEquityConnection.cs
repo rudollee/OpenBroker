@@ -93,7 +93,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 					AskAgg = askList.Sum(x => x.Amount),
 					BidAgg = bidList.Sum(x => x.Amount),
 					Symbol = data[(int)HDFFF010.series_cd],
-					TimeExecuted = (data[(int)HDFFF010.recv_date] + data[(int)HDFFF010.recv_time]).ToDateTimeMicro(),
+					TimeExecuted = (data[(int)HDFFF010.recv_date] + data[(int)HDFFF010.recv_time]).ToDateTimeM(),
 				},
 				Broker = Brkr.KI
 			});
@@ -130,7 +130,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 						_ => MarketSession.REGULAR
 					},
 					Symbol = data[(int)H0STCNT0.MKSC_SHRN_ISCD],
-					TimeExecuted = (DateTime.Now.ToString("yyyyMMdd") + data[(int)H0STCNT0.STCK_CNTG_HOUR]).ToDateTime(),
+					TimeExecuted = data[(int)H0STCNT0.STCK_CNTG_HOUR].ToDateTime(),
 					C = Convert.ToDecimal(data[(int)H0STCNT0.STCK_PRPR]),
 					VolumeExecuted = Convert.ToDecimal(data[(int)H0STCNT0.CNTG_VOL]),
 					ExecutionSide = data[(int)H0STCNT0.CCLD_DVSN] switch
@@ -180,7 +180,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 						_ => MarketSession.REGULAR
 					},
 					Symbol = data[(int)H0UNCNT0.MKSC_SHRN_ISCD],
-					TimeExecuted = (DateTime.Now.ToString("yyyyMMdd") + data[(int)H0UNCNT0.STCK_CNTG_HOUR]).ToDateTime(),
+					TimeExecuted = data[(int)H0UNCNT0.STCK_CNTG_HOUR].ToDateTime(),
 					C = Convert.ToDecimal(data[(int)H0UNCNT0.STCK_PRPR]),
 					VolumeExecuted = Convert.ToDecimal(data[(int)H0UNCNT0.CNTG_VOL]),
 					ExecutionSide = data[(int)H0UNCNT0.CNTG_CLS_CODE] switch
@@ -222,7 +222,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 				Info = new Execution
 				{
 					BrokerCo = "KI",
-					DateBiz = DateOnly.FromDateTime(DateTime.Now),
+					DateBiz = DateTime.Now.ToKrxTradingDay(),
 					OID = Convert.ToInt64(data[(int)H0STCNI0.ODER_NO]),
 					CID = 0,
 					IsLong = data[(int)H0STCNI0.SELN_BYOV_CLS] == "02",

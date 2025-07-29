@@ -70,7 +70,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 						AskAgg = askList.Sum(x => x.Amount),
 						BidAgg = bidList.Sum(x => x.Amount),
 						Symbol = data[(int)HDFFF010.series_cd],
-						TimeExecuted = (data[(int)HDFFF010.recv_date] + data[(int)HDFFF010.recv_time]).ToDateTimeMicro(),
+						TimeExecuted = (data[(int)HDFFF010.recv_date] + data[(int)HDFFF010.recv_time]).ToDateTimeM(),
 					},
 					Remark = plainTxt
 				});
@@ -111,7 +111,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 						PriceOrdered = Convert.ToDecimal(data[(int)HDFFF1C0.fm_lmt_pric]),
 						VolumeOrdered = Convert.ToInt32(data[(int)HDFFF1C0.ord_qty]),
 						VolumeUpdatable = Convert.ToInt32(data[(int)HDFFF1C0.ord_qty]) - Convert.ToInt32(data[(int)HDFFF1C0.tot_ccld_qty]),
-						TimeOrdered = data[(int)HDFFF1C0.ord_dtl_dtime].ToDateTimeMicro(),
+						TimeOrdered = data[(int)HDFFF1C0.ord_dtl_dtime].ToDateTimeM(),
 						Symbol = data[(int)HDFFF1C0.series],
 						Mode = data[(int)HDFFF1C0.rvse_cncl_dvsn_cd] switch
 						{

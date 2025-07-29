@@ -498,7 +498,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			var marketExecutions = new List<MarketExecution>();
 			response.t1301OutBlock1.ForEach(execution => marketExecutions.Add(new MarketExecution
 			{
-				TimeExecuted = (DateTime.Now.ToString("yyyyMMdd") + execution.chetime).ToDateTime(),
+				TimeExecuted = execution.chetime.ToDateTime(),
 				C = execution.price,
 				BasePrice = execution.price + execution.change * (Convert.ToInt32(execution.sign) > 3 ? 1 : -1),
 				VolumeExecuted = execution.cvolume,

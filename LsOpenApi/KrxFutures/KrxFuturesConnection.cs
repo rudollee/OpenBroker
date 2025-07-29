@@ -130,7 +130,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 				Code = response.Header.TrCode,
 				Info = new Execution
 				{
-					TimeExecuted = $"{response.Body.chedate}{response.Body.chetime}".ToDateTimeMicro(),
+					TimeExecuted = $"{response.Body.chedate}{response.Body.chetime}".ToDateTimeM(),
 					OID = Convert.ToInt64(response.Body.ordno),
 					IdOrigin = idOrigin,
 					CID = Convert.ToInt64(response.Body.yakseq),
@@ -177,8 +177,8 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 				Code = response.Header.TrCode,
 				Info = new Order
 				{
-					DateBiz = DateOnly.FromDateTime(DateTime.Now),
-					TimeOrdered = $"{DateTime.Now.ToString("yyyyMMdd")}{response.Body.trxtime}".ToDateTimeMicro(),
+					DateBiz = DateTime.Now.ToKrxTradingDay(),
+					TimeOrdered = response.Body.trxtime.ToDateTimeM(),
 					OID = Convert.ToInt64(response.Body.ordno),
 					IdOrigin = Convert.ToInt64(response.Body.orgordno),
 					Symbol = response.Body.isuno,

@@ -76,7 +76,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				Info = new News
 				{
 					Code = response.Body.realkey,
-					TimePosted = DateTime.Now,
+					TimePosted = (response.Body.date + response.Body.time).ToDateTime(),
 					PublisherId = publisherId,
 					Publisher = CodeRef.NewsPublishers.TryGetValue(publisherId, out string? value) ? value : response.Body.id,
 					Title = response.Body.title,
@@ -220,7 +220,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				Info = new MarketExecution
 				{
 					Symbol = response.Body.base_id,
-					TimeExecuted = (DateTime.UtcNow.AddHours(9).ToString("yyyyMMdd") + response.Body.ctime).ToDateTime(),
+					TimeExecuted = response.Body.ctime.ToDateTime(),
 					C = Convert.ToDecimal(response.Body.price),
 					BasePrice = Convert.ToDecimal(response.Body.price) - Convert.ToDecimal(response.Body.change),
 				},
@@ -550,7 +550,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				Info = new Order
 				{
 					BrokerCo = Brkr.LS.ToDescription(),
-					DateBiz = DateOnly.FromDateTime(DateTime.Now),
+					DateBiz = DateTime.Now.ToKrxTradingDay(),
 					OID = Convert.ToInt64(response.Body.ordno),
 					Symbol = response.Body.shtcode.Substring(1),
 					InstrumentName = response.Body.hname,
@@ -564,7 +564,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					IsLong = response.Body.bnstp == "2",
 					PriceOrdered = Convert.ToDecimal(response.Body.ordprice),
 					VolumeOrdered = Convert.ToDecimal(response.Body.ordqty),
-					TimeOrdered = (DateTime.Now.ToString("yyyyMMdd") + response.Body.ordtm).ToDateTimeMicro(),
+					TimeOrdered = response.Body.ordtm.ToDateTimeM(),
 				},
 				Remark = message,
 				Broker = Brkr.LS
@@ -602,8 +602,8 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				Info = new Order
 				{
 					BrokerCo = Brkr.LS.ToDescription(),
-					DateBiz = DateOnly.FromDateTime(DateTime.Now),
-					TimeOrdered = (DateTime.Now.ToString("yyyyMMdd") + response.Body.proctm.PadLeft(9, '0')).ToDateTimeMicro(),
+					DateBiz = DateTime.Now.ToKrxTradingDay(),
+					TimeOrdered = response.Body.proctm.PadLeft(9, '0').ToDateTimeM(),
 					Currency = Currency.KRW,
 					Precision = 0,
 					NumeralSystem = 10,
@@ -658,7 +658,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				Info = new Execution
 				{
 					BrokerCo = Brkr.LS.ToDescription(),
-					DateBiz = DateOnly.FromDateTime(DateTime.Now),
+					DateBiz = DateTime.Now.ToKrxTradingDay(),
 					OID = Convert.ToInt64(response.Body.ordno),
 					CID = Convert.ToInt64(response.Body.execno),
 					Symbol = response.Body.shtnIsuno.Substring(1),
@@ -668,7 +668,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					PriceOrdered = Convert.ToDecimal(response.Body.ordprc),
 					Volume = Convert.ToDecimal(response.Body.execqty),
 					VolumeLeft = Convert.ToDecimal(response.Body.secbalqty),
-					TimeExecuted = (DateTime.Now.ToString("yyyyMMdd") + response.Body.exectime).ToDateTimeMicro(),
+					TimeExecuted = response.Body.exectime.ToDateTimeM(),
 				},
 				Remark = message,
 				Broker = Brkr.LS

@@ -161,10 +161,10 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 					OID = execution.ordno,
 					CID = execution.sysprocseq,
 					Currency = Currency.KRW,
-					DateBiz = DateOnly.FromDateTime(DateTime.Now),
+					DateBiz = DateTime.Now.ToKrxTradingDay(),
 					ExchangeCode = Exchange.KRX,
 					Symbol = execution.expcode,
-					TimeOrdered = (DateTime.Now.ToString("yyyyMMdd") + execution.ordtime).ToDateTime(),
+					TimeOrdered = execution.ordtime.ToDateTime(),
 					IdOrigin = execution.orgordno,
 					IsLong = execution.orggb == "02",
 					PriceOrdered = execution.price,
@@ -203,7 +203,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 						ExecutionStatus.UnexecutedOnly => "3",
 						_ => "0"
 					},
-					OrdDt = dateBegun.ToString("yyyyMMdd"),
+					OrdDt = dateBegun.ToDate8Txt(),
 				}
 			});
 
@@ -211,7 +211,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 
 			var executions = new List<Execution>() { Capacity = response.CSPAQ13700OutBlock3.Count };
 
-			var date = DateOnly.FromDateTime(DateTime.Now);
+			var date = DateTime.Now.ToKrxTradingDay();
 			var symbol = string.Empty;
 			var instrumentName = string.Empty;
 			long oid = 0;
@@ -233,7 +233,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 					seq = 1;
 					qtyOrdered = execution.OrdQty;
 					priceOrdered = execution.OrdPrc;
-					timeOrdered = (execution.OrdDt + execution.OrdTime).ToDateTimeMicro();
+					timeOrdered = (execution.OrdDt + execution.OrdTime).ToDateTimeM();
 					section = execution.OrdMktCode == "10" ? ExchangeSection.KOSPI : ExchangeSection.KOSDAQ;
 				}
 				else
@@ -246,7 +246,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 					BrokerCo = "LS",
 					DateBiz = date,
 					TimeOrdered = timeOrdered,
-					TimeExecuted = (date.ToString("yyyyMMdd") + execution.ExecTrxTime).ToDateTimeMicro(),
+					TimeExecuted = (date.ToDate8Txt() + execution.ExecTrxTime).ToDateTimeM(),
 					Currency = Currency.KRW,
 					Precision = 0,
 					NumeralSystem = 10,
@@ -353,7 +353,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 				CSPAQ13700InBlock1 = new CSPAQ13700InBlock1
 				{
 					ExecYn = "0",
-					OrdDt = dateBegun.ToString("yyyyMMdd"),
+					OrdDt = dateBegun.ToDate8Txt(),
 				}
 			});
 
@@ -367,7 +367,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 					{
 						BrokerCo = "LS",
 						DateBiz = order.OrdDt.ToDate(),
-						TimeOrdered = (DateTime.Now.ToString("yyyyMMdd") + order.OrdTime).ToDateTimeMicro(),
+						TimeOrdered = order.OrdTime.ToDateTimeM(),
 						Symbol = order.IsuNo.Substring(1),
 						InstrumentName = order.IsuNm,
 						OID = order.OrdNo,
@@ -453,11 +453,11 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 	{
 		try
 		{
-			if (date == DateOnly.FromDateTime(DateTime.Now)) return await RequestExecutionAggToday();
+			if (date == DateTime.Now.ToKrxTradingDay()) return await RequestExecutionAggToday();
 
 			var response = await RequestStandardAsync<t0151>(LsEndpoint.EquityAccount.ToDescription(), new
 			{
-				t0151InBlock = new t0151InBlock { date = date.ToString("yyyyMMdd") }
+				t0151InBlock = new t0151InBlock { date = date.ToDate8Txt() }
 			});
 
 			if (response is null) return ReturnErrorResults<Position>(nameof(t0151), "response is null");
@@ -481,7 +481,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 		if (response is null) return ReturnErrorResults<Position>(nameof(t0150), "response is null");
 		if (response.t0150OutBlock1.Count == 0) return ReturnResults<Position>([], $"{nameof(t0150)}.{response.Code}", response.Message);
 
-		return GeneratePositions(DateOnly.FromDateTime(DateTime.Now), response.t0150OutBlock1);
+		return GeneratePositions(DateTime.Now.ToKrxTradingDay(), response.t0150OutBlock1);
 	}
 	
 	private ResponseResults<Position> GeneratePositions(DateOnly date, List<t0150OutBlock1> outblock)
@@ -495,7 +495,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 			{
 				positions.Add(new Position
 				{
-					DateEntry = date.ToString("yyyyMMdd").ToDateTime(),
+					DateEntry = date.ToDateTime(TimeOnly.Parse("00:00:00")),
 					Symbol = symbol,
 					InstrumentName = Equities[symbol].NameOfficial,
 					IsLong = isLong,
@@ -510,7 +510,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 			}
 		}
 
-		return ReturnResults<Position>(positions, nameof(t0150));
+		return ReturnResults(positions, nameof(t0150));
 	}
 	#endregion
 

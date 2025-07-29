@@ -1,4 +1,6 @@
-﻿namespace OpenBroker.Models;
+﻿using OpenBroker.Extensions;
+
+namespace OpenBroker.Models;
 
 public class Order : InstrumentCore
 {
@@ -25,7 +27,7 @@ public class OrderCore
 {
     public Exchange ExchangeCode { get; set; } = Exchange.NONE;
     public OrderMode Mode { get; set; } = OrderMode.PLACE;
-    public DateOnly DateOrdered { get; set; } = DateOnly.FromDateTime(DateTime.Now);
+    public DateOnly DateOrdered { get; set; } = DateTime.Now.ToKrxTradingDay();
     public long IdOrigin { get; set; }
 	public string Symbol { get; set; } = string.Empty;
 	public decimal VolumeOrdered { get; set; }

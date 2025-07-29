@@ -2,14 +2,32 @@
 
 public static class DateExtension
 {
+    private static readonly string _date8Txt = "yyyyMMdd";
+	private static readonly string _dateTimeTxt863 = "yyyyMMddHHmmssfff";
+	private static readonly string _dateTimeTxt866 = "yyyyMMddHHmmssffffff";
+
     /// <summary>
-    /// Convert dateString to Date
+    /// convert to today to krx trading day
     /// </summary>
-    /// <param name="dateTxt8">8-digit dateString</param>
+    /// <param name="dateTime"></param>
     /// <returns></returns>
-    public static DateOnly ToDate(this string dateTxt8)
+    public static DateOnly ToKrxTradingDay(this DateTime dateTime) => 
+        DateOnly.FromDateTime(dateTime.AddDays(dateTime.DayOfWeek switch
+		{
+			DayOfWeek.Saturday => -1,
+			DayOfWeek.Sunday => -2,
+			DayOfWeek.Monday => dateTime.Hour < 16 ? -3 : 0,
+			_ => dateTime.Hour < 9 ? -1 : 0
+		}));
+
+	/// <summary>
+	/// Convert dateString to Date
+	/// </summary>
+	/// <param name="dateTxt8">8-digit dateString</param>
+	/// <returns></returns>
+	public static DateOnly ToDate(this string dateTxt8)
     {
-        int year = Convert.ToInt32(dateTxt8.Substring(0, 4));
+        int year = Convert.ToInt32(dateTxt8[..4]);
         int month = Convert.ToInt32(dateTxt8.Substring(4, 2));
         int day = Convert.ToInt32(dateTxt8.Substring(6, 2));
 
@@ -42,27 +60,41 @@ public static class DateExtension
     /// <summary>
     /// convert datetimeString to DateTime
     /// </summary>
-    /// <param name="datetimeTxt14"></param>
+    /// <param name="datetimeTxt86"></param>
     /// <returns></returns>
-    public static DateTime ToDateTime(this string datetimeTxt14)
+    public static DateTime ToDateTime(this string datetimeTxt86)
     {
-        if (datetimeTxt14.Length < 8) return DateTime.Now;
+        if (datetimeTxt86.Length == 6) datetimeTxt86 = DateTime.Now.ToKrxTradingDay().ToDate8Txt() + datetimeTxt86;
+        if (datetimeTxt86.Length != 14) return DateTime.Now;
 
-        int year = Convert.ToInt32(datetimeTxt14.Substring(0, 4));
-        int month = Convert.ToInt32(datetimeTxt14.Substring(4, 2));
-        int day = Convert.ToInt32(datetimeTxt14.Substring(6, 2));
+        int year = Convert.ToInt32(datetimeTxt86.Substring(0, 4));
+        int month = Convert.ToInt32(datetimeTxt86.Substring(4, 2));
+        int day = Convert.ToInt32(datetimeTxt86.Substring(6, 2));
 
-        if (datetimeTxt14.Length < 14) return new DateTime(year, month, day);
+        if (datetimeTxt86.Length < 14) return new DateTime(year, month, day);
 
-        var hour = Convert.ToInt32(datetimeTxt14.Substring(8, 2));
-        var minute = Convert.ToInt32(datetimeTxt14.Substring(10, 2));
-        var second = Convert.ToInt32(datetimeTxt14.Substring(12, 2));
+        var hour = Convert.ToInt32(datetimeTxt86.Substring(8, 2));
+        var minute = Convert.ToInt32(datetimeTxt86.Substring(10, 2));
+        var second = Convert.ToInt32(datetimeTxt86.Substring(12, 2));
 
         return new DateTime(year, month, day).Add(new TimeSpan(hour, minute, second));
     }
 
-    public static DateTime ToDateTimeMicro(this string datetimeTxt863) =>
-        DateTime.ParseExact(datetimeTxt863.Substring(0,17), "yyyyMMddHHmmssfff", null);
+    /// <summary>
+    /// convert string to DateTime with Milliseconds
+    /// </summary>
+    /// <param name="datetimeTxt863"></param>
+    /// <returns></returns>
+    public static DateTime ToDateTimeM(this string datetimeTxt863)
+    {
+        if (datetimeTxt863.Length == 0) datetimeTxt863 = DateTime.Now.ToKrxTradingDay().ToDate8Txt() + datetimeTxt863;
+        if (datetimeTxt863.Length != 17) return DateTime.Now;
+
+        return DateTime.ParseExact(datetimeTxt863[..17], _dateTimeTxt863, null);
+	}
+
+    public static DateTime ToDateTimeMicro(this string datetimeTxt866) =>
+        DateTime.ParseExact(datetimeTxt866[..20], _dateTimeTxt866, null);
 
 	public static int ToOrdinalDay(this DateOnly date, DayOfWeek dayOfWeek, int order)
 	{
@@ -77,4 +109,8 @@ public static class DateExtension
         int day = date.ToOrdinalDay(dayOfWeek, order);
         return DateOnly.Parse($"{date.Year}-{date.Month}-{day}");
 	}
+
+    public static string ToDate8Txt(this DateOnly date) => date.ToString(_date8Txt);
+
+    public static string ToDate8Txt(this DateTime date) => date.ToString(_date8Txt);
 }

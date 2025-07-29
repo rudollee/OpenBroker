@@ -118,7 +118,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 
 		var parameters = GenerateParameters(new
 		{
-			ORGN_ORD_DT = order.DateOrdered.ToString("yyyyMMdd"),
+			ORGN_ORD_DT = order.DateOrdered.ToDate8Txt(),
 			ORGN_ODNO = order.IdOrigin.ToString().PadLeft(8, '0'),
 			FM_HDGE_ORD_SCRN_YN = "N",
 			FM_MKPR_CVSN_YN = "N"
@@ -212,7 +212,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 					VolumeOrdered = f.VolumeOrdered,
 					VolumeUpdatable = f.VolumeOrdered - f.VolumeExecuted,
 					Symbol = f.Symbol,
-					TimeOrdered = f.erlm_dtl_dtime.ToDateTimeMicro(),
+					TimeOrdered = f.erlm_dtl_dtime.ToDateTimeM(),
 					IsLong = f.sll_buy_dvsn_cd == "02", //
 					Mode = f.rcit_dvsn_cd switch
 					{
@@ -256,8 +256,8 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 
 		var queryParameters = GenerateParameters(new
 		{
-			STRT_DT = dateBegun.ToString("yyyyMMdd"),
-			END_DT = dateFin.ToString("yyyyMMdd"),
+			STRT_DT = dateBegun.ToDate8Txt(),
+			END_DT = dateFin.ToDate8Txt(),
 			FM_PDGR_CD = "",
 			CCLD_NCCS_DVSN = "01",
 			SLL_BUY_DVSN_CD = "%%",
@@ -306,7 +306,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 					VolumeOrdered = f.VolumeOrdered,
 					VolumeUpdatable = f.VolumeOrdered - f.VolumeExecuted,
 					Symbol = f.Symbol,
-					TimeOrdered = f.OrderDateTime863.ToDateTimeMicro(),
+					TimeOrdered = f.OrderDateTime863.ToDateTimeM(),
 					IsLong = f.sll_buy_dvsn_cd == "02", //
 					Mode = f.rvse_cncl_dvsn_cd switch
 					{
@@ -358,13 +358,13 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 			Code = "ANUMBER",
 			List = new List<Execution>(),
 			Message = "no accountNumber",
-			Remark = dateBegun.ToString("yyyyMMdd")
+			Remark = dateBegun.ToDate8Txt()
 		};
 
 		var queryParameters = GenerateParameters(new
 		{
-			STRT_DT = dateBegun.ToString("yyyyMMdd"),
-			END_DT = dateFin.ToString("yyyyMMdd"),
+			STRT_DT = dateBegun.ToDate8Txt(),
+			END_DT = dateFin.ToDate8Txt(),
 			FUOP_DVSN_CD = "00",
 			FM_PDGR_CD = "",
 			CRCY_CD = "%%%",
@@ -391,7 +391,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 				StatusCode = Status.INTERNALSERVERERROR,
 				List = new List<Execution>(),
 				Message = "response is null",
-				Remark = dateBegun.ToString("yyyyMMdd")
+				Remark = dateBegun.ToDate8Txt()
 			};
 
 			if (response.output1.Count == 0) return new ResponseResults<Execution>
@@ -447,7 +447,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 		var body = GenerateParameters(new
 		{
 			CRCY_CD = currency.ToString(),
-			INQR_DT = (date is null ? DateTime.Now : date)?.ToString("yyyyMMdd")
+			INQR_DT = (date is null ? DateTime.Now : date)?.ToDate8Txt()
 		}, true);
 
 		foreach (var parameter in body)

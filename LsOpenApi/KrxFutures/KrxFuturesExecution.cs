@@ -57,7 +57,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 				if (execution.OrdNo == 0)
 				{
 					var executionFromPrevious = (Execution)previousExecution.Clone();
-					executionFromPrevious.TimeExecuted = $"{executionFromPrevious.TimeExecuted.ToString("yyyyMMdd")}{execution.CtrctTime}".ToDateTimeMicro();
+					executionFromPrevious.TimeExecuted = $"{executionFromPrevious.TimeExecuted.ToString("yyyyMMdd")}{execution.CtrctTime}".ToDateTimeM();
 					executionFromPrevious.CID = execution.CtrctNo;
 					executionFromPrevious.Volume = execution.ExecQty;
 					executionFromPrevious.Price = execution.ExecPrc;
@@ -89,8 +89,8 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 						"07" => 2,
 						_ => 0
 					},
-					TimeOrdered = $"{execution.OrdDt}{execution.OrdTime}".ToDateTimeMicro(),
-					TimeExecuted = $"{execution.OrdDt}{execution.CtrctTime}".ToDateTimeMicro(),
+					TimeOrdered = $"{execution.OrdDt}{execution.OrdTime}".ToDateTimeM(),
+					TimeExecuted = $"{execution.OrdDt}{execution.CtrctTime}".ToDateTimeM(),
 					ExchangeCode = Exchange.KRX,
 					Aggregation = execution.ExecQty * execution.ExecPrc,
 					NumeralSystem = 10,
@@ -202,7 +202,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 						"07" => 2,
 						_ => 0
 					},
-					TimeOrdered = $"{DateTime.UtcNow.AddHours(9).ToString("yyyyMMdd")}{f.ordtime.PadRight(9, '0')}".ToDateTimeMicro(),
+					TimeOrdered = $"{DateTime.UtcNow.AddHours(9).ToString("yyyyMMdd")}{f.ordtime.PadRight(9, '0')}".ToDateTimeM(),
 				});
 			});
 
@@ -270,7 +270,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 					},
 					VolumeOrdered = order.OrdQty,
 					PriceOrdered = order.OrdPrc,
-					TimeOrdered = $"{order.OrdDt}{order.OrdTime}".ToDateTimeMicro(),
+					TimeOrdered = $"{order.OrdDt}{order.OrdTime}".ToDateTimeM(),
 				});
 			}
 
