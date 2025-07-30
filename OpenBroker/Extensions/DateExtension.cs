@@ -65,6 +65,8 @@ public static class DateExtension
     public static DateTime ToDateTime(this string datetimeTxt86)
     {
         if (datetimeTxt86.Length == 6) datetimeTxt86 = DateTime.Now.ToKrxTradingDay().ToDate8Txt() + datetimeTxt86;
+        else if (datetimeTxt86.Length == 8) datetimeTxt86 = datetimeTxt86.PadRight(14, '0');
+
         if (datetimeTxt86.Length != 14) return DateTime.Now;
 
         int year = Convert.ToInt32(datetimeTxt86.Substring(0, 4));
