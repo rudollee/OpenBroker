@@ -66,7 +66,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			MarketExecuted(this, new ResponseResult<MarketExecution>
 			{
 				Typ = MessageType.MKT,
-				Code = response.Header.Code,
+				Code = $"{trCode}:{response.Header.Code}",
 				Info = new MarketExecution
 				{
 					MarketSessionInfo = response.Body.jgubun switch
@@ -127,14 +127,14 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			Executed(this, new ResponseResult<Execution>
 			{
 				Typ = MessageType.EXECUTION,
-				Code = response.Header.TrCode,
+				Code = $"{nameof(C01)}:{response.Header.TrCode}",
 				Info = new Execution
 				{
 					TimeExecuted = $"{response.Body.chedate}{response.Body.chetime}".ToDateTimeM(),
 					OID = Convert.ToInt64(response.Body.ordno),
 					IdOrigin = idOrigin,
 					CID = Convert.ToInt64(response.Body.yakseq),
-					Symbol = response.Body.expcode,
+					Symbol = response.Body.expcode.Substring(3, 8),
 					Price = Convert.ToDecimal(response.Body.cheprice),
 					Volume = Convert.ToDecimal(response.Body.chevol),
 					DateBiz = response.Body.chedate.ToDate(),
@@ -169,19 +169,23 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 		try
 		{
 			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<O01OutBlock>>(message);
-			if (response is null || response.Body is null) return false;
+			if (response is null || response.Body is null)
+			{
+				SendErrorMessage(nameof(O01), message);
+				return false;
+			}
 
 			OrderReceived(this, new ResponseResult<Order>
 			{
 				Typ = MessageType.ORDER,
-				Code = response.Header.TrCode,
+				Code = $"{nameof(O01)}:{response.Header.TrCode}",
 				Info = new Order
 				{
 					DateBiz = DateTime.Now.ToKrxTradingDay(),
 					TimeOrdered = response.Body.trxtime.ToDateTimeM(),
 					OID = Convert.ToInt64(response.Body.ordno),
 					IdOrigin = Convert.ToInt64(response.Body.orgordno),
-					Symbol = response.Body.isuno,
+					Symbol = response.Body.isuno.Substring(3, 8),
 					IsLong = response.Body.bnstp == "2",
 					VolumeOrdered = Convert.ToDecimal(response.Body.ordqty),
 					PriceOrdered = Convert.ToDecimal(response.Body.ordprc),
