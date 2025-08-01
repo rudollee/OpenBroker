@@ -164,7 +164,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 					DateBiz = DateTime.Now.ToKrxTradingDay(),
 					ExchangeCode = Exchange.KRX,
 					Symbol = execution.expcode,
-					TimeOrdered = execution.ordtime.ToDateTime(),
+					TimeOrdered = execution.ordtime.ToDateTimeM(),
 					IdOrigin = execution.orgordno,
 					IsLong = execution.orggb == "02",
 					PriceOrdered = execution.price,
