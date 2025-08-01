@@ -489,6 +489,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 		List<Execution> executions = [];
 		var symbol = string.Empty;
 		var isLong = true;
+		var channel = OrderChannel.API;
 		foreach (var execution in outblock)
 		{
 			if (execution.medosu == "종목소계")
@@ -496,15 +497,9 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 				executions.Add(new Execution
 				{
 					DateBiz = date,
-					Channel = execution.middiv switch
-					{
-						"투혼(HTS)" => OrderChannel.HTS,
-						"투혼(MTS)" => OrderChannel.MTS,
-						"OPEN API" => OrderChannel.API,
-						_ => OrderChannel.ETC
-					},
 					Symbol = symbol,
 					InstrumentName = Equities[symbol].NameOfficial,
+					Channel = channel,
 					IsLong = isLong,
 					Commission = execution.fee,
 					Tax = execution.tax + execution.argtax,
@@ -514,6 +509,13 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 			{
 				symbol = execution.expcode;
 				isLong = execution.medosu == "매수";
+				channel = execution.middiv switch
+				{
+					"투혼(HTS)" => OrderChannel.HTS,
+					"투혼(MTS)" => OrderChannel.MTS,
+					"OPEN API" => OrderChannel.API,
+					_ => OrderChannel.ETC
+				};
 			}
 		}
 
