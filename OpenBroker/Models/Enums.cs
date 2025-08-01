@@ -226,6 +226,19 @@ public enum Brkr
 	LS = 75200,
 }
 
+public enum OrderChannel
+{
+    NONE = 0,
+
+    HTS = 100,
+
+    MTS = 200,
+
+    API = 300,
+
+    ETC = 900,
+}
+
 public enum MarketSession
 {
     REGULAR = 0,

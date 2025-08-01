@@ -5,7 +5,10 @@ namespace OpenBroker.Models;
 public class Order : InstrumentCore
 {
     public string BrokerCo { get; set; } = string.Empty;
-    public OrderMode Mode { get; set; }
+	public Brkr Broker { get; set; }
+	public OrderChannel Channel { get; set; } = OrderChannel.API;
+    public Exchange ExchangeCode { get; set; } = Exchange.CME;
+	public OrderMode Mode { get; set; }
     public DateOnly DateBiz { get; set; }
     public long OID { get; set; }
     public long IdOrigin { get; set; }
@@ -25,7 +28,9 @@ public class Order : InstrumentCore
 
 public class OrderCore
 {
-    public Exchange ExchangeCode { get; set; } = Exchange.NONE;
+	public Brkr Broker { get; set; }
+    public OrderChannel Channel { get; set; } = OrderChannel.API;
+	public Exchange ExchangeCode { get; set; } = Exchange.NONE;
     public OrderMode Mode { get; set; } = OrderMode.PLACE;
     public DateOnly DateOrdered { get; set; } = DateTime.Now.ToKrxTradingDay();
     public long IdOrigin { get; set; }
@@ -39,14 +44,15 @@ public class OrderCore
 
 public class Execution : Order, ICloneable
 {
-    public Exchange ExchangeCode { get; set; } = Exchange.CME;
     public long CID { get; set; }
     public decimal Volume { get; set; }
     public decimal Price { get; set; }
     public decimal VolumeLeft { get; set; }
     public DateTime TimeExecuted { get; set; }
+	public decimal Commission { get; set; }
+	public decimal Tax { get; set; }
 
-    public object Clone() => this.MemberwiseClone();
+	public object Clone() => this.MemberwiseClone();
 }
 
 public class Balance
