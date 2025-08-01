@@ -89,7 +89,7 @@ public static class DateExtension
     /// <returns></returns>
     public static DateTime ToDateTimeM(this string datetimeTxt863)
     {
-        if (datetimeTxt863.Length == 0) datetimeTxt863 = DateTime.Now.ToKrxTradingDay().ToDate8Txt() + datetimeTxt863;
+        if (datetimeTxt863.Length < 9) datetimeTxt863 = DateTime.Now.ToKrxTradingDay().ToDate8Txt() + datetimeTxt863.PadRight(9, '0');
         if (datetimeTxt863.Length != 17) return DateTime.Now;
 
         return DateTime.ParseExact(datetimeTxt863[..17], _dateTimeTxt863, null);
