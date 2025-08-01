@@ -449,7 +449,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 	#endregion
 
 	#region 일간 거래내역 집계 - t0150/t0151
-	public async Task<ResponseResults<Position>> RequestExecutionAgg(DateOnly date)
+	public async Task<ResponseResults<Execution>> RequestExecutionAgg(DateOnly date)
 	{
 		try
 		{
@@ -460,42 +460,49 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 				t0151InBlock = new t0151InBlock { date = date.ToDate8Txt() }
 			});
 
-			if (response is null) return ReturnErrorResults<Position>(nameof(t0151), "response is null");
-			if (response.t0151OutBlock1.Count == 0) return ReturnResults<Position>([], $"{nameof(t0151)}.{response.Code}", "no execution");
+			if (response is null) return ReturnErrorResults<Execution>(nameof(t0151), "response is null");
+			if (response.t0151OutBlock1.Count == 0) return ReturnResults<Execution>([], $"{nameof(t0151)}.{response.Code}", "no execution");
 
-			return GeneratePositions(date, response.t0151OutBlock1);
+			return GenerateExecutions(date, response.t0151OutBlock1);
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<Position>(nameof(t0151), ex.Message);
+			return ReturnErrorResults<Execution>(nameof(t0151), ex.Message);
 		}
 	}
 
-	private async Task<ResponseResults<Position>> RequestExecutionAggToday()
+	private async Task<ResponseResults<Execution>> RequestExecutionAggToday()
 	{
 		var response = await RequestStandardAsync<t0150>(LsEndpoint.EquityAccount.ToDescription(), new
 		{
 			t0150InBlock = new t0150InBlock { }
 		});
 
-		if (response is null) return ReturnErrorResults<Position>(nameof(t0150), "response is null");
-		if (response.t0150OutBlock1.Count == 0) return ReturnResults<Position>([], $"{nameof(t0150)}.{response.Code}", response.Message);
+		if (response is null) return ReturnErrorResults<Execution>(nameof(t0150), "response is null");
+		if (response.t0150OutBlock1.Count == 0) return ReturnResults<Execution>([], $"{nameof(t0150)}.{response.Code}", response.Message);
 
-		return GeneratePositions(DateTime.Now.ToKrxTradingDay(), response.t0150OutBlock1);
+		return GenerateExecutions(DateTime.Now.ToKrxTradingDay(), response.t0150OutBlock1);
 	}
 	
-	private ResponseResults<Position> GeneratePositions(DateOnly date, List<t0150OutBlock1> outblock)
+	private ResponseResults<Execution> GenerateExecutions(DateOnly date, List<t0150OutBlock1> outblock)
 	{
-		List<Position> positions = [];
+		List<Execution> executions = [];
 		var symbol = string.Empty;
 		var isLong = true;
 		foreach (var execution in outblock)
 		{
 			if (execution.medosu == "종목소계")
 			{
-				positions.Add(new Position
+				executions.Add(new Execution
 				{
-					DateEntry = date.ToDateTime(TimeOnly.Parse("00:00:00")),
+					DateBiz = date,
+					Channel = execution.middiv switch
+					{
+						"투혼(HTS)" => OrderChannel.HTS,
+						"투혼(MTS)" => OrderChannel.MTS,
+						"OPEN API" => OrderChannel.API,
+						_ => OrderChannel.ETC
+					},
 					Symbol = symbol,
 					InstrumentName = Equities[symbol].NameOfficial,
 					IsLong = isLong,
@@ -510,7 +517,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 			}
 		}
 
-		return ReturnResults(positions, nameof(t0150));
+		return ReturnResults(executions, nameof(t0150));
 	}
 	#endregion
 
