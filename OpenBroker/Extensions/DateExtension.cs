@@ -16,8 +16,8 @@ public static class DateExtension
 		{
 			DayOfWeek.Saturday => -1,
 			DayOfWeek.Sunday => -2,
-			DayOfWeek.Monday => dateTime.Hour < 16 ? -3 : 0,
-			_ => dateTime.Hour < 9 ? -1 : 0
+			DayOfWeek.Monday => dateTime.Hour < 8 ? -3 : 0,
+			_ => dateTime.Hour < 8 ? -1 : 0
 		}));
 
 	/// <summary>
