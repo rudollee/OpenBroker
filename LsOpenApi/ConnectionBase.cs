@@ -310,7 +310,7 @@ public class ConnectionBase
 			}
 		}
 
-		SendErrorMessage("RECONNECTION", "{info.Type} and reconnected");
+		SendErrorMessage("RECONNECTION", $"{info.Type} and reconnected");
 	}
 	#endregion
 
