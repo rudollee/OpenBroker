@@ -147,6 +147,7 @@ public partial class KisKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	public Task<ResponseResults<Equity>> RequestIPO(DateOnly begin, DateOnly end) => throw new NotImplementedException();
 	public Task<ResponseResults<Sector>> RequestSectors(string code = "", string name = "") => throw new NotImplementedException();
 	public Task<ResponseResults<Sector>> RequestSectorsByEquity(string symbol) => throw new NotImplementedException();
+	public Task<ResponseResult<OrderBook>> RequestOrderbook(string symbol) => throw new NotImplementedException(); 
 	public Task<ResponseResults<MarketExecution>> RequestEquitiesBySector(string sectorCode) => throw new NotImplementedException();
 	public Task<ResponseResults<SearchFilter>> RequestSearchFilters() => throw new NotImplementedException();
 	public Task<ResponseResults<MarketExecution>> RequestEquitiesByFilter(string query) => throw new NotImplementedException();

@@ -142,6 +142,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	}
 	#endregion
 
+	#region request market execution - multiple instruments - t8434
 	public async Task<ResponseResults<MarketExecution>> RequestMarketExecution(IEnumerable<string> symbols)
 	{
 		if (!symbols.Any()) return new ResponseResults<MarketExecution>
@@ -196,10 +197,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				});
 			});
 
-			return new ResponseResults<MarketExecution>
-			{
-				List = executions
-			};
+			return new ResponseResults<MarketExecution> { List = executions };
 		}
 		catch (Exception ex)
 		{
@@ -211,9 +209,13 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				List = []
 			};
 		}
-	}
+	} 
+	#endregion
 
 	public Task<ResponseResults<MarketExecution>> RequestMarketExecutionHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
+
+	public Task<ResponseResult<OrderBook>> RequestOrderbook(string symbol) => throw new NotImplementedException();
+
 	public Task<ResponseResult<News>> RequestNews(string id) => throw new NotImplementedException();
 
 	#region request Price Pack using t8415

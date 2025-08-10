@@ -71,6 +71,13 @@ public interface IMarket
 	Task<ResponseResults<MarketExecution>> RequestMarketExecutionHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0);
 
 	/// <summary>
+	/// 호가
+	/// </summary>
+	/// <param name="symbol"></param>
+	/// <returns></returns>
+	Task<ResponseResult<OrderBook>> RequestOrderbook(string symbol);
+
+	/// <summary>
 	/// 차트 데이터
 	/// </summary>
 	/// <param name="request"></param>
