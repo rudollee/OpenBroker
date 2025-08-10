@@ -94,12 +94,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				t8402InBlock = new t8402InBlock { focode = symbol }
 			});
 
-			if (response is null || response.t8402OutBlock is null) return new ResponseResult<MarketExecution>
-			{
-				Broker = Brkr.LS,
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = "no data",
-			};
+			if (response is null || response.t8402OutBlock is null) return ReturnErrorResult<MarketExecution>(symbol, response?.Message ?? "no data");
 
 			var quote = new MarketExecution
 			{
@@ -214,7 +209,115 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 
 	public Task<ResponseResults<MarketExecution>> RequestMarketExecutionHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
 
-	public Task<ResponseResult<OrderBook>> RequestOrderbook(string symbol) => throw new NotImplementedException();
+	public async Task<ResponseResult<OrderBook>> RequestOrderbook(string symbol)
+	{
+		if (new string[] { "1", "A" }.Contains(symbol[..1]) && !new string[] { "01", "75" }.Contains(symbol.Substring(1, 2)))
+		{
+			return await RequestOrderbookSSFAsync(symbol);
+		}
+
+		try
+		{
+			var response = await RequestStandardAsync<t2105>(LsEndpoint.FuturesMarketData.ToDescription(), new
+			{
+				t2105InBlock = new t2105InBlock
+				{
+					shcode = symbol,
+				}
+			});
+
+			if (response is null || response.t2105OutBlock is null) return ReturnErrorResult<OrderBook>(symbol, response?.Message ?? "no data");
+
+			IList<MarketOrder> asks = [];
+			IList<MarketOrder> bids = [];
+			for (int i = 0; i < 5; i++)
+			{
+				asks.Add(new MarketOrder
+				{
+					Seq = Convert.ToByte(i + 1),
+					Price = Convert.ToDecimal(response.t2105OutBlock.GetPropValue($"offerho{i + 1}")),
+					Amount = Convert.ToDecimal(response.t2105OutBlock.GetPropValue($"offerrem{i + 1}")),
+					AmountGroup = Convert.ToDecimal(response.t2105OutBlock.GetPropValue($"dcnt{i + 1}"))
+				});
+				bids.Add(new MarketOrder
+				{
+					Seq = Convert.ToByte(i + 1),
+					Price = Convert.ToDecimal(response.t2105OutBlock.GetPropValue($"bidho{i + 1}")),
+					Amount = Convert.ToDecimal(response.t2105OutBlock.GetPropValue($"bidrem{i + 1}")),
+					AmountGroup = Convert.ToDecimal(response.t2105OutBlock.GetPropValue($"scnt{i + 1}"))
+				});
+			}
+
+			return ReturnResult(new OrderBook
+			{
+				Symbol = symbol,
+				TimeTaken = response.t2105OutBlock.time.ToTime(),
+				C = response.t2105OutBlock.price,
+				BasePrice = response.t2105OutBlock.jnilclose,
+				Ask = asks,
+				Bid = bids,
+				AskAgg = response.t2105OutBlock.dvol,
+				BidAgg = response.t2105OutBlock.svol,
+			});
+		}
+		catch (Exception ex)
+		{
+			return ReturnErrorResult<OrderBook>("CATCH", ex.Message);
+		}
+	}
+
+	private async Task<ResponseResult<OrderBook>> RequestOrderbookSSFAsync(string symbol)
+	{
+		try
+		{
+			var response = await RequestStandardAsync<t8403>(LsEndpoint.FuturesMarketData.ToDescription(), new
+			{
+				t8403InBlock = new t8403InBlock
+				{
+					shcode = symbol,
+				}
+			});
+
+			if (response is null || response.t8403OutBlock is null) return ReturnErrorResult<OrderBook>(symbol, response?.Message ?? "no data");
+
+			IList<MarketOrder> asks = [];
+			IList<MarketOrder> bids = [];
+			for (int i = 0; i < 10; i++)
+			{
+				asks.Add(new MarketOrder
+				{
+					Seq = Convert.ToByte(i + 1),
+					Price = Convert.ToDecimal(response.t8403OutBlock.GetPropValue($"offerho{(i + 1)}")),
+					Amount = Convert.ToDecimal(response.t8403OutBlock.GetPropValue($"offerrem{(i + 1)}")),
+					AmountGroup = Convert.ToDecimal(response.t8403OutBlock.GetPropValue($"dcnt{(i + 1)}"))
+				});
+
+				bids.Add(new MarketOrder
+				{
+					Seq = Convert.ToByte(i + 1),
+					Price = Convert.ToDecimal(response.t8403OutBlock.GetPropValue($"bidho{(i + 1)}")),
+					Amount = Convert.ToDecimal(response.t8403OutBlock.GetPropValue($"bidrem{(i + 1)}")),
+					AmountGroup = Convert.ToDecimal(response.t8403OutBlock.GetPropValue($"scnt{(i + 1)}"))
+				});
+			}
+
+			return ReturnResult(new OrderBook
+			{
+				Symbol = symbol,
+				TimeTaken = response.t8403OutBlock.time.ToTime(),
+				C = response.t8403OutBlock.price,
+				BasePrice = response.t8403OutBlock.jnilclose,
+				Ask = asks,
+				Bid = bids,
+				AskAgg = response.t8403OutBlock.dvol,
+				BidAgg = response.t8403OutBlock.svol,
+			});
+		}
+		catch (Exception ex)
+		{
+			return ReturnErrorResult<OrderBook>(symbol, ex.Message);
+		}
+	}
 
 	public Task<ResponseResult<News>> RequestNews(string id) => throw new NotImplementedException();
 
