@@ -11,16 +11,16 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	public Dictionary<string, Instrument> Instruments { get; set; } = [];
 
 	public EventHandler<ResponseResult<MarketExecution>>? MarketExecuted { get; set; }
-	public EventHandler<ResponseResult<OrderBook>>? OrderBookTaken { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-	public EventHandler<ResponseResult<News>>? NewsPosted { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-	public EventHandler<ResponseResult<MarketPause>>? MarketPaused { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+	public EventHandler<ResponseResult<OrderBook>>? OrderBookTaken { get; set; }
+	public EventHandler<ResponseResult<News>>? NewsPosted { get; set; }
+	public EventHandler<ResponseResult<MarketPause>>? MarketPaused { get; set; }
 
 	public Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol) => throw new NotImplementedException();
 
 	#region request market execution - t2101, t8402
 	public async Task<ResponseResult<MarketExecution>> RequestMarketExecution(string symbol)
 	{
-		if (new string[] { "1", "A" }.Contains(symbol.Substring(0, 1)) && !new string[] { "01", "75" }.Contains(symbol.Substring(1, 2)))
+		if (_futuresCodes.Contains(symbol[..1]) && !_k200OrFx.Contains(symbol.Substring(1, 2)))
 		{
 			return await RequestMarketExecutionSsf(symbol);
 		}
@@ -65,8 +65,6 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			{
 				Broker = Brkr.LS,
 				Info = quote,
-				StatusCode = Status.SUCCESS,
-				Message = "success",
 				ExtraData = new Dictionary<string, decimal>
 				{
 					{ "OI", response.t2101OutBlock.mgjv }, // open interest
@@ -76,12 +74,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResult<MarketExecution>
-			{
-				Broker = Brkr.LS,
-				StatusCode = Status.INTERNALSERVERERROR,
-				Message = ex.Message
-			};
+			return ReturnErrorResult<MarketExecution>(symbol, ex.Message);
 		}
 	}
 
@@ -116,8 +109,6 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			{
 				Broker = Brkr.LS,
 				Info = quote,
-				StatusCode = Status.SUCCESS,
-				Message = "success",
 				ExtraData = new Dictionary<string, decimal>
 				{
 					{ "OI", response.t8402OutBlock.mgjv }, // open interest
@@ -127,12 +118,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResult<MarketExecution>
-			{
-				Broker = Brkr.LS,
-				StatusCode = Status.INTERNALSERVERERROR,
-				Message = ex.Message
-			};
+			return ReturnErrorResult<MarketExecution>(symbol, ex.Message);
 		}
 	}
 	#endregion
@@ -165,14 +151,10 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				}
 			});
 
-			if (response is null || !response.t8434OutBlock1.Any()) return new ResponseResults<MarketExecution>
+			if (response is null || response.t8434OutBlock1.Count == 0) 
 			{
-				StatusCode = Status.NODATA,
-				List = [],
-				Code = response?.Code ?? "ERR",
-				Message = response?.Message ?? "response is null",
-				Remark = "no data"
-			};
+				return ReturnErrorResults<MarketExecution>(response?.Code ?? "ERR", response?.Message ?? "response is null");
+			}
 
 			List<MarketExecution> executions = [];
 			response.t8434OutBlock1.ForEach(execution =>
@@ -192,26 +174,21 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				});
 			});
 
-			return new ResponseResults<MarketExecution> { List = executions };
+			return ReturnResults(executions);
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<MarketExecution>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Code = "ERR-CATCH",
-				Message = ex.Message,
-				List = []
-			};
+			return ReturnErrorResults<MarketExecution>("ERR-CATch", ex.Message);
 		}
 	} 
 	#endregion
 
 	public Task<ResponseResults<MarketExecution>> RequestMarketExecutionHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
 
+	#region request orderbook - t2105/t8403
 	public async Task<ResponseResult<OrderBook>> RequestOrderbook(string symbol)
 	{
-		if (new string[] { "1", "A" }.Contains(symbol[..1]) && !new string[] { "01", "75" }.Contains(symbol.Substring(1, 2)))
+		if (_futuresCodes.Contains(symbol[..1]) && !_k200OrFx.Contains(symbol.Substring(1, 2)))
 		{
 			return await RequestOrderbookSSFAsync(symbol);
 		}
@@ -317,7 +294,8 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		{
 			return ReturnErrorResult<OrderBook>(symbol, ex.Message);
 		}
-	}
+	} 
+	#endregion
 
 	public Task<ResponseResult<News>> RequestNews(string id) => throw new NotImplementedException();
 
@@ -647,7 +625,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		if (string.IsNullOrWhiteSpace(subscriber)) subscriber = "SYS";
 
 		string trCode = string.Empty;
-		if (new string[] { "1", "A" }.Contains(symbol.Substring(0, 1)))
+		if (_futuresCodes.Contains(symbol[..1]))
 		{
 			trCode = symbol.Substring(1, 2) switch
 			{
