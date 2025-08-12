@@ -9,6 +9,9 @@ using Websocket.Client;
 namespace LsOpenApi.KrxFutures;
 public partial class LsKrxFutures : ConnectionBase, IConnection
 {
+	private readonly string[] _futuresCodes = { "1", "A" };
+	private readonly string[] _k200OrFx = { "01", "75" };
+
 	public Task<ResponseResult<KeyPack>> RequestApprovalKeyAsync(string appkey, string secretkey) => throw new NotImplementedException();
 
 	public async Task<ResponseCore> ConnectAsync() => await ConnectAsync(Callback);
