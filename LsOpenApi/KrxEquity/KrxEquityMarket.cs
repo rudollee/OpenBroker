@@ -46,7 +46,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			Broker = Brkr.LS,
 			StatusCode = Status.BAD_REQUEST,
 			Code = "NOT-FOUND",
-			Message = "A requested Symbol have not found",
+			Message = "Market Execution subscription cannot be changed. A requested Symbol has not found",
 		};
 
 		return await SubscribeAsync(subscriber, Equities[symbol].Section == ExchangeSection.KOSPI ? "S3_" : "K3_", symbol, connecting);
@@ -62,7 +62,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			Broker = Brkr.LS,
 			StatusCode = Status.BAD_REQUEST,
 			Code = "NOT-FOUND",
-			Message = "A requested Symbol have not found",
+			Message = "Market Depth subscription cannot be changed. A requested Symbol has not found",
 		};
 
 		if (string.IsNullOrWhiteSpace(subscriber)) subscriber = "SYS";
