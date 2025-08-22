@@ -132,3 +132,38 @@ internal class JC0OutBlock : FC0OutBlock
 	/// <summary>기초자산현재가</summary>
 	public string basprice { get; set; } = string.Empty;
 }
+
+/// <summary>
+/// KRX야간파생 체결(DC0)
+/// </summary>
+internal class DC0
+{
+	public DC0InBlock DC0InBlock { get; set; } = new();
+	public DC0OutBlock DC0OutBlock { get; set; } = new();
+}
+
+/// <summary>
+/// KRX야간파생 체결(DC0) - InBlock
+/// </summary>
+internal class DC0InBlock : FC0InBlock { }
+
+/// <summary>
+/// KRX야간파생 체결(DC0) - OutBlock
+/// </summary>
+internal class DC0OutBlock : FC0OutBlock
+{
+	/// <summary>일자</summary>
+	public string date { get; set; } = string.Empty;
+
+	/// <summary>배분적용구분</summary>
+	public string alloc_gubun { get; set; } = string.Empty;
+
+	/// <summary>KOSPI등가</summary>
+	public string eqva { get; set; } = string.Empty;
+
+	/// <summary>내재변동성</summary>
+	public string impv { get; set; } = string.Empty;
+
+	/// <summary>시간가치</summary>
+	public string timevalue { get; set; } = string.Empty;
+}

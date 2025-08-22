@@ -50,6 +50,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			nameof(JIF) => CallbackJIF(message.Text),
 			nameof(FC0) => CallbackXC0(message.Text, trCode),
 			nameof(JC0) => CallbackXC0(message.Text, trCode),
+			nameof(DC0) => CallbackXC0(message.Text, trCode),
 			nameof(O01) => CallbackO01(message.Text),
 			//nameof(H01) => CallbackH01(message.Text),
 			nameof(C01) => CallbackC01(message.Text),
@@ -57,6 +58,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 		};
 	}
 
+	#region XC0 callback - FC0, JC0, DC0
 	private bool CallbackXC0(string message, string trCode)
 	{
 		if (MarketExecuted is null) return false;
@@ -76,6 +78,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 					{
 						"07" => MarketSession.CLOSED,
 						"13" => MarketSession.CLOSED,
+						"40" => MarketSession.EXTENDED,
 						_ => MarketSession.REGULAR,
 					},
 					Symbol = response.Body.futcode,
@@ -84,8 +87,8 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 					VolumeExecuted = Convert.ToDecimal(response.Body.cvolume),
 					ExecutionSide = response.Body.cgubun == "+" ? ExecutionSide.ASK : ExecutionSide.BID,
 					BasePrice = Convert.ToDecimal(response.Body.price) - Convert.ToDecimal((DeclineCodes.Contains(response.Body.sign) ? "-" : "") + response.Body.change),
-					QuoteDaily = new Quote 
-					{ 
+					QuoteDaily = new Quote
+					{
 						V = Convert.ToDecimal(response.Body.volume),
 						Turnover = Convert.ToDecimal(response.Body.value),
 					}
@@ -116,7 +119,9 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			return false;
 		}
 	}
+	#endregion
 
+	#region C01 callback
 	private bool CallbackC01(string message)
 	{
 		if (Executed is null) return false;
@@ -164,7 +169,9 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			return false;
 		}
 	}
+	#endregion
 
+	#region O01 callback
 	private bool CallbackO01(string message)
 	{
 		if (OrderReceived is null) return false;
@@ -222,4 +229,5 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			return false;
 		}
 	}
+	#endregion
 }

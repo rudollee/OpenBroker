@@ -245,6 +245,7 @@ public enum MarketSession
     CLOSED = 3,
     AFTER = 4,
     PRE = 10,
+    EXTENDED = 40,
 }
 
 public enum AccountType

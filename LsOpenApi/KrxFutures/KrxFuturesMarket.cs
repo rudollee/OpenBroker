@@ -638,6 +638,8 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		}
 		else trCode = "OC0";
 
+		if (trCode == "FC0") await SubscribeAsync(subscriber, "DC0", symbol, connecting); // 야간파생 추가
+
 		return await SubscribeAsync(subscriber, trCode, symbol, connecting);
 	}
 
