@@ -167,6 +167,7 @@ internal static class CodeRef
 		{ nameof(t8434), 3 },
 		{ nameof(t2105), 3 },
 		{ nameof(t8403), 2 },
+		{ nameof(t8457), 2 },
 	};
 
 	/// <summary>

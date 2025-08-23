@@ -185,7 +185,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 
 	public Task<ResponseResults<MarketExecution>> RequestMarketExecutionHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
 
-	#region request orderbook - t2105/t8403
+	#region request orderbook - t2105(t8457)/t8403
 	public async Task<ResponseResult<OrderBook>> RequestOrderbook(string symbol)
 	{
 		if (_futuresCodes.Contains(symbol[..1]) && !_k200OrFx.Contains(symbol.Substring(1, 2)))
@@ -195,13 +195,26 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 
 		try
 		{
-			var response = await RequestStandardAsync<t2105>(LsEndpoint.FuturesMarketData.ToDescription(), new
+			var isRegular = symbol.Length != 9;
+			var tr = isRegular ? typeof(t2105) : typeof(t8457);
+
+			t2105 response = new();
+			if (isRegular)
 			{
-				t2105InBlock = new t2105InBlock
+				response = await RequestStandardAsync<t2105>(LsEndpoint.FuturesMarketData.ToDescription(), new
 				{
-					shcode = symbol,
-				}
-			});
+					t2105InBlock = new t2105InBlock { shcode = symbol }
+				});
+			}
+			else
+			{
+				var responseExt = await RequestStandardAsync<t8457>(LsEndpoint.FuturesMarketData.ToDescription(), new
+				{
+					t8457InBlock = new t2105InBlock { shcode = symbol }
+				});
+
+				response.t2105OutBlock = responseExt.t8457OutBlock;
+			}
 
 			if (response is null || response.t2105OutBlock is null) return ReturnErrorResult<OrderBook>(symbol, response?.Message ?? "no data");
 
@@ -249,10 +262,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		{
 			var response = await RequestStandardAsync<t8403>(LsEndpoint.FuturesMarketData.ToDescription(), new
 			{
-				t8403InBlock = new t8403InBlock
-				{
-					shcode = symbol,
-				}
+				t8403InBlock = new t2105InBlock { shcode = symbol }
 			});
 
 			if (response is null || response.t8403OutBlock is null) return ReturnErrorResult<OrderBook>(symbol, response?.Message ?? "no data");

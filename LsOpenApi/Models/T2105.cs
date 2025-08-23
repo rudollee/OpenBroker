@@ -154,3 +154,12 @@ internal class t2105OutBlock
 	/// <summary>단축코드</summary>
 	public string shcode { get; set; } = string.Empty;
 }
+
+/// <summary>
+/// KRX야간파생 호가조회(API용)(t8457)
+/// </summary>
+internal class t8457 : LsResponseCore
+{
+	public t2105InBlock t8457InBlock { get; set; } = new();
+	public t2105OutBlock t8457OutBlock { get; set; } = new();
+}
