@@ -210,7 +210,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			{
 				var responseExt = await RequestStandardAsync<t8457>(LsEndpoint.FuturesMarketData.ToDescription(), new
 				{
-					t8457InBlock = new t2105InBlock { shcode = symbol }
+					t8457InBlock = new t2105InBlock { shcode = symbol[..8] }
 				});
 
 				response.t2105OutBlock = responseExt.t8457OutBlock;
