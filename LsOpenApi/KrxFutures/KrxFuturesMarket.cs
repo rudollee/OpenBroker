@@ -653,7 +653,13 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		return await SubscribeAsync(subscriber, trCode, symbol, connecting);
 	}
 
-	public Task<ResponseCore> SubscribeMarketDepth(string symbol, bool connecting = true, string subscriber = "") => throw new NotImplementedException();
+	public async Task<ResponseCore> SubscribeMarketDepth(string symbol, bool connecting = true, string subscriber = "")
+	{
+		if (string.IsNullOrWhiteSpace(symbol)) return ReturnError(symbol, "no symbol");
+
+		return await SubscribeAsync(subscriber, nameof(FH0), symbol, connecting);
+	}
+
 	public Task<ResponseCore> SubscribeMarketPause(string symbol = "000000") => throw new NotImplementedException();
 	public Task<ResponseCore> SubscribeNews(bool connecting = true) => throw new NotImplementedException();
 }

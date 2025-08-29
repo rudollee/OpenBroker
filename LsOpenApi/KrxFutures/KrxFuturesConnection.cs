@@ -51,6 +51,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			nameof(FC0) => CallbackXC0(message.Text, trCode),
 			nameof(JC0) => CallbackXC0(message.Text, trCode),
 			nameof(DC0) => CallbackXC0(message.Text, trCode),
+			nameof(FH0) => CallbackXH0(message.Text),
 			nameof(O01) => CallbackO01(message.Text),
 			//nameof(H01) => CallbackH01(message.Text),
 			nameof(C01) => CallbackC01(message.Text),
@@ -119,6 +120,64 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			return false;
 		}
 	}
+	#endregion
+
+	#region XH0 callback - FH0
+	private bool CallbackXH0(string message)
+	{
+		if (OrderBookTaken is null) return false;
+
+		try
+		{
+			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<FH0OutBlock>>(message);
+			if (response is null || response.Body is null) return false;
+
+			IList<MarketOrder> asks = [];
+			IList<MarketOrder> bids = [];
+			for (int i = 0; i < 5; i++)
+			{
+				asks.Add(new MarketOrder
+				{
+					Seq = Convert.ToByte(i + 1),
+					Price = Convert.ToDecimal(response.Body.GetPropValue($"offerho{i + 1}")),
+					Amount = Convert.ToDecimal(response.Body.GetPropValue($"offerrem{i + 1}")),
+					AmountGroup = Convert.ToDecimal(response.Body.GetPropValue($"offercnt{i + 1}"))
+				});
+
+				bids.Add(new MarketOrder
+				{
+					Seq = Convert.ToByte(i + 1),
+					Price = Convert.ToDecimal(response.Body.GetPropValue($"bidho{i + 1}")),
+					Amount = Convert.ToDecimal(response.Body.GetPropValue($"bidrem{i + 1}")),
+					AmountGroup = Convert.ToDecimal(response.Body.GetPropValue($"bidcnt{i + 1}"))
+				});
+			}
+
+			OrderBookTaken(this, new ResponseResult<OrderBook>
+			{
+				Broker = Brkr.LS,
+				Typ = MessageType.MKT,
+				Info = new()
+				{
+					Exchange = Exchange.KRX,
+					MarketSessionInfo = MarketSession.REGULAR,
+					Symbol = response.Body.futcode,
+					TimeTaken = response.Body.hotime.ToTime(),
+					Ask = asks,
+					AskAgg = Convert.ToDecimal(response.Body.totofferrem),
+					Bid = bids,
+					BidAgg = Convert.ToDecimal(response.Body.totbidrem),
+				}
+			});
+		}
+		catch (Exception ex)
+		{
+			SendErrorMessage(nameof(FH0), ex.Message);
+			return false;
+		}
+
+		return true;
+	} 
 	#endregion
 
 	#region C01 callback
