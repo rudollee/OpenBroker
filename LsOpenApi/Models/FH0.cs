@@ -1,4 +1,6 @@
-﻿namespace LsOpenApi.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace LsOpenApi.Models;
 /// <summary>
 /// KOSPI200선물호가(H0)
 /// </summary>
@@ -14,7 +16,8 @@ internal class FH0
 internal class FH0InBlock
 {
 	/// <summary>단축코드</summary>
-	public string futcode { get; set; } = string.Empty;
+	[JsonPropertyName("futcode")]
+	public string Futcode { get; set; } = string.Empty;
 }
 
 /// <summary>
@@ -23,116 +26,163 @@ internal class FH0InBlock
 internal class FH0OutBlock
 {
 	/// <summary>호가시간</summary>
-	public string hotime { get; set; } = string.Empty;
+	[JsonPropertyName("hotime")]
+	public string Hotime { get; set; } = string.Empty;
 
 	/// <summary>매도호가1</summary>
-	public string offerho1 { get; set; } = string.Empty;
+	[JsonPropertyName("offerho1")]
+	public string Offerho1 { get; set; } = string.Empty;
 
 	/// <summary>매수호가1</summary>
-	public string bidho1 { get; set; } = string.Empty;
+	[JsonPropertyName("bidho1")]
+	public string Bidho1 { get; set; } = string.Empty;
 
 	/// <summary>매도호가수량1</summary>
-	public string offerrem1 { get; set; } = string.Empty;
+	[JsonPropertyName("offerrem1")]
+	public string Offerrem1 { get; set; } = string.Empty;
 
 	/// <summary>매수호가수량1</summary>
-	public string bidrem1 { get; set; } = string.Empty;
+	[JsonPropertyName("bidrem1")]
+	public string Bidrem1 { get; set; } = string.Empty;
 
 	/// <summary>매도호가건수1</summary>
-	public string offercnt1 { get; set; } = string.Empty;
+	[JsonPropertyName("offercnt1")]
+	public string Offercnt1 { get; set; } = string.Empty;
 
 	/// <summary>매수호가건수1</summary>
-	public string bidcnt1 { get; set; } = string.Empty;
+	[JsonPropertyName("bidcnt1")]
+	public string Bidcnt1 { get; set; } = string.Empty;
 
 	/// <summary>매도호가2</summary>
-	public string offerho2 { get; set; } = string.Empty;
+	[JsonPropertyName("offerho2")]
+	public string Offerho2 { get; set; } = string.Empty;
 
 	/// <summary>매수호가2</summary>
-	public string bidho2 { get; set; } = string.Empty;
+	[JsonPropertyName("bidho2")]
+	public string Bidho2 { get; set; } = string.Empty;
 
 	/// <summary>매도호가수량2</summary>
-	public string offerrem2 { get; set; } = string.Empty;
+	[JsonPropertyName("offerrem2")]
+	public string Offerrem2 { get; set; } = string.Empty;
 
 	/// <summary>매수호가수량2</summary>
-	public string bidrem2 { get; set; } = string.Empty;
+	[JsonPropertyName("bidrem2")]
+	public string Bidrem2 { get; set; } = string.Empty;
 
 	/// <summary>매도호가건수2</summary>
-	public string offercnt2 { get; set; } = string.Empty;
+	[JsonPropertyName("offercnt2")]
+	public string Offercnt2 { get; set; } = string.Empty;
 
 	/// <summary>매수호가건수2</summary>
-	public string bidcnt2 { get; set; } = string.Empty;
+	[JsonPropertyName("bidcnt2")]
+	public string Bidcnt2 { get; set; } = string.Empty;
 
 	/// <summary>매도호가3</summary>
-	public string offerho3 { get; set; } = string.Empty;
+	[JsonPropertyName("offerho3")]
+	public string Offerho3 { get; set; } = string.Empty;
 
 	/// <summary>매수호가3</summary>
-	public string bidho3 { get; set; } = string.Empty;
+	[JsonPropertyName("bidho3")]
+	public string Bidho3 { get; set; } = string.Empty;
 
 	/// <summary>매도호가수량3</summary>
-	public string offerrem3 { get; set; } = string.Empty;
+	[JsonPropertyName("offerrem3")]
+	public string Offerrem3 { get; set; } = string.Empty;
 
 	/// <summary>매수호가수량3</summary>
-	public string bidrem3 { get; set; } = string.Empty;
+	[JsonPropertyName("bidrem3")]
+	public string Bidrem3 { get; set; } = string.Empty;
 
 	/// <summary>매도호가건수3</summary>
-	public string offercnt3 { get; set; } = string.Empty;
+	[JsonPropertyName("offercnt3")]
+	public string Offercnt3 { get; set; } = string.Empty;
 
 	/// <summary>매수호가건수3</summary>
-	public string bidcnt3 { get; set; } = string.Empty;
+	[JsonPropertyName("bidcnt3")]
+	public string Bidcnt3 { get; set; } = string.Empty;
 
 	/// <summary>매도호가4</summary>
-	public string offerho4 { get; set; } = string.Empty;
+	[JsonPropertyName("offerho4")]
+	public string Offerho4 { get; set; } = string.Empty;
 
 	/// <summary>매수호가4</summary>
-	public string bidho4 { get; set; } = string.Empty;
+	[JsonPropertyName("bidho4")]
+	public string Bidho4 { get; set; } = string.Empty;
 
 	/// <summary>매도호가수량4</summary>
-	public string offerrem4 { get; set; } = string.Empty;
+	[JsonPropertyName("offerrem4")]
+	public string Offerrem4 { get; set; } = string.Empty;
 
 	/// <summary>매수호가수량4</summary>
-	public string bidrem4 { get; set; } = string.Empty;
+	[JsonPropertyName("bidrem4")]
+	public string Bidrem4 { get; set; } = string.Empty;
 
 	/// <summary>매도호가건수4</summary>
-	public string offercnt4 { get; set; } = string.Empty;
+	[JsonPropertyName("offercnt4")]
+	public string Offercnt4 { get; set; } = string.Empty;
 
 	/// <summary>매수호가건수4</summary>
-	public string bidcnt4 { get; set; } = string.Empty;
+	[JsonPropertyName("bidcnt4")]
+	public string Bidcnt4 { get; set; } = string.Empty;
 
 	/// <summary>매도호가5</summary>
-	public string offerho5 { get; set; } = string.Empty;
+	[JsonPropertyName("offerho5")]
+	public string Offerho5 { get; set; } = string.Empty;
 
 	/// <summary>매수호가5</summary>
-	public string bidho5 { get; set; } = string.Empty;
+	[JsonPropertyName("bidho5")]
+	public string Bidho5 { get; set; } = string.Empty;
 
 	/// <summary>매도호가수량5</summary>
-	public string offerrem5 { get; set; } = string.Empty;
+	[JsonPropertyName("offerrem5")]
+	public string Offerrem5 { get; set; } = string.Empty;
 
 	/// <summary>매수호가수량5</summary>
-	public string bidrem5 { get; set; } = string.Empty;
+	[JsonPropertyName("bidrem5")]
+	public string Bidrem5 { get; set; } = string.Empty;
 
 	/// <summary>매도호가건수5</summary>
-	public string offercnt5 { get; set; } = string.Empty;
+	[JsonPropertyName("offercnt5")]
+	public string Offercnt5 { get; set; } = string.Empty;
 
 	/// <summary>매수호가건수5</summary>
-	public string bidcnt5 { get; set; } = string.Empty;
+	[JsonPropertyName("bidcnt5")]
+	public string Bidcnt5 { get; set; } = string.Empty;
 
 	/// <summary>매도호가총수량</summary>
-	public string totofferrem { get; set; } = string.Empty;
+	[JsonPropertyName("totofferrem")]
+	public string Totofferrem { get; set; } = string.Empty;
 
 	/// <summary>매수호가총수량</summary>
-	public string totbidrem { get; set; } = string.Empty;
+	[JsonPropertyName("totbidrem")]
+	public string Totbidrem { get; set; } = string.Empty;
 
 	/// <summary>매도호가총건수</summary>
-	public string totoffercnt { get; set; } = string.Empty;
+	[JsonPropertyName("totoffercnt")]
+	public string Totoffercnt { get; set; } = string.Empty;
 
 	/// <summary>매수호가총건수</summary>
-	public string totbidcnt { get; set; } = string.Empty;
+	[JsonPropertyName("totbidcnt")]
+	public string Totbidcnt { get; set; } = string.Empty;
 
 	/// <summary>단축코드</summary>
-	public string futcode { get; set; } = string.Empty;
+	[JsonPropertyName("futcode")]
+	public string Futcode { get; set; } = string.Empty;
 
 	/// <summary>단일가호가여부</summary>
-	public string danhochk { get; set; } = string.Empty;
+	[JsonPropertyName("danhochk")]
+	public string Danhochk { get; set; } = string.Empty;
 
 	/// <summary>배분적용구분</summary>
-	public string alloc_gubun { get; set; } = string.Empty;
+	[JsonPropertyName("alloc_gubun")]
+	public string AllocGubun { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// KRX야간파생 호가(H0)
+/// </summary>
+internal class DH0
+{
+	public FH0InBlock DH0InBlock { get; set; } = new();
+	public FH0OutBlock DH0OutBlock { get; set; } = new();
 }

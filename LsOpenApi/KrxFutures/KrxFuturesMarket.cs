@@ -657,7 +657,9 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	{
 		if (string.IsNullOrWhiteSpace(symbol)) return ReturnError(symbol, "no symbol");
 
-		return await SubscribeAsync(subscriber, nameof(FH0), symbol, connecting);
+		await SubscribeAsync(subscriber, nameof(FH0), symbol, connecting); // KRX야간파생 호가
+
+		return await SubscribeAsync(subscriber, nameof(DH0), symbol, connecting);
 	}
 
 	public Task<ResponseCore> SubscribeMarketPause(string symbol = "000000") => throw new NotImplementedException();

@@ -51,7 +51,8 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			nameof(FC0) => CallbackXC0(message.Text, trCode),
 			nameof(JC0) => CallbackXC0(message.Text, trCode),
 			nameof(DC0) => CallbackXC0(message.Text, trCode),
-			nameof(FH0) => CallbackXH0(message.Text),
+			nameof(FH0) => CallbackXH0(message.Text, trCode),
+			nameof(DH0) => CallbackXH0(message.Text, trCode),
 			nameof(O01) => CallbackO01(message.Text),
 			//nameof(H01) => CallbackH01(message.Text),
 			nameof(C01) => CallbackC01(message.Text),
@@ -122,8 +123,8 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 	}
 	#endregion
 
-	#region XH0 callback - FH0
-	private bool CallbackXH0(string message)
+	#region XH0 callback - FH0, DH0
+	private bool CallbackXH0(string message, string tr)
 	{
 		if (OrderBookTaken is null) return false;
 
@@ -139,17 +140,17 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 				asks.Add(new MarketOrder
 				{
 					Seq = Convert.ToByte(i + 1),
-					Price = Convert.ToDecimal(response.Body.GetPropValue($"offerho{i + 1}")),
-					Amount = Convert.ToDecimal(response.Body.GetPropValue($"offerrem{i + 1}")),
-					AmountGroup = Convert.ToDecimal(response.Body.GetPropValue($"offercnt{i + 1}"))
+					Price = Convert.ToDecimal(response.Body.GetPropValue($"Offerho{i + 1}")),
+					Amount = Convert.ToDecimal(response.Body.GetPropValue($"Offerrem{i + 1}")),
+					AmountGroup = Convert.ToDecimal(response.Body.GetPropValue($"Offercnt{i + 1}"))
 				});
 
 				bids.Add(new MarketOrder
 				{
 					Seq = Convert.ToByte(i + 1),
-					Price = Convert.ToDecimal(response.Body.GetPropValue($"bidho{i + 1}")),
-					Amount = Convert.ToDecimal(response.Body.GetPropValue($"bidrem{i + 1}")),
-					AmountGroup = Convert.ToDecimal(response.Body.GetPropValue($"bidcnt{i + 1}"))
+					Price = Convert.ToDecimal(response.Body.GetPropValue($"Bidho{i + 1}")),
+					Amount = Convert.ToDecimal(response.Body.GetPropValue($"Bidrem{i + 1}")),
+					AmountGroup = Convert.ToDecimal(response.Body.GetPropValue($"Bidcnt{i + 1}"))
 				});
 			}
 
@@ -160,19 +161,19 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 				Info = new()
 				{
 					Exchange = Exchange.KRX,
-					MarketSessionInfo = MarketSession.REGULAR,
-					Symbol = response.Body.futcode,
-					TimeTaken = response.Body.hotime.ToTime(),
+					MarketSessionInfo = tr == nameof(FH0) ? MarketSession.REGULAR : MarketSession.EXTENDED,
+					Symbol = response.Body.Futcode,
+					TimeTaken = response.Body.Hotime.ToTime(),
 					Ask = asks,
-					AskAgg = Convert.ToDecimal(response.Body.totofferrem),
+					AskAgg = Convert.ToDecimal(response.Body.Totofferrem),
 					Bid = bids,
-					BidAgg = Convert.ToDecimal(response.Body.totbidrem),
+					BidAgg = Convert.ToDecimal(response.Body.Totbidrem),
 				}
 			});
 		}
 		catch (Exception ex)
 		{
-			SendErrorMessage(nameof(FH0), ex.Message);
+			SendErrorMessage(tr, ex.Message);
 			return false;
 		}
 
