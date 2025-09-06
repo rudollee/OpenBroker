@@ -639,16 +639,16 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		{
 			trCode = symbol.Substring(1, 2) switch
 			{
-				"01" => "FC0",
-				"05" => "FC0",
-				"07" => "EU1",
-				"75" => "FC0",
-				_ => "JC0"
+				"01" => nameof(FH0),
+				"05" => nameof(FH0),
+				//"07" => "EU1",
+				"75" => nameof(FH0),
+				_ => nameof(JC0)
 			};
 		}
 		else trCode = "OC0";
 
-		if (trCode == "FC0") await SubscribeAsync(subscriber, "DC0", symbol, connecting); // 야간파생 추가
+		if (trCode == nameof(FH0)) await SubscribeAsync(subscriber, nameof(DC0), symbol, connecting); // 야간파생 추가
 
 		return await SubscribeAsync(subscriber, trCode, symbol, connecting);
 	}
@@ -657,9 +657,23 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	{
 		if (string.IsNullOrWhiteSpace(symbol)) return ReturnError(symbol, "no symbol");
 
-		await SubscribeAsync(subscriber, nameof(FH0), symbol, connecting); // KRX야간파생 호가
+		string trCode = string.Empty;
+		if (_futuresCodes.Contains(symbol[..1]))
+		{
+			trCode = symbol.Substring(1, 2) switch
+			{
+				"01" => nameof(FH0),
+				//"05" => "FC0",
+				//"07" => "EU1",
+				"75" => nameof(FH0),
+				_ => nameof(JC0)
+			};
+		}
+		else trCode = "OC0";
 
-		return await SubscribeAsync(subscriber, nameof(DH0), symbol, connecting);
+		if (trCode == nameof(FH0)) await SubscribeAsync(subscriber, nameof(DH0), symbol, connecting); // KRX야간파생 호가
+
+		return await SubscribeAsync(subscriber, trCode, symbol, connecting);
 	}
 
 	public Task<ResponseCore> SubscribeMarketPause(string symbol = "000000") => throw new NotImplementedException();
