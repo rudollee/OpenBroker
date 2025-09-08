@@ -79,9 +79,11 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 					MarketSessionInfo = response.Body.jgubun switch
 					{
 						"07" => MarketSession.CLOSED,
+						"99" => MarketSession.CLOSED,
 						"13" => MarketSession.CLOSED,
-						"40" => MarketSession.EXTENDED,
-						_ => MarketSession.REGULAR,
+						"30" => MarketSession.CLOSING,
+						"40" => trCode == nameof(DC0) ? MarketSession.EXTENDED : MarketSession.REGULAR,
+						_ => trCode == nameof(DC0) ? MarketSession.EXTENDED : MarketSession.REGULAR,
 					},
 					Symbol = response.Body.futcode,
 					TimeExecuted = response.Body.chetime.ToDateTime(),
