@@ -241,10 +241,11 @@ public enum OrderChannel
 
 public enum MarketSession
 {
-    REGULAR = 0,
-    CLOSED = 3,
-    AFTER = 4,
-    PRE = 10,
+	PRE = 10,
+	REGULAR = 20,
+    CLOSED = 30,
+    AFTER = 40,
+    CLOSING = 31,
     EXTENDED = 40,
 }
 
