@@ -639,16 +639,16 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		{
 			trCode = symbol.Substring(1, 2) switch
 			{
-				"01" => nameof(FH0),
-				"05" => nameof(FH0),
+				"01" => nameof(FC0),
+				"05" => nameof(FC0),
 				//"07" => "EU1",
-				"75" => nameof(FH0),
+				"75" => nameof(FC0),
 				_ => nameof(JC0)
 			};
 		}
 		else trCode = "OC0";
 
-		if (trCode == nameof(FH0)) await SubscribeAsync(subscriber, nameof(DC0), symbol, connecting); // 야간파생 추가
+		if (trCode == nameof(FC0)) await SubscribeAsync(subscriber, nameof(DC0), symbol, connecting); // 야간파생 추가
 
 		return await SubscribeAsync(subscriber, trCode, symbol, connecting);
 	}
