@@ -126,7 +126,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 						"1" => MarketSession.PRE,
 						"2" => MarketSession.REGULAR,
 						"3" => MarketSession.CLOSED,
-						"4" => MarketSession.AFTER,
+						"4" => MarketSession.EXTENDED,
 						_ => MarketSession.REGULAR
 					},
 					Symbol = data[(int)H0STCNT0.MKSC_SHRN_ISCD],
@@ -171,12 +171,12 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 				Code = "001",
 				Info = new MarketExecution
 				{
-					MarketSessionInfo = data[(int)H0UNCNT0.NEW_MKOP_CLS_CODE].Substring(0, 1) switch
+					MarketSessionInfo = data[(int)H0UNCNT0.NEW_MKOP_CLS_CODE][..1] switch
 					{
 						"1" => MarketSession.PRE,
 						"2" => MarketSession.REGULAR,
 						"3" => MarketSession.CLOSED,
-						"4" => MarketSession.AFTER,
+						"4" => MarketSession.EXTENDED,
 						_ => MarketSession.REGULAR
 					},
 					Symbol = data[(int)H0UNCNT0.MKSC_SHRN_ISCD],
