@@ -120,8 +120,9 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					Exchange = response.Body.exchname == "KRX" ? Exchange.KRX : Exchange.NXT,
 					MarketSessionInfo = response.Body.status switch
 					{
+						"00" => MarketSession.REGULAR,
 						"3" => MarketSession.CLOSED,
-						"4" => MarketSession.AFTER,
+						"4" => MarketSession.EXTENDED,
 						"10" => MarketSession.PRE,
 						_ => MarketSession.REGULAR,
 					},

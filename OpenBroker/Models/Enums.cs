@@ -244,7 +244,6 @@ public enum MarketSession
 	PRE = 10,
 	REGULAR = 20,
     CLOSED = 30,
-    AFTER = 40,
     CLOSING = 31,
     EXTENDED = 40,
 }
