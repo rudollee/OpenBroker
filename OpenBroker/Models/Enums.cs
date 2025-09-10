@@ -241,6 +241,7 @@ public enum OrderChannel
 
 public enum MarketSession
 {
+    NOTSET = 0,
 	PRE = 10,
 	REGULAR = 20,
     CLOSED = 30,
