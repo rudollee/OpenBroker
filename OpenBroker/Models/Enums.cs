@@ -313,6 +313,11 @@ public enum MessageType
     SYSERR,
 
     /// <summary>
+    /// Connection
+    /// </summary>
+    CONNECTION,
+
+    /// <summary>
     /// Market Data
     /// </summary>
     MKT,
