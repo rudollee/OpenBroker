@@ -17,7 +17,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 
 	public Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol) => throw new NotImplementedException();
 
-	#region request market execution - t2101, t8402
+	#region request market execution - t2101/t8456, t8402
 	public async Task<ResponseResult<MarketExecution>> RequestMarketExecution(string symbol)
 	{
 		if (_futuresCodes.Contains(symbol[..1]) && !_k200OrFx.Contains(symbol.Substring(1, 2)))
@@ -25,52 +25,89 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			return await RequestMarketExecutionSsf(symbol);
 		}
 
+		if (symbol[(symbol.Length - 1)..] == "N") return await RequestMarketExecutionExtended(symbol[..8]);
+
 		try
 		{
-			var response = await RequestStandardAsync<t2101>(LsEndpoint.FuturesMarketData.ToDescription(), new
+			var response = await RequestStandardAsync<T2101>(LsEndpoint.FuturesMarketData.ToDescription(), new
 			{
-				t2101InBlock = new t2101InBlock
-				{
-					focode = symbol,
-				}
+				t2101InBlock = new T2101InBlock { Focode = symbol }
 			});
 
-			if (response is null || response.t2101OutBlock is null) return new ResponseResult<MarketExecution>
-			{
-				Broker = Brkr.LS,
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = "no data",
-			};
+			if (response is null || response.T2101OutBlock is null) return ReturnResult<MarketExecution>(new(), nameof(T2101), response?.Message ?? string.Empty);
 
 			var quote = new MarketExecution
 			{
 				Symbol = symbol,
-				C = response.t2101OutBlock.price,
+				C = response.T2101OutBlock.Price,
 				QuoteDaily = new Quote
 				{
 					T = DateTime.Now,
-					BasePrice = response.t2101OutBlock.jnilclose,
-                    C = response.t2101OutBlock.price,
-					O = response.t2101OutBlock.open,
-					H = response.t2101OutBlock.high,
-					L = response.t2101OutBlock.low,
-					V = response.t2101OutBlock.volume,
-					Turnover = response.t2101OutBlock.value,
+					BasePrice = response.T2101OutBlock.Jnilclose,
+                    C = response.T2101OutBlock.Price,
+					O = response.T2101OutBlock.Open,
+					H = response.T2101OutBlock.High,
+					L = response.T2101OutBlock.Low,
+					V = response.T2101OutBlock.Volume,
+					Turnover = response.T2101OutBlock.Value,
 				},
-				BasePrice = response.t2101OutBlock.jnilclose,
-				VolumeExecuted = response.t2101OutBlock.volume,
+				BasePrice = response.T2101OutBlock.Jnilclose,
+				VolumeExecuted = response.T2101OutBlock.Volume,
 			};
 
-			return new ResponseResult<MarketExecution>
+			var result = ReturnResult(quote);
+			result.ExtraData = new()
 			{
-				Broker = Brkr.LS,
-				Info = quote,
-				ExtraData = new Dictionary<string, decimal>
-				{
-					{ "OI", response.t2101OutBlock.mgjv }, // open interest
-					{ "UNDERLYINGPRICE", response.t2101OutBlock.price - response.t2101OutBlock.sbasis }, // Underlying Asset Price
-				}
+				{ "OI", response.T2101OutBlock.Mgjv }, // open interest
+				{ "UNDERLYINGPRICE", response.T2101OutBlock.Price - response.T2101OutBlock.Sbasis }, // Underlying Asset Price
 			};
+
+			return result;
+		}
+		catch (Exception ex)
+		{
+			return ReturnErrorResult<MarketExecution>(symbol, ex.Message);
+		}
+	}
+
+	private async Task<ResponseResult<MarketExecution>> RequestMarketExecutionExtended(string symbol)
+	{
+		try
+		{
+			var response = await RequestStandardAsync<T8456>(LsEndpoint.FuturesMarketData.ToDescription(), new
+			{
+				t8456InBlock = new T8456InBlock { Focode = symbol }
+			});
+
+			if (response is null || response.T8456OutBlock is null) return ReturnErrorResult<MarketExecution>(symbol, response?.Message ?? "no data");
+
+			var quote = new MarketExecution
+			{
+				Symbol = symbol,
+				C = response.T8456OutBlock.Price,
+				QuoteDaily = new Quote
+				{
+					T = DateTime.Now,
+					BasePrice = response.T8456OutBlock.Jnilclose,
+					C = response.T8456OutBlock.Price,
+					O = response.T8456OutBlock.Open,
+					H = response.T8456OutBlock.High,
+					L = response.T8456OutBlock.Low,
+					V = response.T8456OutBlock.Volume,
+					Turnover = response.T8456OutBlock.Value,
+				},
+				BasePrice = response.T8456OutBlock.Jnilclose,
+				VolumeExecuted = response.T8456OutBlock.Volume,
+			};
+
+			var result = ReturnResult(quote);
+			result.ExtraData = new()
+			{
+				{ "OI", response.T8456OutBlock.Mgjv }, // open interest
+				{ "UNDERLYINGPRICE", response.T8456OutBlock.Price - response.T8456OutBlock.Sbasis }, // Underlying Asset Price
+			};
+
+			return result;
 		}
 		catch (Exception ex)
 		{
@@ -105,16 +142,14 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				BasePrice = response.t8402OutBlock.jnilclose,
 			};
 
-			return new ResponseResult<MarketExecution>
+			var result = ReturnResult(quote);
+			result.ExtraData = new()
 			{
-				Broker = Brkr.LS,
-				Info = quote,
-				ExtraData = new Dictionary<string, decimal>
-				{
-					{ "OI", response.t8402OutBlock.mgjv }, // open interest
-					{ "UNDERLYINGPRICE", response.t8402OutBlock.baseprice }, // Underlying Asset Price
-				}
+				{ "OI", response.t8402OutBlock.mgjv }, // open interest
+				{ "UNDERLYINGPRICE", response.t8402OutBlock.baseprice }, // Underlying Asset Price
 			};
+
+			return result;
 		}
 		catch (Exception ex)
 		{
