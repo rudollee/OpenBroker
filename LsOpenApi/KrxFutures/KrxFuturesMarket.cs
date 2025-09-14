@@ -29,12 +29,12 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 
 		try
 		{
-			var response = await RequestStandardAsync<T2101>(LsEndpoint.FuturesMarketData.ToDescription(), new
+			var response = await RequestStandardAsync<t2101>(LsEndpoint.FuturesMarketData.ToDescription(), new
 			{
 				t2101InBlock = new T2101InBlock { Focode = symbol }
 			});
 
-			if (response is null || response.T2101OutBlock is null) return ReturnResult<MarketExecution>(new(), nameof(T2101), response?.Message ?? string.Empty);
+			if (response is null || response.T2101OutBlock is null) return ReturnResult<MarketExecution>(new(), nameof(t2101), response?.Message ?? string.Empty);
 
 			var quote = new MarketExecution
 			{
@@ -74,7 +74,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	{
 		try
 		{
-			var response = await RequestStandardAsync<T8456>(LsEndpoint.FuturesMarketData.ToDescription(), new
+			var response = await RequestStandardAsync<t8456>(LsEndpoint.FuturesMarketData.ToDescription(), new
 			{
 				t8456InBlock = new T8456InBlock { Focode = symbol }
 			});
