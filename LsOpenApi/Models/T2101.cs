@@ -4,7 +4,7 @@ namespace LsOpenApi.Models;
 /// <summary>
 /// 선물/옵션현재가(시세)조회(t2101)
 /// </summary>
-internal class t2101 : LsResponseCore
+internal class T2101 : LsResponseCore
 {
 	[JsonPropertyName("t2101InBlock")]
 	public T2101InBlock T2101InBlock { get; set; } = new();

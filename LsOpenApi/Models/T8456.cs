@@ -4,7 +4,7 @@ namespace LsOpenApi.Models;
 /// <summary>
 /// KRX야간파생 시세조회(API용)(t8456)
 /// </summary>
-internal class t8456 : LsResponseCore
+internal class T8456 : LsResponseCore
 {
 	[JsonPropertyName("t8456InBlock")]
 	public T8456InBlock T8456InBlock { get; set; } = new();

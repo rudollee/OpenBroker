@@ -29,12 +29,12 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 
 		try
 		{
-			var response = await RequestStandardAsync<t2101>(LsEndpoint.FuturesMarketData.ToDescription(), new
+			var response = await RequestStandardAsync<T2101>(LsEndpoint.FuturesMarketData.ToDescription(), new
 			{
 				t2101InBlock = new T2101InBlock { Focode = symbol }
 			});
 
-			if (response is null || response.T2101OutBlock is null) return ReturnResult<MarketExecution>(new(), nameof(t2101), response?.Message ?? string.Empty);
+			if (response is null || response.T2101OutBlock is null) return ReturnResult<MarketExecution>(new(), nameof(T2101), response?.Message ?? string.Empty);
 
 			var quote = new MarketExecution
 			{
@@ -74,7 +74,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	{
 		try
 		{
-			var response = await RequestStandardAsync<t8456>(LsEndpoint.FuturesMarketData.ToDescription(), new
+			var response = await RequestStandardAsync<T8456>(LsEndpoint.FuturesMarketData.ToDescription(), new
 			{
 				t8456InBlock = new T8456InBlock { Focode = symbol }
 			});
@@ -398,7 +398,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 					}
 				}, nextKey);
 
-				if (response is null || !response.t8416OutBlock1.Any()) break;
+				if (response is null || response.t8416OutBlock1.Count == 0) break;
 
 				list.AddRange(response.t8416OutBlock1);
 				nextKey = response.NextKey;
@@ -461,7 +461,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				}
 			}, nextKey);
 
-			if (response is null || !response.t8415OutBlock1.Any()) break;
+			if (response is null || response.t8415OutBlock1.Count == 0) break;
 
 			list.AddRange(response.t8415OutBlock1);
 			nextKey = response.NextKey;
@@ -505,15 +505,15 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				t8401InBlock = new t8401InBlock { }
 			});
 
-			if (!response.t8401OutBlock.Any()) return new ResponseDictionary<string, Instrument>
+			if (response.t8401OutBlock.Count == 0) return new ResponseDictionary<string, Instrument>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = "no data",
 				Code = response.Code,
-				Dic = new Dictionary<string, Instrument>(),
+				Dic = [],
 			};
 
-			List<MMDAQ91200OutBlock2> margins = new();
+			List<MMDAQ91200OutBlock2> margins = [];
 			var nextKey = string.Empty;
 			do
 			{
@@ -530,13 +530,13 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			response.t8401OutBlock.ForEach(instrument =>
 			{
 				var id = instrument.shcode.ToKrxProductCode();
-				var marginInfo = margins.FirstOrDefault(f => $"{f.IsuSmclssCode.Substring(1)}" == id);
+				var marginInfo = margins.FirstOrDefault(f => $"{f.IsuSmclssCode[1..]}" == id);
 				Instruments.Add(instrument.shcode, new Instrument
 				{
 					Symbol = instrument.shcode,
 					Product = id,
 					InstrumentName = instrument.hname,
-					SymbolUnderlying = instrument.basecode.Substring(1),
+					SymbolUnderlying = instrument.basecode[1..],
 					Margin = marginInfo is null ? 0 : marginInfo.OnePrcntrOrdMgn * 0.1m,
 					MarginRate = marginInfo is null ? 0.00m : marginInfo.CsgnMgnrt * 0.01m,
 				});
@@ -576,7 +576,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				},
 			});
 
-			if (!response.t2301OutBlock1.Any()) return new ResponseResult<OptionPack>
+			if (response.t2301OutBlock1.Count == 0) return new ResponseResult<OptionPack>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = "no data",

@@ -13,7 +13,7 @@ public class ConnectionBase
 	internal readonly string grant_type = "client_credentials";
 
 	public KeyPack KeyInfo { get => _keyInfo; }
-	private KeyPack _keyInfo = new KeyPack();
+	private KeyPack _keyInfo = new();
 	public void SetKeyPack(KeyPack keyInfo) => _keyInfo = keyInfo;
 
 	public Account AccountInfo { get => _accountInfo; }
@@ -21,7 +21,7 @@ public class ConnectionBase
 	public void SetAccount(Account account) => _accountInfo = account;
 
 	public BankAccount BankAccountInfo { get => _bankAccountInfo; }
-	private BankAccount _bankAccountInfo = new BankAccount();
+	private BankAccount _bankAccountInfo = new();
 	public void SetBankAccount(BankAccount bankAccount) => _bankAccountInfo = bankAccount;
 
 	public bool IsConnected { get => _connected; }
@@ -32,14 +32,14 @@ public class ConnectionBase
 
 	protected IWebsocketClient? Client;
 
-	private List<Request> Requests = [];
+	private readonly List<Request> Requests = [];
 
 	private Dictionary<string, SubscriptionPack> _subscriptions = new()
 	{
-		{ "JIF", new SubscriptionPack{ TrCode = "JIF", Key = "0", Subscriber = new List<string>(){ "INIT" }} },
+		{ "JIF", new SubscriptionPack{ TrCode = "JIF", Key = "0", Subscriber = ["INIT"]} },
 	};
 
-	protected readonly string[] DeclineCodes = new string[] { "4", "5" };
+	protected readonly string[] DeclineCodes = ["4", "5"];
 
 	public async Task<ResponseResult<KeyPack>> RequestAccessTokenAsync(string appkey, string appsecret)
 	{
@@ -213,7 +213,7 @@ public class ConnectionBase
 					{
 						TrCode = trCode,
 						Key = key,
-						Subscriber = new List<string> { subscriber }
+						Subscriber = [subscriber]
 					});
 					needsAction = true;
 				}
@@ -230,7 +230,7 @@ public class ConnectionBase
 					else if (_subscriptions[$"{trCode}-{key}"].Subscriber.Contains(subscriber))
 					{
 						_subscriptions[$"{trCode}-{key}"].Subscriber.Remove(subscriber);
-						if (!_subscriptions[$"{trCode}-{key}"].Subscriber.Any())
+						if (_subscriptions[$"{trCode}-{key}"].Subscriber.Count == 0)
 						{
 							_subscriptions.Remove($"{trCode}-{key}");
 							needsAction = true;
@@ -347,7 +347,7 @@ public class ConnectionBase
 			parameters.Add(parameter.Key, parameter.Value?.ToString());
 		}
 
-		return parameters ?? new Dictionary<string, string?>();
+		return parameters ?? [];
 	}
 
 	/// <summary>
@@ -386,18 +386,16 @@ public class ConnectionBase
 	/// </summary>
 	/// <param name="tr"></param>
 	/// <returns></returns>
-	protected Dictionary<string, string> GenerateHeaders(string tr, string nextKey = "")
-	{
-		return new Dictionary<string, string>
+	protected Dictionary<string, string> GenerateHeaders(string tr, string nextKey = "") =>
+		new()
 		{
 			{ "content-type", "application/json; charset=utf-8" },
 			{ "authorization", $"Bearer {KeyInfo.AccessToken}"},
-			{ "tr_cd", tr},
+			{ "tr_cd", tr.StartsWith("T") ? tr.ToLower() : tr},
 			{ "tr_cont", string.IsNullOrEmpty(nextKey) ? "N" : "Y" },
 			{ "tr_cont_key", nextKey },
 			{ "mac_address", ""}
 		};
-	}
 
 	/// <summary>
 	/// Generate Headers
@@ -437,7 +435,7 @@ public class ConnectionBase
 
 		if (needsMessage && delaying.TotalMilliseconds > 250)
 		{
-			SendMessage(trCode, $"request forcely delayed {(delaying.TotalMilliseconds * 0.001).ToString("N3")} sec.");
+			SendMessage(trCode, $"request forcely delayed {delaying.TotalMilliseconds * 0.001:N3} sec.");
 		}
 
 		Thread.Sleep(delaying);
@@ -569,6 +567,7 @@ public class ConnectionBase
 		Typ = MessageType.SYSERR,
 		Code = code,
 		Message = message,
+		Remark = remark
 	});
 
 	protected ResponseCore ReturnError(string code, string message, string remark = "") => new() 
@@ -622,7 +621,7 @@ public class ConnectionBase
 		List = []
 	};
 
-	protected ResponseResults<T> ReturnResults<T>(List<T> list, string code = "", string message = "", MessageType typ = MessageType.SYS, string remark = "") where T : class => new ResponseResults<T>
+	protected ResponseResults<T> ReturnResults<T>(List<T> list, string code = "", string message = "", MessageType typ = MessageType.SYS, string remark = "") where T : class => new()
 	{
 		Broker = Brkr.LS,
 		StatusCode = list.Count >0 ? Status.SUCCESS : Status.NODATA,
