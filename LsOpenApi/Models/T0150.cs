@@ -1,158 +1,208 @@
-﻿namespace LsOpenApi.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace LsOpenApi.Models;
 /// <summary>
 /// 주식당일매매일지/수수료(t0150)
 /// </summary>
-internal class t0150 : LsResponseCore
+internal class T0150 : LsResponseCore
 {
-	public t0150InBlock t0150InBlock { get; set; } = new();
-	public t0150OutBlock t0150OutBlock { get; set; } = new();
-	public List<t0150OutBlock1> t0150OutBlock1 { get; set; } = new();
+	[JsonPropertyName("t0150InBlock")]
+	public T0150InBlock T0150InBlock { get; set; } = new();
+	[JsonPropertyName("t0150OutBlock")]
+	public T0150OutBlock T0150OutBlock { get; set; } = new();
+	[JsonPropertyName("t0150OutBlock1")]
+	public List<T0150OutBlock1> T0150OutBlock1 { get; set; } = [];
 }
 
 /// <summary>
 /// 주식당일매매일지/수수료(t0150) - InBlock
 /// </summary>
-internal class t0150InBlock
+internal class T0150InBlock
 {
+	/// <summary>계좌번호</summary>
+	[JsonPropertyName("accno")]
+	public string Accno { get; set; } = string.Empty;
+
 	/// <summary>CTS_매매구분</summary>
-	public string cts_medosu { get; set; } = string.Empty;
+	[JsonPropertyName("cts_medosu")]
+	public string CtsMedosu { get; set; } = string.Empty;
 
 	/// <summary>CTS_종목번호</summary>
-	public string cts_expcode { get; set; } = string.Empty;
+	[JsonPropertyName("cts_expcode")]
+	public string CtsExpcode { get; set; } = string.Empty;
 
 	/// <summary>CTS_단가</summary>
-	public string cts_price { get; set; } = string.Empty;
+	[JsonPropertyName("cts_price")]
+	public string CtsPrice { get; set; } = string.Empty;
 
 	/// <summary>CTS_매체</summary>
-	public string cts_middiv { get; set; } = string.Empty;
+	[JsonPropertyName("cts_middiv")]
+	public string CtsMiddiv { get; set; } = string.Empty;
 }
 
 /// <summary>
 /// 주식당일매매일지/수수료(t0150) - OutBlock
 /// </summary>
-internal class t0150OutBlock
+internal class T0150OutBlock
 {
 	/// <summary>매도수량</summary>
-	public long mdqty { get; set; }
+	[JsonPropertyName("mdqty")]
+	public long Mdqty { get; set; }
 
 	/// <summary>매도약정금액</summary>
-	public long mdamt { get; set; }
+	[JsonPropertyName("mdamt")]
+	public long Mdamt { get; set; }
 
 	/// <summary>매도수수료</summary>
-	public long mdfee { get; set; }
+	[JsonPropertyName("mdfee")]
+	public long Mdfee { get; set; }
 
 	/// <summary>매도거래세</summary>
-	public long mdtax { get; set; }
+	[JsonPropertyName("mdtax")]
+	public long Mdtax { get; set; }
 
 	/// <summary>매도농특세</summary>
-	public long mdargtax { get; set; }
+	[JsonPropertyName("mdargtax")]
+	public long Mdargtax { get; set; }
 
 	/// <summary>매도제비용합</summary>
-	public long tmdtax { get; set; }
+	[JsonPropertyName("tmdtax")]
+	public long Tmdtax { get; set; }
 
 	/// <summary>매도정산금액</summary>
-	public long mdadjamt { get; set; }
+	[JsonPropertyName("mdadjamt")]
+	public long Mdadjamt { get; set; }
 
 	/// <summary>매수수량</summary>
-	public long msqty { get; set; }
+	[JsonPropertyName("msqty")]
+	public long Msqty { get; set; }
 
 	/// <summary>매수약정금액</summary>
-	public long msamt { get; set; }
+	[JsonPropertyName("msamt")]
+	public long Msamt { get; set; }
 
 	/// <summary>매수수수료</summary>
-	public long msfee { get; set; }
+	[JsonPropertyName("msfee")]
+	public long Msfee { get; set; }
 
 	/// <summary>매수제비용합</summary>
-	public long tmstax { get; set; }
+	[JsonPropertyName("tmstax")]
+	public long Tmstax { get; set; }
 
 	/// <summary>매수정산금액</summary>
-	public long msadjamt { get; set; }
+	[JsonPropertyName("msadjamt")]
+	public long Msadjamt { get; set; }
 
 	/// <summary>합계수량</summary>
-	public long tqty { get; set; }
+	[JsonPropertyName("tqty")]
+	public long Tqty { get; set; }
 
 	/// <summary>합계약정금액</summary>
-	public long tamt { get; set; }
+	[JsonPropertyName("tamt")]
+	public long Tamt { get; set; }
 
 	/// <summary>합계수수료</summary>
-	public long tfee { get; set; }
+	[JsonPropertyName("tfee")]
+	public long Tfee { get; set; }
 
 	/// <summary>합계거래세</summary>
-	public long tottax { get; set; }
+	[JsonPropertyName("tottax")]
+	public long Tottax { get; set; }
 
 	/// <summary>합계농특세</summary>
-	public long targtax { get; set; }
+	[JsonPropertyName("targtax")]
+	public long Targtax { get; set; }
 
 	/// <summary>합계제비용합</summary>
-	public long ttax { get; set; }
+	[JsonPropertyName("ttax")]
+	public long Ttax { get; set; }
 
 	/// <summary>합계정산금액</summary>
-	public long tadjamt { get; set; }
+	[JsonPropertyName("tadjamt")]
+	public long Tadjamt { get; set; }
 
 	/// <summary>CTS_매매구분</summary>
-	public string cts_medosu { get; set; } = string.Empty;
+	[JsonPropertyName("cts_medosu")]
+	public string CtsMedosu { get; set; } = string.Empty;
 
 	/// <summary>CTS_종목번호</summary>
-	public string cts_expcode { get; set; } = string.Empty;
+	[JsonPropertyName("cts_expcode")]
+	public string CtsExpcode { get; set; } = string.Empty;
 
 	/// <summary>CTS_단가</summary>
-	public string cts_price { get; set; } = string.Empty;
+	[JsonPropertyName("cts_price")]
+	public string CtsPrice { get; set; } = string.Empty;
 
 	/// <summary>CTS_매체</summary>
-	public string cts_middiv { get; set; } = string.Empty;
+	[JsonPropertyName("cts_middiv")]
+	public string CtsMiddiv { get; set; } = string.Empty;
 }
 
 /// <summary>
 /// 주식당일매매일지/수수료(t0150) - OutBlock1
 /// </summary>
-internal class t0150OutBlock1
+internal class T0150OutBlock1
 {
 	/// <summary>매매구분</summary>
-	public string medosu { get; set; } = string.Empty;
+	[JsonPropertyName("medosu")]
+	public string Medosu { get; set; } = string.Empty;
 
 	/// <summary>종목번호</summary>
-	public string expcode { get; set; } = string.Empty;
+	[JsonPropertyName("expcode")]
+	public string Expcode { get; set; } = string.Empty;
 
 	/// <summary>수량</summary>
-	public long qty { get; set; }
+	[JsonPropertyName("qty")]
+	public long Qty { get; set; }
 
 	/// <summary>단가</summary>
-	public long price { get; set; }
+	[JsonPropertyName("price")]
+	public long Price { get; set; }
 
 	/// <summary>약정금액</summary>
-	public long amt { get; set; }
+	[JsonPropertyName("amt")]
+	public long Amt { get; set; }
 
 	/// <summary>수수료</summary>
-	public long fee { get; set; }
+	[JsonPropertyName("fee")]
+	public long Fee { get; set; }
 
 	/// <summary>거래세</summary>
-	public long tax { get; set; }
+	[JsonPropertyName("tax")]
+	public long Tax { get; set; }
 
 	/// <summary>농특세</summary>
-	public long argtax { get; set; }
+	[JsonPropertyName("argtax")]
+	public long Argtax { get; set; }
 
 	/// <summary>정산금액</summary>
-	public long adjamt { get; set; }
+	[JsonPropertyName("adjamt")]
+	public long Adjamt { get; set; }
 
 	/// <summary>매체</summary>
-	public string middiv { get; set; } = string.Empty;
+	[JsonPropertyName("middiv")]
+	public string Middiv { get; set; } = string.Empty;
 }
 
 /// <summary>
 /// 주식당일매매일지/수수료 - 특정일자(t0150)
 /// </summary>
-internal class t0151 : LsResponseCore
+internal class T0151 : LsResponseCore
 {
-	public t0151InBlock t0151InBlock { get; set; } = new();
-	public t0150OutBlock t0151OutBlock { get; set; } = new();
-	public List<t0150OutBlock1> t0151OutBlock1 { get; set; } = [];
+	[JsonPropertyName("t0151InBlock")]
+	public T0151InBlock T0151InBlock { get; set; } = new();
+	[JsonPropertyName("t0151OutBlock")]
+	public T0150OutBlock T0151OutBlock { get; set; } = new();
+	[JsonPropertyName("t0151OutBlock1")]
+	public List<T0150OutBlock1> T0151OutBlock1 { get; set; } = [];
 }
 
 /// <summary>
 /// 주식당일매매일지/수수료 - 특정일자(t0150) - InBlock
 /// </summary>
-internal class t0151InBlock : t0150InBlock
+internal class T0151InBlock : T0150InBlock
 {
 	/// <summary>일자</summary>
-	public string date { get; set; } = string.Empty;
+	[JsonPropertyName("date")]
+	public string Date { get; set; } = string.Empty;
 }

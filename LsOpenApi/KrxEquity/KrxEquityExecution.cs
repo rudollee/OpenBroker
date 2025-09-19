@@ -4,7 +4,6 @@ using OpenBroker.Models;
 using OpenBroker;
 using OpenBroker.Extensions;
 using RestSharp;
-using System;
 
 namespace LsOpenApi.KrxEquity;
 public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEquity
@@ -368,7 +367,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 						BrokerCo = "LS",
 						DateBiz = order.OrdDt.ToDate(),
 						TimeOrdered = order.OrdTime.ToDateTimeM(),
-						Symbol = order.IsuNo.Substring(1),
+						Symbol = order.IsuNo[1..],
 						InstrumentName = order.IsuNm,
 						OID = order.OrdNo,
 						IdOrigin = order.OrgOrdNo,
@@ -455,36 +454,36 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 		{
 			if (date == DateTime.Now.ToKrxTradingDay()) return await RequestExecutionAggToday();
 
-			var response = await RequestStandardAsync<t0151>(LsEndpoint.EquityAccount.ToDescription(), new
+			var response = await RequestStandardAsync<T0151>(LsEndpoint.EquityAccount.ToDescription(), new
 			{
-				t0151InBlock = new t0151InBlock { date = date.ToDate8Txt() }
+				t0151InBlock = new T0151InBlock { Date = date.ToDate8Txt() }
 			});
 
-			if (response is null) return ReturnErrorResults<Execution>(nameof(t0151), "response is null");
-			if (response.t0151OutBlock1.Count == 0) return ReturnResults<Execution>([], $"{nameof(t0151)}.{response.Code}", "no execution");
+			if (response is null) return ReturnErrorResults<Execution>(nameof(T0151), "response is null");
+			if (response.T0151OutBlock1.Count == 0) return ReturnResults<Execution>([], $"{nameof(T0151)}.{response.Code}", "no execution");
 
-			return GenerateExecutions(date, response.t0151OutBlock1);
+			return GenerateExecutions(date, response.T0151OutBlock1);
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<Execution>(nameof(t0151), ex.Message);
+			return ReturnErrorResults<Execution>(nameof(T0151), ex.Message);
 		}
 	}
 
 	private async Task<ResponseResults<Execution>> RequestExecutionAggToday()
 	{
-		var response = await RequestStandardAsync<t0150>(LsEndpoint.EquityAccount.ToDescription(), new
+		var response = await RequestStandardAsync<T0150>(LsEndpoint.EquityAccount.ToDescription(), new
 		{
-			t0150InBlock = new t0150InBlock { }
+			t0150InBlock = new T0150InBlock { }
 		});
 
-		if (response is null) return ReturnErrorResults<Execution>(nameof(t0150), "response is null");
-		if (response.t0150OutBlock1.Count == 0) return ReturnResults<Execution>([], $"{nameof(t0150)}.{response.Code}", response.Message);
+		if (response is null) return ReturnErrorResults<Execution>(nameof(T0150), "response is null");
+		if (response.T0150OutBlock1.Count == 0) return ReturnResults<Execution>([], $"{nameof(T0150)}.{response.Code}", response.Message);
 
-		return GenerateExecutions(DateTime.Now.ToKrxTradingDay(), response.t0150OutBlock1);
+		return GenerateExecutions(DateTime.Now.ToKrxTradingDay(), response.T0150OutBlock1);
 	}
 	
-	private ResponseResults<Execution> GenerateExecutions(DateOnly date, List<t0150OutBlock1> outblock)
+	private ResponseResults<Execution> GenerateExecutions(DateOnly date, List<T0150OutBlock1> outblock)
 	{
 		List<Execution> executions = [];
 		var symbol = string.Empty;
@@ -492,7 +491,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 		var channel = OrderChannel.API;
 		foreach (var execution in outblock)
 		{
-			if (execution.medosu == "종목소계")
+			if (execution.Medosu == "종목소계")
 			{
 				executions.Add(new Execution
 				{
@@ -501,15 +500,15 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 					InstrumentName = Equities[symbol].NameOfficial,
 					Channel = channel,
 					IsLong = isLong,
-					Commission = execution.fee,
-					Tax = execution.tax + execution.argtax,
+					Commission = execution.Fee,
+					Tax = execution.Tax + execution.Argtax,
 				});
 			}
 			else
 			{
-				symbol = execution.expcode;
-				isLong = execution.medosu == "매수";
-				channel = execution.middiv switch
+				symbol = execution.Expcode;
+				isLong = execution.Medosu == "매수";
+				channel = execution.Middiv switch
 				{
 					"투혼(HTS)" => OrderChannel.HTS,
 					"투혼(MTS)" => OrderChannel.MTS,
@@ -519,7 +518,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 			}
 		}
 
-		return ReturnResults(executions, nameof(t0150));
+		return ReturnResults(executions, nameof(T0150));
 	}
 	#endregion
 
