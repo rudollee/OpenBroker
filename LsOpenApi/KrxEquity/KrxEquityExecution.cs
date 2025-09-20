@@ -405,44 +405,44 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 		var positions = new List<Position>();
 		try
 		{
-			var response = await RequestStandardAsync<t0424>(LsEndpoint.EquityAccount.ToDescription(), new
+			var response = await RequestStandardAsync<T0424>(LsEndpoint.EquityAccount.ToDescription(), new
 			{
-				t0424InBlock = new t0424InBlock
+				t0424InBlock = new T0424InBlock
 				{
-					prcgb = "1",
-					chegb = "2",
-					dangb = "0",
-					charge = "1",
-					cts_expcode = ""
+					Prcgb = "1",
+					Chegb = "2",
+					Dangb = "0",
+					Charge = "1",
+					CtsExpcode = ""
 				}
 			});
 
-			positions.Capacity = response.t0424OutBlock1.Count;
+			positions.Capacity = response.T0424OutBlock1.Count;
 
-			response.t0424OutBlock1.ForEach(position =>
+			response.T0424OutBlock1.ForEach(position =>
 			{
 				positions.Add(new Position
 				{
 					Currency = Currency.KRW,
-					Symbol = position.expcode,
-					InstrumentName = position.hname,
+					Symbol = position.Expcode,
+					InstrumentName = position.Hname,
 					NumeralSystem = 10,
 					Precision = 0,
-					PriceEntry = position.pamt,
-					Price = position.price,
-					VolumeEntry = position.janqty,
-					Volume = position.janqty,
+					PriceEntry = position.Pamt,
+					Price = position.Price,
+					VolumeEntry = position.Janqty,
+					Volume = position.Janqty,
 					Tradable = true,
-					Tax = position.tax,
-					Commission = position.fee,
+					Tax = position.Tax,
+					Commission = position.Fee,
 				});
 			});
 
-			return ReturnResults<Position>(positions, $"{nameof(t0424)}.{response.Code}", string.Empty, MessageType.SYS, response.t0424OutBlock.dtsunik.ToString());
+			return ReturnResults(positions, $"{nameof(T0424)}.{response.Code}", string.Empty, MessageType.SYS, response.T0424OutBlock.Dtsunik.ToString());
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<Position>(nameof(t0424), ex.Message);
+			return ReturnErrorResults<Position>(nameof(T0424), ex.Message);
 		}
 	}
 	#endregion
