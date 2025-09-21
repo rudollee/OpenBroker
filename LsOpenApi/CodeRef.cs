@@ -133,7 +133,7 @@ internal static class CodeRef
 		{ nameof(CSPAT00801), 3 },
 		{ nameof(CSPBQ00200), 1 },
 		{ nameof(T0424), 1 },
-		{ nameof(t0425), 1 },
+		{ nameof(T0425), 1 },
 		{ nameof(t1101), 3 },
 		{ nameof(t1102), 3 },
 		{ nameof(t1301), 2 },

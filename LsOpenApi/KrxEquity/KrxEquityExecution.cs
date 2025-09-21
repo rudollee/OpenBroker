@@ -131,57 +131,57 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 	{
 		try
 		{
-			var response = await RequestStandardAsync<t0425>(LsEndpoint.EquityAccount.ToDescription(), new
+			var response = await RequestStandardAsync<T0425>(LsEndpoint.EquityAccount.ToDescription(), new
 			{
-				t0425InBlock = new t0425InBlock
+				t0425InBlock = new T0425InBlock
 				{
-					expcode = symbol,
-					chegb = status switch
+					Expcode = symbol,
+					Chegb = status switch
 					{
 						ExecutionStatus.All => "0",
 						ExecutionStatus.ExecutedOnly => "1",
 						ExecutionStatus.UnexecutedOnly => "2",
 						_ => "0"
 					},
-					medosu = "0",
-					sortgb = "1",
-					cts_ordno = "",
+					Medosu = "0",
+					Sortgb = "1",
+					CtsOrdno = "",
 				}
 			});
 
-			if (response.t0425OutBlock1.Count == 0) return ReturnResults<Execution>([], $"{nameof(t0425)}.{response.Code}", response.Message);
+			if (response.T0425OutBlock1.Count == 0) return ReturnResults<Execution>([], $"{nameof(T0425)}.{response.Code}", response.Message);
 
-			var executions = new List<Execution>() { Capacity = response.t0425OutBlock1.Count };
-			response.t0425OutBlock1.ForEach(execution =>
+			var executions = new List<Execution>() { Capacity = response.T0425OutBlock1.Count };
+			response.T0425OutBlock1.ForEach(execution =>
 			{
 				executions.Add(new Execution
 				{
 					BrokerCo = "LS",
-					OID = execution.ordno,
-					CID = execution.sysprocseq,
+					OID = execution.Ordno,
+					CID = execution.Sysprocseq,
 					Currency = Currency.KRW,
 					DateBiz = DateTime.Now.ToKrxTradingDay(),
 					ExchangeCode = Exchange.KRX,
-					Symbol = execution.expcode,
-					TimeOrdered = execution.ordtime.ToDateTimeM(),
-					IdOrigin = execution.orgordno,
-					IsLong = execution.orggb == "02",
-					PriceOrdered = execution.price,
-					Price = execution.cheprice,
-					Volume = execution.cheqty,
-					VolumeLeft = execution.ordrem,
-					VolumeOrdered = execution.qty,
-					VolumeCancelable = execution.ordrem,
-					VolumeUpdatable = execution.ordrem,
-					VolumeOrderable = execution.ordrem,
+					Symbol = execution.Expcode,
+					TimeOrdered = execution.Ordtime.ToDateTimeM(),
+					IdOrigin = execution.Orgordno,
+					IsLong = execution.Orggb == "02",
+					PriceOrdered = execution.Price,
+					Price = execution.Cheprice,
+					Volume = execution.Cheqty,
+					VolumeLeft = execution.Ordrem,
+					VolumeOrdered = execution.Qty,
+					VolumeCancelable = execution.Ordrem,
+					VolumeUpdatable = execution.Ordrem,
+					VolumeOrderable = execution.Ordrem,
 				});
 			});
 
-			return ReturnResults(executions, $"{nameof(t0425)}.{response.Code}");
+			return ReturnResults(executions, $"{nameof(T0425)}.{response.Code}");
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<Execution>(nameof(t0425), ex.Message);
+			return ReturnErrorResults<Execution>(nameof(T0425), ex.Message);
 		}
 	}
 	#endregion
