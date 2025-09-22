@@ -163,41 +163,41 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 	{
 		try
 		{
-			var response = await RequestStandardAsync<t0434>(LsEndpoint.FuturesAccount.ToDescription(), new
+			var response = await RequestStandardAsync<T0434>(LsEndpoint.FuturesAccount.ToDescription(), new
 			{
-				t0434InBlock = new t0434InBlock { }
+				t0434InBlock = new T0434InBlock { }
 			});
 
-			if (response.t0434OutBlock1.Count == 0) return ReturnResults<Order>([], nameof(t0434), response.Message);
+			if (response.T0434OutBlock1.Count == 0) return ReturnResults<Order>([], nameof(T0434), response.Message);
 
-			List<Order> orders = new() { Capacity = response.t0434OutBlock1.Count };
-			response.t0434OutBlock1.ForEach(f =>
+			List<Order> orders = new() { Capacity = response.T0434OutBlock1.Count };
+			response.T0434OutBlock1.ForEach(f =>
 			{
 				orders.Add(new Order
 				{
 					DateBiz = DateOnly.FromDateTime(DateTime.UtcNow.AddHours(9)),
 					BrokerCo = "LS",
-					OID = f.ordno,
-					IdOrigin = f.orgordno,
-					Mode = f.orgordno == 0 ? OrderMode.PLACE : f.medosu.Substring(2,2) switch
+					OID = f.Ordno,
+					IdOrigin = f.Orgordno,
+					Mode = f.Orgordno == 0 ? OrderMode.PLACE : f.Medosu.Substring(2,2) switch
 					{
 						"정정" => OrderMode.UPDATE,
 						"취소" => OrderMode.CANCEL,
 						_ => OrderMode.PLACE
 					},
-					Symbol = f.expcode,
-					IsLong = f.medosu.Contains("매수"),
-					VolumeOrdered = f.qty,
-					VolumeUpdatable = f.ordrem,
-					PriceOrdered = f.price,
-					Precision = !new string[] { "1", "A" }.Contains(f.expcode.Substring(0, 1)) ? 2 : f.expcode.Substring(1, 2) switch
+					Symbol = f.Expcode,
+					IsLong = f.Medosu.Contains("매수"),
+					VolumeOrdered = f.Qty,
+					VolumeUpdatable = f.Ordrem,
+					PriceOrdered = f.Price,
+					Precision = !new string[] { "1", "A" }.Contains(f.Expcode.Substring(0, 1)) ? 2 : f.Expcode.Substring(1, 2) switch
 					{
 						"01" => 2,
 						"05" => 2,
 						"07" => 2,
 						_ => 0
 					},
-					TimeOrdered = $"{DateTime.UtcNow.AddHours(9).ToString("yyyyMMdd")}{f.ordtime.PadRight(9, '0')}".ToDateTimeM(),
+					TimeOrdered = $"{DateTime.UtcNow.AddHours(9).ToString("yyyyMMdd")}{f.Ordtime.PadRight(9, '0')}".ToDateTimeM(),
 				});
 			});
 
