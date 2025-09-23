@@ -309,12 +309,12 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 	private async Task<ResponseResult<OrderBook>> RequestOrderbookAsync(string symbol)
 	{
-		var response = await RequestStandardAsync<t1101>(LsEndpoint.EquityMarketData.ToDescription(), new
+		var response = await RequestStandardAsync<T1101>(LsEndpoint.EquityMarketData.ToDescription(), new
 		{
-			t1101InBlock = new t1101InBlock { shcode = symbol }
+			t1101InBlock = new T1101InBlock { Shcode = symbol }
 		});
 
-		if (response is null || response.t1101OutBlock is null) return ReturnErrorResult<OrderBook>(nameof(t1101), "response is null");
+		if (response is null || response.T1101OutBlock is null) return ReturnErrorResult<OrderBook>(nameof(T1101), "response is null");
 
 		List<MarketOrder> asks = [];
 		List<MarketOrder> bids = [];
@@ -323,15 +323,15 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			asks.Add(new MarketOrder
 			{
 				Seq = Convert.ToByte(i + 1),
-				Price = Convert.ToDecimal(response.t1101OutBlock.GetPropValue($"offerho{(i + 1)}")),
-				Amount = Convert.ToDecimal(response.t1101OutBlock.GetPropValue($"offerrem{(i + 1)}")),
+				Price = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"Offerho{(i + 1)}")),
+				Amount = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"Offerrem{(i + 1)}")),
 			});
 
 			bids.Add(new MarketOrder
 			{
 				Seq = Convert.ToByte(i + 1),
-				Price = Convert.ToDecimal(response.t1101OutBlock.GetPropValue($"bidho{(i + 1)}")),
-				Amount = Convert.ToDecimal(response.t1101OutBlock.GetPropValue($"bidrem{(i + 1)}"))
+				Price = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"Bidho{(i + 1)}")),
+				Amount = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"Bidrem{(i + 1)}"))
 			});
 		}
 
@@ -341,11 +341,11 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			Typ = MessageType.MKT,
 			Info = new OrderBook
 			{
-				TimeTaken = response.t1101OutBlock.hotime.ToTime(),
+				TimeTaken = response.T1101OutBlock.Hotime.ToTime(),
 				Ask = asks,
 				Bid = bids,
-				AskAgg = Convert.ToDecimal(response.t1101OutBlock.GetPropValue($"offer")),
-				BidAgg = Convert.ToDecimal(response.t1101OutBlock.GetPropValue($"bid")),
+				AskAgg = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"Offer")),
+				BidAgg = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"Bid")),
 			}
 		};
 	}

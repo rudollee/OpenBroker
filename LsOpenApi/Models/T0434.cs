@@ -19,14 +19,6 @@ internal class T0434 : LsResponseCore
 /// </summary>
 internal class T0434InBlock
 {
-	/// <summary>계좌번호</summary>
-	[JsonPropertyName("accno")]
-	public string Accno { get; set; } = string.Empty;
-
-	/// <summary>비밀번호</summary>
-	[JsonPropertyName("passwd")]
-	public string Passwd { get; set; } = string.Empty;
-
 	/// <summary>종목번호</summary>
 	[JsonPropertyName("expcode")]
 	public string Expcode { get; set; } = string.Empty;
