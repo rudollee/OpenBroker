@@ -1,521 +1,693 @@
-﻿namespace LsOpenApi.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace LsOpenApi.Models;
 /// <summary>
 /// 주식현재가(시세)조회(t1102)
 /// </summary>
-internal class t1102 : LsResponseCore
+internal class T1102 : LsResponseCore
 {
-	public t1102OutBlock t1102OutBlock { get; set; } = new();
+	[JsonPropertyName("t1102InBlock")]
+	public T1102InBlock T1102InBlock { get; set; } = new();
+	[JsonPropertyName("t1102OutBlock")]
+	public T1102OutBlock T1102OutBlock { get; set; } = new();
 }
 
 /// <summary>
 /// 주식현재가(시세)조회(t1102) - InBlock
 /// </summary>
-internal class t1102InBlock
+internal class T1102InBlock
 {
 	/// <summary>단축코드</summary>
-	public string shcode { get; set; } = string.Empty;
+	[JsonPropertyName("shcode")]
+	public string Shcode { get; set; } = string.Empty;
 
-	/// <summary>거래소구분코드 - K/N/U</summary>
-	public string exchgubun { get; set; } = "U";
+	/// <summary>거래소구분코드</summary>
+	[JsonPropertyName("exchgubun")]
+	public string Exchgubun { get; set; } = string.Empty;
 }
 
 /// <summary>
 /// 주식현재가(시세)조회(t1102) - OutBlock
 /// </summary>
-internal class t1102OutBlock
+internal class T1102OutBlock
 {
 	/// <summary>한글명</summary>
-	public string hname { get; set; } = string.Empty;
+	[JsonPropertyName("hname")]
+	public string Hname { get; set; } = string.Empty;
 
 	/// <summary>현재가</summary>
-	public long price { get; set; }
+	[JsonPropertyName("price")]
+	public long Price { get; set; }
 
 	/// <summary>전일대비구분</summary>
-	public string sign { get; set; } = string.Empty;
+	[JsonPropertyName("sign")]
+	public string Sign { get; set; } = string.Empty;
 
 	/// <summary>전일대비</summary>
-	public long change { get; set; }
+	[JsonPropertyName("change")]
+	public long Change { get; set; }
 
 	/// <summary>등락율</summary>
-	public decimal diff { get; set; }
+	[JsonPropertyName("diff")]
+	public decimal Diff { get; set; }
 
 	/// <summary>누적거래량</summary>
-	public long volume { get; set; }
+	[JsonPropertyName("volume")]
+	public long Volume { get; set; }
 
 	/// <summary>기준가(평가가격)</summary>
-	public long recprice { get; set; }
+	[JsonPropertyName("recprice")]
+	public long Recprice { get; set; }
 
 	/// <summary>가중평균</summary>
-	public long avg { get; set; }
+	[JsonPropertyName("avg")]
+	public long Avg { get; set; }
 
 	/// <summary>상한가(최고호가가격)</summary>
-	public long uplmtprice { get; set; }
+	[JsonPropertyName("uplmtprice")]
+	public long Uplmtprice { get; set; }
 
 	/// <summary>하한가(최저호가가격)</summary>
-	public long dnlmtprice { get; set; }
+	[JsonPropertyName("dnlmtprice")]
+	public long Dnlmtprice { get; set; }
 
 	/// <summary>전일거래량</summary>
-	public long jnilvolume { get; set; }
+	[JsonPropertyName("jnilvolume")]
+	public long Jnilvolume { get; set; }
 
 	/// <summary>거래량차</summary>
-	public long volumediff { get; set; }
+	[JsonPropertyName("volumediff")]
+	public long Volumediff { get; set; }
 
 	/// <summary>시가</summary>
-	public long open { get; set; }
+	[JsonPropertyName("open")]
+	public long Open { get; set; }
 
 	/// <summary>시가시간</summary>
-	public string opentime { get; set; } = string.Empty;
+	[JsonPropertyName("opentime")]
+	public string Opentime { get; set; } = string.Empty;
 
 	/// <summary>고가</summary>
-	public long high { get; set; }
+	[JsonPropertyName("high")]
+	public long High { get; set; }
 
 	/// <summary>고가시간</summary>
-	public string hightime { get; set; } = string.Empty;
+	[JsonPropertyName("hightime")]
+	public string Hightime { get; set; } = string.Empty;
 
 	/// <summary>저가</summary>
-	public long low { get; set; }
+	[JsonPropertyName("low")]
+	public long Low { get; set; }
 
 	/// <summary>저가시간</summary>
-	public string lowtime { get; set; } = string.Empty;
+	[JsonPropertyName("lowtime")]
+	public string Lowtime { get; set; } = string.Empty;
 
 	/// <summary>52최고가</summary>
-	public long high52w { get; set; }
+	[JsonPropertyName("high52w")]
+	public long High52w { get; set; }
 
 	/// <summary>52최고가일</summary>
-	public string high52wdate { get; set; } = string.Empty;
+	[JsonPropertyName("high52wdate")]
+	public string High52wdate { get; set; } = string.Empty;
 
 	/// <summary>52최저가</summary>
-	public long low52w { get; set; }
+	[JsonPropertyName("low52w")]
+	public long Low52w { get; set; }
 
 	/// <summary>52최저가일</summary>
-	public string low52wdate { get; set; } = string.Empty;
+	[JsonPropertyName("low52wdate")]
+	public string Low52wdate { get; set; } = string.Empty;
 
 	/// <summary>소진율</summary>
-	public decimal exhratio { get; set; }
+	[JsonPropertyName("exhratio")]
+	public decimal Exhratio { get; set; }
 
 	/// <summary>PER</summary>
-	public decimal per { get; set; }
+	[JsonPropertyName("per")]
+	public decimal Per { get; set; }
 
 	/// <summary>PBRX</summary>
-	public decimal pbrx { get; set; }
+	[JsonPropertyName("pbrx")]
+	public decimal Pbrx { get; set; }
 
 	/// <summary>상장주식수(천)</summary>
-	public long listing { get; set; }
+	[JsonPropertyName("listing")]
+	public long Listing { get; set; }
 
 	/// <summary>증거금율</summary>
-	public long jkrate { get; set; }
+	[JsonPropertyName("jkrate")]
+	public long Jkrate { get; set; }
 
 	/// <summary>수량단위</summary>
-	public string memedan { get; set; } = string.Empty;
+	[JsonPropertyName("memedan")]
+	public string Memedan { get; set; } = string.Empty;
 
 	/// <summary>매도증권사코드1</summary>
-	public string offernocd1 { get; set; } = string.Empty;
+	[JsonPropertyName("offernocd1")]
+	public string Offernocd1 { get; set; } = string.Empty;
 
 	/// <summary>매수증권사코드1</summary>
-	public string bidnocd1 { get; set; } = string.Empty;
+	[JsonPropertyName("bidnocd1")]
+	public string Bidnocd1 { get; set; } = string.Empty;
 
 	/// <summary>매도증권사명1</summary>
-	public string offerno1 { get; set; } = string.Empty;
+	[JsonPropertyName("offerno1")]
+	public string Offerno1 { get; set; } = string.Empty;
 
 	/// <summary>매수증권사명1</summary>
-	public string bidno1 { get; set; } = string.Empty;
+	[JsonPropertyName("bidno1")]
+	public string Bidno1 { get; set; } = string.Empty;
 
 	/// <summary>총매도수량1</summary>
-	public long dvol1 { get; set; }
+	[JsonPropertyName("dvol1")]
+	public long Dvol1 { get; set; }
 
 	/// <summary>총매수수량1</summary>
-	public long svol1 { get; set; }
+	[JsonPropertyName("svol1")]
+	public long Svol1 { get; set; }
 
 	/// <summary>매도증감1</summary>
-	public long dcha1 { get; set; }
+	[JsonPropertyName("dcha1")]
+	public long Dcha1 { get; set; }
 
 	/// <summary>매수증감1</summary>
-	public long scha1 { get; set; }
+	[JsonPropertyName("scha1")]
+	public long Scha1 { get; set; }
 
 	/// <summary>매도비율1</summary>
-	public decimal ddiff1 { get; set; }
+	[JsonPropertyName("ddiff1")]
+	public decimal Ddiff1 { get; set; }
 
 	/// <summary>매수비율1</summary>
-	public decimal sdiff1 { get; set; }
+	[JsonPropertyName("sdiff1")]
+	public decimal Sdiff1 { get; set; }
 
 	/// <summary>매도증권사코드2</summary>
-	public string offernocd2 { get; set; } = string.Empty;
+	[JsonPropertyName("offernocd2")]
+	public string Offernocd2 { get; set; } = string.Empty;
 
 	/// <summary>매수증권사코드2</summary>
-	public string bidnocd2 { get; set; } = string.Empty;
+	[JsonPropertyName("bidnocd2")]
+	public string Bidnocd2 { get; set; } = string.Empty;
 
 	/// <summary>매도증권사명2</summary>
-	public string offerno2 { get; set; } = string.Empty;
+	[JsonPropertyName("offerno2")]
+	public string Offerno2 { get; set; } = string.Empty;
 
 	/// <summary>매수증권사명2</summary>
-	public string bidno2 { get; set; } = string.Empty;
+	[JsonPropertyName("bidno2")]
+	public string Bidno2 { get; set; } = string.Empty;
 
 	/// <summary>총매도수량2</summary>
-	public long dvol2 { get; set; }
+	[JsonPropertyName("dvol2")]
+	public long Dvol2 { get; set; }
 
 	/// <summary>총매수수량2</summary>
-	public long svol2 { get; set; }
+	[JsonPropertyName("svol2")]
+	public long Svol2 { get; set; }
 
 	/// <summary>매도증감2</summary>
-	public long dcha2 { get; set; }
+	[JsonPropertyName("dcha2")]
+	public long Dcha2 { get; set; }
 
 	/// <summary>매수증감2</summary>
-	public long scha2 { get; set; }
+	[JsonPropertyName("scha2")]
+	public long Scha2 { get; set; }
 
 	/// <summary>매도비율2</summary>
-	public decimal ddiff2 { get; set; }
+	[JsonPropertyName("ddiff2")]
+	public decimal Ddiff2 { get; set; }
 
 	/// <summary>매수비율2</summary>
-	public decimal sdiff2 { get; set; }
+	[JsonPropertyName("sdiff2")]
+	public decimal Sdiff2 { get; set; }
 
 	/// <summary>매도증권사코드3</summary>
-	public string offernocd3 { get; set; } = string.Empty;
+	[JsonPropertyName("offernocd3")]
+	public string Offernocd3 { get; set; } = string.Empty;
 
 	/// <summary>매수증권사코드3</summary>
-	public string bidnocd3 { get; set; } = string.Empty;
+	[JsonPropertyName("bidnocd3")]
+	public string Bidnocd3 { get; set; } = string.Empty;
 
 	/// <summary>매도증권사명3</summary>
-	public string offerno3 { get; set; } = string.Empty;
+	[JsonPropertyName("offerno3")]
+	public string Offerno3 { get; set; } = string.Empty;
 
 	/// <summary>매수증권사명3</summary>
-	public string bidno3 { get; set; } = string.Empty;
+	[JsonPropertyName("bidno3")]
+	public string Bidno3 { get; set; } = string.Empty;
 
 	/// <summary>총매도수량3</summary>
-	public long dvol3 { get; set; }
+	[JsonPropertyName("dvol3")]
+	public long Dvol3 { get; set; }
 
 	/// <summary>총매수수량3</summary>
-	public long svol3 { get; set; }
+	[JsonPropertyName("svol3")]
+	public long Svol3 { get; set; }
 
 	/// <summary>매도증감3</summary>
-	public long dcha3 { get; set; }
+	[JsonPropertyName("dcha3")]
+	public long Dcha3 { get; set; }
 
 	/// <summary>매수증감3</summary>
-	public long scha3 { get; set; }
+	[JsonPropertyName("scha3")]
+	public long Scha3 { get; set; }
 
 	/// <summary>매도비율3</summary>
-	public decimal ddiff3 { get; set; }
+	[JsonPropertyName("ddiff3")]
+	public decimal Ddiff3 { get; set; }
 
 	/// <summary>매수비율3</summary>
-	public decimal sdiff3 { get; set; }
+	[JsonPropertyName("sdiff3")]
+	public decimal Sdiff3 { get; set; }
 
 	/// <summary>매도증권사코드4</summary>
-	public string offernocd4 { get; set; } = string.Empty;
+	[JsonPropertyName("offernocd4")]
+	public string Offernocd4 { get; set; } = string.Empty;
 
 	/// <summary>매수증권사코드4</summary>
-	public string bidnocd4 { get; set; } = string.Empty;
+	[JsonPropertyName("bidnocd4")]
+	public string Bidnocd4 { get; set; } = string.Empty;
 
 	/// <summary>매도증권사명4</summary>
-	public string offerno4 { get; set; } = string.Empty;
+	[JsonPropertyName("offerno4")]
+	public string Offerno4 { get; set; } = string.Empty;
 
 	/// <summary>매수증권사명4</summary>
-	public string bidno4 { get; set; } = string.Empty;
+	[JsonPropertyName("bidno4")]
+	public string Bidno4 { get; set; } = string.Empty;
 
 	/// <summary>총매도수량4</summary>
-	public long dvol4 { get; set; }
+	[JsonPropertyName("dvol4")]
+	public long Dvol4 { get; set; }
 
 	/// <summary>총매수수량4</summary>
-	public long svol4 { get; set; }
+	[JsonPropertyName("svol4")]
+	public long Svol4 { get; set; }
 
 	/// <summary>매도증감4</summary>
-	public long dcha4 { get; set; }
+	[JsonPropertyName("dcha4")]
+	public long Dcha4 { get; set; }
 
 	/// <summary>매수증감4</summary>
-	public long scha4 { get; set; }
+	[JsonPropertyName("scha4")]
+	public long Scha4 { get; set; }
 
 	/// <summary>매도비율4</summary>
-	public decimal ddiff4 { get; set; }
+	[JsonPropertyName("ddiff4")]
+	public decimal Ddiff4 { get; set; }
 
 	/// <summary>매수비율4</summary>
-	public decimal sdiff4 { get; set; }
+	[JsonPropertyName("sdiff4")]
+	public decimal Sdiff4 { get; set; }
 
 	/// <summary>매도증권사코드5</summary>
-	public string offernocd5 { get; set; } = string.Empty;
+	[JsonPropertyName("offernocd5")]
+	public string Offernocd5 { get; set; } = string.Empty;
 
 	/// <summary>매수증권사코드5</summary>
-	public string bidnocd5 { get; set; } = string.Empty;
+	[JsonPropertyName("bidnocd5")]
+	public string Bidnocd5 { get; set; } = string.Empty;
 
 	/// <summary>매도증권사명5</summary>
-	public string offerno5 { get; set; } = string.Empty;
+	[JsonPropertyName("offerno5")]
+	public string Offerno5 { get; set; } = string.Empty;
 
 	/// <summary>매수증권사명5</summary>
-	public string bidno5 { get; set; } = string.Empty;
+	[JsonPropertyName("bidno5")]
+	public string Bidno5 { get; set; } = string.Empty;
 
 	/// <summary>총매도수량5</summary>
-	public long dvol5 { get; set; }
+	[JsonPropertyName("dvol5")]
+	public long Dvol5 { get; set; }
 
 	/// <summary>총매수수량5</summary>
-	public long svol5 { get; set; }
+	[JsonPropertyName("svol5")]
+	public long Svol5 { get; set; }
 
 	/// <summary>매도증감5</summary>
-	public long dcha5 { get; set; }
+	[JsonPropertyName("dcha5")]
+	public long Dcha5 { get; set; }
 
 	/// <summary>매수증감5</summary>
-	public long scha5 { get; set; }
+	[JsonPropertyName("scha5")]
+	public long Scha5 { get; set; }
 
 	/// <summary>매도비율5</summary>
-	public decimal ddiff5 { get; set; }
+	[JsonPropertyName("ddiff5")]
+	public decimal Ddiff5 { get; set; }
 
 	/// <summary>매수비율5</summary>
-	public decimal sdiff5 { get; set; }
+	[JsonPropertyName("sdiff5")]
+	public decimal Sdiff5 { get; set; }
 
 	/// <summary>외국계매도합계수량</summary>
-	public long fwdvl { get; set; }
+	[JsonPropertyName("fwdvl")]
+	public long Fwdvl { get; set; }
 
 	/// <summary>외국계매도직전대비</summary>
-	public long ftradmdcha { get; set; }
+	[JsonPropertyName("ftradmdcha")]
+	public long Ftradmdcha { get; set; }
 
 	/// <summary>외국계매도비율</summary>
-	public decimal ftradmddiff { get; set; }
+	[JsonPropertyName("ftradmddiff")]
+	public decimal Ftradmddiff { get; set; }
 
 	/// <summary>외국계매수합계수량</summary>
-	public long fwsvl { get; set; }
+	[JsonPropertyName("fwsvl")]
+	public long Fwsvl { get; set; }
 
 	/// <summary>외국계매수직전대비</summary>
-	public long ftradmscha { get; set; }
+	[JsonPropertyName("ftradmscha")]
+	public long Ftradmscha { get; set; }
 
 	/// <summary>외국계매수비율</summary>
-	public decimal ftradmsdiff { get; set; }
+	[JsonPropertyName("ftradmsdiff")]
+	public decimal Ftradmsdiff { get; set; }
 
 	/// <summary>회전율</summary>
-	public decimal vol { get; set; }
+	[JsonPropertyName("vol")]
+	public decimal Vol { get; set; }
 
 	/// <summary>단축코드</summary>
-	public string shcode { get; set; } = string.Empty;
+	[JsonPropertyName("shcode")]
+	public string Shcode { get; set; } = string.Empty;
 
 	/// <summary>누적거래대금</summary>
-	public long value { get; set; }
+	[JsonPropertyName("value")]
+	public long Value { get; set; }
 
 	/// <summary>전일동시간거래량</summary>
-	public long jvolume { get; set; }
+	[JsonPropertyName("jvolume")]
+	public long Jvolume { get; set; }
 
 	/// <summary>연중최고가</summary>
-	public long highyear { get; set; }
+	[JsonPropertyName("highyear")]
+	public long Highyear { get; set; }
 
 	/// <summary>연중최고일자</summary>
-	public string highyeardate { get; set; } = string.Empty;
+	[JsonPropertyName("highyeardate")]
+	public string Highyeardate { get; set; } = string.Empty;
 
 	/// <summary>연중최저가</summary>
-	public long lowyear { get; set; }
+	[JsonPropertyName("lowyear")]
+	public long Lowyear { get; set; }
 
 	/// <summary>연중최저일자</summary>
-	public string lowyeardate { get; set; } = string.Empty;
+	[JsonPropertyName("lowyeardate")]
+	public string Lowyeardate { get; set; } = string.Empty;
 
 	/// <summary>목표가</summary>
-	public long target { get; set; }
+	[JsonPropertyName("target")]
+	public long Target { get; set; }
 
 	/// <summary>자본금</summary>
-	public long capital { get; set; }
+	[JsonPropertyName("capital")]
+	public long Capital { get; set; }
 
 	/// <summary>유동주식수</summary>
-	public long abscnt { get; set; }
+	[JsonPropertyName("abscnt")]
+	public long Abscnt { get; set; }
 
 	/// <summary>액면가</summary>
-	public long parprice { get; set; }
+	[JsonPropertyName("parprice")]
+	public long Parprice { get; set; }
 
 	/// <summary>결산월</summary>
-	public string gsmm { get; set; } = string.Empty;
+	[JsonPropertyName("gsmm")]
+	public string Gsmm { get; set; } = string.Empty;
 
 	/// <summary>대용가</summary>
-	public long subprice { get; set; }
+	[JsonPropertyName("subprice")]
+	public long Subprice { get; set; }
 
 	/// <summary>시가총액</summary>
-	public long total { get; set; }
+	[JsonPropertyName("total")]
+	public long Total { get; set; }
 
 	/// <summary>상장일</summary>
-	public string listdate { get; set; } = string.Empty;
+	[JsonPropertyName("listdate")]
+	public string Listdate { get; set; } = string.Empty;
 
 	/// <summary>전분기명</summary>
-	public string name { get; set; } = string.Empty;
+	[JsonPropertyName("name")]
+	public string Name { get; set; } = string.Empty;
 
 	/// <summary>전분기매출액</summary>
-	public long bfsales { get; set; }
+	[JsonPropertyName("bfsales")]
+	public long Bfsales { get; set; }
 
 	/// <summary>전분기영업이익</summary>
-	public long bfoperatingincome { get; set; }
+	[JsonPropertyName("bfoperatingincome")]
+	public long Bfoperatingincome { get; set; }
 
 	/// <summary>전분기경상이익</summary>
-	public long bfordinaryincome { get; set; }
+	[JsonPropertyName("bfordinaryincome")]
+	public long Bfordinaryincome { get; set; }
 
 	/// <summary>전분기순이익</summary>
-	public long bfnetincome { get; set; }
+	[JsonPropertyName("bfnetincome")]
+	public long Bfnetincome { get; set; }
 
 	/// <summary>전분기EPS</summary>
-	public decimal bfeps { get; set; }
+	[JsonPropertyName("bfeps")]
+	public decimal Bfeps { get; set; }
 
 	/// <summary>전전분기명</summary>
-	public string name2 { get; set; } = string.Empty;
+	[JsonPropertyName("name2")]
+	public string Name2 { get; set; } = string.Empty;
 
 	/// <summary>전전분기매출액</summary>
-	public long bfsales2 { get; set; }
+	[JsonPropertyName("bfsales2")]
+	public long Bfsales2 { get; set; }
 
 	/// <summary>전전분기영업이익</summary>
-	public long bfoperatingincome2 { get; set; }
+	[JsonPropertyName("bfoperatingincome2")]
+	public long Bfoperatingincome2 { get; set; }
 
 	/// <summary>전전분기경상이익</summary>
-	public long bfordinaryincome2 { get; set; }
+	[JsonPropertyName("bfordinaryincome2")]
+	public long Bfordinaryincome2 { get; set; }
 
 	/// <summary>전전분기순이익</summary>
-	public long bfnetincome2 { get; set; }
+	[JsonPropertyName("bfnetincome2")]
+	public long Bfnetincome2 { get; set; }
 
 	/// <summary>전전분기EPS</summary>
-	public decimal bfeps2 { get; set; }
+	[JsonPropertyName("bfeps2")]
+	public decimal Bfeps2 { get; set; }
 
 	/// <summary>전년대비매출액</summary>
-	public decimal salert { get; set; }
+	[JsonPropertyName("salert")]
+	public decimal Salert { get; set; }
 
 	/// <summary>전년대비영업이익</summary>
-	public decimal opert { get; set; }
+	[JsonPropertyName("opert")]
+	public decimal Opert { get; set; }
 
 	/// <summary>전년대비경상이익</summary>
-	public decimal ordrt { get; set; }
+	[JsonPropertyName("ordrt")]
+	public decimal Ordrt { get; set; }
 
 	/// <summary>전년대비순이익</summary>
-	public decimal netrt { get; set; }
+	[JsonPropertyName("netrt")]
+	public decimal Netrt { get; set; }
 
 	/// <summary>전년대비EPS</summary>
-	public decimal epsrt { get; set; }
+	[JsonPropertyName("epsrt")]
+	public decimal Epsrt { get; set; }
 
 	/// <summary>락구분</summary>
-	public string info1 { get; set; } = string.Empty;
+	[JsonPropertyName("info1")]
+	public string Info1 { get; set; } = string.Empty;
 
 	/// <summary>관리/급등구분</summary>
-	public string info2 { get; set; } = string.Empty;
+	[JsonPropertyName("info2")]
+	public string Info2 { get; set; } = string.Empty;
 
 	/// <summary>정지/연장구분</summary>
-	public string info3 { get; set; } = string.Empty;
+	[JsonPropertyName("info3")]
+	public string Info3 { get; set; } = string.Empty;
 
 	/// <summary>투자/불성실구분</summary>
-	public string info4 { get; set; } = string.Empty;
+	[JsonPropertyName("info4")]
+	public string Info4 { get; set; } = string.Empty;
 
 	/// <summary>장구분</summary>
-	public string janginfo { get; set; } = string.Empty;
+	[JsonPropertyName("janginfo")]
+	public string Janginfo { get; set; } = string.Empty;
 
 	/// <summary>T.PER</summary>
-	public decimal t_per { get; set; }
+	[JsonPropertyName("t_per")]
+	public decimal TPer { get; set; }
 
 	/// <summary>통화ISO코드</summary>
-	public string tonghwa { get; set; } = string.Empty;
+	[JsonPropertyName("tonghwa")]
+	public string Tonghwa { get; set; } = string.Empty;
 
 	/// <summary>총매도대금1</summary>
-	public long dval1 { get; set; }
+	[JsonPropertyName("dval1")]
+	public long Dval1 { get; set; }
 
 	/// <summary>총매수대금1</summary>
-	public long sval1 { get; set; }
+	[JsonPropertyName("sval1")]
+	public long Sval1 { get; set; }
 
 	/// <summary>총매도대금2</summary>
-	public long dval2 { get; set; }
+	[JsonPropertyName("dval2")]
+	public long Dval2 { get; set; }
 
 	/// <summary>총매수대금2</summary>
-	public long sval2 { get; set; }
+	[JsonPropertyName("sval2")]
+	public long Sval2 { get; set; }
 
 	/// <summary>총매도대금3</summary>
-	public long dval3 { get; set; }
+	[JsonPropertyName("dval3")]
+	public long Dval3 { get; set; }
 
 	/// <summary>총매수대금3</summary>
-	public long sval3 { get; set; }
+	[JsonPropertyName("sval3")]
+	public long Sval3 { get; set; }
 
 	/// <summary>총매도대금4</summary>
-	public long dval4 { get; set; }
+	[JsonPropertyName("dval4")]
+	public long Dval4 { get; set; }
 
 	/// <summary>총매수대금4</summary>
-	public long sval4 { get; set; }
+	[JsonPropertyName("sval4")]
+	public long Sval4 { get; set; }
 
 	/// <summary>총매도대금5</summary>
-	public long dval5 { get; set; }
+	[JsonPropertyName("dval5")]
+	public long Dval5 { get; set; }
 
 	/// <summary>총매수대금5</summary>
-	public long sval5 { get; set; }
+	[JsonPropertyName("sval5")]
+	public long Sval5 { get; set; }
 
 	/// <summary>총매도평단가1</summary>
-	public long davg1 { get; set; }
+	[JsonPropertyName("davg1")]
+	public long Davg1 { get; set; }
 
 	/// <summary>총매수평단가1</summary>
-	public long savg1 { get; set; }
+	[JsonPropertyName("savg1")]
+	public long Savg1 { get; set; }
 
 	/// <summary>총매도평단가2</summary>
-	public long davg2 { get; set; }
+	[JsonPropertyName("davg2")]
+	public long Davg2 { get; set; }
 
 	/// <summary>총매수평단가2</summary>
-	public long savg2 { get; set; }
+	[JsonPropertyName("savg2")]
+	public long Savg2 { get; set; }
 
 	/// <summary>총매도평단가3</summary>
-	public long davg3 { get; set; }
+	[JsonPropertyName("davg3")]
+	public long Davg3 { get; set; }
 
 	/// <summary>총매수평단가3</summary>
-	public long savg3 { get; set; }
+	[JsonPropertyName("savg3")]
+	public long Savg3 { get; set; }
 
 	/// <summary>총매도평단가4</summary>
-	public long davg4 { get; set; }
+	[JsonPropertyName("davg4")]
+	public long Davg4 { get; set; }
 
 	/// <summary>총매수평단가4</summary>
-	public long savg4 { get; set; }
+	[JsonPropertyName("savg4")]
+	public long Savg4 { get; set; }
 
 	/// <summary>총매도평단가5</summary>
-	public long davg5 { get; set; }
+	[JsonPropertyName("davg5")]
+	public long Davg5 { get; set; }
 
 	/// <summary>총매수평단가5</summary>
-	public long savg5 { get; set; }
+	[JsonPropertyName("savg5")]
+	public long Savg5 { get; set; }
 
 	/// <summary>외국계매도대금</summary>
-	public long ftradmdval { get; set; }
+	[JsonPropertyName("ftradmdval")]
+	public long Ftradmdval { get; set; }
 
 	/// <summary>외국계매수대금</summary>
-	public long ftradmsval { get; set; }
+	[JsonPropertyName("ftradmsval")]
+	public long Ftradmsval { get; set; }
 
 	/// <summary>외국계매도평단가</summary>
-	public long ftradmdvag { get; set; }
+	[JsonPropertyName("ftradmdvag")]
+	public long Ftradmdvag { get; set; }
 
 	/// <summary>외국계매수평단가</summary>
-	public long ftradmsvag { get; set; }
+	[JsonPropertyName("ftradmsvag")]
+	public long Ftradmsvag { get; set; }
 
 	/// <summary>투자주의환기</summary>
-	public string info5 { get; set; } = string.Empty;
+	[JsonPropertyName("info5")]
+	public string Info5 { get; set; } = string.Empty;
 
 	/// <summary>기업인수목적회사여부</summary>
-	public string spac_gubun { get; set; } = string.Empty;
+	[JsonPropertyName("spac_gubun")]
+	public string SpacGubun { get; set; } = string.Empty;
 
 	/// <summary>발행가격</summary>
-	public long issueprice { get; set; }
+	[JsonPropertyName("issueprice")]
+	public long Issueprice { get; set; }
 
 	/// <summary>배분적용구분코드(1:배분발생2:배분해제그외:미발생)</summary>
-	public string alloc_gubun { get; set; } = string.Empty;
+	[JsonPropertyName("alloc_gubun")]
+	public string AllocGubun { get; set; } = string.Empty;
 
 	/// <summary>배분적용구분</summary>
-	public string alloc_text { get; set; } = string.Empty;
+	[JsonPropertyName("alloc_text")]
+	public string AllocText { get; set; } = string.Empty;
 
 	/// <summary>단기과열/VI발동</summary>
-	public string shterm_text { get; set; } = string.Empty;
+	[JsonPropertyName("shterm_text")]
+	public string ShtermText { get; set; } = string.Empty;
 
 	/// <summary>정적VI상한가</summary>
-	public long svi_uplmtprice { get; set; }
+	[JsonPropertyName("svi_uplmtprice")]
+	public long SviUplmtprice { get; set; }
 
 	/// <summary>정적VI하한가</summary>
-	public long svi_dnlmtprice { get; set; }
+	[JsonPropertyName("svi_dnlmtprice")]
+	public long SviDnlmtprice { get; set; }
 
 	/// <summary>저유동성종목여부</summary>
-	public string low_lqdt_gu { get; set; } = string.Empty;
+	[JsonPropertyName("low_lqdt_gu")]
+	public string LowLqdtGu { get; set; } = string.Empty;
 
 	/// <summary>이상급등종목여부</summary>
-	public string abnormal_rise_gu { get; set; } = string.Empty;
+	[JsonPropertyName("abnormal_rise_gu")]
+	public string AbnormalRiseGu { get; set; } = string.Empty;
 
 	/// <summary>대차불가표시</summary>
-	public string lend_text { get; set; } = string.Empty;
+	[JsonPropertyName("lend_text")]
+	public string LendText { get; set; } = string.Empty;
 
 	/// <summary>ETF/ETN투자유의</summary>
-	public string ty_text { get; set; } = string.Empty;
+	[JsonPropertyName("ty_text")]
+	public string TyText { get; set; } = string.Empty;
 
 	/// <summary>NXT장구분</summary>
-	public string nxt_janginfo { get; set; } = string.Empty;
+	[JsonPropertyName("nxt_janginfo")]
+	public string NxtJanginfo { get; set; } = string.Empty;
 
 	/// <summary>NXT단기과열/VI발동</summary>
-	public string nxt_shterm_text { get; set; } = string.Empty;
+	[JsonPropertyName("nxt_shterm_text")]
+	public string NxtShtermText { get; set; } = string.Empty;
 
 	/// <summary>NXT정적VI상한가</summary>
-	public long nxt_svi_uplmtprice { get; set; }
+	[JsonPropertyName("nxt_svi_uplmtprice")]
+	public long NxtSviUplmtprice { get; set; }
 
 	/// <summary>NXT정적VI하한가</summary>
-	public long nxt_svi_dnlmtprice { get; set; }
+	[JsonPropertyName("nxt_svi_dnlmtprice")]
+	public long NxtSviDnlmtprice { get; set; }
 
 	/// <summary>거래소별단축코드</summary>
-	public string ex_shcode { get; set; } = string.Empty;
+	[JsonPropertyName("ex_shcode")]
+	public string ExShcode { get; set; } = string.Empty;
 }

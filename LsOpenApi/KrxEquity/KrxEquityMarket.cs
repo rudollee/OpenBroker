@@ -250,39 +250,39 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 		try
 		{
-			var response = await RequestStandardAsync<t1102>(LsEndpoint.EquityMarketData.ToDescription(), new
+			var response = await RequestStandardAsync<T1102>(LsEndpoint.EquityMarketData.ToDescription(), new
 			{
-				t1102InBlock = new t1102InBlock
+				t1102InBlock = new T1102InBlock
 				{
-					shcode = symbol,
-					exchgubun = exchangeCode
+					Shcode = symbol,
+					Exchgubun = exchangeCode
 				}
 			});
 
-			if (response.t1102OutBlock is null) return ReturnResult<EquityPack>(new(), nameof(t1102), response.Message);
+			if (response.T1102OutBlock is null) return ReturnResult<EquityPack>(new(), nameof(T1102), response.Message);
 
 			var equity = new EquityPack
 			{
-				Symbol = response.t1102OutBlock.shcode,
-				NameOfficial = response.t1102OutBlock.hname,
-				Section = response.t1102OutBlock.janginfo.Contains("KOSPI") ? ExchangeSection.KOSPI : ExchangeSection.KOSDAQ,
+				Symbol = response.T1102OutBlock.Shcode,
+				NameOfficial = response.T1102OutBlock.Hname,
+				Section = response.T1102OutBlock.Janginfo.Contains("KOSPI") ? ExchangeSection.KOSPI : ExchangeSection.KOSDAQ,
 				PriceInfo = new QuoteRate
 				{
 					T = DateTime.Now,
-					BasePrice = response.t1102OutBlock.recprice,
-					C = response.t1102OutBlock.price,
-					O = response.t1102OutBlock.open,
-					H = response.t1102OutBlock.high,
-					L = response.t1102OutBlock.low,
-					V = response.t1102OutBlock.volume,
-					Turnover = response.t1102OutBlock.value,
-					HighLimit = response.t1102OutBlock.uplmtprice,
-					LowLimit = response.t1102OutBlock.dnlmtprice,
+					BasePrice = response.T1102OutBlock.Recprice,
+					C = response.T1102OutBlock.Price,
+					O = response.T1102OutBlock.Open,
+					H = response.T1102OutBlock.High,
+					L = response.T1102OutBlock.Low,
+					V = response.T1102OutBlock.Volume,
+					Turnover = response.T1102OutBlock.Value,
+					HighLimit = response.T1102OutBlock.Uplmtprice,
+					LowLimit = response.T1102OutBlock.Dnlmtprice,
 				},
 				DiscardStatus = DiscardStatus.TRADABLE,
 				TradingInfo = new EquityPack.TradingData
 				{
-					MarginRate = response.t1102OutBlock.jkrate,
+					MarginRate = response.T1102OutBlock.Jkrate,
 				}
 			};
 
@@ -294,16 +294,16 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 					_ => await RequestOrderbookAsync(symbol, exchange)
 				};
 
-				if (responseOrderbook.Info is null) return ReturnErrorResult<EquityPack>(nameof(t1102), responseOrderbook.Message);
+				if (responseOrderbook.Info is null) return ReturnErrorResult<EquityPack>(nameof(T1102), responseOrderbook.Message);
 
 				equity.OrderBook = responseOrderbook.Info;
 			}
 
-			return ReturnResult(equity, nameof(t1102), string.Empty, MessageType.MKT, "MoneyAgg multiple: M");
+			return ReturnResult(equity, nameof(T1102), string.Empty, MessageType.MKT, "MoneyAgg multiple: M");
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResult<EquityPack>(nameof(t1102), ex.Message);
+			return ReturnErrorResult<EquityPack>(nameof(T1102), ex.Message);
 		}
 	}
 
