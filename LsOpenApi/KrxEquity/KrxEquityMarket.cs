@@ -482,37 +482,37 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	{
 		try
 		{
-			var response = await RequestStandardAsync<t1301>(LsEndpoint.EquityMarketData.ToDescription(), new
+			var response = await RequestStandardAsync<T1301>(LsEndpoint.EquityMarketData.ToDescription(), new
 			{
-				t1301InBlock = new t1301InBlock
+				t1301InBlock = new T1301InBlock
 				{
-					shcode = symbol,
-					starttime = begin,
-					endtime = end,
-					cvolume = Convert.ToInt64(baseVolume)
+					Shcode = symbol,
+					Starttime = begin,
+					Endtime = end,
+					Cvolume = Convert.ToInt64(baseVolume)
 				}
 			});
 
-			if (response.t1301OutBlock1.Count == 0) return ReturnResults<MarketExecution>([], nameof(t1301), response.Message);
+			if (response.T1301OutBlock1.Count == 0) return ReturnResults<MarketExecution>([], nameof(T1301), response.Message);
 
 			var marketExecutions = new List<MarketExecution>();
-			response.t1301OutBlock1.ForEach(execution => marketExecutions.Add(new MarketExecution
+			response.T1301OutBlock1.ForEach(execution => marketExecutions.Add(new MarketExecution
 			{
-				TimeExecuted = execution.chetime.ToDateTime(),
-				C = execution.price,
-				BasePrice = execution.price + execution.change * (Convert.ToInt32(execution.sign) > 3 ? 1 : -1),
-				VolumeExecuted = execution.cvolume,
+				TimeExecuted = execution.Chetime.ToDateTime(),
+				C = execution.Price,
+				BasePrice = execution.Price + execution.Change * (Convert.ToInt32(execution.Sign) > 3 ? 1 : -1),
+				VolumeExecuted = execution.Cvolume,
 				QuoteDaily = new Quote
 				{
-					V = execution.volume,
+					V = execution.Volume,
 				},
 			}));
 
-			return ReturnResults(marketExecutions, nameof(t1301));
+			return ReturnResults(marketExecutions, nameof(T1301));
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<MarketExecution>(nameof(t1301), ex.Message);
+			return ReturnErrorResults<MarketExecution>(nameof(T1301), ex.Message);
 		}
 	}
 	#endregion
