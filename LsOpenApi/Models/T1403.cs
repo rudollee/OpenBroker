@@ -1,85 +1,103 @@
-﻿namespace LsOpenApi.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace LsOpenApi.Models;
 /// <summary>
 /// 신규상장종목조회(t1403)
 /// </summary>
-internal class t1403 : LsResponseCore
+internal class T1403 : LsResponseCore
 {
-	public t1403OutBlock t1403OutBlock { get; set; } = new();
-	public List<t1403OutBlock1> t1403OutBlock1 { get; set; } = new();
+	[JsonPropertyName("t1403InBlock")]
+	public T1403InBlock T1403InBlock { get; set; } = new();
+	[JsonPropertyName("t1403OutBlock1")]
+	public List<T1403OutBlock1> T1403OutBlock1 { get; set; } = [];
 }
 
 /// <summary>
 /// 신규상장종목조회(t1403) - InBlock
 /// </summary>
-internal class t1403InBlock
+internal class T1403InBlock
 {
 	/// <summary>구분</summary>
-	public string gubun { get; set; } = string.Empty;
+	[JsonPropertyName("gubun")]
+	public string Gubun { get; set; } = string.Empty;
 
 	/// <summary>시작상장월</summary>
-	public string styymm { get; set; } = string.Empty;
+	[JsonPropertyName("styymm")]
+	public string Styymm { get; set; } = string.Empty;
 
 	/// <summary>종료상장월</summary>
-	public string enyymm { get; set; } = string.Empty;
+	[JsonPropertyName("enyymm")]
+	public string Enyymm { get; set; } = string.Empty;
 
 	/// <summary>IDX</summary>
-	public long idx { get; set; }
-
+	[JsonPropertyName("idx")]
+	public long Idx { get; set; }
 }
 
 /// <summary>
 /// 신규상장종목조회(t1403) - OutBlock
 /// </summary>
-internal class t1403OutBlock
+internal class T1403OutBlock
 {
 	/// <summary>IDX</summary>
-	public long idx { get; set; }
-
+	[JsonPropertyName("idx")]
+	public long Idx { get; set; }
 }
 
 /// <summary>
 /// 신규상장종목조회(t1403) - OutBlock1
 /// </summary>
-internal class t1403OutBlock1
+internal class T1403OutBlock1
 {
 	/// <summary>한글명</summary>
-	public string hname { get; set; } = string.Empty;
+	[JsonPropertyName("hname")]
+	public string Hname { get; set; } = string.Empty;
 
 	/// <summary>현재가</summary>
-	public long price { get; set; }
+	[JsonPropertyName("price")]
+	public long Price { get; set; }
 
 	/// <summary>전일대비구분</summary>
-	public string sign { get; set; } = string.Empty;
+	[JsonPropertyName("sign")]
+	public string Sign { get; set; } = string.Empty;
 
 	/// <summary>전일대비</summary>
-	public long change { get; set; }
+	[JsonPropertyName("change")]
+	public long Change { get; set; }
 
 	/// <summary>등락율</summary>
-	public decimal diff { get; set; }
+	[JsonPropertyName("diff")]
+	public decimal Diff { get; set; }
 
 	/// <summary>누적거래량</summary>
-	public long volume { get; set; }
+	[JsonPropertyName("volume")]
+	public long Volume { get; set; }
 
 	/// <summary>공모가</summary>
-	public long kmprice { get; set; }
+	[JsonPropertyName("kmprice")]
+	public long Kmprice { get; set; }
 
 	/// <summary>등록일</summary>
-	public string date { get; set; } = string.Empty;
+	[JsonPropertyName("date")]
+	public string Date { get; set; } = string.Empty;
 
 	/// <summary>등록일기준가</summary>
-	public long recprice { get; set; }
+	[JsonPropertyName("recprice")]
+	public long Recprice { get; set; }
 
 	/// <summary>기준가등락율</summary>
-	public decimal kmdiff { get; set; }
+	[JsonPropertyName("kmdiff")]
+	public decimal Kmdiff { get; set; }
 
 	/// <summary>등록일종가</summary>
-	public long close { get; set; }
+	[JsonPropertyName("close")]
+	public long Close { get; set; }
 
 	/// <summary>등록일등락율</summary>
-	public decimal recdiff { get; set; }
+	[JsonPropertyName("recdiff")]
+	public decimal Recdiff { get; set; }
 
 	/// <summary>종목코드</summary>
-	public string shcode { get; set; } = string.Empty;
-
+	[JsonPropertyName("shcode")]
+	public string Shcode { get; set; } = string.Empty;
 }
-

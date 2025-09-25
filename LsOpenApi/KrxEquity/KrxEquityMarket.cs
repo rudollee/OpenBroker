@@ -207,33 +207,33 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	{
 		try
 		{
-			var response = await RequestStandardAsync<t1403>(LsEndpoint.EquityEtc.ToDescription(), new
+			var response = await RequestStandardAsync<T1403>(LsEndpoint.EquityEtc.ToDescription(), new
 			{
-				t1403InBlock = new t1403InBlock
+				t1403InBlock = new T1403InBlock
 				{
-					gubun = "0",
-					styymm = begin.ToString("yyyyMM"),
-					enyymm = end.ToString("yyyyMM"),
+					Gubun = "0",
+					Styymm = begin.ToString("yyyyMM"),
+					Enyymm = end.ToString("yyyyMM"),
 				}
 			});
 
-			if (response.t1403OutBlock1.Count == 0) return ReturnResults<Equity>([], nameof(t1403));
+			if (response.T1403OutBlock1.Count == 0) return ReturnResults<Equity>([], nameof(T1403));
 
 			var equities = new List<Equity>();
-			foreach (var equity in response.t1403OutBlock1)
+			foreach (var equity in response.T1403OutBlock1)
 			{
 				equities.Add(new Equity
 				{
-					Symbol = equity.shcode,
-					NameOfficial = equity.hname,
+					Symbol = equity.Shcode,
+					NameOfficial = equity.Hname,
 				});
 			}
 
-			return ReturnResults(equities, nameof(t1403), string.Empty, MessageType.MKT, response.t1403OutBlock1.Select(s => s.date).Max() ?? string.Empty);
+			return ReturnResults(equities, nameof(T1403), string.Empty, MessageType.MKT, response.T1403OutBlock1.Select(s => s.Date).Max() ?? string.Empty);
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<Equity>(nameof(t1403), ex.Message);
+			return ReturnErrorResults<Equity>(nameof(T1403), ex.Message);
 		}
 	}
 	#endregion
