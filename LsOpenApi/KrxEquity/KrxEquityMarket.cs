@@ -524,30 +524,30 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	{
 		try
 		{
-			var response = await RequestStandardAsync<t1531>(LsEndpoint.EquitySector.ToDescription(), new
+			var response = await RequestStandardAsync<T1531>(LsEndpoint.EquitySector.ToDescription(), new
 			{
-				t1531InBlock = new t1531InBlock
+				t1531InBlock = new T1531InBlock
 				{
-					tmname = name,
-					tmcode = code
+					TmName = name,
+					TmCode = code
 				}
 			});
 
-			if (response.t1531OutBlock.Count == 0) return ReturnResults<Sector>([], nameof(t1531), response.Message);
+			if (response.T1531OutBlock.Count == 0) return ReturnResults<Sector>([], nameof(T1531), response.Message);
 
 			var sectors = new List<Sector>();
-			response.t1531OutBlock.ForEach(sector => sectors.Add(new Sector
+			response.T1531OutBlock.ForEach(sector => sectors.Add(new Sector
 			{
-				Code = sector.tmcode,
-				Name = sector.tmname,
-				Diff = Convert.ToDecimal(sector.avgdiff)
+				Code = sector.TmCode,
+				Name = sector.TmName,
+				Diff = Convert.ToDecimal(sector.AvgDiff)
 			}));
 
-			return ReturnResults(sectors, nameof(t1531));
+			return ReturnResults(sectors, nameof(T1531));
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<Sector>(nameof(t1531), ex.Message);
+			return ReturnErrorResults<Sector>(nameof(T1531), ex.Message);
 		}
 	}
 	#endregion

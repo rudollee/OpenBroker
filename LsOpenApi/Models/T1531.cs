@@ -1,36 +1,45 @@
-﻿namespace LsOpenApi.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace LsOpenApi.Models;
 /// <summary>
 /// 테마별종목(t1531)
 /// </summary>
-internal class t1531 : LsResponseCore
+internal class T1531 : LsResponseCore
 {
-	public t1531InBlock t1531InBlock { get; set; } = new();
-	public List<t1531OutBlock> t1531OutBlock { get; set; } = new();
+	[JsonPropertyName("t1531InBlock")]
+	public T1531InBlock T1531InBlock { get; set; } = new();
+	[JsonPropertyName("t1531OutBlock")]
+	public List<T1531OutBlock> T1531OutBlock { get; set; } = [];
 }
 
 /// <summary>
 /// 테마별종목(t1531) - InBlock
 /// </summary>
-internal class t1531InBlock
+internal class T1531InBlock
 {
 	/// <summary>테마명</summary>
-	public string tmname { get; set; } = string.Empty;
+	[JsonPropertyName("tmname")]
+	public string TmName { get; set; } = string.Empty;
 
 	/// <summary>테마코드</summary>
-	public string tmcode { get; set; } = string.Empty;
+	[JsonPropertyName("tmcode")]
+	public string TmCode { get; set; } = string.Empty;
 }
 
 /// <summary>
 /// 테마별종목(t1531) - OutBlock
 /// </summary>
-internal class t1531OutBlock
+internal class T1531OutBlock
 {
 	/// <summary>테마명</summary>
-	public string tmname { get; set; } = string.Empty;
+	[JsonPropertyName("tmname")]
+	public string TmName { get; set; } = string.Empty;
 
 	/// <summary>평균등락율</summary>
-	public decimal avgdiff { get; set; }
+	[JsonPropertyName("avgdiff")]
+	public decimal AvgDiff { get; set; }
 
 	/// <summary>테마코드</summary>
-	public string tmcode { get; set; } = string.Empty;
+	[JsonPropertyName("tmcode")]
+	public string TmCode { get; set; } = string.Empty;
 }
