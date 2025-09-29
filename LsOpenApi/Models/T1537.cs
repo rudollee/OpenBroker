@@ -1,85 +1,109 @@
-﻿namespace LsOpenApi.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace LsOpenApi.Models;
 /// <summary>
 /// 테마종목별시세조회(t1537)
 /// </summary>
-internal class t1537 : LsResponseCore
+internal class T1537 : LsResponseCore
 {
-	public t1537InBlock t1537InBlock { get; set; } = new();
-	public t1537OutBlock t1537OutBlock { get; set; } = new();
-	public List<t1537OutBlock1> t1537OutBlock1 { get; set; } = new();
+	[JsonPropertyName("t1537InBlock")]
+	public T1537InBlock T1537InBlock { get; set; } = new();
+	[JsonPropertyName("t1537OutBlock")]
+	public T1537OutBlock T1537OutBlock { get; set; } = new();
+	[JsonPropertyName("t1537OutBlock1")]
+	public List<T1537OutBlock1> T1537OutBlock1 { get; set; } = [];
 }
 
 /// <summary>
 /// 테마종목별시세조회(t1537) - InBlock
 /// </summary>
-internal class t1537InBlock
+internal class T1537InBlock
 {
 	/// <summary>테마코드</summary>
-	public string tmcode { get; set; } = string.Empty;
+	[JsonPropertyName("tmcode")]
+	public string TmCode { get; set; } = string.Empty;
 }
 
 /// <summary>
 /// 테마종목별시세조회(t1537) - OutBlock
 /// </summary>
-internal class t1537OutBlock
+internal class T1537OutBlock
 {
 	/// <summary>상승종목수</summary>
-	public long upcnt { get; set; }
+	[JsonPropertyName("upcnt")]
+	public long UpCnt { get; set; }
 
 	/// <summary>테마종목수</summary>
-	public long tmcnt { get; set; }
+	[JsonPropertyName("tmcnt")]
+	public long TmCnt { get; set; }
 
 	/// <summary>상승종목비율</summary>
-	public long uprate { get; set; }
+	[JsonPropertyName("uprate")]
+	public long UpRate { get; set; }
 
 	/// <summary>테마명</summary>
-	public string tmname { get; set; } = string.Empty;
+	[JsonPropertyName("tmname")]
+	public string TmName { get; set; } = string.Empty;
 }
 
 /// <summary>
 /// 테마종목별시세조회(t1537) - OutBlock1
 /// </summary>
-internal class t1537OutBlock1
+internal class T1537OutBlock1
 {
 	/// <summary>종목명</summary>
-	public string hname { get; set; } = string.Empty;
+	[JsonPropertyName("hname")]
+	public string HName { get; set; } = string.Empty;
 
 	/// <summary>현재가</summary>
-	public long price { get; set; }
+	[JsonPropertyName("price")]
+	public long Price { get; set; }
 
 	/// <summary>전일대비구분</summary>
-	public string sign { get; set; } = string.Empty;
+	[JsonPropertyName("sign")]
+	public string Sign { get; set; } = string.Empty;
 
 	/// <summary>전일대비</summary>
-	public long change { get; set; }
+	[JsonPropertyName("change")]
+	public long Change { get; set; }
 
 	/// <summary>등락율</summary>
-	public decimal diff { get; set; }
+	[JsonPropertyName("diff")]
+	public decimal Diff { get; set; }
 
 	/// <summary>누적거래량</summary>
-	public long volume { get; set; }
+	[JsonPropertyName("volume")]
+	public long Volume { get; set; }
 
 	/// <summary>전일동시간</summary>
-	public decimal jniltime { get; set; }
+	[JsonPropertyName("jniltime")]
+	public decimal JnilTime { get; set; }
 
 	/// <summary>종목코드</summary>
-	public string shcode { get; set; } = string.Empty;
+	[JsonPropertyName("shcode")]
+	public string Shcode { get; set; } = string.Empty;
 
 	/// <summary>예상체결가</summary>
-	public long yeprice { get; set; }
+	[JsonPropertyName("yeprice")]
+	public long YePrice { get; set; }
 
 	/// <summary>시가</summary>
-	public long open { get; set; }
+	[JsonPropertyName("open")]
+	public long Open { get; set; }
 
 	/// <summary>고가</summary>
-	public long high { get; set; }
+	[JsonPropertyName("high")]
+	public long High { get; set; }
 
 	/// <summary>저가</summary>
-	public long low { get; set; }
+	[JsonPropertyName("low")]
+	public long Low { get; set; }
 
 	/// <summary>누적거래대금(단위:백만)</summary>
-	public long value { get; set; }
+	[JsonPropertyName("value")]
+	public long Value { get; set; }
 
 	/// <summary>시가총액(단위:백만)</summary>
-	public long marketcap { get; set; }
+	[JsonPropertyName("marketcap")]
+	public long MarketCap { get; set; }
 }

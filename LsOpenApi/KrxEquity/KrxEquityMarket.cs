@@ -589,36 +589,36 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	{
 		try
 		{
-			var response = await RequestStandardAsync<t1537>(LsEndpoint.EquitySector.ToDescription(), new
+			var response = await RequestStandardAsync<T1537>(LsEndpoint.EquitySector.ToDescription(), new
 			{
-				t1537InBlock = new t1537InBlock
+				t1537InBlock = new T1537InBlock
 				{
-					tmcode = sectorCode
+					TmCode = sectorCode
 				}
 			});
 
-			if (response.t1537OutBlock1.Count == 0) return ReturnResults<MarketExecution>([], nameof(t1537), response.Message);
+			if (response.T1537OutBlock1.Count == 0) return ReturnResults<MarketExecution>([], nameof(T1537), response.Message);
 
 			var equities = new List<MarketExecution>();
-			response.t1537OutBlock1.ForEach(equity => equities.Add(new MarketExecution
+			response.T1537OutBlock1.ForEach(equity => equities.Add(new MarketExecution
 			{
-				Symbol = equity.shcode,
+				Symbol = equity.Shcode,
 				QuoteDaily = new Quote
 				{
-					O = Convert.ToDecimal(equity.open),
-					C = Convert.ToDecimal(equity.price),
-					H = Convert.ToDecimal(equity.high),
-					L = Convert.ToDecimal(equity.low),
+					O = Convert.ToDecimal(equity.Open),
+					C = Convert.ToDecimal(equity.Price),
+					H = Convert.ToDecimal(equity.High),
+					L = Convert.ToDecimal(equity.Low),
 				},
-				C = Convert.ToDecimal(equity.price),
-				BasePrice = Convert.ToDecimal(equity.price) - Convert.ToDecimal(equity.change) * (DeclineCodes.Contains(equity.sign) ? -1 : 1)
+				C = Convert.ToDecimal(equity.Price),
+				BasePrice = Convert.ToDecimal(equity.Price) - Convert.ToDecimal(equity.Change) * (DeclineCodes.Contains(equity.Sign) ? -1 : 1)
 			}));
 
-			return ReturnResults(equities, nameof(t1537));
+			return ReturnResults(equities, nameof(T1537));
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<MarketExecution>(nameof(t1537), ex.Message);
+			return ReturnErrorResults<MarketExecution>(nameof(T1537), ex.Message);
 		}
 	}
 	#endregion
