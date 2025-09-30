@@ -25,15 +25,15 @@ internal class T0434InBlock
 
 	/// <summary>체결구분</summary>
 	[JsonPropertyName("chegb")]
-	public string Chegb { get; set; } = string.Empty;
+	public string Chegb { get; set; } = "0";
 
 	/// <summary>정렬순서</summary>
 	[JsonPropertyName("sortgb")]
-	public string Sortgb { get; set; } = string.Empty;
+	public string Sortgb { get; set; } = "2";
 
 	/// <summary>CTS_주문번호</summary>
 	[JsonPropertyName("cts_ordno")]
-	public string CtsOrdno { get; set; } = string.Empty;
+	public string CtsOrdno { get; set; } = " ";
 }
 
 /// <summary>
