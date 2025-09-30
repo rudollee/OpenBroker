@@ -865,30 +865,30 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	{
 		try
 		{
-			var response = await RequestStandardAsync<t1859>(LsEndpoint.EquitySearch.ToDescription(), new
+			var response = await RequestStandardAsync<T1859>(LsEndpoint.EquitySearch.ToDescription(), new
 			{
-				t1859InBlock = new t1859InBlock
+				t1859InBlock = new T1859InBlock
 				{
-					query_index = query
+					QueryIndex = query
 				}
 			});
 
-			if (response.t1859OutBlock1.Count == 0) return ReturnResults<MarketExecution>([], nameof(t1859), response.Message);
+			if (response.T1859OutBlock1.Count == 0) return ReturnResults<MarketExecution>([], nameof(T1859), response.Message);
 
 			var executions = new List<MarketExecution>();
-			response.t1859OutBlock1.ForEach(execution => executions.Add(new MarketExecution
+			response.T1859OutBlock1.ForEach(execution => executions.Add(new MarketExecution
 			{
-				Symbol = execution.shcode,
-				C = execution.price,
-				BasePrice = execution.price - execution.change * (DeclineCodes.Contains(execution.sign) ? -1 : 1),
-				VolumeExecuted = execution.volume,
+				Symbol = execution.Shcode,
+				C = execution.Price,
+				BasePrice = execution.Price - execution.Change * (DeclineCodes.Contains(execution.Sign) ? -1 : 1),
+				VolumeExecuted = execution.Volume,
 			}));
 
-			return ReturnResults(executions, nameof(t1859));
+			return ReturnResults(executions, nameof(T1859));
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<MarketExecution>(nameof(t1859), ex.Message);
+			return ReturnErrorResults<MarketExecution>(nameof(T1859), ex.Message);
 		}
 	}
 	#endregion
