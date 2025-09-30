@@ -76,7 +76,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 				Code = $"{trCode}:{response.Header.Code}",
 				Info = new MarketExecution
 				{
-					MarketSessionInfo = response.Body.jgubun switch
+					MarketSessionInfo = response.Body.Jgubun switch
 					{
 						"07" => MarketSession.CLOSED,
 						"99" => MarketSession.CLOSED,
@@ -85,25 +85,25 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 						"40" => trCode == nameof(DC0) ? MarketSession.EXTENDED : MarketSession.REGULAR,
 						_ => trCode == nameof(DC0) ? MarketSession.EXTENDED : MarketSession.REGULAR,
 					},
-					Symbol = response.Body.futcode,
-					TimeExecuted = response.Body.chetime.ToDateTime(),
-					C = Convert.ToDecimal(response.Body.price),
-					VolumeExecuted = Convert.ToDecimal(response.Body.cvolume),
-					ExecutionSide = response.Body.cgubun == "+" ? ExecutionSide.ASK : ExecutionSide.BID,
-					BasePrice = Convert.ToDecimal(response.Body.price) - Convert.ToDecimal((DeclineCodes.Contains(response.Body.sign) ? "-" : "") + response.Body.change),
+					Symbol = response.Body.Futcode,
+					TimeExecuted = response.Body.Chetime.ToDateTime(),
+					C = Convert.ToDecimal(response.Body.Price),
+					VolumeExecuted = Convert.ToDecimal(response.Body.Cvolume),
+					ExecutionSide = response.Body.Cgubun == "+" ? ExecutionSide.ASK : ExecutionSide.BID,
+					BasePrice = Convert.ToDecimal(response.Body.Price) - Convert.ToDecimal((DeclineCodes.Contains(response.Body.Sign) ? "-" : "") + response.Body.Change),
 					QuoteDaily = new Quote
 					{
-						V = Convert.ToDecimal(response.Body.volume),
-						Turnover = Convert.ToDecimal(response.Body.value),
+						V = Convert.ToDecimal(response.Body.Volume),
+						Turnover = Convert.ToDecimal(response.Body.Value),
 					}
 				},
 				Remark = message,
 				Broker = Brkr.LS,
 				ExtraData = new Dictionary<string, decimal>
 				{
-					{ "KOSPI200", Convert.ToDecimal(response.Body.k200jisu) },
-					{ "BASIS", Convert.ToDecimal(response.Body.sbasis) },
-					{ "OI", Convert.ToDecimal(response.Body.openyak) },
+					{ "KOSPI200", Convert.ToDecimal(response.Body.K200jisu) },
+					{ "BASIS", Convert.ToDecimal(response.Body.Sbasis) },
+					{ "OI", Convert.ToDecimal(response.Body.Openyak) },
 				}
 			});
 
