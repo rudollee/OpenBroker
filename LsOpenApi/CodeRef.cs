@@ -139,7 +139,7 @@ internal static class CodeRef
 		{ nameof(T1301), 2 },
 		{ nameof(T1403), 1 },
 		{ nameof(T1859), 1 },
-		{ nameof(t1866), 1 },
+		{ nameof(T1866), 1 },
 		{ nameof(t3102), 1 },
 		{ nameof(t8407), 2 },
 		{ nameof(t8436), 2 },

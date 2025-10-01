@@ -835,29 +835,29 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				List = new List<SearchFilter>()
 			};
 
-			var response = await RequestStandardAsync<t1866>(LsEndpoint.EquitySearch.ToDescription(), new
+			var response = await RequestStandardAsync<T1866>(LsEndpoint.EquitySearch.ToDescription(), new
 			{
-				t1866InBlock = new t1866InBlock
+				t1866InBlock = new T1866InBlock
 				{
-					user_id = AccountInfo.ID,
+					UserId = AccountInfo.ID,
 				}
 			});
 
-			if (response.t1866OutBlock1.Count == 0) return ReturnResults<SearchFilter>([], nameof(t1866), response.Message);
+			if (response.T1866OutBlock1.Count == 0) return ReturnResults<SearchFilter>([], nameof(T1866), response.Message);
 
 			var filters = new List<SearchFilter>();
-			response.t1866OutBlock1.ForEach(filter => filters.Add(new SearchFilter
+			response.T1866OutBlock1.ForEach(filter => filters.Add(new SearchFilter
 			{
-				Group = filter.group_name,
-				ID = filter.query_index,
-				Query = filter.query_name
+				Group = filter.GroupName,
+				ID = filter.QueryIndex,
+				Query = filter.QueryName
 			}));
 
-			return ReturnResults(filters, nameof(t1866));
+			return ReturnResults(filters, nameof(T1866));
 		}
 		catch (Exception ex)
 		{
-			return ReturnResults<SearchFilter>([], nameof(t1866), ex.Message);
+			return ReturnResults<SearchFilter>([], nameof(T1866), ex.Message);
 		}
 	}
 
