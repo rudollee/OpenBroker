@@ -1,165 +1,216 @@
-﻿namespace LsOpenApi.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace LsOpenApi.Models;
 /// <summary>
 /// 선물/옵션현재가호가조회(t2105)
 /// </summary>
-internal class t2105 : LsResponseCore
+internal class T2105 : LsResponseCore
 {
-	public t2105InBlock t2105InBlock { get; set; } = new();
-	public t2105OutBlock t2105OutBlock { get; set; } = new();
+	[JsonPropertyName("t2105InBlock")]
+	public T2105InBlock T2105InBlock { get; set; } = new();
+	[JsonPropertyName("t2105OutBlock")]
+	public T2105OutBlock T2105OutBlock { get; set; } = new();
 }
 
 /// <summary>
 /// 선물/옵션현재가호가조회(t2105) - InBlock
 /// </summary>
-internal class t2105InBlock
+internal class T2105InBlock
 {
 	/// <summary>단축코드</summary>
-	public string shcode { get; set; } = string.Empty;
+	[JsonPropertyName("shcode")]
+	public string Shcode { get; set; } = string.Empty;
 }
 
 /// <summary>
 /// 선물/옵션현재가호가조회(t2105) - OutBlock
 /// </summary>
-internal class t2105OutBlock
+internal class T2105OutBlock
 {
 	/// <summary>종목명</summary>
-	public string hname { get; set; } = string.Empty;
+	[JsonPropertyName("hname")]
+	public string Hname { get; set; } = string.Empty;
 
 	/// <summary>현재가</summary>
-	public decimal price { get; set; }
+	[JsonPropertyName("price")]
+	public decimal Price { get; set; }
 
 	/// <summary>전일대비구분</summary>
-	public string sign { get; set; } = string.Empty;
+	[JsonPropertyName("sign")]
+	public string Sign { get; set; } = string.Empty;
 
 	/// <summary>전일대비</summary>
-	public decimal change { get; set; }
+	[JsonPropertyName("change")]
+	public decimal Change { get; set; }
 
 	/// <summary>등락율</summary>
-	public decimal diff { get; set; }
+	[JsonPropertyName("diff")]
+	public decimal Diff { get; set; }
 
 	/// <summary>거래량</summary>
-	public long volume { get; set; }
+	[JsonPropertyName("volume")]
+	public long Volume { get; set; }
 
 	/// <summary>거래량전일동시간비율</summary>
-	public decimal stimeqrt { get; set; }
+	[JsonPropertyName("stimeqrt")]
+	public decimal Stimeqrt { get; set; }
 
 	/// <summary>전일종가</summary>
-	public decimal jnilclose { get; set; }
+	[JsonPropertyName("jnilclose")]
+	public decimal Jnilclose { get; set; }
 
 	/// <summary>매도호가1</summary>
-	public decimal offerho1 { get; set; }
+	[JsonPropertyName("offerho1")]
+	public decimal Offerho1 { get; set; }
 
 	/// <summary>매수호가1</summary>
-	public decimal bidho1 { get; set; }
+	[JsonPropertyName("bidho1")]
+	public decimal Bidho1 { get; set; }
 
 	/// <summary>매도호가수량1</summary>
-	public long offerrem1 { get; set; }
+	[JsonPropertyName("offerrem1")]
+	public long Offerrem1 { get; set; }
 
 	/// <summary>매수호가수량1</summary>
-	public long bidrem1 { get; set; }
+	[JsonPropertyName("bidrem1")]
+	public long Bidrem1 { get; set; }
 
 	/// <summary>매도호가건수1</summary>
-	public long dcnt1 { get; set; }
+	[JsonPropertyName("dcnt1")]
+	public long Dcnt1 { get; set; }
 
 	/// <summary>매수호가건수1</summary>
-	public long scnt1 { get; set; }
+	[JsonPropertyName("scnt1")]
+	public long Scnt1 { get; set; }
 
 	/// <summary>매도호가2</summary>
-	public decimal offerho2 { get; set; }
+	[JsonPropertyName("offerho2")]
+	public decimal Offerho2 { get; set; }
 
 	/// <summary>매수호가2</summary>
-	public decimal bidho2 { get; set; }
+	[JsonPropertyName("bidho2")]
+	public decimal Bidho2 { get; set; }
 
 	/// <summary>매도호가수량2</summary>
-	public long offerrem2 { get; set; }
+	[JsonPropertyName("offerrem2")]
+	public long Offerrem2 { get; set; }
 
 	/// <summary>매수호가수량2</summary>
-	public long bidrem2 { get; set; }
+	[JsonPropertyName("bidrem2")]
+	public long Bidrem2 { get; set; }
 
 	/// <summary>매도호가건수2</summary>
-	public long dcnt2 { get; set; }
+	[JsonPropertyName("dcnt2")]
+	public long Dcnt2 { get; set; }
 
 	/// <summary>매수호가건수2</summary>
-	public long scnt2 { get; set; }
+	[JsonPropertyName("scnt2")]
+	public long Scnt2 { get; set; }
 
 	/// <summary>매도호가3</summary>
-	public decimal offerho3 { get; set; }
+	[JsonPropertyName("offerho3")]
+	public decimal Offerho3 { get; set; }
 
 	/// <summary>매수호가3</summary>
-	public decimal bidho3 { get; set; }
+	[JsonPropertyName("bidho3")]
+	public decimal Bidho3 { get; set; }
 
 	/// <summary>매도호가수량3</summary>
-	public long offerrem3 { get; set; }
+	[JsonPropertyName("offerrem3")]
+	public long Offerrem3 { get; set; }
 
 	/// <summary>매수호가수량3</summary>
-	public long bidrem3 { get; set; }
+	[JsonPropertyName("bidrem3")]
+	public long Bidrem3 { get; set; }
 
 	/// <summary>매도호가건수3</summary>
-	public long dcnt3 { get; set; }
+	[JsonPropertyName("dcnt3")]
+	public long Dcnt3 { get; set; }
 
 	/// <summary>매수호가건수3</summary>
-	public long scnt3 { get; set; }
+	[JsonPropertyName("scnt3")]
+	public long Scnt3 { get; set; }
 
 	/// <summary>매도호가4</summary>
-	public decimal offerho4 { get; set; }
+	[JsonPropertyName("offerho4")]
+	public decimal Offerho4 { get; set; }
 
 	/// <summary>매수호가4</summary>
-	public decimal bidho4 { get; set; }
+	[JsonPropertyName("bidho4")]
+	public decimal Bidho4 { get; set; }
 
 	/// <summary>매도호가수량4</summary>
-	public long offerrem4 { get; set; }
+	[JsonPropertyName("offerrem4")]
+	public long Offerrem4 { get; set; }
 
 	/// <summary>매수호가수량4</summary>
-	public long bidrem4 { get; set; }
+	[JsonPropertyName("bidrem4")]
+	public long Bidrem4 { get; set; }
 
 	/// <summary>매도호가건수4</summary>
-	public long dcnt4 { get; set; }
+	[JsonPropertyName("dcnt4")]
+	public long Dcnt4 { get; set; }
 
 	/// <summary>매수호가건수4</summary>
-	public long scnt4 { get; set; }
+	[JsonPropertyName("scnt4")]
+	public long Scnt4 { get; set; }
 
 	/// <summary>매도호가5</summary>
-	public decimal offerho5 { get; set; }
+	[JsonPropertyName("offerho5")]
+	public decimal Offerho5 { get; set; }
 
 	/// <summary>매수호가5</summary>
-	public decimal bidho5 { get; set; }
+	[JsonPropertyName("bidho5")]
+	public decimal Bidho5 { get; set; }
 
 	/// <summary>매도호가수량5</summary>
-	public long offerrem5 { get; set; }
+	[JsonPropertyName("offerrem5")]
+	public long Offerrem5 { get; set; }
 
 	/// <summary>매수호가수량5</summary>
-	public long bidrem5 { get; set; }
+	[JsonPropertyName("bidrem5")]
+	public long Bidrem5 { get; set; }
 
 	/// <summary>매도호가건수5</summary>
-	public long dcnt5 { get; set; }
+	[JsonPropertyName("dcnt5")]
+	public long Dcnt5 { get; set; }
 
 	/// <summary>매수호가건수5</summary>
-	public long scnt5 { get; set; }
+	[JsonPropertyName("scnt5")]
+	public long Scnt5 { get; set; }
 
 	/// <summary>매도호가총수량</summary>
-	public long dvol { get; set; }
+	[JsonPropertyName("dvol")]
+	public long Dvol { get; set; }
 
 	/// <summary>매수호가총수량</summary>
-	public long svol { get; set; }
+	[JsonPropertyName("svol")]
+	public long Svol { get; set; }
 
 	/// <summary>총매도호가건수</summary>
-	public long toffernum { get; set; }
+	[JsonPropertyName("toffernum")]
+	public long Toffernum { get; set; }
 
 	/// <summary>총매수호가건수</summary>
-	public long tbidnum { get; set; }
+	[JsonPropertyName("tbidnum")]
+	public long Tbidnum { get; set; }
 
 	/// <summary>수신시간</summary>
-	public string time { get; set; } = string.Empty;
+	[JsonPropertyName("time")]
+	public string Time { get; set; } = string.Empty;
 
 	/// <summary>단축코드</summary>
-	public string shcode { get; set; } = string.Empty;
+	[JsonPropertyName("shcode")]
+	public string Shcode { get; set; } = string.Empty;
 }
 
 /// <summary>
 /// KRX야간파생 호가조회(API용)(t8457)
 /// </summary>
-internal class t8457 : LsResponseCore
+internal class T8457 : LsResponseCore
 {
-	public t2105InBlock t8457InBlock { get; set; } = new();
-	public t2105OutBlock t8457OutBlock { get; set; } = new();
+	[JsonPropertyName("t8457InBlock")]
+	public T2105InBlock T8457InBlock { get; set; } = new();
+	[JsonPropertyName("t8457OutBlock")]
+	public T2105OutBlock T8457OutBlock { get; set; } = new();
 }

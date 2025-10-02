@@ -231,27 +231,27 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		try
 		{
 			var isRegular = symbol.Length != 9;
-			var tr = isRegular ? typeof(t2105) : typeof(t8457);
+			var tr = isRegular ? typeof(T2105) : typeof(T8457);
 
-			t2105 response = new();
+			T2105 response = new();
 			if (isRegular)
 			{
-				response = await RequestStandardAsync<t2105>(LsEndpoint.FuturesMarketData.ToDescription(), new
+				response = await RequestStandardAsync<T2105>(LsEndpoint.FuturesMarketData.ToDescription(), new
 				{
-					t2105InBlock = new t2105InBlock { shcode = symbol }
+					t2105InBlock = new T2105InBlock { Shcode = symbol }
 				});
 			}
 			else
 			{
-				var responseExt = await RequestStandardAsync<t8457>(LsEndpoint.FuturesMarketData.ToDescription(), new
+				var responseExt = await RequestStandardAsync<T8457>(LsEndpoint.FuturesMarketData.ToDescription(), new
 				{
-					t8457InBlock = new t2105InBlock { shcode = symbol[..8] }
+					t8457InBlock = new T2105InBlock { Shcode = symbol[..8] }
 				});
 
-				response.t2105OutBlock = responseExt.t8457OutBlock;
+				response.T2105OutBlock = responseExt.T8457OutBlock;
 			}
 
-			if (response is null || response.t2105OutBlock is null) return ReturnErrorResult<OrderBook>(symbol, response?.Message ?? "no data");
+			if (response is null || response.T2105OutBlock is null) return ReturnErrorResult<OrderBook>(symbol, response?.Message ?? "no data");
 
 			IList<MarketOrder> asks = [];
 			IList<MarketOrder> bids = [];
@@ -260,29 +260,29 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				asks.Add(new MarketOrder
 				{
 					Seq = Convert.ToByte(i + 1),
-					Price = Convert.ToDecimal(response.t2105OutBlock.GetPropValue($"offerho{i + 1}")),
-					Amount = Convert.ToDecimal(response.t2105OutBlock.GetPropValue($"offerrem{i + 1}")),
-					AmountGroup = Convert.ToDecimal(response.t2105OutBlock.GetPropValue($"dcnt{i + 1}"))
+					Price = Convert.ToDecimal(response.T2105OutBlock.GetPropValue($"Offerho{i + 1}")),
+					Amount = Convert.ToDecimal(response.T2105OutBlock.GetPropValue($"Offerrem{i + 1}")),
+					AmountGroup = Convert.ToDecimal(response.T2105OutBlock.GetPropValue($"Dcnt{i + 1}"))
 				});
 				bids.Add(new MarketOrder
 				{
 					Seq = Convert.ToByte(i + 1),
-					Price = Convert.ToDecimal(response.t2105OutBlock.GetPropValue($"bidho{i + 1}")),
-					Amount = Convert.ToDecimal(response.t2105OutBlock.GetPropValue($"bidrem{i + 1}")),
-					AmountGroup = Convert.ToDecimal(response.t2105OutBlock.GetPropValue($"scnt{i + 1}"))
+					Price = Convert.ToDecimal(response.T2105OutBlock.GetPropValue($"Bidho{i + 1}")),
+					Amount = Convert.ToDecimal(response.T2105OutBlock.GetPropValue($"Bidrem{i + 1}")),
+					AmountGroup = Convert.ToDecimal(response.T2105OutBlock.GetPropValue($"Scnt{i + 1}"))
 				});
 			}
 
 			return ReturnResult(new OrderBook
 			{
 				Symbol = symbol,
-				TimeTaken = response.t2105OutBlock.time.ToTime(),
-				C = response.t2105OutBlock.price,
-				BasePrice = response.t2105OutBlock.jnilclose,
+				TimeTaken = response.T2105OutBlock.Time.ToTime(),
+				C = response.T2105OutBlock.Price,
+				BasePrice = response.T2105OutBlock.Jnilclose,
 				Ask = asks,
 				Bid = bids,
-				AskAgg = response.t2105OutBlock.dvol,
-				BidAgg = response.t2105OutBlock.svol,
+				AskAgg = response.T2105OutBlock.Dvol,
+				BidAgg = response.T2105OutBlock.Svol,
 			});
 		}
 		catch (Exception ex)
@@ -295,12 +295,12 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	{
 		try
 		{
-			var response = await RequestStandardAsync<t8403>(LsEndpoint.FuturesMarketData.ToDescription(), new
+			var response = await RequestStandardAsync<T8403>(LsEndpoint.FuturesMarketData.ToDescription(), new
 			{
-				t8403InBlock = new t2105InBlock { shcode = symbol }
+				t8403InBlock = new T2105InBlock { Shcode = symbol }
 			});
 
-			if (response is null || response.t8403OutBlock is null) return ReturnErrorResult<OrderBook>(symbol, response?.Message ?? "no data");
+			if (response is null || response.T8403OutBlock is null) return ReturnErrorResult<OrderBook>(symbol, response?.Message ?? "no data");
 
 			IList<MarketOrder> asks = [];
 			IList<MarketOrder> bids = [];
@@ -309,30 +309,30 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				asks.Add(new MarketOrder
 				{
 					Seq = Convert.ToByte(i + 1),
-					Price = Convert.ToDecimal(response.t8403OutBlock.GetPropValue($"offerho{(i + 1)}")),
-					Amount = Convert.ToDecimal(response.t8403OutBlock.GetPropValue($"offerrem{(i + 1)}")),
-					AmountGroup = Convert.ToDecimal(response.t8403OutBlock.GetPropValue($"dcnt{(i + 1)}"))
+					Price = Convert.ToDecimal(response.T8403OutBlock.GetPropValue($"Offerho{(i + 1)}")),
+					Amount = Convert.ToDecimal(response.T8403OutBlock.GetPropValue($"Offerrem{(i + 1)}")),
+					AmountGroup = Convert.ToDecimal(response.T8403OutBlock.GetPropValue($"Dcnt{(i + 1)}"))
 				});
 
 				bids.Add(new MarketOrder
 				{
 					Seq = Convert.ToByte(i + 1),
-					Price = Convert.ToDecimal(response.t8403OutBlock.GetPropValue($"bidho{(i + 1)}")),
-					Amount = Convert.ToDecimal(response.t8403OutBlock.GetPropValue($"bidrem{(i + 1)}")),
-					AmountGroup = Convert.ToDecimal(response.t8403OutBlock.GetPropValue($"scnt{(i + 1)}"))
+					Price = Convert.ToDecimal(response.T8403OutBlock.GetPropValue($"Bidho{(i + 1)}")),
+					Amount = Convert.ToDecimal(response.T8403OutBlock.GetPropValue($"Bidrem{(i + 1)}")),
+					AmountGroup = Convert.ToDecimal(response.T8403OutBlock.GetPropValue($"Scnt{(i + 1)}"))
 				});
 			}
 
 			return ReturnResult(new OrderBook
 			{
 				Symbol = symbol,
-				TimeTaken = response.t8403OutBlock.time.ToTime(),
-				C = response.t8403OutBlock.price,
-				BasePrice = response.t8403OutBlock.jnilclose,
+				TimeTaken = response.T8403OutBlock.Time.ToTime(),
+				C = response.T8403OutBlock.Price,
+				BasePrice = response.T8403OutBlock.Jnilclose,
 				Ask = asks,
 				Bid = bids,
-				AskAgg = response.t8403OutBlock.dvol,
-				BidAgg = response.t8403OutBlock.svol,
+				AskAgg = response.T8403OutBlock.Dvol,
+				BidAgg = response.T8403OutBlock.Svol,
 			});
 		}
 		catch (Exception ex)
