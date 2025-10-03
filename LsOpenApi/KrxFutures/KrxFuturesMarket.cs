@@ -567,16 +567,16 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		try
 		{
 			var expiry = expiry6.Length == 6 ? expiry6 : DateOnly.FromDateTime(DateTime.Now).ToKrxExpiry().ToString("yyyyMM");
-			var response = await RequestStandardAsync<t2301>(LsEndpoint.FuturesMarketData.ToDescription(), new
+			var response = await RequestStandardAsync<T2301>(LsEndpoint.FuturesMarketData.ToDescription(), new
 			{
-				t2301InBlock = new t2301InBlock
+				t2301InBlock = new T2301InBlock
 				{
-					yyyymm = expiry,
-					gubun = typ.ToString(),
+					YyyyMm = expiry,
+					Gubun = typ.ToString(),
 				},
 			});
 
-			if (response.t2301OutBlock1.Count == 0) return new ResponseResult<OptionPack>
+			if (response.T2301OutBlock1.Count == 0) return new ResponseResult<OptionPack>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = "no data",
@@ -584,60 +584,60 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			};
 
 			var calls = new List<OptionsInfo>();
-			response.t2301OutBlock1.ForEach(option => calls.Add(new OptionsInfo
+			response.T2301OutBlock1.ForEach(option => calls.Add(new OptionsInfo
 			{
 				Currency = Currency.KRW,
-				Symbol = option.optcode,
-				Product = option.optcode.ToKrxProductCode(),
+				Symbol = option.OptCode,
+				Product = option.OptCode.ToKrxProductCode(),
 				InstrumentType = InstrumentType.Call,
-				Strike = Math.Floor(option.actprice).ToString(),
+				Strike = Math.Floor(option.ActPrice).ToString(),
 				QuoteInfo = new()
 				{
-					C = option.price,
-					O = option.open,
-					H = option.high,
-					L = option.low,
-					V = option.volume,
-					BasePrice = option.price + option.change * (Convert.ToInt32(option.sign) > 3 ? 1 : -1),
-					HighLimit = option.iv,
-					Turnover = option.value,
+					C = option.Price,
+					O = option.Open,
+					H = option.High,
+					L = option.Low,
+					V = option.Volume,
+					BasePrice = option.Price + option.Change * (Convert.ToInt32(option.Sign) > 3 ? 1 : -1),
+					HighLimit = option.Iv,
+					Turnover = option.Value,
 				},
-				OI = option.mgjv,
+				OI = option.Mgjv,
 				Precision = 2,
 				Greek = new()
 				{
-					Delta = option.delt,
-					Gamma = option.gama,
-					Theta = option.ceta,
+					Delta = option.Delt,
+					Gamma = option.Gama,
+					Theta = option.Ceta,
 				}
 			}));
 
 			var puts = new List<OptionsInfo>();
-			response.t2301OutBlock2.ForEach(option => puts.Add(new OptionsInfo
+			response.T2301OutBlock2.ForEach(option => puts.Add(new OptionsInfo
 			{
 				Currency = Currency.KRW,
-				Symbol = option.optcode,
-				Product = option.optcode.ToKrxProductCode(),
+				Symbol = option.OptCode,
+				Product = option.OptCode.ToKrxProductCode(),
 				InstrumentType = InstrumentType.Put,
-				Strike = Math.Floor(option.actprice).ToString(),
+				Strike = Math.Floor(option.ActPrice).ToString(),
 				QuoteInfo = new()
 				{
-					C = option.price,
-					O = option.open,
-					H = option.high,
-					L = option.low,
-					V = option.volume,
-					BasePrice = option.price + option.change * (Convert.ToInt32(option.sign) > 3 ? 1 : -1),
-					HighLimit = option.iv,
-					Turnover = option.value,
+					C = option.Price,
+					O = option.Open,
+					H = option.High,
+					L = option.Low,
+					V = option.Volume,
+					BasePrice = option.Price + option.Change * (Convert.ToInt32(option.Sign) > 3 ? 1 : -1),
+					HighLimit = option.Iv,
+					Turnover = option.Value,
 				},
-				OI = option.mgjv,
+				OI = option.Mgjv,
 				Precision = 2,
 				Greek = new()
 				{
-					Delta = option.delt,
-					Gamma = option.gama,
-					Theta = option.ceta,
+					Delta = option.Delt,
+					Gamma = option.Gama,
+					Theta = option.Ceta,
 				}
 			}));
 
@@ -646,7 +646,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				Broker = Brkr.LS,
 				Info = new OptionPack
 				{
-					ExpiryLeft = Convert.ToInt32(response.t2301OutBlock.jandatecnt),
+					ExpiryLeft = Convert.ToInt32(response.T2301OutBlock.JanDateCnt),
 					Calls = calls,
 					Puts = puts,
 				}

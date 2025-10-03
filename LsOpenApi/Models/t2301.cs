@@ -1,264 +1,345 @@
-﻿namespace LsOpenApi.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace LsOpenApi.Models;
 /// <summary>
 /// 옵션전광판(t2301)
 /// </summary>
-internal class t2301 : LsResponseCore
+internal class T2301 : LsResponseCore
 {
-	public t2301InBlock t2301InBlock { get; set; } = new();
-	public t2301OutBlock t2301OutBlock { get; set; } = new();
-	public List<t2301OutBlock1> t2301OutBlock1 { get; set; } = new();
-	public List<t2301OutBlock2> t2301OutBlock2 { get; set; } = new();
+	[JsonPropertyName("t2301InBlock")]
+	public T2301InBlock T2301InBlock { get; set; } = new();
+	[JsonPropertyName("t2301OutBlock")]
+	public T2301OutBlock T2301OutBlock { get; set; } = new();
+	[JsonPropertyName("t2301OutBlock1")]
+	public List<T2301OutBlock1> T2301OutBlock1 { get; set; } = [];
+	[JsonPropertyName("t2301OutBlock2")]
+	public List<T2301OutBlock2> T2301OutBlock2 { get; set; } = [];
 }
 
 /// <summary>
 /// 옵션전광판(t2301) - InBlock
 /// </summary>
-internal class t2301InBlock
+internal class T2301InBlock
 {
 	/// <summary>월물</summary>
-	public string yyyymm { get; set; } = string.Empty;
+	[JsonPropertyName("yyyymm")]
+	public string YyyyMm { get; set; } = string.Empty;
 
 	/// <summary>미니구분(M:미니G:정규)</summary>
-	public string gubun { get; set; } = "G";
+	[JsonPropertyName("gubun")]
+	public string Gubun { get; set; } = "G";
 }
 
 /// <summary>
 /// 옵션전광판(t2301) - OutBlock
 /// </summary>
-internal class t2301OutBlock
+internal class T2301OutBlock
 {
 	/// <summary>역사적변동성</summary>
-	public long histimpv { get; set; }
+	[JsonPropertyName("histimpv")]
+	public long HistImpv { get; set; }
 
 	/// <summary>옵션잔존일</summary>
-	public long jandatecnt { get; set; }
+	[JsonPropertyName("jandatecnt")]
+	public long JanDateCnt { get; set; }
 
 	/// <summary>콜옵션대표IV</summary>
-	public decimal cimpv { get; set; }
+	[JsonPropertyName("cimpv")]
+	public decimal CImpv { get; set; }
 
 	/// <summary>풋옵션대표IV</summary>
-	public decimal pimpv { get; set; }
+	[JsonPropertyName("pimpv")]
+	public decimal PImpv { get; set; }
 
 	/// <summary>근월물현재가</summary>
-	public decimal gmprice { get; set; }
+	[JsonPropertyName("gmprice")]
+	public decimal GmPrice { get; set; }
 
 	/// <summary>근월물전일대비구분</summary>
-	public string gmsign { get; set; } = string.Empty;
+	[JsonPropertyName("gmsign")]
+	public string GmSign { get; set; } = string.Empty;
 
 	/// <summary>근월물전일대비</summary>
-	public decimal gmchange { get; set; }
+	[JsonPropertyName("gmchange")]
+	public decimal GmChange { get; set; }
 
 	/// <summary>근월물등락율</summary>
-	public decimal gmdiff { get; set; }
+	[JsonPropertyName("gmdiff")]
+	public decimal GmDiff { get; set; }
 
 	/// <summary>근월물거래량</summary>
-	public long gmvolume { get; set; }
+	[JsonPropertyName("gmvolume")]
+	public long GmVolume { get; set; }
 
 	/// <summary>근월물선물코드</summary>
-	public string gmshcode { get; set; } = string.Empty;
+	[JsonPropertyName("gmshcode")]
+	public string GmShcode { get; set; } = string.Empty;
 }
 
 /// <summary>
 /// 옵션전광판(t2301) - OutBlock1
 /// </summary>
-internal class t2301OutBlock1
+internal class T2301OutBlock1
 {
 	/// <summary>행사가</summary>
-	public decimal actprice { get; set; }
+	[JsonPropertyName("actprice")]
+	public decimal ActPrice { get; set; }
 
 	/// <summary>콜옵션코드</summary>
-	public string optcode { get; set; } = string.Empty;
+	[JsonPropertyName("optcode")]
+	public string OptCode { get; set; } = string.Empty;
 
 	/// <summary>현재가</summary>
-	public decimal price { get; set; }
+	[JsonPropertyName("price")]
+	public decimal Price { get; set; }
 
 	/// <summary>전일대비구분</summary>
-	public string sign { get; set; } = string.Empty;
+	[JsonPropertyName("sign")]
+	public string Sign { get; set; } = string.Empty;
 
 	/// <summary>전일대비</summary>
-	public decimal change { get; set; }
+	[JsonPropertyName("change")]
+	public decimal Change { get; set; }
 
 	/// <summary>등락율</summary>
-	public decimal diff { get; set; }
+	[JsonPropertyName("diff")]
+	public decimal Diff { get; set; }
 
 	/// <summary>거래량</summary>
-	public long volume { get; set; }
+	[JsonPropertyName("volume")]
+	public long Volume { get; set; }
 
 	/// <summary>IV</summary>
-	public decimal iv { get; set; }
+	[JsonPropertyName("iv")]
+	public decimal Iv { get; set; }
 
 	/// <summary>미결제약정</summary>
-	public long mgjv { get; set; }
+	[JsonPropertyName("mgjv")]
+	public long Mgjv { get; set; }
 
 	/// <summary>미결제약정증감</summary>
-	public long mgjvupdn { get; set; }
+	[JsonPropertyName("mgjvupdn")]
+	public long Mgjvupdn { get; set; }
 
 	/// <summary>매도호가</summary>
-	public decimal offerho1 { get; set; }
+	[JsonPropertyName("offerho1")]
+	public decimal Offerho1 { get; set; }
 
 	/// <summary>매수호가</summary>
-	public decimal bidho1 { get; set; }
+	[JsonPropertyName("bidho1")]
+	public decimal Bidho1 { get; set; }
 
 	/// <summary>체결량</summary>
-	public long cvolume { get; set; }
+	[JsonPropertyName("cvolume")]
+	public long Cvolume { get; set; }
 
 	/// <summary>델타</summary>
-	public decimal delt { get; set; }
+	[JsonPropertyName("delt")]
+	public decimal Delt { get; set; }
 
 	/// <summary>감마</summary>
-	public decimal gama { get; set; }
+	[JsonPropertyName("gama")]
+	public decimal Gama { get; set; }
 
 	/// <summary>베가</summary>
-	public decimal vega { get; set; }
+	[JsonPropertyName("vega")]
+	public decimal Vega { get; set; }
 
 	/// <summary>쎄타</summary>
-	public decimal ceta { get; set; }
+	[JsonPropertyName("ceta")]
+	public decimal Ceta { get; set; }
 
 	/// <summary>로우</summary>
-	public decimal rhox { get; set; }
+	[JsonPropertyName("rhox")]
+	public decimal Rhox { get; set; }
 
 	/// <summary>이론가</summary>
-	public decimal theoryprice { get; set; }
+	[JsonPropertyName("theoryprice")]
+	public decimal Theoryprice { get; set; }
 
 	/// <summary>내재가치</summary>
-	public decimal impv { get; set; }
+	[JsonPropertyName("impv")]
+	public decimal Impv { get; set; }
 
 	/// <summary>시간가치</summary>
-	public decimal timevl { get; set; }
+	[JsonPropertyName("timevl")]
+	public decimal Timevl { get; set; }
 
 	/// <summary>잔고수량</summary>
-	public long jvolume { get; set; }
+	[JsonPropertyName("jvolume")]
+	public long Jvolume { get; set; }
 
 	/// <summary>평가손익</summary>
-	public long parpl { get; set; }
+	[JsonPropertyName("parpl")]
+	public long Parpl { get; set; }
 
 	/// <summary>청산가능수량</summary>
-	public long jngo { get; set; }
+	[JsonPropertyName("jngo")]
+	public long Jngo { get; set; }
 
 	/// <summary>매도잔량</summary>
-	public long offerrem1 { get; set; }
+	[JsonPropertyName("offerrem1")]
+	public long Offerrem1 { get; set; }
 
 	/// <summary>매수잔량</summary>
-	public long bidrem1 { get; set; }
+	[JsonPropertyName("bidrem1")]
+	public long Bidrem1 { get; set; }
 
 	/// <summary>시가</summary>
-	public decimal open { get; set; }
+	[JsonPropertyName("open")]
+	public decimal Open { get; set; }
 
 	/// <summary>고가</summary>
-	public decimal high { get; set; }
+	[JsonPropertyName("high")]
+	public decimal High { get; set; }
 
 	/// <summary>저가</summary>
-	public decimal low { get; set; }
+	[JsonPropertyName("low")]
+	public decimal Low { get; set; }
 
 	/// <summary>ATM구분</summary>
-	public string atmgubun { get; set; } = string.Empty;
+	[JsonPropertyName("atmgubun")]
+	public string Atmgubun { get; set; } = string.Empty;
 
 	/// <summary>지수환산</summary>
-	public decimal jisuconv { get; set; }
+	[JsonPropertyName("jisuconv")]
+	public decimal Jisuconv { get; set; }
 
 	/// <summary>거래대금</summary>
-	public decimal value { get; set; }
-
+	[JsonPropertyName("value")]
+	public decimal Value { get; set; }
 }
 
 /// <summary>
 /// 옵션전광판(t2301) - OutBlock2
 /// </summary>
-internal class t2301OutBlock2
+internal class T2301OutBlock2
 {
 	/// <summary>행사가</summary>
-	public decimal actprice { get; set; }
+	[JsonPropertyName("actprice")]
+	public decimal ActPrice { get; set; }
 
 	/// <summary>풋옵션코드</summary>
-	public string optcode { get; set; } = string.Empty;
+	[JsonPropertyName("optcode")]
+	public string OptCode { get; set; } = string.Empty;
 
 	/// <summary>현재가</summary>
-	public decimal price { get; set; }
+	[JsonPropertyName("price")]
+	public decimal Price { get; set; }
 
 	/// <summary>전일대비구분</summary>
-	public string sign { get; set; } = string.Empty;
+	[JsonPropertyName("sign")]
+	public string Sign { get; set; } = string.Empty;
 
 	/// <summary>전일대비</summary>
-	public decimal change { get; set; }
+	[JsonPropertyName("change")]
+	public decimal Change { get; set; }
 
 	/// <summary>등락율</summary>
-	public decimal diff { get; set; }
+	[JsonPropertyName("diff")]
+	public decimal Diff { get; set; }
 
 	/// <summary>거래량</summary>
-	public long volume { get; set; }
+	[JsonPropertyName("volume")]
+	public long Volume { get; set; }
 
 	/// <summary>IV</summary>
-	public decimal iv { get; set; }
+	[JsonPropertyName("iv")]
+	public decimal Iv { get; set; }
 
 	/// <summary>미결제약정</summary>
-	public long mgjv { get; set; }
+	[JsonPropertyName("mgjv")]
+	public long Mgjv { get; set; }
 
 	/// <summary>미결제약정증감</summary>
-	public long mgjvupdn { get; set; }
+	[JsonPropertyName("mgjvupdn")]
+	public long Mgjvupdn { get; set; }
 
 	/// <summary>매도호가</summary>
-	public decimal offerho1 { get; set; }
+	[JsonPropertyName("offerho1")]
+	public decimal Offerho1 { get; set; }
 
 	/// <summary>매수호가</summary>
-	public decimal bidho1 { get; set; }
+	[JsonPropertyName("bidho1")]
+	public decimal Bidho1 { get; set; }
 
 	/// <summary>체결량</summary>
-	public long cvolume { get; set; }
+	[JsonPropertyName("cvolume")]
+	public long Cvolume { get; set; }
 
 	/// <summary>델타</summary>
-	public decimal delt { get; set; }
+	[JsonPropertyName("delt")]
+	public decimal Delt { get; set; }
 
 	/// <summary>감마</summary>
-	public decimal gama { get; set; }
+	[JsonPropertyName("gama")]
+	public decimal Gama { get; set; }
 
 	/// <summary>베가</summary>
-	public decimal vega { get; set; }
+	[JsonPropertyName("vega")]
+	public decimal Vega { get; set; }
 
 	/// <summary>쎄타</summary>
-	public decimal ceta { get; set; }
+	[JsonPropertyName("ceta")]
+	public decimal Ceta { get; set; }
 
 	/// <summary>로우</summary>
-	public decimal rhox { get; set; }
+	[JsonPropertyName("rhox")]
+	public decimal Rhox { get; set; }
 
 	/// <summary>이론가</summary>
-	public decimal theoryprice { get; set; }
+	[JsonPropertyName("theoryprice")]
+	public decimal Theoryprice { get; set; }
 
 	/// <summary>내재가치</summary>
-	public decimal impv { get; set; }
+	[JsonPropertyName("impv")]
+	public decimal Impv { get; set; }
 
 	/// <summary>시간가치</summary>
-	public decimal timevl { get; set; }
+	[JsonPropertyName("timevl")]
+	public decimal Timevl { get; set; }
 
 	/// <summary>잔고수량</summary>
-	public long jvolume { get; set; }
+	[JsonPropertyName("jvolume")]
+	public long Jvolume { get; set; }
 
 	/// <summary>평가손익</summary>
-	public long parpl { get; set; }
+	[JsonPropertyName("parpl")]
+	public long Parpl { get; set; }
 
 	/// <summary>청산가능수량</summary>
-	public long jngo { get; set; }
+	[JsonPropertyName("jngo")]
+	public long Jngo { get; set; }
 
 	/// <summary>매도잔량</summary>
-	public long offerrem1 { get; set; }
+	[JsonPropertyName("offerrem1")]
+	public long Offerrem1 { get; set; }
 
 	/// <summary>매수잔량</summary>
-	public long bidrem1 { get; set; }
+	[JsonPropertyName("bidrem1")]
+	public long Bidrem1 { get; set; }
 
 	/// <summary>시가</summary>
-	public decimal open { get; set; }
+	[JsonPropertyName("open")]
+	public decimal Open { get; set; }
 
 	/// <summary>고가</summary>
-	public decimal high { get; set; }
+	[JsonPropertyName("high")]
+	public decimal High { get; set; }
 
 	/// <summary>저가</summary>
-	public decimal low { get; set; }
+	[JsonPropertyName("low")]
+	public decimal Low { get; set; }
 
 	/// <summary>ATM구분</summary>
-	public string atmgubun { get; set; } = string.Empty;
+	[JsonPropertyName("atmgubun")]
+	public string Atmgubun { get; set; } = string.Empty;
 
 	/// <summary>지수환산</summary>
-	public decimal jisuconv { get; set; }
+	[JsonPropertyName("jisuconv")]
+	public decimal Jisuconv { get; set; }
 
 	/// <summary>거래대금</summary>
-	public decimal value { get; set; }
+	[JsonPropertyName("value")]
+	public decimal Value { get; set; }
 }
