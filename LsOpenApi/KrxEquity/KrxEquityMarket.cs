@@ -86,29 +86,29 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	{
 		try
 		{
-			var response = await RequestStandardAsync<t3102>(LsEndpoint.EquityInfo.ToDescription(), new
+			var response = await RequestStandardAsync<T3102>(LsEndpoint.EquityInfo.ToDescription(), new
 			{
-				t3102InBlock = new t3102InBlock
+				t3102InBlock = new T3102InBlock
 				{
-					sNewsno = id
+					SNewsno = id
 				}
 			});
 
-			if (!response.t3102OutBlock1.Any()) return ReturnResult<News>(new() 
+			if (response.T3102OutBlock1.Count == 0) return ReturnResult<News>(new() 
 			{ 
-				Code = nameof(t3102), 
+				Code = nameof(T3102), 
 				Title = string.Empty 
-			}, nameof(t3102), response.Message);
+			}, nameof(T3102), response.Message);
 
-			var htmlString = string.Join("", response.t3102OutBlock1.Select(s => s.sBody)).Replace("t3102OutBlock1", "");
+			var htmlString = string.Join("", response.T3102OutBlock1.Select(s => s.SBody)).Replace("t3102OutBlock1", "");
 
 			return ReturnResult(new News
 			{
 				Code = id,
-				Title = response.t3102OutBlock2.sTitle,
+				Title = response.T3102OutBlock2.STitle,
 				Body = htmlString,
-				SymbolList = response.t3102OutBlock.Select(s => s.sJongcode).ToArray()
-			}, nameof(t3102));
+				SymbolList = [.. response.T3102OutBlock.Select(s => s.SJongcode)]
+			}, nameof(T3102));
 		}
 		catch (Exception ex)
 		{
