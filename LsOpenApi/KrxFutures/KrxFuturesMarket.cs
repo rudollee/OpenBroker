@@ -500,12 +500,12 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	{
 		try
 		{
-			var response = await RequestStandardAsync<t8401>(LsEndpoint.FuturesMarketData.ToDescription(), new
+			var response = await RequestStandardAsync<T8401>(LsEndpoint.FuturesMarketData.ToDescription(), new
 			{
-				t8401InBlock = new t8401InBlock { }
+				t8401InBlock = new T8401InBlock { }
 			});
 
-			if (response.t8401OutBlock.Count == 0) return new ResponseDictionary<string, Instrument>
+			if (response.T8401OutBlock.Count == 0) return new ResponseDictionary<string, Instrument>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = "no data",
@@ -527,16 +527,16 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			} while (!string.IsNullOrEmpty(nextKey));
 
 			Instruments.Clear();
-			response.t8401OutBlock.ForEach(instrument =>
+			response.T8401OutBlock.ForEach(instrument =>
 			{
-				var id = instrument.shcode.ToKrxProductCode();
+				var id = instrument.ShCode.ToKrxProductCode();
 				var marginInfo = margins.FirstOrDefault(f => $"{f.IsuSmclssCode[1..]}" == id);
-				Instruments.Add(instrument.shcode, new Instrument
+				Instruments.Add(instrument.ShCode, new Instrument
 				{
-					Symbol = instrument.shcode,
+					Symbol = instrument.ShCode,
 					Product = id,
-					InstrumentName = instrument.hname,
-					SymbolUnderlying = instrument.basecode[1..],
+					InstrumentName = instrument.HName,
+					SymbolUnderlying = instrument.BaseCode[1..],
 					Margin = marginInfo is null ? 0 : marginInfo.OnePrcntrOrdMgn * 0.1m,
 					MarginRate = marginInfo is null ? 0.00m : marginInfo.CsgnMgnrt * 0.01m,
 				});
