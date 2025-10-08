@@ -119,34 +119,34 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	{
 		try
 		{
-			var response = await RequestStandardAsync<t8402>(LsEndpoint.FuturesMarketData.ToDescription(), new
+			var response = await RequestStandardAsync<T8402>(LsEndpoint.FuturesMarketData.ToDescription(), new
 			{
-				t8402InBlock = new t8402InBlock { focode = symbol }
+				t8402InBlock = new T8402InBlock { FoCode = symbol }
 			});
 
-			if (response is null || response.t8402OutBlock is null) return ReturnErrorResult<MarketExecution>(symbol, response?.Message ?? "no data");
+			if (response is null || response.T8402OutBlock is null) return ReturnErrorResult<MarketExecution>(symbol, response?.Message ?? "no data");
 
 			var quote = new MarketExecution
 			{
 				TimeExecuted = DateTime.Now,
-				C = response.t8402OutBlock.price,
+				C = response.T8402OutBlock.Price,
 				QuoteDaily = new Quote
 				{
-					O = response.t8402OutBlock.open,
-					H = response.t8402OutBlock.high,
-					L = response.t8402OutBlock.low,
-					V = response.t8402OutBlock.volume,
-					BasePrice = response.t8402OutBlock.jnilclose,
-					Turnover = response.t8402OutBlock.value,
+					O = response.T8402OutBlock.Open,
+					H = response.T8402OutBlock.High,
+					L = response.T8402OutBlock.Low,
+					V = response.T8402OutBlock.Volume,
+					BasePrice = response.T8402OutBlock.JnilClose,
+					Turnover = response.T8402OutBlock.Value,
 				},
-				BasePrice = response.t8402OutBlock.jnilclose,
+				BasePrice = response.T8402OutBlock.JnilClose,
 			};
 
 			var result = ReturnResult(quote);
 			result.ExtraData = new()
 			{
-				{ "OI", response.t8402OutBlock.mgjv }, // open interest
-				{ "UNDERLYINGPRICE", response.t8402OutBlock.baseprice }, // Underlying Asset Price
+				{ "OI", response.T8402OutBlock.Mgjv }, // open interest
+				{ "UNDERLYINGPRICE", response.T8402OutBlock.BasePrice }, // Underlying Asset Price
 			};
 
 			return result;
