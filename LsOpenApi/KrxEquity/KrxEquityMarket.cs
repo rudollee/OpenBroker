@@ -435,44 +435,44 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	{
 		try
 		{
-			var response = await RequestStandardAsync<t8407>(LsEndpoint.EquityMarketData.ToDescription(), new
+			var response = await RequestStandardAsync<T8407>(LsEndpoint.EquityMarketData.ToDescription(), new
 			{
-				t8407InBlock = new t8407InBlock
+				t8407InBlock = new T8407InBlock
 				{
-					nrec = symbols.Count(),
-					shcode = string.Join("", symbols.Take(50))
+					Nrec = symbols.Count(),
+					Shcode = string.Join("", symbols.Take(50))
 				}
 			});
 
-			if (response.t8407OutBlock1.Count == 0) return ReturnResults<MarketExecution>([], nameof(t8407), response.Message);
+			if (response.T8407OutBlock1.Count == 0) return ReturnResults<MarketExecution>([], nameof(T8407), response.Message);
 
 			var executions = new List<MarketExecution>();
-			response.t8407OutBlock1.ForEach(f =>
+			response.T8407OutBlock1.ForEach(f =>
 			{
 				executions.Add(new MarketExecution
 				{
 					TimeExecuted = DateTime.Now,
-					Symbol = f.shcode,
-					C = f.price,
-					BasePrice = f.jnilclose,
+					Symbol = f.Shcode,
+					C = f.Price,
+					BasePrice = f.Jnilclose,
 					QuoteDaily = new Quote
 					{
-						C = f.price,
-						O = f.open,
-						H = f.high,
-						L = f.low,
-						V = f.volume,
-						Turnover = f.value
+						C = f.Price,
+						O = f.Open,
+						H = f.High,
+						L = f.Low,
+						V = f.Volume,
+						Turnover = f.Value
 					},
-					VolumeExecuted = f.cvolume,
+					VolumeExecuted = f.Cvolume,
 				});
 			});
 
-			return ReturnResults(executions, nameof(t8407));
+			return ReturnResults(executions, nameof(T8407));
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<MarketExecution>(nameof(t8407), ex.Message);
+			return ReturnErrorResults<MarketExecution>(nameof(T8407), ex.Message);
 		}
 	}
 	#endregion
