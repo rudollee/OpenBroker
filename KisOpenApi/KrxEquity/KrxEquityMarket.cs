@@ -103,17 +103,21 @@ public partial class KisKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		response.Output2.ForEach(f =>
 		{
 			var close = Convert.ToDecimal(f.stck_clpr);
-			quotes.Add(new Quote
+			var datetime = f.stck_bsop_date.ToDateTime();
+			if (datetime >= request.DateTimeBegin && datetime <= request.DateTimeEnd )
 			{
-				T = f.stck_bsop_date.ToDateTime(),
-				C = close,
-				H = Convert.ToDecimal(f.stck_hgpr),
-				L = Convert.ToDecimal(f.stck_lwpr),
-				O = Convert.ToDecimal(f.stck_oprc),
-				V = Convert.ToDecimal(f.acml_vol),
-				BasePrice = close - Convert.ToDecimal(f.prdy_vrss),
-				Turnover = Convert.ToDecimal(f.acml_tr_pbmn) / 1_000_000,
-			});
+				quotes.Add(new Quote
+				{
+					T = f.stck_bsop_date.ToDateTime(),
+					C = close,
+					H = Convert.ToDecimal(f.stck_hgpr),
+					L = Convert.ToDecimal(f.stck_lwpr),
+					O = Convert.ToDecimal(f.stck_oprc),
+					V = Convert.ToDecimal(f.acml_vol),
+					BasePrice = close - Convert.ToDecimal(f.prdy_vrss),
+					Turnover = Convert.ToDecimal(f.acml_tr_pbmn) / 1_000_000,
+				});
+			}
 		});
 
 		return new ResponseResult<QuotePack<T>>
