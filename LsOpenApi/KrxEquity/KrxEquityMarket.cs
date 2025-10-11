@@ -27,9 +27,9 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	public EventHandler<ResponseResult<News>>? NewsPosted { get; set; }
 	public EventHandler<ResponseResult<MarketPause>>? MarketPaused { get; set; }
 
-	public Dictionary<string, Equity> Equities { get; set; } = new();
+	public Dictionary<string, Equity> Equities { get; set; } = [];
 
-	public Dictionary<string, Instrument> Instruments { get; set; } = new();
+	public Dictionary<string, Instrument> Instruments { get; set; } = [];
 
 	public Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol) => throw new NotImplementedException();
 
@@ -54,8 +54,8 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 	public async Task<ResponseCore> SubscribeMarketDepth(string symbol, bool connecting = true, string subscriber = "")
 	{
-		var isUnified = symbol.StartsWith("U");
-		if (isUnified) symbol = symbol.Substring(1);
+		var isUnified = symbol.StartsWith('U');
+		if (isUnified) symbol = symbol[1..];
 
 		if (!Equities.ContainsKey(symbol)) return new ResponseCore
 		{
@@ -657,7 +657,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 		if (typeof(T) != typeof(Quote)) return ReturnErrorResult<QuotePack<T>>(nameof(t8411), "Invalid type parameter for RequestPricePackTick", "type mismatch");
 
-		if (response.t8411OutBlock1.Count == 0) return ReturnResult<QuotePack<T>>(new() { PrimaryList = [] }, nameof(t8410), response.Message);
+		if (response.t8411OutBlock1.Count == 0) return ReturnResult<QuotePack<T>>(new() { PrimaryList = [] }, nameof(T8410), response.Message);
 
 		var priceInfo = new QuoteRate
 		{
@@ -758,39 +758,39 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	private async Task<ResponseResult<QuotePack<T>>> RequestPricePackX<T>(QuoteRequest request) where T : Quote
 	{
 		List<Quote> quotes = [];
-		List<t8410OutBlock1> list = [];
+		List<T8410OutBlock1> list = [];
 		var nextKey = string.Empty;
 		var ctsDate = string.Empty;
 		do
 		{
-			var response = await RequestContinuousAsync<t8410>(LsEndpoint.EquityChart.ToDescription(), new
+			var response = await RequestContinuousAsync<T8410>(LsEndpoint.EquityChart.ToDescription(), new
 			{
-				t8410InBlock = new t8410InBlock
+				t8410InBlock = new T8410InBlock
 				{
-					shcode = request.Symbol,
-					gubun = request.TimeIntervalUnit switch
+					Shcode = request.Symbol,
+					Gubun = request.TimeIntervalUnit switch
 					{
 						IntervalUnit.Day => "2",
 						IntervalUnit.Week => "3",
 						IntervalUnit.Month => "4",
 						_ => "5"
 					},
-					qrycnt = 500,
-					sdate = request.DateTimeBegin.ToString("yyyyMMdd"),
-					edate = request.DateTimeEnd.ToString("yyyyMMdd"),
-					cts_date = ctsDate,
+					Qrycnt = 500,
+					Sdate = request.DateTimeBegin.ToString("yyyyMMdd"),
+					Edate = request.DateTimeEnd.ToString("yyyyMMdd"),
+					CtsDate = ctsDate,
 				}
 			}, nextKey);
 
-			if (response.t8410OutBlock1.Count == 0)
+			if (response.T8410OutBlock1.Count == 0)
 			{
 				nextKey = string.Empty;
 				break;
 			}
 
-			list.InsertRange(0, response.t8410OutBlock1);
+			list.InsertRange(0, response.T8410OutBlock1);
 			nextKey = response.NextKey;
-			ctsDate = response.t8410OutBlock.cts_date;
+			ctsDate = response.T8410OutBlock.CtsDate;
 		} while (!string.IsNullOrEmpty(nextKey));
 
 		quotes.Capacity = list.Count;
@@ -798,12 +798,12 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		{
 			quotes.Add(new Quote
 			{
-				T = $"{f.date}".ToDateTime(),
-				O = f.open,
-				H = f.high,
-				L = f.low,
-				C = f.close,
-				V = f.jdiff_vol,
+				T = $"{f.Date}".ToDateTime(),
+				O = f.Open,
+				H = f.High,
+				L = f.Low,
+				C = f.Close,
+				V = f.JdiffVol,
 			});
 		});
 
