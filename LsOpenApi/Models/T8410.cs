@@ -25,11 +25,11 @@ internal class T8410InBlock
 
 	/// <summary>주기구분(2:일3:주4:월5:년)</summary>
 	[JsonPropertyName("gubun")]
-	public string Gubun { get; set; } = string.Empty;
+	public string Gubun { get; set; } = "2";
 
 	/// <summary>요청건수(최대-압축:2000비압축:500)</summary>
 	[JsonPropertyName("qrycnt")]
-	public long Qrycnt { get; set; }
+	public long Qrycnt { get; set; } = 500;
 
 	/// <summary>시작일자</summary>
 	[JsonPropertyName("sdate")]
@@ -45,11 +45,11 @@ internal class T8410InBlock
 
 	/// <summary>압축여부(Y:압축N:비압축)</summary>
 	[JsonPropertyName("comp_yn")]
-	public string CompYn { get; set; } = string.Empty;
+	public string CompYn { get; set; } = "N";
 
 	/// <summary>수정주가여부(Y:적용N:비적용)</summary>
 	[JsonPropertyName("sujung")]
-	public string Sujung { get; set; } = string.Empty;
+	public string Sujung { get; set; } = "N";
 }
 
 /// <summary>
