@@ -103,19 +103,13 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<Execution>
-			{
-				StatusCode = Status.INTERNALSERVERERROR,
-				Message = ex.Message,
-				List = [],
-			};
+			return ReturnErrorResults<Execution>(nameof(CFOAQ00600), ex.Message);
 		}
 
 		if (dateBegun.Date != dateFin.Date) return new ResponseResults<Execution> { List = executions };
 
 		try
 		{
-
 			var response = await RequestStandardAsync<CFOEQ82600>(LsEndpoint.FuturesAccount.ToDescription(), new
 			{
 				CFOEQ82600InBlock1 = new CFOEQ82600InBlock1
@@ -125,27 +119,27 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 				}
 			});
 
-			if (response is null || response.CFOEQ82600OutBlock3.Count == 0) return new ResponseResults<Execution>
+			if (response is null || response.CFOEQ82600OutBlock2 is null) return new()
 			{
 				StatusCode = Status.PARTIALLY_SUCCESS,
-				Message = response?.Message ?? "response or CFOEQ82600OutBlock3 is null",
+				Message = response?.Message ?? "response or CFOEQ82600OutBlock2 is null",
 				List = executions,
 			};
 
-			return new ResponseResults<Execution>
+			return new()
 			{
 				StatusCode = Status.SUCCESS,
 				Message = response.Message,
 				List = executions,
 				ExtraData = new Dictionary<string, decimal>
 				{
-					{ "COMMISSION", response.CFOEQ82600OutBlock3.First().CmsnAmt },
+					{ "COMMISSION", response.CFOEQ82600OutBlock2.FnoCmsnAmt },
 				}
 			};
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<Execution>
+			return new()
 			{
 				StatusCode = Status.PARTIALLY_SUCCESS,
 				Message = ex.Message,
