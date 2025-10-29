@@ -193,22 +193,22 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<C01OutBlock>>(message);
 			if (response is null || response.Body is null) return false;
 
-			Int64.TryParse(response.Body.ordordno, out long idOrigin);
+			Int64.TryParse(response.Body.Ordordno, out long idOrigin);
 			Executed(this, new ResponseResult<Execution>
 			{
 				Typ = MessageType.EXECUTION,
 				Code = $"{nameof(C01)}:{response.Header.TrCode}",
 				Info = new Execution
 				{
-					TimeExecuted = $"{response.Body.chedate}{response.Body.chetime}".ToDateTimeM(),
-					OID = Convert.ToInt64(response.Body.ordno),
+					TimeExecuted = $"{response.Body.CheDate}{response.Body.CheTime}".ToDateTimeM(),
+					OID = Convert.ToInt64(response.Body.Ordno),
 					IdOrigin = idOrigin,
-					CID = Convert.ToInt64(response.Body.yakseq),
-					Symbol = response.Body.expcode.Substring(3, 8),
-					Price = Convert.ToDecimal(response.Body.cheprice),
-					Volume = Convert.ToDecimal(response.Body.chevol),
-					DateBiz = response.Body.chedate.ToDate(),
-					IsLong = response.Body.dosugb == "2",
+					CID = Convert.ToInt64(response.Body.Yakseq),
+					Symbol = response.Body.Expcode.Substring(3, 8),
+					Price = Convert.ToDecimal(response.Body.ChePrice),
+					Volume = Convert.ToDecimal(response.Body.CheVol),
+					DateBiz = response.Body.CheDate.ToDate(),
+					IsLong = response.Body.DosuGb == "2",
 				},
 				Remark = message,
 				Broker = Brkr.LS,
