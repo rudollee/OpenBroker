@@ -355,12 +355,25 @@ public enum MessageType
 
 public enum IntervalUnit
 {
-    Tick = 11,
+    [Description("T")]
+	Tick = 11,
+
+    [Description("S")]
 	Second = 21,
+
+    [Description("M")]
 	Minute = 22,
+
+    [Description("H")]
 	Hour = 23,
+
+    [Description("D")]
 	Day = 31,
+
+    [Description("W")]
 	Week = 32,
+
+    [Description("MM")]
 	Month = 33,
 }
 
