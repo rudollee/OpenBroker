@@ -23,9 +23,9 @@ public class InstrumentCore
     public string Symbol { get; set; } = string.Empty;
 
     /// <summary>
-    /// Asset/Product Code (part of Symbol)
+    /// Asset/Instrument Code (part of Symbol)
     /// </summary>
-    public string Product { get; set; } = string.Empty;
+    public string Inst { get; set; } = string.Empty;
 
     /// <summary>
     /// Expiration Code (part of Symbol)

@@ -38,7 +38,7 @@ public partial class KisGlobalFutures : ConnectionBase, IMarket
 			{
 				ExchangeCode = (Exchange)Enum.Parse(typeof(Exchange), response.Output1.exch_cd),
 				Symbol = symbol,
-				Product = symbol.ToCmeProductCode(),
+				Inst = symbol.ToCmeProductCode(),
 				Margin = Convert.ToDecimal(response.Output1.trst_mgn),
 				Tick = Convert.ToDecimal(response.Output1.tick_sz),
 				TickValue = Convert.ToDecimal(response.Output1.tick_val),
@@ -128,7 +128,7 @@ public partial class KisGlobalFutures : ConnectionBase, IMarket
 			var instrument = new Instrument
 			{
 				Symbol = symbol,
-				Product = line.Substring(line.Length - 81, 10).Trim(),
+				Inst = line.Substring(line.Length - 81, 10).Trim(),
 				Expiry = symbol.Substring(symbol.Length - 3),
 				InstrumentName = endIndex > 0 ? instrumentName.Substring(0, endIndex) : instrumentName,
 				Tick = Convert.ToDecimal(line.Substring(line.Length - 58, 14).Trim()),
@@ -142,7 +142,7 @@ public partial class KisGlobalFutures : ConnectionBase, IMarket
 				DiscardStatus = DiscardStatus.TRADABLE
 			};
 
-			Instruments.Add(instrument.Product, instrument);
+			Instruments.Add(instrument.Inst, instrument);
 		}
 
 		return new ResponseDictionary<string, Instrument>

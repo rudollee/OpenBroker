@@ -534,7 +534,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				Instruments.Add(instrument.ShCode, new Instrument
 				{
 					Symbol = instrument.ShCode,
-					Product = id,
+					Inst = id,
 					InstrumentName = instrument.HName,
 					SymbolUnderlying = instrument.BaseCode[1..],
 					Margin = marginInfo is null ? 0 : marginInfo.OnePrcntrOrdMgn * 0.1m,
@@ -588,7 +588,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			{
 				Currency = Currency.KRW,
 				Symbol = option.OptCode,
-				Product = option.OptCode.ToKrxProductCode(),
+				Inst = option.OptCode.ToKrxProductCode(),
 				InstrumentType = InstrumentType.Call,
 				Strike = Math.Floor(option.ActPrice).ToString(),
 				QuoteInfo = new()
@@ -617,7 +617,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			{
 				Currency = Currency.KRW,
 				Symbol = option.OptCode,
-				Product = option.OptCode.ToKrxProductCode(),
+				Inst = option.OptCode.ToKrxProductCode(),
 				InstrumentType = InstrumentType.Put,
 				Strike = Math.Floor(option.ActPrice).ToString(),
 				QuoteInfo = new()
