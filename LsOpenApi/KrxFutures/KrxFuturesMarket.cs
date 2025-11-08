@@ -529,7 +529,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			Instruments.Clear();
 			response.T8401OutBlock.ForEach(instrument =>
 			{
-				var id = instrument.ShCode.ToKrxProductCode();
+				var id = instrument.ShCode.ToKrxInstrumentCode();
 				var marginInfo = margins.FirstOrDefault(f => $"{f.IsuSmclssCode[1..]}" == id);
 				Instruments.Add(instrument.ShCode, new Instrument
 				{
@@ -588,7 +588,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			{
 				Currency = Currency.KRW,
 				Symbol = option.OptCode,
-				Inst = option.OptCode.ToKrxProductCode(),
+				Inst = option.OptCode.ToKrxInstrumentCode(),
 				InstrumentType = InstrumentType.Call,
 				Strike = Math.Floor(option.ActPrice).ToString(),
 				QuoteInfo = new()
@@ -617,7 +617,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			{
 				Currency = Currency.KRW,
 				Symbol = option.OptCode,
-				Inst = option.OptCode.ToKrxProductCode(),
+				Inst = option.OptCode.ToKrxInstrumentCode(),
 				InstrumentType = InstrumentType.Put,
 				Strike = Math.Floor(option.ActPrice).ToString(),
 				QuoteInfo = new()

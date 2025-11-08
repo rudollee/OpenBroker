@@ -2,7 +2,7 @@
 
 public static class KrxExtension
 {
-	public static string ToKrxProductCode(this string symbol) => symbol.Length switch
+	public static string ToKrxInstrumentCode(this string symbol) => symbol.Length switch
 	{
 		> 4 => symbol.Substring(1, 2),
 		_ => string.Empty,
@@ -38,7 +38,7 @@ public static class KrxExtension
 		var di = 1 / uptick;
 		decimal normalizedPrice = Math.Ceiling(price * di) / di;
 
-		return normalizedPrice += needsOnlyNormalizing ? 0 : uptick;
+		return normalizedPrice + (needsOnlyNormalizing ? 0 : uptick);
 	}
 
 	public static decimal ToDownTickPrice(this decimal price, bool needsOnlyNormalizing = false)
@@ -47,7 +47,7 @@ public static class KrxExtension
 		var di = 1 / downtick;
 		decimal normalizedPrice = Math.Floor(price * di) / di;
 
-		return normalizedPrice -= needsOnlyNormalizing ? 0 : downtick;
+		return normalizedPrice - (needsOnlyNormalizing ? 0 : downtick);
 	}
 
 	public static DateOnly ToKrxExpiry(this DateOnly date, bool quarterly = false)
@@ -65,7 +65,7 @@ public static class KrxExtension
 		return dateFin.AddMonths(date > dateFin ? 1 : 0);
 	}
 
-	public static DateOnly ToKrxExpiry(this string expiryCode, int cycle = 0, bool quarterly = false)
+	public static DateOnly ToKrxExpiry(this string expiryCode, int cycle = 0)
 	{
 		int getYear(string yearString)
 		{
@@ -88,15 +88,15 @@ public static class KrxExtension
 			return 1996 + seq - cycle * 30; ;
 		}
 
-		int month = expiryCode.Substring(1) switch
+		int month = expiryCode[1..] switch
 		{
 			"A" => 10,
 			"B" => 11,
 			"C" => 12,
-			_ => int.Parse(expiryCode.Substring(1))
+			_ => int.Parse(expiryCode[1..])
 		};
 
-		return DateOnly.ParseExact($"{getYear(expiryCode.Substring(0, 1))}{month.ToString().PadLeft(2, '0')}01", "yyyyMMdd");
+		return DateOnly.ParseExact($"{getYear(expiryCode[..1])}{month.ToString().PadLeft(2, '0')}01", "yyyyMMdd");
 	}
 
 	public static string ToKrxExpiryCode(this DateOnly date, bool quarterly = false)
