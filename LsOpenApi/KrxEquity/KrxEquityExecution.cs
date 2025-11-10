@@ -390,7 +390,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 				}
 			});
 
-			return ReturnResults<Order>(orders, $"{nameof(CSPAQ13700)}.{response.Code}");
+			return ReturnResults(orders, $"{nameof(CSPAQ13700)}.{response.Code}");
 		}
 		catch (Exception ex)
 		{

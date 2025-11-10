@@ -570,7 +570,7 @@ public class ConnectionBase
 		Remark = remark
 	});
 
-	protected ResponseCore ReturnError(string code, string message, string remark = "") => new() 
+	protected static ResponseCore ReturnError(string code, string message, string remark = "") => new() 
 	{
 		Broker = Brkr.LS,
 		Typ = MessageType.SYSERR,
@@ -580,7 +580,7 @@ public class ConnectionBase
 		Remark = remark
 	};
 
-	protected ResponseCore ReturnCore(string code = "", string message = "", MessageType typ = MessageType.SYS, string remark = "") => new()
+	protected static ResponseCore ReturnCore(string code = "", string message = "", MessageType typ = MessageType.SYS, string remark = "") => new()
 	{
 		Broker = Brkr.LS,
 		Typ = typ,
@@ -589,7 +589,7 @@ public class ConnectionBase
 		Remark = remark
 	};
 
-	protected ResponseResult<T> ReturnErrorResult<T>(string code, string meesage, string remark = "") where T : class => new()
+	protected static ResponseResult<T> ReturnErrorResult<T>(string code, string meesage, string remark = "") where T : class => new()
 	{
 		Broker = Brkr.LS,
 		Typ = MessageType.SYSERR,
@@ -599,7 +599,7 @@ public class ConnectionBase
 		Remark = remark
 	};
 
-	protected ResponseResult<T> ReturnResult<T>(T info, string code = "", string message = "", MessageType typ = MessageType.SYS, string remark = "") where T : class => new()
+	protected static ResponseResult<T> ReturnResult<T>(T info, string code = "", string message = "", MessageType typ = MessageType.SYS, string remark = "") where T : class => new()
 	{
 		Broker = Brkr.LS,
 		StatusCode = info is null ? Status.NODATA : Status.SUCCESS,
@@ -610,10 +610,10 @@ public class ConnectionBase
 		Remark = remark
 	};
 
-	protected ResponseResults<T> ReturnErrorResults<T>(string code = "", string message = "", string remark = "") where T : class => new()
+	protected static ResponseResults<T> ReturnErrorResults<T>(string code = "", string message = "", string remark = "", Status statusCode = Status.ERROR_OPEN_API) where T : class => new()
 	{
 		Broker = Brkr.LS,
-		StatusCode = Status.ERROR_OPEN_API,
+		StatusCode = statusCode,
 		Typ = MessageType.SYSERR,
 		Code = code,
 		Message = message,
@@ -621,7 +621,7 @@ public class ConnectionBase
 		List = []
 	};
 
-	protected ResponseResults<T> ReturnResults<T>(List<T> list, string code = "", string message = "", MessageType typ = MessageType.SYS, string remark = "") where T : class => new()
+	protected static ResponseResults<T> ReturnResults<T>(List<T> list, string code = "", string message = "", MessageType typ = MessageType.SYS, string remark = "") where T : class => new()
 	{
 		Broker = Brkr.LS,
 		StatusCode = list.Count >0 ? Status.SUCCESS : Status.NODATA,

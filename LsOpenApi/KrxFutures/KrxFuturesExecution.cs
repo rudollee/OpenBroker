@@ -280,48 +280,34 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 	}
 	#endregion
 
-	#region request positions - CFOAQ50600
+	#region request positions - t0441
 	public async Task<ResponseResults<Position>> RequestPositionsAsync()
 	{
-		List<Position> positions = new();
+		List<Position> positions = [];
 		try
 		{
-			var response = await RequestStandardAsync<CFOAQ50600>(LsEndpoint.FuturesAccount.ToDescription(), new
+			var response = await RequestStandardAsync<T0441>(LsEndpoint.FuturesAccount.ToDescription(), new
 			{
-				CFOAQ50600InBlock1 = new CFOAQ50600InBlock1() 
+				t0441InBlock = new T0441InBlock() 
 			});
 
-			if (response is null) return new ResponseResults<Position>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = "response or CFOAQ50600OutBlock3 is null",
-				List = positions,
-			};
+			if (response is null) return ReturnErrorResults<Position>(message: "t0441 or t0441OutBlock1 is null");
 
-			positions.Capacity = response.CFOAQ50600OutBlock3.Count;
-
-			response.CFOAQ50600OutBlock3.ForEach(f => positions.Add(new Position
+			positions.Capacity = response.T0441OutBlock1.Count;
+			response.T0441OutBlock1.ForEach(f => positions.Add(new Position
 			{
-				Symbol = f.FnoIsuNo,
-				InstrumentName = f.IsuNm,
-				PriceEntry = f.FnoAvrPrc,
-				Price = f.FnoNowPrc,
-				Volume = f.UnsttQty,
+				Symbol = f.Expcode,
+				IsLong = f.Medocd == "2",
+				PriceEntry = f.Pamt,
+				Price = f.Price,
+				Volume = f.Jqty,
 			}));
 
-			return new ResponseResults<Position> { List = positions, ExtraData = new Dictionary<string, decimal>
-			{
-				{ "COMMISSION", response.CFOAQ50600OutBlock2.CmsnAmt }
-			}};
+			return ReturnResults(positions);
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<Position>
-			{
-				StatusCode = Status.INTERNALSERVERERROR,
-				Message = ex.Message,
-				List = positions,
-			};
+			return ReturnErrorResults<Position>(nameof(T0441), ex.Message, string.Empty, Status.INTERNALSERVERERROR);
 		}
 	}
 	#endregion
