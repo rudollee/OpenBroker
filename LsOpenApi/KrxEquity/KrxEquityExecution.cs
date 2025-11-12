@@ -366,7 +366,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 					{
 						BrokerCo = "LS",
 						DateBiz = order.OrdDt.ToDate(),
-						TimeOrdered = order.OrdTime.ToDateTimeM(),
+						TimeOrdered = (order.OrdDt + order.OrdTime).ToDateTimeM(),
 						Symbol = order.IsuNo[1..],
 						InstrumentName = order.IsuNm,
 						OID = order.OrdNo,
