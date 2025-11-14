@@ -510,10 +510,10 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 				isLong = execution.Medosu == "매수";
 				channel = execution.Middiv switch
 				{
+					"OPEN API" => OrderChannel.API,
 					"투혼(HTS)" => OrderChannel.HTS,
 					"투혼(MTS)" => OrderChannel.MTS,
-					"OPEN API" => OrderChannel.API,
-					_ => OrderChannel.ETC
+					var m => m.Contains("MTS") ? OrderChannel.MTS : OrderChannel.ETC
 				};
 			}
 		}
