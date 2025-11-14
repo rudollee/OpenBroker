@@ -82,11 +82,12 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 					Volume = execution.ExecQty,
 					PriceOrdered = execution.OrdPrc,
 					Price = execution.ExecPrc,
-					Precision = !new string[] { "1", "A" }.Contains(execution.FnoIsuNo.Substring(0, 1)) ? 2 : execution.FnoIsuNo.Substring(1, 2) switch 
+					Precision = !new string[] { "1", "A" }.Contains(execution.FnoIsuNo[..1]) ? 2 : execution.FnoIsuNo.Substring(1, 2) switch 
 					{
 						"01" => 2,
 						"05" => 2,
 						"07" => 2,
+						"75" => 2,
 						_ => 0
 					},
 					TimeOrdered = $"{execution.OrdDt}{execution.OrdTime}".ToDateTimeM(),
