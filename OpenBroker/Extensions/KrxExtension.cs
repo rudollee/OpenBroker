@@ -1,4 +1,6 @@
-﻿namespace OpenBroker.Extensions;
+﻿using OpenBroker.Models;
+
+namespace OpenBroker.Extensions;
 
 public static class KrxExtension
 {
@@ -107,7 +109,7 @@ public static class KrxExtension
 
 		var expiry = date.ToKrxExpiry(quarterly);
 		var monthCode = expiry.Month.ToString().Replace("10", "A").Replace("11", "B").Replace("12", "C");
-		return $"{expiry.Year.ToYearCode(cycle)}{monthCode}";
+		return $"{expiry.Year.ToKrxYearCode(cycle)}{monthCode}";
 	}
 
 	public static string ToKrxExpiryCode(this DateOnly date, string instrumentCode)
@@ -120,10 +122,10 @@ public static class KrxExtension
 
 		var expiry = date.ToKrxExpiry(instrumentCode);
 		var monthCode = expiry.Month.ToString().Replace("10", "A").Replace("11", "B").Replace("12", "C");
-		return $"{expiry.Year.ToYearCode(cycle)}{monthCode}";
+		return $"{expiry.Year.ToKrxYearCode(cycle)}{monthCode}";
 	}
 
-	public static string ToYearCode(this int year, int cycle)
+	public static string ToKrxYearCode(this int year, int cycle)
 	{
 		int seq = ((year - 1996 - cycle * 30) % 30);
 
@@ -139,5 +141,20 @@ public static class KrxExtension
 		};
 
 		return c.ToString();
+	}
+
+	public static string ToKrxInstrumentTypeCode(this DateOnly date, string instrumentCode = "01", InstrumentType typ = InstrumentType.Futures)
+	{
+		var maxDay = instrumentCode.Equals("01") ? 11 : 15;
+		int maxValue = new DateOnly(2025, 12, maxDay).DayNumber;
+		int cycle = date.DayNumber > maxValue ? 1 : 0;
+		return typ switch
+		{
+			InstrumentType.Futures => cycle == 1 ? "A" : "1",
+			InstrumentType.Call => cycle == 1 ? "B" : "2",
+			InstrumentType.Put => cycle == 1 ? "C" : "3",
+			InstrumentType.FuturesSpread => cycle == 1 ? "D" : "4",
+			_ => string.Empty
+		};
 	}
 }
