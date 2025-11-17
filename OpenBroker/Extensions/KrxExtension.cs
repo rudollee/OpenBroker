@@ -112,6 +112,9 @@ public static class KrxExtension
 		return $"{expiry.Year.ToKrxYearCode(cycle)}{monthCode}";
 	}
 
+	public static string ToKrxExpiryCode(this DateTime dateTime, bool quarterly = false) =>
+		DateOnly.FromDateTime(dateTime).ToKrxExpiryCode(quarterly);
+
 	public static string ToKrxExpiryCode(this DateOnly date, string instrumentCode)
 	{
 		if (instrumentCode != "75") return date.ToKrxExpiryCode();
@@ -124,6 +127,9 @@ public static class KrxExtension
 		var monthCode = expiry.Month.ToString().Replace("10", "A").Replace("11", "B").Replace("12", "C");
 		return $"{expiry.Year.ToKrxYearCode(cycle)}{monthCode}";
 	}
+
+	public static string ToKrxExpiryCode(this DateTime dateTime, string instrumentCode) =>
+		DateOnly.FromDateTime(dateTime).ToKrxExpiryCode(instrumentCode);
 
 	public static string ToKrxYearCode(this int year, int cycle)
 	{
