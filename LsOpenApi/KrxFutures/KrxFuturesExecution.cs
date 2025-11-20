@@ -40,7 +40,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 					}
 				}, nextKey);
 
-				if (response is null || !response.CFOAQ00600OutBlock3.Any())
+				if (response is null || response.CFOAQ00600OutBlock3.Count == 0)
 				{
 					nextKey = string.Empty;
 					break;
@@ -50,6 +50,12 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 				nextKey = response.NextKey;
 			} while (!string.IsNullOrEmpty(nextKey));
 
+			if (executionsRaw.Count == 0)
+			{
+				var periodTxt = dateBegun == dateFin ? $"on {dateBegun:yyyy-MM-dd}" : $"between {dateBegun:yyyy-MM-dd} and {dateFin:yyyy-MM-dd}";
+				return ReturnErrorResults<Execution>(nameof(CFOAQ00600), $"No trading data found {periodTxt}", "", Status.NODATA);
+			}
+
 			Execution previousExecution = new();
 			executions.Capacity = executionsRaw.Count;
 			foreach (var execution in executionsRaw)
@@ -57,7 +63,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 				if (execution.OrdNo == 0)
 				{
 					var executionFromPrevious = (Execution)previousExecution.Clone();
-					executionFromPrevious.TimeExecuted = $"{executionFromPrevious.TimeExecuted.ToString("yyyyMMdd")}{execution.CtrctTime}".ToDateTimeM();
+					executionFromPrevious.TimeExecuted = $"{executionFromPrevious.TimeExecuted:yyyyMMdd}{execution.CtrctTime}".ToDateTimeM();
 					executionFromPrevious.CID = execution.CtrctNo;
 					executionFromPrevious.Volume = execution.ExecQty;
 					executionFromPrevious.Price = execution.ExecPrc;
@@ -120,23 +126,18 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 				}
 			});
 
-			if (response is null || response.CFOEQ82600OutBlock2 is null) return new()
+			if (response is null || response.CFOEQ82600OutBlock2 is null)
 			{
-				StatusCode = Status.PARTIALLY_SUCCESS,
-				Message = response?.Message ?? "response or CFOEQ82600OutBlock2 is null",
-				List = executions,
+				return ReturnErrorResults<Execution>(nameof(CFOEQ82600), "response or CFOEQ82600OutBlock2 is null");
+			}
+
+			var results = ReturnResults(executions);
+			results.ExtraData = new Dictionary<string, decimal>
+			{
+				{ "COMMISSION", response.CFOEQ82600OutBlock2.FnoCmsnAmt },
 			};
 
-			return new()
-			{
-				StatusCode = Status.SUCCESS,
-				Message = response.Message,
-				List = executions,
-				ExtraData = new Dictionary<string, decimal>
-				{
-					{ "COMMISSION", response.CFOEQ82600OutBlock2.FnoCmsnAmt },
-				}
-			};
+			return results;
 		}
 		catch (Exception ex)
 		{
@@ -185,7 +186,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 					VolumeOrdered = f.Qty,
 					VolumeUpdatable = f.Ordrem,
 					PriceOrdered = f.Price,
-					Precision = !new string[] { "1", "A" }.Contains(f.Expcode.Substring(0, 1)) ? 2 : f.Expcode.Substring(1, 2) switch
+					Precision = !new string[] { "1", "A" }.Contains(f.Expcode[..1]) ? 2 : f.Expcode.Substring(1, 2) switch
 					{
 						"01" => 2,
 						"05" => 2,
@@ -204,7 +205,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 			{
 				StatusCode = Status.INTERNALSERVERERROR,
 				Message = ex.Message,
-				List = new List<Order>(),
+				List = []
 			};
 		}
 	}
@@ -213,7 +214,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 	{
 		try
 		{
-			List<CFOAQ00600OutBlock3> ordersRaw = new();
+			List<CFOAQ00600OutBlock3> ordersRaw = [];
 			var nextKey = string.Empty;
 			do
 			{
@@ -275,7 +276,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 			{
 				StatusCode = Status.INTERNALSERVERERROR,
 				Message = ex.Message,
-				List = new List<Order>(),
+				List = [],
 			};
 		}
 	}
