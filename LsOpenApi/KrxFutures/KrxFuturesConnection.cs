@@ -203,6 +203,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 					TimeExecuted = $"{response.Body.CheDate}{response.Body.CheTime}".ToDateTimeM(),
 					OID = Convert.ToInt64(response.Body.Ordno),
 					IdOrigin = idOrigin,
+					EID = Convert.ToInt64(response.Body.Yakseq),
 					CID = Convert.ToInt64(response.Body.Yakseq),
 					Symbol = response.Body.Expcode.Substring(3, 8),
 					Price = Convert.ToDecimal(response.Body.ChePrice),

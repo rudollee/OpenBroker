@@ -409,6 +409,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 				{
 					BrokerCo = "KI",
 					ExchangeCode = Exchange.CME,
+					EID = f.CID,
 					CID = f.CID,
 					OID = f.OID,
 					DateBiz = f.DateBizTxt8.ToDate(),

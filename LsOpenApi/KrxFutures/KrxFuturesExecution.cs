@@ -64,6 +64,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 				{
 					var executionFromPrevious = (Execution)previousExecution.Clone();
 					executionFromPrevious.TimeExecuted = $"{executionFromPrevious.TimeExecuted:yyyyMMdd}{execution.CtrctTime}".ToDateTimeM();
+					executionFromPrevious.EID = execution.CtrctNo;
 					executionFromPrevious.CID = execution.CtrctNo;
 					executionFromPrevious.Volume = execution.ExecQty;
 					executionFromPrevious.Price = execution.ExecPrc;
@@ -78,6 +79,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 					BrokerCo = "LS",
 					OID = execution.OrdNo,
 					IdOrigin = execution.OrgOrdNo,
+					EID = execution.CtrctNo,
 					CID = execution.CtrctNo,
 					Symbol = execution.FnoIsuNo,
 					InstrumentName = execution.IsuNm,

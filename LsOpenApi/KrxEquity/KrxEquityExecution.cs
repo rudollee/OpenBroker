@@ -158,6 +158,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 				{
 					BrokerCo = "LS",
 					OID = execution.Ordno,
+					EID = execution.Sysprocseq,
 					CID = execution.Sysprocseq,
 					Currency = Currency.KRW,
 					DateBiz = DateTime.Now.ToKrxTradingDay(),
@@ -253,6 +254,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 					InstrumentName = instrumentName,
 					OID = oid,
 					IdOrigin = idOrigin,
+					EID = seq,
 					CID = seq,
 					IsLong = execution.BnsTpCode == "2",
 					Mode = execution.MrcTpCode switch

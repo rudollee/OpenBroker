@@ -44,7 +44,10 @@ public class OrderCore
 
 public class Execution : Order, ICloneable
 {
+    [Obsolete("Use EID")]
     public long CID { get; set; }
+
+    public long EID { get; set; }
     public decimal Volume { get; set; }
     public decimal Price { get; set; }
     public decimal VolumeLeft { get; set; }

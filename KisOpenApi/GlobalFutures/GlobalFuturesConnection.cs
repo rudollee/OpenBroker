@@ -139,6 +139,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 						BrokerCo = "KI",
 						DateBiz = data[(int)HDFFF2C0.ccld_dt].ToDate(),
 						OID = Convert.ToInt64(data[(int)HDFFF2C0.odno]),
+						EID = Convert.ToInt64(data[(int)HDFFF2C0.ccno]),
 						CID = Convert.ToInt64(data[(int)HDFFF2C0.ccno]),
 						IsLong = data[(int)HDFFF2C0.sll_buy_dvsn_cd] == "02",
 						Price = Convert.ToDecimal(data[(int)HDFFF2C0.fm_ccld_pric]),

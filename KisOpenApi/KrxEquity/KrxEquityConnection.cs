@@ -224,6 +224,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 					BrokerCo = "KI",
 					DateBiz = DateTime.Now.ToKrxTradingDay(),
 					OID = Convert.ToInt64(data[(int)H0STCNI0.ODER_NO]),
+					EID = 0,
 					CID = 0,
 					IsLong = data[(int)H0STCNI0.SELN_BYOV_CLS] == "02",
 					Price = Convert.ToDecimal(data[(int)H0STCNI0.CNTG_UNPR]),

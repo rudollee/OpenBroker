@@ -661,6 +661,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					BrokerCo = Brkr.LS.ToDescription(),
 					DateBiz = DateTime.Now.ToKrxTradingDay(),
 					OID = Convert.ToInt64(response.Body.ordno),
+					EID = Convert.ToInt64(response.Body.execno),
 					CID = Convert.ToInt64(response.Body.execno),
 					Symbol = response.Body.shtnIsuno.Substring(1),
 					InstrumentName = response.Body.Isunm,
