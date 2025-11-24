@@ -59,7 +59,9 @@ public class Execution : Order, ICloneable
     public long CID { get; set; }
 
     public long EID { get; set; }
+    [Obsolete("Use Qty property")]
     public decimal Volume { get; set; }
+    public decimal Qty { get; set; }
     public decimal Price { get; set; }
     public decimal VolumeLeft { get; set; }
     public DateTime TimeExecuted { get; set; }
