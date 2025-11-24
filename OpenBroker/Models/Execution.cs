@@ -4,6 +4,7 @@ namespace OpenBroker.Models;
 
 public class Order : InstrumentCore
 {
+    [Obsolete("Use Broker property")]
     public string BrokerCo { get; set; } = string.Empty;
 	public Brkr Broker { get; set; }
 	public OrderChannel Channel { get; set; } = OrderChannel.API;
@@ -12,10 +13,18 @@ public class Order : InstrumentCore
     public DateOnly DateBiz { get; set; }
     public long OID { get; set; }
     public long IdOrigin { get; set; }
+    [Obsolete("Use QtyOrdered property")]
     public decimal VolumeOrdered { get; set; }
+    [Obsolete("Use QtyOrderable property")]
     public decimal VolumeOrderable { get; set; }
+    [Obsolete("Use QtyUpdatable property")]
     public decimal VolumeUpdatable { get; set; }
+    [Obsolete("Use QtyCancelable property")]
     public decimal VolumeCancelable { get; set; }
+    public decimal QtyOrdered { get; set; }
+    public decimal QtyOrderable { get; set; }
+    public decimal QtyUpdatable { get; set; }
+    public decimal QtyCancelable { get; set; }
     public decimal PriceOrdered { get; set; }
 
     /// <summary>
@@ -35,7 +44,9 @@ public class OrderCore
     public DateOnly DateOrdered { get; set; } = DateTime.Now.ToKrxTradingDay();
     public long IdOrigin { get; set; }
 	public string Symbol { get; set; } = string.Empty;
-	public decimal VolumeOrdered { get; set; }
+    [Obsolete("Use QtyOrdered property")]
+    public decimal VolumeOrdered { get; set; }
+	public decimal QtyOrdered { get; set; }
 	public decimal PriceOrdered { get; set; }
     public bool IsLong { get; set; } = true;
     public OrderType OrderType { get; set; } = OrderType.AUTO;
@@ -63,7 +74,13 @@ public class Balance
     /// <summary>
     /// 증권사 코드
     /// </summary>
+    [Obsolete("Use BID property")]
     public string BrokerCode { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 증권사 ID
+    /// </summary>
+    public Brkr BID { get; set; }
 
     /// <summary>
     /// 증권사 계좌번호
