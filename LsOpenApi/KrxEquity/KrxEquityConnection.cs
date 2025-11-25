@@ -668,7 +668,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					Price = Convert.ToDecimal(response.Body.execprc),
 					PriceOrdered = Convert.ToDecimal(response.Body.ordprc),
 					Qty = Convert.ToDecimal(response.Body.execqty),
-					VolumeLeft = Convert.ToDecimal(response.Body.secbalqty),
+					QtyLeft = Convert.ToDecimal(response.Body.secbalqty),
 					TimeExecuted = response.Body.exectime.ToDateTimeM(),
 				},
 				Remark = message,

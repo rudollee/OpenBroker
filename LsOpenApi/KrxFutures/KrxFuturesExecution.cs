@@ -84,7 +84,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 					IsLong = execution.BnsTpNm == "매수",
 					QtyOrdered = execution.OrdQty,
 					QtyUpdatable = execution.UnercQty,
-					VolumeLeft = execution.UnercQty,
+					QtyLeft = execution.UnercQty,
 					Qty = execution.ExecQty,
 					PriceOrdered = execution.OrdPrc,
 					Price = execution.ExecPrc,
@@ -302,7 +302,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 				IsLong = f.Medocd == "2",
 				PriceEntry = f.Pamt,
 				Price = f.Price,
-				Volume = f.Jqty,
+				Qty = f.Jqty,
 			}));
 
 			return ReturnResults(positions);
