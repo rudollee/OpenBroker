@@ -63,6 +63,8 @@ public class Execution : Order, ICloneable
     public decimal Volume { get; set; }
     public decimal Qty { get; set; }
     public decimal Price { get; set; }
+    public decimal QtyLeft { get; set; }
+    [Obsolete("Use QtyLeft property")]
     public decimal VolumeLeft { get; set; }
     public DateTime TimeExecuted { get; set; }
 	public decimal Commission { get; set; }
@@ -160,8 +162,12 @@ public class AssetCashable
 public class Position : InstrumentCore
 {
     public bool IsLong { get; set; }
+    public decimal QtyEntry { get; set; }
+    [Obsolete("Use QtyEntry property")]
     public decimal VolumeEntry { get; set; }
     public decimal PriceEntry { get; set; }
+    public decimal Qty { get; set; }
+    [Obsolete("Use Qty property")]
     public decimal Volume { get; set; }
     public decimal Price { get; set; }
     public DateTime DateEntry { get; set; }
