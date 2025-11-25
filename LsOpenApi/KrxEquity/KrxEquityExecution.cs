@@ -19,7 +19,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 			CSPAT00601InBlock1 = new CSPAT00601InBlock1
 			{
 				IsuNo = $"A{order.Symbol}",
-				OrdQty = order.VolumeOrdered,
+				OrdQty = order.QtyOrdered,
 				OrdPrc = order.PriceOrdered,
 				BnsTpCode = order.IsLong ? "2" : "1",
 				OrdprcPtnCode = order.OrderType switch
@@ -44,7 +44,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 			{
 				OrgOrdNo = order.IdOrigin,
 				IsuNo = $"A{order.Symbol}",
-				OrdQty = order.VolumeOrdered,
+				OrdQty = order.QtyOrdered,
 				OrdPrc = order.PriceOrdered,
 				OrdprcPtnCode = order.OrderType switch
 				{
@@ -64,7 +64,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 			{
 				OrgOrdNo = order.IdOrigin,
 				IsuNo = order.Symbol,
-				OrdQty = order.VolumeOrdered,
+				OrdQty = order.QtyOrdered,
 			}
 		});
 
@@ -109,8 +109,8 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 
 			return ReturnResult<Balance>(new Balance
 			{
-				BrokerCode = "LS",
-				CurBased = Currency.KRW,
+				BID = Brkr.LS,
+                CurBased = Currency.KRW,
 				AccountNumber = response.CSPAQ22200OutBlock1.AcntNo,
 				DepositInit = Convert.ToDecimal(response.CSPAQ22200OutBlock2.Dps),
 				DepositD1 = Convert.ToDecimal(response.CSPAQ22200OutBlock2.D1Dps),
@@ -156,10 +156,9 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 			{
 				executions.Add(new Execution
 				{
-					BrokerCo = "LS",
+					Broker = Brkr.LS,
 					OID = execution.Ordno,
 					EID = execution.Sysprocseq,
-					CID = execution.Sysprocseq,
 					Currency = Currency.KRW,
 					DateBiz = DateTime.Now.ToKrxTradingDay(),
 					ExchangeCode = Exchange.KRX,
@@ -169,12 +168,12 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 					IsLong = execution.Orggb == "02",
 					PriceOrdered = execution.Price,
 					Price = execution.Cheprice,
-					Volume = execution.Cheqty,
+					Qty = execution.Cheqty,
 					VolumeLeft = execution.Ordrem,
-					VolumeOrdered = execution.Qty,
-					VolumeCancelable = execution.Ordrem,
-					VolumeUpdatable = execution.Ordrem,
-					VolumeOrderable = execution.Ordrem,
+					QtyOrdered = execution.Qty,
+					QtyCancelable = execution.Ordrem,
+					QtyUpdatable = execution.Ordrem,
+					QtyOrderable = execution.Ordrem,
 				});
 			});
 
@@ -243,7 +242,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 				
 				executions.Add(new Execution
 				{
-					BrokerCo = "LS",
+					Broker = Brkr.LS,
 					DateBiz = date,
 					TimeOrdered = timeOrdered,
 					TimeExecuted = (date.ToDate8Txt() + execution.ExecTrxTime).ToDateTimeM(),
@@ -255,7 +254,6 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 					OID = oid,
 					IdOrigin = idOrigin,
 					EID = seq,
-					CID = seq,
 					IsLong = execution.BnsTpCode == "2",
 					Mode = execution.MrcTpCode switch
 					{
@@ -265,9 +263,9 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 						_ => OrderMode.NONE,
 					},
 					PriceOrdered = priceOrdered,
-					VolumeOrdered = qtyOrdered,
+					QtyOrdered = qtyOrdered,
 					Price = execution.ExecPrc,
-					Volume = execution.ExecQty,
+					Qty = execution.ExecQty,
 					Aggregation = execution.OrdPrc * execution.OrdQty,
 					Section = section
 				});
@@ -366,8 +364,8 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 				{
 					orders.Add(new Order
 					{
-						BrokerCo = "LS",
-						DateBiz = order.OrdDt.ToDate(),
+                        Broker = Brkr.LS,
+                        DateBiz = order.OrdDt.ToDate(),
 						TimeOrdered = (order.OrdDt + order.OrdTime).ToDateTimeM(),
 						Symbol = order.IsuNo[1..],
 						InstrumentName = order.IsuNm,
@@ -385,7 +383,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 							_ => OrderMode.NONE,
 						},
 						PriceOrdered = order.OrdPrc,
-						VolumeOrdered = order.OrdQty,
+						QtyOrdered = order.OrdQty,
 						Aggregation = order.OrdPrc * order.OrdQty,
 						Section = order.OrdMktCode == "10" ? ExchangeSection.KOSPI : ExchangeSection.KOSDAQ
 					}); 

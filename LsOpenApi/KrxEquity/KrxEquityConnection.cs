@@ -550,7 +550,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				Code = nameof(SC0),
 				Info = new Order
 				{
-					BrokerCo = Brkr.LS.ToDescription(),
+					Broker = Brkr.LS,
 					DateBiz = DateTime.Now.ToKrxTradingDay(),
 					OID = Convert.ToInt64(response.Body.ordno),
 					Symbol = response.Body.shtcode.Substring(1),
@@ -564,7 +564,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					},
 					IsLong = response.Body.bnstp == "2",
 					PriceOrdered = Convert.ToDecimal(response.Body.ordprice),
-					VolumeOrdered = Convert.ToDecimal(response.Body.ordqty),
+					QtyOrdered = Convert.ToDecimal(response.Body.ordqty),
 					TimeOrdered = response.Body.ordtm.ToDateTimeM(),
 				},
 				Remark = message,
@@ -602,7 +602,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				Code = trCode,
 				Info = new Order
 				{
-					BrokerCo = Brkr.LS.ToDescription(),
+					Broker = Brkr.LS,
 					DateBiz = DateTime.Now.ToKrxTradingDay(),
 					TimeOrdered = response.Body.proctm.PadLeft(9, '0').ToDateTimeM(),
 					Currency = Currency.KRW,
@@ -613,7 +613,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					OID = Convert.ToInt64(response.Body.ordno),
 					IdOrigin = Convert.ToInt64(response.Body.orgordno),
 					IsLong = response.Body.bnstp == "2",
-					VolumeOrdered = Convert.ToDecimal(trCode == nameof(SC2) ? response.Body.mdfycnfqty : response.Body.canccnfqty),
+					QtyOrdered = Convert.ToDecimal(trCode == nameof(SC2) ? response.Body.mdfycnfqty : response.Body.canccnfqty),
 					PriceOrdered = Convert.ToDecimal(trCode == nameof(SC2) ? response.Body.mdfycnfprc : "0"),
 					Aggregation = Convert.ToDecimal(response.Body.ordamt),
 					DiscardStatus = DiscardStatus.TRADABLE,
@@ -658,17 +658,16 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				Code = nameof(SC1),
 				Info = new Execution
 				{
-					BrokerCo = Brkr.LS.ToDescription(),
+					Broker = Brkr.LS,
 					DateBiz = DateTime.Now.ToKrxTradingDay(),
 					OID = Convert.ToInt64(response.Body.ordno),
 					EID = Convert.ToInt64(response.Body.execno),
-					CID = Convert.ToInt64(response.Body.execno),
 					Symbol = response.Body.shtnIsuno.Substring(1),
 					InstrumentName = response.Body.Isunm,
 					IsLong = response.Body.bnstp == "2",
 					Price = Convert.ToDecimal(response.Body.execprc),
 					PriceOrdered = Convert.ToDecimal(response.Body.ordprc),
-					Volume = Convert.ToDecimal(response.Body.execqty),
+					Qty = Convert.ToDecimal(response.Body.execqty),
 					VolumeLeft = Convert.ToDecimal(response.Body.secbalqty),
 					TimeExecuted = response.Body.exectime.ToDateTimeM(),
 				},

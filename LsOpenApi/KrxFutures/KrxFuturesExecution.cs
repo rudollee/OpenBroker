@@ -65,8 +65,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 					var executionFromPrevious = (Execution)previousExecution.Clone();
 					executionFromPrevious.TimeExecuted = $"{executionFromPrevious.TimeExecuted:yyyyMMdd}{execution.CtrctTime}".ToDateTimeM();
 					executionFromPrevious.EID = execution.CtrctNo;
-					executionFromPrevious.CID = execution.CtrctNo;
-					executionFromPrevious.Volume = execution.ExecQty;
+					executionFromPrevious.Qty = execution.ExecQty;
 					executionFromPrevious.Price = execution.ExecPrc;
 
 					executions.Add(executionFromPrevious);
@@ -76,18 +75,17 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 				executions.Add(new Execution
 				{ 
 					DateBiz = execution.OrdDt.ToDate(),
-					BrokerCo = "LS",
-					OID = execution.OrdNo,
+                    Broker = Brkr.LS,
+                    OID = execution.OrdNo,
 					IdOrigin = execution.OrgOrdNo,
 					EID = execution.CtrctNo,
-					CID = execution.CtrctNo,
 					Symbol = execution.FnoIsuNo,
 					InstrumentName = execution.IsuNm,
 					IsLong = execution.BnsTpNm == "매수",
-					VolumeOrdered = execution.OrdQty,
-					VolumeUpdatable = execution.UnercQty,
+					QtyOrdered = execution.OrdQty,
+					QtyUpdatable = execution.UnercQty,
 					VolumeLeft = execution.UnercQty,
-					Volume = execution.ExecQty,
+					Qty = execution.ExecQty,
 					PriceOrdered = execution.OrdPrc,
 					Price = execution.ExecPrc,
 					Precision = !new string[] { "1", "A" }.Contains(execution.FnoIsuNo[..1]) ? 2 : execution.FnoIsuNo.Substring(1, 2) switch 
@@ -174,8 +172,8 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 				orders.Add(new Order
 				{
 					DateBiz = DateOnly.FromDateTime(DateTime.UtcNow.AddHours(9)),
-					BrokerCo = "LS",
-					OID = f.Ordno,
+                    Broker = Brkr.LS,
+                    OID = f.Ordno,
 					IdOrigin = f.Orgordno,
 					Mode = f.Orgordno == 0 ? OrderMode.PLACE : f.Medosu.Substring(2,2) switch
 					{
@@ -185,8 +183,8 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 					},
 					Symbol = f.Expcode,
 					IsLong = f.Medosu.Contains("매수"),
-					VolumeOrdered = f.Qty,
-					VolumeUpdatable = f.Ordrem,
+					QtyOrdered = f.Qty,
+					QtyUpdatable = f.Ordrem,
 					PriceOrdered = f.Price,
 					Precision = !new string[] { "1", "A" }.Contains(f.Expcode[..1]) ? 2 : f.Expcode.Substring(1, 2) switch
 					{
@@ -249,7 +247,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 				orders.Add(new Order
 				{
 					DateBiz = order.OrdDt.ToDate(),
-					BrokerCo = "LS",
+					Broker = Brkr.LS,
 					OID = order.OrdNo,
 					IdOrigin = order.OrgOrdNo,
 					Symbol = order.FnoIsuNo,
@@ -261,7 +259,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 						"취소" => OrderMode.CANCEL,
 						_ => OrderMode.PLACE
 					},
-					VolumeOrdered = order.OrdQty,
+					QtyOrdered = order.OrdQty,
 					PriceOrdered = order.OrdPrc,
 					TimeOrdered = $"{order.OrdDt}{order.OrdTime}".ToDateTimeM(),
 				});

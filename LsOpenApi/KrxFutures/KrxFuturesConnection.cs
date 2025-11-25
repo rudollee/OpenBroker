@@ -204,10 +204,9 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 					OID = Convert.ToInt64(response.Body.Ordno),
 					IdOrigin = idOrigin,
 					EID = Convert.ToInt64(response.Body.Yakseq),
-					CID = Convert.ToInt64(response.Body.Yakseq),
 					Symbol = response.Body.Expcode.Substring(3, 8),
 					Price = Convert.ToDecimal(response.Body.ChePrice),
-					Volume = Convert.ToDecimal(response.Body.CheVol),
+					Qty = Convert.ToDecimal(response.Body.CheVol),
 					DateBiz = response.Body.CheDate.ToDate(),
 					IsLong = response.Body.DosuGb == "2",
 				},
@@ -260,7 +259,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 					IdOrigin = Convert.ToInt64(response.Body.orgordno),
 					Symbol = response.Body.isuno.Substring(3, 8),
 					IsLong = response.Body.bnstp == "2",
-					VolumeOrdered = Convert.ToDecimal(response.Body.ordqty),
+					QtyOrdered = Convert.ToDecimal(response.Body.ordqty),
 					PriceOrdered = Convert.ToDecimal(response.Body.ordprc),
 					Mode = response.Body.mrctp switch
 					{
