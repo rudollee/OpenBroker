@@ -99,18 +99,19 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 			case nameof(HDFFF1C0):
 				OrderReceived(this, new ResponseResult<Order>
 				{
-					Typ = MessageType.ORDER,
+					Broker = Brkr.KI,
+                    Typ = MessageType.ORDER,
 					StatusCode = Status.SUCCESS,
 					Code = rawData[2],
 					Info = new Order
 					{
-						BrokerCo = "KI",
+						Broker = Brkr.KI,
 						DateBiz = data[(int)HDFFF1C0.ord_dt].ToDate(),
 						OID = Convert.ToInt64(data[(int)HDFFF1C0.odno]),
 						IsLong = data[(int)HDFFF1C0.sll_buy_dvsn_cd] == "02",
 						PriceOrdered = Convert.ToDecimal(data[(int)HDFFF1C0.fm_lmt_pric]),
-						VolumeOrdered = Convert.ToInt32(data[(int)HDFFF1C0.ord_qty]),
-						VolumeUpdatable = Convert.ToInt32(data[(int)HDFFF1C0.ord_qty]) - Convert.ToInt32(data[(int)HDFFF1C0.tot_ccld_qty]),
+						QtyOrdered = Convert.ToInt32(data[(int)HDFFF1C0.ord_qty]),
+						QtyUpdatable = Convert.ToInt32(data[(int)HDFFF1C0.ord_qty]) - Convert.ToInt32(data[(int)HDFFF1C0.tot_ccld_qty]),
 						TimeOrdered = data[(int)HDFFF1C0.ord_dtl_dtime].ToDateTimeM(),
 						Symbol = data[(int)HDFFF1C0.series],
 						Mode = data[(int)HDFFF1C0.rvse_cncl_dvsn_cd] switch
@@ -136,14 +137,13 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 					Code = rawData[2],
 					Info = new Execution
 					{
-						BrokerCo = "KI",
-						DateBiz = data[(int)HDFFF2C0.ccld_dt].ToDate(),
+						Broker = Brkr.KI,
+                        DateBiz = data[(int)HDFFF2C0.ccld_dt].ToDate(),
 						OID = Convert.ToInt64(data[(int)HDFFF2C0.odno]),
 						EID = Convert.ToInt64(data[(int)HDFFF2C0.ccno]),
-						CID = Convert.ToInt64(data[(int)HDFFF2C0.ccno]),
 						IsLong = data[(int)HDFFF2C0.sll_buy_dvsn_cd] == "02",
 						Price = Convert.ToDecimal(data[(int)HDFFF2C0.fm_ccld_pric]),
-						Volume = Convert.ToInt32(data[(int)HDFFF2C0.ccld_qty]),
+						Qty = Convert.ToInt32(data[(int)HDFFF2C0.ccld_qty]),
 						TimeExecuted = data[(int)HDFFF2C0.ccld_dt].ToDateTime(),
 						Symbol = data[(int)HDFFF2C0.series],
 					},

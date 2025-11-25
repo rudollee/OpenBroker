@@ -24,7 +24,7 @@ public partial class KisKrxEquity : ConnectionBase, IExecution
 		{
 			PDNO = order.Symbol,
 			ORD_DVSN = order.OrderType == OrderType.MARKET ? "01" : "00",
-			ORD_QTY = order.VolumeOrdered,
+			ORD_QTY = order.QtyOrdered,
 			ORD_UNPR = order.OrderType == OrderType.MARKET ? "0" : order.PriceOrdered.ToString(),
 		}, true);
 
@@ -35,7 +35,7 @@ public partial class KisKrxEquity : ConnectionBase, IExecution
 	
 	public async Task<ResponseCore> CancelOrderAsync(OrderCore order)
 	{
-		if (order.IdOrigin == 0 || order.VolumeOrdered == 0) return new ResponseCore
+		if (order.IdOrigin == 0 || order.QtyOrdered == 0) return new ResponseCore
 		{
 			StatusCode = Status.BAD_REQUEST,
 			Code = "REFUSE",

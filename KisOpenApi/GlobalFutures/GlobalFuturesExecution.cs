@@ -91,7 +91,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 			PRIC_DVSN_CD = ((int)order.OrderType).ToString(),  // 가격구분코드: 1.지정, 2.시장, 3.STOP, 4S/L
 			FM_LIMIT_ORD_PRIC = order.OrderType == OrderType.LIMIT ? order.PriceOrdered.ToString() : "",  // FMLIMIT주문가격: 지정가가 아닐 경우 빈칸
 			FM_STOP_ORD_PRIC = needsStop ? order.PriceOrdered.ToString() : "",  // FMSTOP주문가격: 시장가, 지정가인 경우, 빈칸("") 입력
-			FM_ORD_QTY = order.VolumeOrdered.ToString(), // FM주문수량
+			FM_ORD_QTY = $"{order.QtyOrdered}", // FM주문수량
 			CCLD_CNDT_CD = ((int)order.OrderDuration).ToString(), // 체결조건코드: EOD/지정가.6, GTD.5, 시장가.2
 			CPLX_ORD_DVSN_CD = "0", // 복합주문구분코드
 			ECIS_RSVN_ORD_YN = "N", // 행사예약주문여부
@@ -109,7 +109,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 
 	public async Task<ResponseCore> CancelOrderAsync(OrderCore order)
 	{
-		if (order.IdOrigin == 0 || order.VolumeOrdered == 0) return new ResponseCore
+		if (order.IdOrigin == 0 || order.QtyOrdered == 0) return new ResponseCore
 		{
 			StatusCode = Status.BAD_REQUEST,
 			Code = "REFUSE",
@@ -187,14 +187,14 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 			if (response is null) return new ResponseResults<Order>
 			{
 				StatusCode = Status.INTERNALSERVERERROR,
-				List = new List<Order>(),
+				List = [],
 				Message = "response is null",
 			};
 
 			if (!response.Output.Any()) return new ResponseResults<Order>
 			{
 				StatusCode = Status.NODATA,
-				List = new List<Order>(),
+				List = [],
 				Message = "no order",
 				Remark = $"{BankAccountInfo.AccountNumber}: {BankAccountInfo.AccountNumberSuffix}",
 			};
@@ -205,12 +205,12 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 			{
 				orders.Add(new Order
 				{
-					BrokerCo = "KI",
-					OID = f.OID,
+					Broker = Brkr.KI,
+                    OID = f.OID,
 					DateBiz = f.ord_dt.ToDate(),
 					PriceOrdered = f.PriceOrdered,
-					VolumeOrdered = f.VolumeOrdered,
-					VolumeUpdatable = f.VolumeOrdered - f.VolumeExecuted,
+					QtyOrdered = f.VolumeOrdered,
+					QtyUpdatable = f.VolumeOrdered - f.VolumeExecuted,
 					Symbol = f.Symbol,
 					TimeOrdered = f.erlm_dtl_dtime.ToDateTimeM(),
 					IsLong = f.sll_buy_dvsn_cd == "02", //
@@ -299,12 +299,12 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 			{
 				orders.Add(new Order
 				{
-					BrokerCo = "KI",
-					OID = f.OID,
+					Broker = Brkr.KI,
+                    OID = f.OID,
 					DateBiz = f.ord_dt.ToDate(),
 					PriceOrdered = f.PriceOrdered,
-					VolumeOrdered = f.VolumeOrdered,
-					VolumeUpdatable = f.VolumeOrdered - f.VolumeExecuted,
+					QtyOrdered = f.VolumeOrdered,
+					QtyUpdatable = f.VolumeOrdered - f.VolumeExecuted,
 					Symbol = f.Symbol,
 					TimeOrdered = f.OrderDateTime863.ToDateTimeM(),
 					IsLong = f.sll_buy_dvsn_cd == "02", //
@@ -407,14 +407,13 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 			{
 				executions.Add(new Execution
 				{
-					BrokerCo = "KI",
-					ExchangeCode = Exchange.CME,
+					Broker = Brkr.KI,
+                    ExchangeCode = Exchange.CME,
 					EID = f.CID,
-					CID = f.CID,
 					OID = f.OID,
 					DateBiz = f.DateBizTxt8.ToDate(),
 					Price = f.Price,
-					Volume = f.Volume,
+					Qty = f.QtyExecuted,
 					Symbol = f.Symbol,
 					TimeExecuted = f.ccld_dtl_dtime.ToDateTime(),
 					IsLong = f.DirectionCode == "02", //
@@ -468,7 +467,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 
 			var balance = new Balance
 			{
-				BrokerCode = "KI",
+				BID = Brkr.KI,
 				AccountNumber = response.output.Account,
 				CurBased = Enum.Parse<Currency>(response.output.crcy_cd),
 				DepositInit = response.output.fm_dnca_rmnd,

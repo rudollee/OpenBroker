@@ -221,14 +221,13 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 				Code = "001",
 				Info = new Execution
 				{
-					BrokerCo = "KI",
+					Broker = Brkr.KI,
 					DateBiz = DateTime.Now.ToKrxTradingDay(),
 					OID = Convert.ToInt64(data[(int)H0STCNI0.ODER_NO]),
 					EID = 0,
-					CID = 0,
 					IsLong = data[(int)H0STCNI0.SELN_BYOV_CLS] == "02",
 					Price = Convert.ToDecimal(data[(int)H0STCNI0.CNTG_UNPR]),
-					Volume = Convert.ToInt32(data[(int)H0STCNI0.CNTG_QTY]),
+					Qty = Convert.ToInt32(data[(int)H0STCNI0.CNTG_QTY]),
 					TimeExecuted = data[(int)H0STCNI0.STCK_CNTG_HOUR].ToDateTime(),
 					Symbol = data[(int)H0STCNI0.STCK_SHRN_ISCD],
 				},

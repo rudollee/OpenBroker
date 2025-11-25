@@ -15,7 +15,7 @@ internal class OTFM3122R : KisResponseBase
 {
     public string ctx_area_fk200 { get; set; } = string.Empty;
     public string ctx_area_nk200 { get; set; } = string.Empty;
-    public List<Output1> output1 { get; set; } = new List<Output1>();
+    public List<Output1> output1 { get; set; } = [];
     public Output2 output2 { get; set; } = new Output2();
 
     internal class Output1
@@ -42,7 +42,7 @@ internal class OTFM3122R : KisResponseBase
         /// 체결량
         /// </summary>
         [JsonPropertyName("fm_ccld_qty")]
-        public int Volume { get; set; }
+        public int QtyExecuted { get; set; }
 
         /// <summary>
         /// 체결단가
