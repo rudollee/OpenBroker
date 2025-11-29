@@ -23,17 +23,17 @@ internal class T0425InBlock
 	[JsonPropertyName("expcode")]
 	public string Expcode { get; set; } = string.Empty;
 
-	/// <summary>체결구분</summary>
+	/// <summary>체결구분: 0.전체, 1.체결, 2.미체결</summary>
 	[JsonPropertyName("chegb")]
-	public string Chegb { get; set; } = string.Empty;
+	public string Chegb { get; set; } = "0";
 
-	/// <summary>매매구분</summary>
+	/// <summary>매매구분: 0.전체, 1.매도, 2.매수</summary>
 	[JsonPropertyName("medosu")]
-	public string Medosu { get; set; } = string.Empty;
+	public string Medosu { get; set; } = "0";
 
-	/// <summary>정렬순서</summary>
+	/// <summary>정렬순서: 1.역순, 2.순</summary>
 	[JsonPropertyName("sortgb")]
-	public string Sortgb { get; set; } = string.Empty;
+	public string Sortgb { get; set; } = "1";
 
 	/// <summary>주문번호</summary>
 	[JsonPropertyName("cts_ordno")]
