@@ -406,7 +406,10 @@ public enum AssetClass
     [Description("Equity Index")]
 	EQUITY_INDEX = 20,
 
-    [Description("Metal")]
+    [Description("Single Stock")]
+	SINGLE_STOCK = 21,
+
+	[Description("Metal")]
 	METAL = 30,
 
     [Description("Precious Metal")]
