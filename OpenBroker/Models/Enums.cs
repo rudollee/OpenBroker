@@ -392,6 +392,33 @@ public enum InstrumentType
     FuturesSpread,
 }
 
+/// <summary>
+/// Asset Class
+/// </summary>
+public enum AssetClass
+{
+    [Description("not Classified")]
+    NONE = 0,
+    
+    [Description("Forex")]
+	FOREX = 10,
+
+    [Description("Equity Index")]
+	EQUITY_INDEX = 20,
+
+    [Description("Metal")]
+	METAL = 30,
+
+    [Description("Precious Metal")]
+	PRECOUS_METAL = 31,
+
+    [Description("Energy")]
+	ENERGY = 40,
+    
+    [Description("Agriculture")]
+	AGRICULTURE = 50,
+}
+
 public enum OptionsType
 {
     NONE = 0,
