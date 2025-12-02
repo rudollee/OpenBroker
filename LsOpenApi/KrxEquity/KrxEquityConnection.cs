@@ -557,7 +557,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					InstrumentName = response.Body.hname,
 					Mode = response.Body.ordchegb switch
 					{
-						"01" => OrderMode.PLACE,
+						"01" => OrderMode.PLACE_RESPONSE,
 						"02" => OrderMode.UPDATE,
 						"03" => OrderMode.CANCEL,
 						_ => OrderMode.NONE
