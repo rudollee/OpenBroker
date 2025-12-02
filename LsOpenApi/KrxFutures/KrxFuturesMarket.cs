@@ -537,6 +537,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 					Inst = id,
 					InstrumentName = instrument.HName,
 					SymbolUnderlying = instrument.BaseCode[1..],
+					AssetClass = AssetClass.SINGLE_STOCK,
 					Margin = marginInfo is null ? 0 : marginInfo.OnePrcntrOrdMgn * 0.1m,
 					MarginRate = marginInfo is null ? 0.00m : marginInfo.CsgnMgnrt * 0.01m,
 				});

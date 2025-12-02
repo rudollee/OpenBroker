@@ -82,10 +82,12 @@ public class Instrument : InstrumentCore
 	/// </summary>
 	public string SymbolUnderlying { get; set; } = string.Empty;
 
-	/// <summary>
-	/// Margin Rate
-	/// </summary>
-	public decimal MarginRate { get; set; }
+    public AssetClass AssetClass { get; set; }
+
+    /// <summary>
+    /// Margin Rate
+    /// </summary>
+    public decimal MarginRate { get; set; }
 
 	/// <summary>
 	/// Margin Amount
