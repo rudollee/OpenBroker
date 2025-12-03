@@ -609,6 +609,8 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 					C = Convert.ToDecimal(equity.Price),
 					H = Convert.ToDecimal(equity.High),
 					L = Convert.ToDecimal(equity.Low),
+					V = Convert.ToDecimal(equity.Volume),
+					Turnover = Convert.ToDecimal(equity.Value),
 				},
 				C = Convert.ToDecimal(equity.Price),
 				BasePrice = Convert.ToDecimal(equity.Price) - Convert.ToDecimal(equity.Change) * (DeclineCodes.Contains(equity.Sign) ? -1 : 1)
