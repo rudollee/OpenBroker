@@ -142,6 +142,10 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 					BasePrice = Convert.ToDecimal(data[(int)H0STCNT0.STCK_PRPR]) - Convert.ToDecimal(data[(int)H0STCNT0.PRDY_VRSS]),
 					QuoteDaily = new Quote
 					{
+						C = Convert.ToDecimal(data[(int)H0STCNT0.STCK_PRPR]),
+						O = Convert.ToDecimal(data[(int)H0STCNT0.STCK_OPRC]),
+						H = Convert.ToDecimal(data[(int)H0STCNT0.STCK_HGPR]),
+						L = Convert.ToDecimal(data[(int)H0STCNT0.STCK_LWPR]),
 						V = Convert.ToDecimal(data[(int)H0STCNT0.ACML_VOL]),
 						Turnover = Convert.ToDecimal(data[(int)H0STCNT0.ACML_TR_PBMN]) / 1_000_000,
 					}

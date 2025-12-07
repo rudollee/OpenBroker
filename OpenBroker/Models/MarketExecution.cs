@@ -53,12 +53,12 @@ public class MarketExecution
     /// <summary>
     /// 등락
     /// </summary>
-	public decimal Diff { get => BasePrice == 0 ? 0 : C - BasePrice; }
+	public decimal Diff => BasePrice == 0 ? 0 : C - BasePrice;
 
     /// <summary>
     /// 등락률
     /// </summary>
-	public decimal DiffRate { get => BasePrice == 0 ? 0 : (C - BasePrice) / BasePrice; }
+    public decimal DiffRate => BasePrice == 0 ? 0 : (C - BasePrice) / BasePrice;
 
     /// <summary>
     /// 일간 데이터
