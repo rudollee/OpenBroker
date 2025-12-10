@@ -88,7 +88,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 					Qty = execution.ExecQty,
 					PriceOrdered = execution.OrdPrc,
 					Price = execution.ExecPrc,
-					Precision = !new string[] { "1", "A" }.Contains(execution.FnoIsuNo[..1]) ? 2 : execution.FnoIsuNo.Substring(1, 2) switch 
+					Precision = !_futuresCodes.Contains(execution.FnoIsuNo[..1]) ? 2 : execution.FnoIsuNo.Substring(1, 2) switch 
 					{
 						"01" => 2,
 						"05" => 2,
@@ -186,14 +186,14 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 					QtyOrdered = f.Qty,
 					QtyUpdatable = f.Ordrem,
 					PriceOrdered = f.Price,
-					Precision = !new string[] { "1", "A" }.Contains(f.Expcode[..1]) ? 2 : f.Expcode.Substring(1, 2) switch
+					Precision = !_futuresCodes.Contains(f.Expcode[..1]) ? 2 : f.Expcode.Substring(1, 2) switch
 					{
 						"01" => 2,
 						"05" => 2,
 						"07" => 2,
 						_ => 0
 					},
-					TimeOrdered = $"{DateTime.UtcNow.AddHours(9).ToString("yyyyMMdd")}{f.Ordtime.PadRight(9, '0')}".ToDateTimeM(),
+					TimeOrdered = $"{DateTime.UtcNow.AddHours(9):yyyyMMdd}{f.Ordtime.PadRight(9, '0')}".ToDateTimeM(),
 				});
 			});
 

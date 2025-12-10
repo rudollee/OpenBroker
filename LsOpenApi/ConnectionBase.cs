@@ -17,7 +17,7 @@ public class ConnectionBase
 	public void SetKeyPack(KeyPack keyInfo) => _keyInfo = keyInfo;
 
 	public Account AccountInfo { get => _accountInfo; }
-	private Account _accountInfo = new Account();
+	private Account _accountInfo = new();
 	public void SetAccount(Account account) => _accountInfo = account;
 
 	public BankAccount BankAccountInfo { get => _bankAccountInfo; }
@@ -624,10 +624,10 @@ public class ConnectionBase
 	protected static ResponseResults<T> ReturnResults<T>(List<T> list, string code = "", string message = "", MessageType typ = MessageType.SYS, string remark = "") where T : class => new()
 	{
 		Broker = Brkr.LS,
-		StatusCode = list.Count >0 ? Status.SUCCESS : Status.NODATA,
+		StatusCode = list.Count > 0 ? Status.SUCCESS : Status.NODATA,
 		Typ = typ,
 		Code = code,
-		Message = message,
+		Message = string.IsNullOrEmpty(message) && list.Count == 0 ? "no data" : message,
 		List = list,
 		Remark = remark
 	};
