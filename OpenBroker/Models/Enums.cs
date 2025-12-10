@@ -341,6 +341,11 @@ public enum MessageType
     ORDER,
 
     /// <summary>
+    /// position
+    /// </summary>
+    POSITION,
+
+    /// <summary>
     /// Subscribe / Unsubscribe Realtime Data
     /// </summary>
     SUB,

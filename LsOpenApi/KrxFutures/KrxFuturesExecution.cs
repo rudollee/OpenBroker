@@ -305,7 +305,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 				Qty = f.Jqty,
 			}));
 
-			return ReturnResults(positions);
+			return ReturnResults(positions, typ: MessageType.POSITION);
 		}
 		catch (Exception ex)
 		{
