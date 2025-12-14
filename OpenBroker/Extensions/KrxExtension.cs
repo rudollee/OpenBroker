@@ -149,6 +149,20 @@ public static class KrxExtension
 		return c.ToString();
 	}
 
+	public static InstrumentType ToKrxInstrumentTypeCode(this string symbol) =>
+		symbol[..1] switch
+		{
+			"A"  => InstrumentType.Futures,
+			"B" => InstrumentType.Call,
+			"C" => InstrumentType.Put,
+			"D" => InstrumentType.FuturesSpread,
+			"1" => InstrumentType.Futures,
+			"2" => InstrumentType.Call,
+			"3" => InstrumentType.Put,
+			"4" => InstrumentType.FuturesSpread,
+			_ => InstrumentType.Spot,
+		};
+
 	public static string ToKrxInstrumentTypeCode(this DateOnly date, string instrumentCode = "01", InstrumentType typ = InstrumentType.Futures)
 	{
 		var maxDay = instrumentCode.Equals("01") ? 11 : 15;
@@ -163,4 +177,23 @@ public static class KrxExtension
 			_ => string.Empty
 		};
 	}
+
+	public static decimal ToKrxMultiple(this string symbol) => symbol.ToKrxInstrumentCode() switch
+	{
+		"01" => 250_000,
+		"05" => 50_000,
+		"06" => 10_000,
+		"08" => 50_000,
+		"09" => 250_000,
+		"AF" => 250_000,
+		"65" => 1_000_000,
+		"66" => 1_000_000,
+		"67" => 1_000_000,
+		"70" => 1_000_000,
+		"75" => 10_000,
+		"76" => 1_000_000,
+		"77" => 10_000,
+		"78" => 10_0000,
+		_ => 10
+	};
 }
