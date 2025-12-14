@@ -23,11 +23,11 @@ internal class T0434InBlock
 	[JsonPropertyName("expcode")]
 	public string Expcode { get; set; } = string.Empty;
 
-	/// <summary>체결구분</summary>
+	/// <summary>체결구분: 0.전체, 1.체결, 2.미체결</summary>
 	[JsonPropertyName("chegb")]
 	public string Chegb { get; set; } = "0";
 
-	/// <summary>정렬순서</summary>
+	/// <summary>정렬순서: 1.주문번호역순, 2.주문번호순</summary>
 	[JsonPropertyName("sortgb")]
 	public string Sortgb { get; set; } = "2";
 
@@ -53,11 +53,11 @@ internal class T0434OutBlock1
 {
 	/// <summary>주문번호</summary>
 	[JsonPropertyName("ordno")]
-	public long Ordno { get; set; }
+	public long OrdNo { get; set; }
 
 	/// <summary>원주문번호</summary>
 	[JsonPropertyName("orgordno")]
-	public long Orgordno { get; set; }
+	public long OrgOrdNo { get; set; }
 
 	/// <summary>구분</summary>
 	[JsonPropertyName("medosu")]
@@ -93,7 +93,7 @@ internal class T0434OutBlock1
 
 	/// <summary>주문시간</summary>
 	[JsonPropertyName("ordtime")]
-	public string Ordtime { get; set; } = string.Empty;
+	public string OrdTime { get; set; } = string.Empty;
 
 	/// <summary>주문매체</summary>
 	[JsonPropertyName("ordermtd")]
@@ -109,7 +109,7 @@ internal class T0434OutBlock1
 
 	/// <summary>처리순번</summary>
 	[JsonPropertyName("sysprocseq")]
-	public long Sysprocseq { get; set; }
+	public long SysProcSeq { get; set; }
 
 	/// <summary>호가타입</summary>
 	[JsonPropertyName("hogatype")]

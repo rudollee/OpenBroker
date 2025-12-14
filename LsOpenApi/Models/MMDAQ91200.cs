@@ -14,10 +14,10 @@ internal class MMDAQ91200 : LsResponseCore
 /// </summary>
 internal class MMDAQ91200InBlock1
 {
-	/// <summary>종목대분류코드</summary>
+	/// <summary>종목대분류코드: 11.선물, 12.옵션</summary>
 	public string IsuLgclssCode { get; set; } = "11";
 
-	/// <summary>종목중분류코드</summary>
+	/// <summary>종목중분류코드: 01.지수, 02.주식, 03.금리, 04.통화, 05.상품</summary>
 	public string IsuMdclssCode { get; set; } = "02";
 }
 

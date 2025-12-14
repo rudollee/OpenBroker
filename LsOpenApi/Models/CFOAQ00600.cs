@@ -7,7 +7,7 @@ internal class CFOAQ00600 : LsResponseCore
 	public CFOAQ00600InBlock1 CFOAQ00600InBlock { get; set; } = new();
 	public CFOAQ00600OutBlock1 CFOAQ00600OutBlock1 { get; set; } = new();
 	public CFOAQ00600OutBlock2 CFOAQ00600OutBlock2 { get; set; } = new();
-	public List<CFOAQ00600OutBlock3> CFOAQ00600OutBlock3 { get; set; } = new();
+	public List<CFOAQ00600OutBlock3> CFOAQ00600OutBlock3 { get; set; } = [];
 }
 
 /// <summary>

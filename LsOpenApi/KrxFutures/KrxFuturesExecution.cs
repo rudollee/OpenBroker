@@ -88,7 +88,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 					Qty = execution.ExecQty,
 					PriceOrdered = execution.OrdPrc,
 					Price = execution.ExecPrc,
-					Precision = !_futuresCodes.Contains(execution.FnoIsuNo[..1]) ? 2 : execution.FnoIsuNo.Substring(1, 2) switch 
+					Precision = execution.FnoIsuNo.ToKrxInstrumentTypeCode() != InstrumentType.Futures ? 2 : execution.FnoIsuNo.Substring(1, 2) switch 
 					{
 						"01" => 2,
 						"05" => 2,
@@ -99,7 +99,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 					TimeOrdered = $"{execution.OrdDt}{execution.OrdTime}".ToDateTimeM(),
 					TimeExecuted = $"{execution.OrdDt}{execution.CtrctTime}".ToDateTimeM(),
 					ExchangeCode = Exchange.KRX,
-					Aggregation = execution.ExecQty * execution.ExecPrc,
+					Aggregation = execution.ExecQty * execution.ExecPrc * execution.FnoIsuNo.ToKrxMultiple(),
 					NumeralSystem = 10,
 					Currency = Currency.KRW,
 				});
@@ -173,9 +173,9 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 				{
 					DateBiz = DateOnly.FromDateTime(DateTime.UtcNow.AddHours(9)),
                     Broker = Brkr.LS,
-                    OID = f.Ordno,
-					IdOrigin = f.Orgordno,
-					Mode = f.Orgordno == 0 ? OrderMode.PLACE : f.Medosu.Substring(2,2) switch
+                    OID = f.OrdNo,
+					IdOrigin = f.OrgOrdNo,
+					Mode = f.OrgOrdNo == 0 ? OrderMode.PLACE : f.Medosu.Substring(2,2) switch
 					{
 						"정정" => OrderMode.UPDATE,
 						"취소" => OrderMode.CANCEL,
@@ -186,14 +186,15 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 					QtyOrdered = f.Qty,
 					QtyUpdatable = f.Ordrem,
 					PriceOrdered = f.Price,
-					Precision = !_futuresCodes.Contains(f.Expcode[..1]) ? 2 : f.Expcode.Substring(1, 2) switch
+					Precision = f.Expcode.ToKrxInstrumentTypeCode() != InstrumentType.Futures ? 2 : f.Expcode.Substring(1, 2) switch
 					{
 						"01" => 2,
 						"05" => 2,
 						"07" => 2,
+						"75" => 2,
 						_ => 0
 					},
-					TimeOrdered = $"{DateTime.UtcNow.AddHours(9):yyyyMMdd}{f.Ordtime.PadRight(9, '0')}".ToDateTimeM(),
+					TimeOrdered = $"{DateTime.UtcNow.AddHours(9):yyyyMMdd}{f.OrdTime.PadRight(9, '0')}".ToDateTimeM(),
 				});
 			});
 
@@ -201,12 +202,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<Order>
-			{
-				StatusCode = Status.INTERNALSERVERERROR,
-				Message = ex.Message,
-				List = []
-			};
+			return ReturnErrorResults<Order>(nameof(T0434), ex.Message, statusCode: Status.INTERNALSERVERERROR);
 		}
 	}
 
@@ -272,12 +268,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResults<Order>
-			{
-				StatusCode = Status.INTERNALSERVERERROR,
-				Message = ex.Message,
-				List = [],
-			};
+			return ReturnErrorResults<Order>(nameof(CFOAQ00600), ex.Message, statusCode: Status.INTERNALSERVERERROR);
 		}
 	}
 	#endregion
