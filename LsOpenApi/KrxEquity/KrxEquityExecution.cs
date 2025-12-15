@@ -340,7 +340,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 	#endregion
 
 	#region 주문 내역 - CSPAQ13700
-	public async Task<ResponseResults<Order>> RequestOrdersAsync() =>
+	public async Task<ResponseResults<Order>> RequestOrdersAsync(ExecutionStatus executionStatus = ExecutionStatus.All) =>
 		await RequestOrdersAsync(DateOnly.FromDateTime(DateTime.Now), DateOnly.FromDateTime(DateTime.Now));
 
 	public async Task<ResponseResults<Order>> RequestOrdersAsync(DateOnly dateBegun, DateOnly dateFin)

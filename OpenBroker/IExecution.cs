@@ -59,7 +59,7 @@ public interface IExecution
 	/// 주문내역 - 당일
 	/// </summary>
 	/// <returns></returns>
-	Task<ResponseResults<Order>> RequestOrdersAsync();
+	Task<ResponseResults<Order>> RequestOrdersAsync(ExecutionStatus executionStatus = ExecutionStatus.All);
 
 	/// <summary>
 	/// 주문내역 - 기간별

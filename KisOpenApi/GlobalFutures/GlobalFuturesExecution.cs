@@ -162,7 +162,7 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 	#endregion
 
 	#region OTFM3116R 당일주문내역조회 / OTFM3120R 일별주문내역조회
-	public async Task<ResponseResults<Order>> RequestOrdersAsync()
+	public async Task<ResponseResults<Order>> RequestOrdersAsync(ExecutionStatus executionStatus = ExecutionStatus.All)
 	{
 		if (string.IsNullOrEmpty(BankAccountInfo.AccountNumber)) return new ResponseResults<Order>
 		{

@@ -22,6 +22,7 @@ public class Order : InstrumentCore
     [Obsolete("Use QtyCancelable property")]
     public decimal VolumeCancelable { get; set; }
     public decimal QtyOrdered { get; set; }
+    public decimal QtyExecuted { get; set; }
     public decimal QtyOrderable { get; set; }
     public decimal QtyUpdatable { get; set; }
     public decimal QtyCancelable { get; set; }

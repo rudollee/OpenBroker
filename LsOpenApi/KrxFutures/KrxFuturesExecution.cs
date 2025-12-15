@@ -155,13 +155,22 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 	public Task<ResponseCore> RequestOrderableAsync(Order order) => throw new NotImplementedException();
 
 	#region request Orders - t0434 / CFOAQ00600
-	public async Task<ResponseResults<Order>> RequestOrdersAsync()
+	public async Task<ResponseResults<Order>> RequestOrdersAsync(ExecutionStatus executionStatus = ExecutionStatus.All)
 	{
 		try
 		{
 			var response = await RequestStandardAsync<T0434>(LsEndpoint.FuturesAccount.ToDescription(), new
 			{
-				t0434InBlock = new T0434InBlock { }
+				t0434InBlock = new T0434InBlock 
+				{ 
+					Chegb = executionStatus switch
+					{
+						ExecutionStatus.All => "0",
+						ExecutionStatus.ExecutedOnly => "1",
+						ExecutionStatus.UnexecutedOnly => "2",
+						_ => "0"
+					}
+				}
 			});
 
 			if (response.T0434OutBlock1.Count == 0) return ReturnResults<Order>([], nameof(T0434), response.Message);
@@ -184,7 +193,10 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 					Symbol = f.Expcode,
 					IsLong = f.Medosu.Contains("매수"),
 					QtyOrdered = f.Qty,
+					QtyExecuted = f.Cheqty,
 					QtyUpdatable = f.Ordrem,
+					QtyOrderable = f.Ordrem,
+					QtyCancelable = f.Ordrem,
 					PriceOrdered = f.Price,
 					Precision = f.Expcode.ToKrxInstrumentTypeCode() != InstrumentType.Futures ? 2 : f.Expcode.Substring(1, 2) switch
 					{
@@ -195,6 +207,9 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 						_ => 0
 					},
 					TimeOrdered = $"{DateTime.UtcNow.AddHours(9):yyyyMMdd}{f.OrdTime.PadRight(9, '0')}".ToDateTimeM(),
+					Channel = OrderChannel.API,
+					Currency = Currency.KRW,
+					
 				});
 			});
 
