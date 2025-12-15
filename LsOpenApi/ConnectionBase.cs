@@ -621,7 +621,7 @@ public class ConnectionBase
 		List = []
 	};
 
-	protected static ResponseResults<T> ReturnResults<T>(List<T> list, string code = "", string message = "", MessageType typ = MessageType.SYS, string remark = "") where T : class => new()
+	protected static ResponseResults<T> ReturnResults<T>(List<T> list, string code = "", string message = "", MessageType typ = MessageType.SYS, string remark = "", Dictionary<string, decimal>? extraData = null) where T : class => new()
 	{
 		Broker = Brkr.LS,
 		StatusCode = list.Count > 0 ? Status.SUCCESS : Status.NODATA,
@@ -629,7 +629,8 @@ public class ConnectionBase
 		Code = code,
 		Message = string.IsNullOrEmpty(message) && list.Count == 0 ? "no data" : message,
 		List = list,
-		Remark = remark
+		Remark = remark,
+		ExtraData = extraData ?? []
 	};
 	#endregion
 }

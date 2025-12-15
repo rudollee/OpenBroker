@@ -276,10 +276,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 				});
 			}
 
-			return new ResponseResults<Order>
-			{
-				List = orders,
-			};
+			return ReturnResults(orders);
 		}
 		catch (Exception ex)
 		{
@@ -311,7 +308,13 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 				Qty = f.Jqty,
 			}));
 
-			return ReturnResults(positions, typ: MessageType.POSITION);
+			Dictionary<string, decimal> extraData = new()
+			{
+                { "REALIZED-PNL", response.T0441OutBlock.Tdtsunik },
+				{ "PNL", response.T0441OutBlock.Tsunik }
+            };
+
+			return ReturnResults(positions, typ: MessageType.POSITION, extraData: extraData);
 		}
 		catch (Exception ex)
 		{
