@@ -13,6 +13,10 @@ public class Order : InstrumentCore
     public DateOnly DateBiz { get; set; }
     public long OID { get; set; }
     public long IdOrigin { get; set; }
+    public DateTime TimeOrdered { get; set; }
+    public OrderType OrderType { get; set; } = OrderType.LIMIT;
+    public bool IsLong { get; set; }
+
     [Obsolete("Use QtyOrdered property")]
     public decimal VolumeOrdered { get; set; }
     [Obsolete("Use QtyOrderable property")]
@@ -32,8 +36,6 @@ public class Order : InstrumentCore
     /// 주문 금액
     /// </summary>
 	public decimal Aggregation { get; set; }
-    public bool IsLong { get; set; }
-    public DateTime TimeOrdered { get; set; }
 }
 
 public class OrderCore
