@@ -97,13 +97,13 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 			#endregion
 			#region 실시간 주문 HDFFF1C0
 			case nameof(HDFFF1C0):
-				OrderReceived(this, new ResponseResult<Order>
+				OrderReceived(this, new ResponseResult<Execution>
 				{
 					Broker = Brkr.KI,
                     Typ = MessageType.ORDER,
 					StatusCode = Status.SUCCESS,
 					Code = rawData[2],
-					Info = new Order
+					Info = new Execution
 					{
 						Broker = Brkr.KI,
 						DateBiz = data[(int)HDFFF1C0.ord_dt].ToDate(),

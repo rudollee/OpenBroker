@@ -20,7 +20,7 @@ public interface IExecution
     /// <summary>
     /// 체결/미체결 내역
     /// </summary>
-    EventHandler<ResponseResult<Order>> OrderReceived { get; set; }
+    EventHandler<ResponseResult<Execution>> OrderReceived { get; set; }
 
     /// <summary>
     /// 잔고

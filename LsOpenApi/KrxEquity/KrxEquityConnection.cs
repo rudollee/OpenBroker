@@ -543,16 +543,18 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<SC0OutBlock>>(message);
 			if (response is null || response.Body is null) return false;
 
-			OrderReceived(this, new ResponseResult<Order>
+			OrderReceived(this, new ResponseResult<Execution>
 			{
 				Typ = MessageType.ORDER,
 				StatusCode = Status.SUCCESS,
 				Code = nameof(SC0),
-				Info = new Order
+				Info = new Execution
 				{
 					Broker = Brkr.LS,
 					DateBiz = DateTime.Now.ToKrxTradingDay(),
 					OID = Convert.ToInt64(response.Body.ordno),
+					IdOrigin = Convert.ToInt64(response.Body.orgordno),
+					TimeOrdered = response.Body.ordtm.ToDateTimeM(),
 					Symbol = response.Body.shtcode.Substring(1),
 					InstrumentName = response.Body.hname,
 					Mode = response.Body.ordchegb switch
@@ -565,7 +567,6 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					IsLong = response.Body.bnstp == "2",
 					PriceOrdered = Convert.ToDecimal(response.Body.ordprice),
 					QtyOrdered = Convert.ToDecimal(response.Body.ordqty),
-					TimeOrdered = response.Body.ordtm.ToDateTimeM(),
 				},
 				Remark = message,
 				Broker = Brkr.LS
@@ -595,12 +596,12 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<SC2OutBlock>>(message);
 			if (response is null || response.Body is null) return false;
 
-			OrderReceived(this, new ResponseResult<Order>
+			OrderReceived(this, new ResponseResult<Execution>
 			{
 				Typ = MessageType.ORDER,
 				StatusCode = Status.SUCCESS,
 				Code = trCode,
-				Info = new Order
+				Info = new Execution
 				{
 					Broker = Brkr.LS,
 					DateBiz = DateTime.Now.ToKrxTradingDay(),

@@ -7,7 +7,7 @@ namespace LsOpenApi.KrxFutures;
 public partial class LsKrxFutures : ConnectionBase, IExecution
 {
 	public required EventHandler<ResponseResult<Execution>> Executed { get; set; }
-	public required EventHandler<ResponseResult<Order>> OrderReceived { get; set; }
+	public required EventHandler<ResponseResult<Execution>> OrderReceived { get; set; }
 	public EventHandler<ResponseResult<Balance>>? BalanceAggregated { get; set; }
 
 	public Task<ResponseCore> PlaceOrderAsync(OrderCore order) => throw new NotImplementedException();

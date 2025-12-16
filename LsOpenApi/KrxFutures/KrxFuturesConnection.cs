@@ -246,11 +246,11 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 				return false;
 			}
 
-			OrderReceived(this, new ResponseResult<Order>
+			OrderReceived(this, new ResponseResult<Execution>
 			{
 				Typ = MessageType.ORDER,
 				Code = $"{nameof(O01)}:{response.Header.TrCode}",
-				Info = new Order
+				Info = new Execution
 				{
 					DateBiz = DateTime.Now.ToKrxTradingDay(),
 					TimeOrdered = response.Body.trxtime.ToDateTimeM(),
@@ -277,16 +277,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			Message(this, new ResponseCore
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Typ = MessageType.ORDER,
-				Code = nameof(O01),
-				Message = ex.Message,
-				Remark = message,
-				Broker = Brkr.LS
-			});
-
+			SendErrorMessage(nameof(O01), ex.Message);
 			return false;
 		}
 	}

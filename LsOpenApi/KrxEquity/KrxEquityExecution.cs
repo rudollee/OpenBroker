@@ -9,7 +9,7 @@ namespace LsOpenApi.KrxEquity;
 public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEquity
 {
 	public required EventHandler<ResponseResult<Execution>> Executed { get; set; }
-	public required EventHandler<ResponseResult<Order>> OrderReceived { get; set; }
+	public required EventHandler<ResponseResult<Execution>> OrderReceived { get; set; }
 	public EventHandler<ResponseResult<Balance>>? BalanceAggregated { get; set; }
 
 	#region 주문/정정/취소 - CSPAT00601/CSPAT00701/CSPAT00801
