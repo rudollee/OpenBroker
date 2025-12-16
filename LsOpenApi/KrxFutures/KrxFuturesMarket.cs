@@ -20,8 +20,8 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	#region request market execution - t2101/t8456, t8402
 	public async Task<ResponseResult<MarketExecution>> RequestMarketExecution(string symbol)
 	{
-		if (_futuresCodes.Contains(symbol[..1]) && !_k200OrFx.Contains(symbol.Substring(1, 2)))
-		{
+        if (symbol.ToKrxInstrumentTypeCode() == InstrumentType.Futures && !_k200OrFx.Contains(symbol.Substring(1, 2)))
+        {
 			return await RequestMarketExecutionSsf(symbol);
 		}
 
@@ -223,12 +223,12 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	#region request orderbook - t2105(t8457)/t8403
 	public async Task<ResponseResult<OrderBook>> RequestOrderbook(string symbol)
 	{
-		if (_futuresCodes.Contains(symbol[..1]) && !_k200OrFx.Contains(symbol.Substring(1, 2)))
+		if (symbol.ToKrxInstrumentTypeCode() == InstrumentType.Futures && !_k200OrFx.Contains(symbol.Substring(1, 2)))
 		{
-			return await RequestOrderbookSSFAsync(symbol);
-		}
+            return await RequestOrderbookSSFAsync(symbol);
+        }
 
-		try
+        try
 		{
 			var isRegular = symbol.Length != 9;
 			var tr = isRegular ? typeof(T2105) : typeof(T8457);
@@ -671,7 +671,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		if (string.IsNullOrWhiteSpace(subscriber)) subscriber = "SYS";
 
 		string trCode = string.Empty;
-		if (_futuresCodes.Contains(symbol[..1]))
+		if (symbol.ToKrxInstrumentTypeCode() == InstrumentType.Futures)
 		{
 			trCode = symbol.Substring(1, 2) switch
 			{
@@ -694,7 +694,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		if (string.IsNullOrWhiteSpace(symbol)) return ReturnError(symbol, "no symbol");
 
 		string trCode = string.Empty;
-		if (_futuresCodes.Contains(symbol[..1]))
+		if (symbol.ToKrxInstrumentTypeCode() == InstrumentType.Futures)
 		{
 			trCode = symbol.Substring(1, 2) switch
 			{

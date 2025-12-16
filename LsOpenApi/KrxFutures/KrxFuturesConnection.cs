@@ -9,8 +9,7 @@ using Websocket.Client;
 namespace LsOpenApi.KrxFutures;
 public partial class LsKrxFutures : ConnectionBase, IConnection
 {
-	private readonly string[] _futuresCodes = { "1", "A" };
-	private readonly string[] _k200OrFx = { "01", "75" };
+	private readonly string[] _k200OrFx = ["01", "75"];
 
 	public Task<ResponseResult<KeyPack>> RequestApprovalKeyAsync(string appkey, string secretkey) => throw new NotImplementedException();
 
@@ -193,7 +192,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<C01OutBlock>>(message);
 			if (response is null || response.Body is null) return false;
 
-			Int64.TryParse(response.Body.Ordordno, out long idOrigin);
+            _ = long.TryParse(response.Body.Ordordno, out long idOrigin);
 			Executed(this, new ResponseResult<Execution>
 			{
 				Typ = MessageType.EXECUTION,
@@ -206,7 +205,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 					EID = Convert.ToInt64(response.Body.Yakseq),
 					Symbol = response.Body.Expcode.Substring(3, 8),
 					Price = Convert.ToDecimal(response.Body.ChePrice),
-					Qty = Convert.ToDecimal(response.Body.CheVol),
+					QtyExecuted = Convert.ToDecimal(response.Body.CheVol),
 					DateBiz = response.Body.CheDate.ToDate(),
 					IsLong = response.Body.DosuGb == "2",
 				},
