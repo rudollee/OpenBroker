@@ -340,12 +340,85 @@ public partial class KisGlobalFutures : ConnectionBase, IExecution
 	}
 	#endregion
 
-	#region 일별 체결내역 : OTFM3122R
+	#region 당일/일별 체결내역 : OTFM3116R/OTFM3122R
 	public async Task<ResponseResults<Execution>> RequestExecutionsAsync(ExecutionStatus status = ExecutionStatus.ExecutedOnly, string symbol = "")
 	{
-		var date = DateTime.Now.ToNewYorkTime();
+		var queryParameters = GenerateParameters(new
+		{
+			CCLD_NCCS_DVSN = status switch
+			{
+				ExecutionStatus.UnexecutedOnly => "03",
+				ExecutionStatus.ExecutedOnly => "02",
+				_ => "01"
+			},
+			SLL_BUY_DVSN_CD = "%%",
+			FUOP_DVSN = "00",
+			CTX_AREA_FK200 = "",
+			CTX_AREA_NK200 = ""
+		}, true);
 
-		return await RequestExecutionsAsync(date, date, status);
+		try
+		{
+			var response = await RequestStandardAsync<OTFM3116R>("uapi/overseas-futureoption/v1/trading/inquire-ccld", queryParameters);
+			if (response is null) return new ResponseResults<Execution>
+			{
+				StatusCode = Status.INTERNALSERVERERROR,
+				List = [],
+				Message = "response is null",
+			};
+
+			if (response.Output.Count == 0) return new ResponseResults<Execution>
+			{
+				StatusCode = Status.NODATA,
+				List = [],
+				Message = "no order",
+				Remark = $"{BankAccountInfo.AccountNumber}: {BankAccountInfo.AccountNumberSuffix}",
+			};
+
+			List<Execution> executions = [];
+			var remark = string.Empty;
+			response.Output.ForEach(f =>
+			{
+				executions.Add(new Execution
+				{
+					Broker = Brkr.KI,
+					OID = f.OID,
+					DateBiz = f.ord_dt.ToDate(),
+					PriceOrdered = f.PriceOrdered,
+					QtyOrdered = f.VolumeOrdered,
+					QtyUpdatable = f.VolumeOrdered - f.VolumeExecuted,
+					Symbol = f.Symbol,
+					TimeOrdered = f.erlm_dtl_dtime.ToDateTimeM(),
+					IsLong = f.sll_buy_dvsn_cd == "02", //
+					Mode = f.rcit_dvsn_cd switch
+					{
+						"00" => OrderMode.PLACE,
+						"01" => OrderMode.UPDATE,
+						"02" => OrderMode.CANCEL,
+						"03" => OrderMode.PLACE_RESPONSE,
+						"04" => OrderMode.UPDATE_RESPONSE,
+						_ => OrderMode.NONE
+					}
+				});
+
+				remark += f.rcit_dvsn_cd + "|";
+			});
+
+			return new ResponseResults<Execution>
+			{
+				List = executions,
+				Remark = remark
+			};
+		}
+		catch (Exception ex)
+		{
+			return new ResponseResults<Execution>
+			{
+				List = [],
+				StatusCode = Status.INTERNALSERVERERROR,
+				Message = $"error catch: {ex.Message}",
+			};
+		}
 	}
 
 	public async Task<ResponseResults<Execution>> RequestExecutionsAsync(DateTime dateBegun, ExecutionStatus status = ExecutionStatus.ExecutedOnly) =>

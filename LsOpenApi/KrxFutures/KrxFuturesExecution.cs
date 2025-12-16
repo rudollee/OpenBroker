@@ -15,10 +15,70 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 	public Task<ResponseResult<Balance>> RequestBalancesAsync(DateTime? date = null, Currency currency = Currency.TUS) => throw new NotImplementedException();
 
 	#region request executions - CFOAQ00600
-	public Task<ResponseResults<Execution>> RequestExecutionsAsync(ExecutionStatus status = ExecutionStatus.ExecutedOnly, string symbol = "")
+	public async Task<ResponseResults<Execution>> RequestExecutionsAsync(ExecutionStatus status = ExecutionStatus.ExecutedOnly, string symbol = "")
 	{
-		var date = DateTime.Now;
-		return RequestExecutionsAsync(date, date, status);
+		try
+		{
+			var response = await RequestStandardAsync<T0434>(LsEndpoint.FuturesAccount.ToDescription(), new
+			{
+				t0434InBlock = new T0434InBlock
+				{
+					Chegb = status switch
+					{
+						ExecutionStatus.All => "0",
+						ExecutionStatus.ExecutedOnly => "1",
+						ExecutionStatus.UnexecutedOnly => "2",
+						_ => "0"
+					}
+				}
+			});
+
+			if (response.T0434OutBlock1.Count == 0) return ReturnResults<Execution>([], nameof(T0434), response.Message);
+
+			List<Execution> executions = new() { Capacity = response.T0434OutBlock1.Count };
+			response.T0434OutBlock1.ForEach(f =>
+			{
+				executions.Add(new Execution
+				{
+					DateBiz = DateOnly.FromDateTime(DateTime.UtcNow.AddHours(9)),
+					Broker = Brkr.LS,
+					OID = f.OrdNo,
+					IdOrigin = f.OrgOrdNo,
+					Mode = f.OrgOrdNo == 0 ? OrderMode.PLACE : f.Medosu.Substring(2, 2) switch
+					{
+						"정정" => OrderMode.UPDATE,
+						"취소" => OrderMode.CANCEL,
+						_ => OrderMode.PLACE
+					},
+					Symbol = f.Expcode,
+					IsLong = f.Medosu.Contains("매수"),
+					QtyOrdered = f.Qty,
+					QtyExecuted = f.Cheqty,
+					QtyUpdatable = f.Ordrem,
+					QtyOrderable = f.Ordrem,
+					QtyCancelable = f.Ordrem,
+					PriceOrdered = f.Price,
+					Precision = f.Expcode.ToKrxInstrumentTypeCode() != InstrumentType.Futures ? 2 : f.Expcode.Substring(1, 2) switch
+					{
+						"01" => 2,
+						"05" => 2,
+						"07" => 2,
+						"75" => 2,
+						_ => 0
+					},
+					TimeOrdered = $"{DateTime.UtcNow.AddHours(9):yyyyMMdd}{f.OrdTime.PadRight(9, '0')}".ToDateTimeM(),
+					Channel = OrderChannel.API,
+					Currency = Currency.KRW,
+
+				});
+			});
+
+			return ReturnResults(executions);
+		}
+		catch (Exception ex)
+		{
+			return ReturnErrorResults<Execution>(nameof(T0434), ex.Message, statusCode: Status.INTERNALSERVERERROR);
+		}
 	}
 
 	public async Task<ResponseResults<Execution>> RequestExecutionsAsync(DateTime dateBegun, DateTime dateFin, ExecutionStatus status = ExecutionStatus.ExecutedOnly)

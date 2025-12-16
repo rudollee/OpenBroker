@@ -55,11 +55,12 @@ public interface IExecution
 	/// <returns></returns>
 	Task<ResponseCore> CancelOrderAsync(OrderCore order);
 
-	/// <summary>
-	/// 주문내역 - 당일
-	/// </summary>
-	/// <returns></returns>
-	Task<ResponseResults<Order>> RequestOrdersAsync(ExecutionStatus executionStatus = ExecutionStatus.All);
+    /// <summary>
+    /// 주문내역 - 당일
+    /// </summary>
+    /// <returns></returns>
+    [Obsolete("use RequestExecutionsAsync")]
+    Task<ResponseResults<Order>> RequestOrdersAsync(ExecutionStatus executionStatus = ExecutionStatus.All);
 
 	/// <summary>
 	/// 주문내역 - 기간별
@@ -67,6 +68,7 @@ public interface IExecution
 	/// <param name="dateBegun"></param>
 	/// <param name="dateFin"></param>
 	/// <returns></returns>
+	[Obsolete("use RequestExecutionsAsync")]
 	Task<ResponseResults<Order>> RequestOrdersAsync(DateOnly dateBegun, DateOnly dateFin);
 
 	/// <summary>
