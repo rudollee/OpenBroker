@@ -14,7 +14,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 	public Task<ResponseCore> CancelOrderAsync(OrderCore order) => throw new NotImplementedException();
 	public Task<ResponseResult<Balance>> RequestBalancesAsync(DateTime? date = null, Currency currency = Currency.TUS) => throw new NotImplementedException();
 
-	#region request executions - CFOAQ00600
+	#region request executions - T0434 / CFOAQ00600
 	public async Task<ResponseResults<Execution>> RequestExecutionsAsync(ExecutionStatus status = ExecutionStatus.ExecutedOnly, string symbol = "")
 	{
 		try
@@ -49,6 +49,11 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 						"정정" => OrderMode.UPDATE,
 						"취소" => OrderMode.CANCEL,
 						_ => OrderMode.PLACE
+					},
+					OrderType = f.Hogatype switch
+					{
+						"L" => OrderType.LIMIT,
+						_ => OrderType.MARKET,
 					},
 					Symbol = f.Expcode,
 					IsLong = f.Medosu.Contains("매수"),
@@ -94,9 +99,15 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 				{
 					CFOAQ00600InBlock1 = new CFOAQ00600InBlock1
 					{
-						QrySrtDt = dateBegun.ToString("yyyyMMdd"),
-						QryEndDt = dateFin.ToString("yyyyMMdd"),
-						PrdtExecTpCode = "1"
+						QrySrtDt = $"{dateBegun:yyyyMMdd}",
+						QryEndDt = $"{dateFin:yyyyMMdd}",
+						PrdtExecTpCode = status switch
+						{
+							ExecutionStatus.All => "0",
+							ExecutionStatus.ExecutedOnly => "1",
+							ExecutionStatus.UnexecutedOnly => "2",
+							_ => "0"
+						}
 					}
 				}, nextKey);
 
@@ -142,7 +153,20 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 					Symbol = execution.FnoIsuNo,
 					InstrumentName = execution.IsuNm,
 					IsLong = execution.BnsTpNm == "매수",
+					Mode = execution.MrcTpNm switch
+					{
+						"정정" => OrderMode.UPDATE,
+						"취소" => OrderMode.CANCEL,
+						_ => OrderMode.PLACE
+					},
+					OrderType = execution.FnoOrdprcPtnCode switch
+					{
+						"00" => OrderType.LIMIT,
+						"03" => OrderType.MARKET,
+						_ => OrderType.LIMIT
+					},
 					QtyOrdered = execution.OrdQty,
+					QtyExecuted = execution.ExecQty,
 					QtyUpdatable = execution.UnercQty,
 					QtyLeft = execution.UnercQty,
 					Qty = execution.ExecQty,

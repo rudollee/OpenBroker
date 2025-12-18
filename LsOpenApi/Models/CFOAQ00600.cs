@@ -21,16 +21,16 @@ internal class CFOAQ00600InBlock1
 	/// <summary>조회종료일</summary>
 	public string QryEndDt { get; set; } = string.Empty;
 
-	/// <summary>선물옵션분류코드</summary>
+	/// <summary>선물옵션분류코드: 00.전체, 11.선물, 12.옵션</summary>
 	public string FnoClssCode { get; set; } = "00";
 
-	/// <summary>상품군코드</summary>
+	/// <summary>상품군코드: 00.전체, 01.주가지수, 02.개별주식, 03.가공채권, 04.통화, 05.상품, 06.금리</summary>
 	public string PrdgrpCode { get; set; } = "00";
 
-	/// <summary>체결구분</summary>
+	/// <summary>체결구분: 0.전체, 1.체결, 2.미체결</summary>
 	public string PrdtExecTpCode { get; set; } = "1";
 
-	/// <summary>정렬순서구분</summary>
+	/// <summary>정렬순서구분: 3.역순, 4.정순</summary>
 	public string StnlnSeqTp { get; set; } = "4";
 
 	/// <summary>통신매체코드</summary>
@@ -126,7 +126,7 @@ internal class CFOAQ00600OutBlock3
 	/// <summary>정정취소구분명</summary>
 	public string MrcTpNm { get; set; } = string.Empty;
 
-	/// <summary>선물옵션호가유형코드</summary>
+	/// <summary>선물옵션호가유형코드: 00.지정가, 03.시장가, 05.조건부지정가, 06.최유리지정가, 10.지정가(IOC), 20.지정가(FOK), 13.시장가(IOC), 23.시장가(FOK), 16.최유리지정가(IOC), 26.최유리지정가(FOK)</summary>
 	public string FnoOrdprcPtnCode { get; set; } = string.Empty;
 
 	/// <summary>선물옵션호가유형명</summary>
