@@ -407,9 +407,17 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 	}
 	#endregion
 
-	public async Task<ResponseCore> SubscribeExecutionAsync(bool connecting = true) => await SubscribeAsync("SYS", nameof(C01), "", connecting);
+	public async Task<ResponseCore> SubscribeExecutionAsync(bool connecting = true)
+	{
+		await SubscribeAsync("SYS", nameof(C02), string.Empty, connecting);
+        return await SubscribeAsync("SYS", nameof(C01), string.Empty, connecting);
+    }
 
-	public async Task<ResponseCore> SubscribeOrderAsync(bool connecting = true) => await SubscribeAsync("SYS", nameof(O01), "", connecting);
+	public async Task<ResponseCore> SubscribeOrderAsync(bool connecting = true)
+	{
+		await SubscribeAsync("SYS", nameof(O02), string.Empty, connecting);
+		return await SubscribeAsync("SYS", nameof(O01), string.Empty, connecting);
+    }
 
 	public Task<ResponseCore> UpdateOrderAsync(OrderCore order) => throw new NotImplementedException();
 }

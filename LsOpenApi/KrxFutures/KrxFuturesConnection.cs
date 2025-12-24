@@ -52,9 +52,11 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			nameof(DC0) => CallbackXC0(message.Text, trCode),
 			nameof(FH0) => CallbackXH0(message.Text, trCode),
 			nameof(DH0) => CallbackXH0(message.Text, trCode),
-			nameof(O01) => CallbackO01(message.Text),
+			nameof(O01) => CallbackO0X(message.Text, trCode),
+			nameof(O02) => CallbackO0X(message.Text, trCode),
 			//nameof(H01) => CallbackH01(message.Text),
-			nameof(C01) => CallbackC01(message.Text),
+			nameof(C01) => CallbackC0X(message.Text, trCode),
+			nameof(C02) => CallbackC0X(message.Text, trCode),
 			_ => false
 		};
 	}
@@ -182,21 +184,25 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 	} 
 	#endregion
 
-	#region C01 callback
-	private bool CallbackC01(string message)
+	#region C01/C02 callback
+	private bool CallbackC0X(string message, string tr)
 	{
 		if (Executed is null) return false;
 
 		try
 		{
 			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<C01OutBlock>>(message);
-			if (response is null || response.Body is null) return false;
+            if (response is null || response.Body is null)
+            {
+                SendErrorMessage(tr, message);
+                return false;
+            }
 
             _ = long.TryParse(response.Body.Ordordno, out long idOrigin);
 			Executed(this, new ResponseResult<Execution>
 			{
 				Typ = MessageType.EXECUTION,
-				Code = $"{nameof(C01)}:{response.Header.TrCode}",
+				Code = $"{tr}:{response.Header.TrCode}",
 				Info = new Execution
 				{
 					TimeExecuted = $"{response.Body.CheDate}{response.Body.CheTime}".ToDateTimeM(),
@@ -217,23 +223,14 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			Message(this, new ResponseCore
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Typ = MessageType.EXECUTION,
-				Code = nameof(C01),
-				Message = ex.Message,
-				Remark = message,
-				Broker = Brkr.LS
-			});
-
-			return false;
+            SendErrorMessage(tr, ex.Message);
+            return false;
 		}
 	}
 	#endregion
 
-	#region O01 callback
-	private bool CallbackO01(string message)
+	#region O01/O02 callback
+	private bool CallbackO0X(string message, string tr)
 	{
 		if (OrderReceived is null) return false;
 
@@ -242,32 +239,32 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<O01OutBlock>>(message);
 			if (response is null || response.Body is null)
 			{
-				SendErrorMessage(nameof(O01), message);
+				SendErrorMessage(tr, message);
 				return false;
 			}
 
 			OrderReceived(this, new ResponseResult<Execution>
 			{
 				Typ = MessageType.ORDER,
-				Code = $"{nameof(O01)}:{response.Header.TrCode}",
+				Code = $"{tr}:{response.Header.TrCode}",
 				Info = new Execution
 				{
 					DateBiz = DateTime.Now.ToKrxTradingDay(),
-					TimeOrdered = response.Body.trxtime.ToDateTimeM(),
-					OID = Convert.ToInt64(response.Body.ordno),
-					IdOrigin = Convert.ToInt64(response.Body.orgordno),
-					Symbol = response.Body.isuno.Substring(3, 8),
-					IsLong = response.Body.bnstp == "2",
-					QtyOrdered = Convert.ToDecimal(response.Body.ordqty),
-					PriceOrdered = Convert.ToDecimal(response.Body.ordprc),
-					Mode = response.Body.mrctp switch
+					TimeOrdered = response.Body.Trxtime.ToDateTimeM(),
+					OID = Convert.ToInt64(response.Body.Ordno),
+					IdOrigin = Convert.ToInt64(response.Body.Orgordno),
+					Symbol = response.Body.Isuno.Substring(3, 8),
+					IsLong = response.Body.Bnstp == "2",
+					QtyOrdered = Convert.ToDecimal(response.Body.Ordqty),
+					PriceOrdered = Convert.ToDecimal(response.Body.Ordprc),
+					Mode = response.Body.Mrctp switch
 					{
 						"0" => OrderMode.PLACE,
 						"1" => OrderMode.UPDATE,
 						"2" => OrderMode.CANCEL,
 						_ => OrderMode.NONE,
 					},
-					Aggregation = Convert.ToDecimal(response.Body.ordprc) * Convert.ToDecimal(response.Body.ordqty),
+					Aggregation = Convert.ToDecimal(response.Body.Ordprc) * Convert.ToDecimal(response.Body.Ordqty),
 				},
 				Remark = message,
 				Broker = Brkr.LS,
@@ -277,7 +274,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			SendErrorMessage(nameof(O01), ex.Message);
+			SendErrorMessage(tr, ex.Message);
 			return false;
 		}
 	}

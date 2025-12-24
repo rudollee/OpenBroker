@@ -128,3 +128,12 @@ internal class C01OutBlock
 	[JsonPropertyName("mem_accno")]
 	public string MemAccno { get; set; } = string.Empty;
 }
+
+/// <summary>
+/// KRX야간파생 선물체결
+/// </summary>
+internal class C02
+{
+    public C01InBlock C02InBlock { get; set; } = new();
+    public C01OutBlock C02OutBlock { get; set; } = new();
+}
