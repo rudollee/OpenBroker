@@ -15,11 +15,9 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			if (closedWeeks.Contains(now.DayOfWeek)) return false;
 
 			if (now.TimeOfDay < new TimeSpan(7, 20, 00)) return false;
-			if (now.TimeOfDay > new TimeSpan(20, 45, 00)) return false;
-
-			return true;
-		}
-	}
+            return now.TimeOfDay <= new TimeSpan(20, 45, 00);
+        }
+    }
 
 	public EventHandler<ResponseResult<MarketExecution>>? MarketExecuted { get; set; }
 	public EventHandler<ResponseResult<OrderBook>>? OrderBookTaken { get; set; }
@@ -41,13 +39,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		else if (symbol == "JPYUSD") return await SubscribeAsync(subscriber, "CUR", symbol.PadRight(6, ' '), connecting);
 		else if (symbol.Contains('@')) return await SubscribeAsync(subscriber, "MK2", symbol.PadRight(16, ' '), connecting);
 
-		if (!Equities.ContainsKey(symbol)) return new ResponseCore
-		{
-			Broker = Brkr.LS,
-			StatusCode = Status.BAD_REQUEST,
-			Code = "NOT-FOUND",
-			Message = "Market Execution subscription cannot be changed. A requested Symbol has not found",
-		};
+		if (!Equities.ContainsKey(symbol)) return ReturnError("NOT-FOUND", "A requested Symbol has not found", typ: MessageType.MISC, statusCode: Status.BAD_REQUEST); 
 
 		return await SubscribeAsync(subscriber, Equities[symbol].Section == ExchangeSection.KOSPI ? "S3_" : "K3_", symbol, connecting);
 	}
@@ -57,13 +49,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		var isUnified = symbol.StartsWith('U');
 		if (isUnified) symbol = symbol[1..];
 
-		if (!Equities.ContainsKey(symbol)) return new ResponseCore
-		{
-			Broker = Brkr.LS,
-			StatusCode = Status.BAD_REQUEST,
-			Code = "NOT-FOUND",
-			Message = "Market Depth subscription cannot be changed. A requested Symbol has not found",
-		};
+		if (!Equities.ContainsKey(symbol)) return ReturnError("NOT-FOUND", "A requested Symbol has not found", typ: MessageType.MISC, statusCode: Status.BAD_REQUEST);
 
 		if (string.IsNullOrWhiteSpace(subscriber)) subscriber = "SYS";
 
@@ -90,7 +76,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			{
 				t3102InBlock = new T3102InBlock
 				{
-					SNewsno = id
+					NewsNo = id
 				}
 			});
 
@@ -100,14 +86,16 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				Title = string.Empty 
 			}, nameof(T3102), response.Message);
 
-			var htmlString = string.Join("", response.T3102OutBlock1.Select(s => s.SBody)).Replace("t3102OutBlock1", "");
+			var htmlString = string.Join("", response.T3102OutBlock1.Select(s => s.Body))
+				.Replace("t3102OutBlock1", "")
+				.Replace("IMGsrc=", "img src=");
 
 			return ReturnResult(new News
 			{
 				Code = id,
-				Title = response.T3102OutBlock2.STitle,
+				Title = response.T3102OutBlock2.Title,
 				Body = htmlString,
-				SymbolList = [.. response.T3102OutBlock.Select(s => s.SJongcode)]
+				SymbolList = [.. response.T3102OutBlock.Select(s => s.SymbolsTxt)]
 			}, nameof(T3102));
 		}
 		catch (Exception ex)
@@ -165,12 +153,12 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 					t9945InBlock = new t9945InBlock { gubun = code }
 				});
 
-				if (!response.t9945OutBlock.Any()) return new ResponseDictionary<string, Equity>
+				if (response.t9945OutBlock.Count == 0) return new ResponseDictionary<string, Equity>
 				{
 					StatusCode = Status.ERROR_OPEN_API,
 					Message = "no data",
 					Code = response.Code,
-					Dic = new Dictionary<string, Equity>()
+					Dic = []
 				};
 
 				foreach (var instrument in response.t9945OutBlock.Where(w => w.etfchk == "0"))
@@ -415,7 +403,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#region request marketExecution using t8407
 	public async Task<ResponseResult<MarketExecution>> RequestMarketExecution(string symbol)
 	{
-		var response = await RequestMarketExecution(new string[] { symbol });
+		var response = await RequestMarketExecution([symbol]);
 		if (!response.List.Any()) return new ResponseResult<MarketExecution>
 		{
 			StatusCode = Status.NODATA,
@@ -834,7 +822,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = "HTS ID is required",
-				List = new List<SearchFilter>()
+				List = []
 			};
 
 			var response = await RequestStandardAsync<T1866>(LsEndpoint.EquitySearch.ToDescription(), new

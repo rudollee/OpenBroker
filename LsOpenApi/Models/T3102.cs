@@ -23,7 +23,7 @@ internal class T3102InBlock
 {
 	/// <summary>뉴스번호</summary>
 	[JsonPropertyName("sNewsno")]
-	public string SNewsno { get; set; } = string.Empty;
+	public string NewsNo { get; set; } = string.Empty;
 }
 
 /// <summary>
@@ -33,7 +33,7 @@ internal class T3102OutBlock
 {
 	/// <summary>뉴스종목</summary>
 	[JsonPropertyName("sJongcode")]
-	public string SJongcode { get; set; } = string.Empty;
+	public string SymbolsTxt { get; set; } = string.Empty;
 }
 
 /// <summary>
@@ -43,7 +43,7 @@ internal class T3102OutBlock1
 {
 	/// <summary>뉴스본문</summary>
 	[JsonPropertyName("sBody")]
-	public string SBody { get; set; } = string.Empty;
+	public string Body { get; set; } = string.Empty;
 }
 
 /// <summary>
@@ -53,5 +53,5 @@ internal class T3102OutBlock2
 {
 	/// <summary>뉴스타이틀</summary>
 	[JsonPropertyName("sTitle")]
-	public string STitle { get; set; } = string.Empty;
+	public string Title { get; set; } = string.Empty;
 }

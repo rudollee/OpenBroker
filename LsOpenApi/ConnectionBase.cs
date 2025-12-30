@@ -570,11 +570,11 @@ public class ConnectionBase
 		Remark = remark
 	});
 
-	protected static ResponseCore ReturnError(string code, string message, string remark = "") => new() 
+	protected static ResponseCore ReturnError(string code, string message, string remark = "", MessageType typ = MessageType.SYSERR, Status statusCode = Status.ERROR_OPEN_API) => new() 
 	{
 		Broker = Brkr.LS,
-		Typ = MessageType.SYSERR,
-		StatusCode = Status.ERROR_OPEN_API,
+		Typ = typ,
+		StatusCode = statusCode,
 		Code = code,
 		Message = message,
 		Remark = remark
