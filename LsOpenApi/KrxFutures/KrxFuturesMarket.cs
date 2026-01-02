@@ -554,6 +554,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		{
 			return new ResponseDictionary<string, Instrument>
 			{
+				StatusCode = Status.INTERNALSERVERERROR,
 				Broker = Brkr.LS,
 				Code = "OPENAPI-ERR",
 				Message = ex.Message,
