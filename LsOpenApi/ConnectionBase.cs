@@ -137,13 +137,14 @@ public class ConnectionBase
 			return new ResponseCore
 			{
 				Broker = Brkr.LS,
+				Typ = MessageType.CONNECTION,
 				StatusCode = Status.SUCCESS,
 				Message = "Connected"
 			};
 		}
 		catch (Exception ex)
 		{
-			return ReturnError("CONNECTION", ex.Message, "during connect websocket");
+			return ReturnError("CONNECTION", ex.Message, "during connect websocket", typ: MessageType.CONNECTION);
 		}
 	}
 

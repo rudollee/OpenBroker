@@ -199,7 +199,9 @@ public class ConnectionBase
 
 			return new ResponseCore
 			{
+				Broker = Brkr.KI,
 				StatusCode = Status.SUCCESS,
+				Typ = MessageType.CONNECTION,
 				Message = "Connected"
 			};
 		}
@@ -207,7 +209,9 @@ public class ConnectionBase
 		{
 			return new ResponseCore
 			{
+				Broker = Brkr.KI,
 				StatusCode = Status.INTERNALSERVERERROR,
+				Typ = MessageType.CONNECTION,
 				Message = ex.Message,
 				Remark = "during connect websocket"
 			};
@@ -218,6 +222,9 @@ public class ConnectionBase
 	{
 		if (Client is null) return new ResponseCore
 		{
+			Broker = Brkr.KI,
+			StatusCode = Status.ERROR_OPEN_API,
+			Typ = MessageType.CONNECTION,
 			Code = "NOCONNECTION",
 			Message = "no connection to disconnect or already disconnected"
 		};
@@ -233,6 +240,8 @@ public class ConnectionBase
 
 		return new ResponseCore
 		{
+			Broker = Brkr.KI,
+			Typ = MessageType.CONNECTION,
 			Message = "disconnected"
 		};
 	}
@@ -245,6 +254,7 @@ public class ConnectionBase
 		{
 			Broker = Brkr.KI,
 			StatusCode = Status.ERROR_OPEN_API,
+			Typ = MessageType.SUB,
 			Code = "NULLERR",
 			Message = "Client is null",
 			Remark = subscriber
@@ -330,7 +340,9 @@ public class ConnectionBase
 
 			return new ResponseCore
 			{
+				Broker = Brkr.KI,
 				StatusCode = result ? Status.SUCCESS : Status.ERROR_OPEN_API,
+				Typ = MessageType.SUB
 			};
 		}
 		catch (Exception ex)
@@ -682,11 +694,11 @@ public class ConnectionBase
 		Message = message,
 	});
 
-	protected void SendErrorMessage(string code, string message, string remark = "") => Message(this, new ResponseCore
+	protected void SendErrorMessage(string code, string message, string remark = "", MessageType typ = MessageType.SYSERR) => Message(this, new ResponseCore
 	{
 		StatusCode = Status.ERROR_OPEN_API,
 		Broker = Brkr.KI,
-		Typ = MessageType.SYSERR,
+		Typ = typ,
 		Code = code,
 		Message = message,
 	});
