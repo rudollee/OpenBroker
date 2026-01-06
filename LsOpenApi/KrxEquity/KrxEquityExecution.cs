@@ -423,6 +423,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 			{
 				positions.Add(new Position
 				{
+					BID = Brkr.LS,
 					Currency = Currency.KRW,
 					Symbol = position.Expcode,
 					InstrumentName = position.Hname,

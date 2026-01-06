@@ -383,13 +383,14 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 			if (response is null) return ReturnErrorResults<Position>(message: "t0441 or t0441OutBlock1 is null");
 
 			positions.Capacity = response.T0441OutBlock1.Count;
-			response.T0441OutBlock1.ForEach(f => positions.Add(new Position
+			response.T0441OutBlock1.ForEach(Position => positions.Add(new Position
 			{
-				Symbol = f.Expcode,
-				IsLong = f.Medocd == "2",
-				PriceEntry = f.Pamt,
-				Price = f.Price,
-				Qty = f.Jqty,
+				BID = Brkr.LS,
+				Symbol = Position.Expcode,
+				IsLong = Position.Medocd == "2",
+				PriceEntry = Position.Pamt,
+				Price = Position.Price,
+				Qty = Position.Jqty,
 			}));
 
 			Dictionary<string, decimal> extraData = new()

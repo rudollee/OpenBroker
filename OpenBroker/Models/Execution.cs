@@ -164,6 +164,7 @@ public class AssetCashable
 
 public class Position : InstrumentCore
 {
+    public Brkr BID { get; set; }
     public bool IsLong { get; set; }
     public decimal QtyEntry { get; set; }
     [Obsolete("Use QtyEntry property")]
