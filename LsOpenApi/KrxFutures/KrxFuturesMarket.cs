@@ -344,14 +344,14 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 
 	public Task<ResponseResult<News>> RequestNews(string id) => throw new NotImplementedException();
 
-	#region request Price Pack using t8415
+	#region request Price Pack using t8415/t8416
 	public async Task<ResponseResult<QuotePack<T>>> RequestPricePack<T>(QuoteRequest request) where T : Quote
 	{
 		if (request.DateTimeBegin > request.DateTimeEnd) return new ResponseResult<QuotePack<T>>
 		{
 			Broker = Brkr.LS,
 			StatusCode = Status.BAD_REQUEST,
-			Message = "period error"
+			Message = "wrong period"
 		};
 
 		if (request.TimeIntervalUnit == IntervalUnit.Minute)
@@ -374,35 +374,35 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		List<QuoteExt> quotes = [];
 		try
 		{
-			List<t8416OutBlock1> list = [];
+			List<T8416OutBlock1> list = [];
 			var nextKey = string.Empty;
 			var ctsDate = string.Empty;
 			do
 			{
-				var response = await RequestContinuousAsync<t8416>(LsEndpoint.FuturesChart.ToDescription(), new
+				var response = await RequestContinuousAsync<T8416>(LsEndpoint.FuturesChart.ToDescription(), new
 				{
-					t8416InBlock = new t8416InBlock
+					t8416InBlock = new T8416InBlock
 					{
-						shcode = request.Symbol,
-						gubun = request.TimeIntervalUnit switch
+						Shcode = request.Symbol,
+						Gubun = request.TimeIntervalUnit switch
 						{
 							IntervalUnit.Day => "2",
 							IntervalUnit.Week => "3",
 							IntervalUnit.Month => "4",
 							_ => "2"
 						},
-						qrycnt = request.TimeInterval,
-						sdate = request.Amount < 500 ? request.DateTimeBegin.ToString(_date8txt) : " ",
-						edate = request.DateTimeEnd.ToString(_date8txt),
-						cts_date = ctsDate
+						Qrycnt = request.TimeInterval,
+						Sdate = request.Amount < 500 ? request.DateTimeBegin.ToString(_date8txt) : " ",
+						Edate = request.DateTimeEnd.ToString(_date8txt),
+						CtsDate = ctsDate
 					}
 				}, nextKey);
 
-				if (response is null || response.t8416OutBlock1.Count == 0) break;
+				if (response is null || response.T8416OutBlock1.Count == 0) break;
 
-				list.AddRange(response.t8416OutBlock1);
+				list.AddRange(response.T8416OutBlock1);
 				nextKey = response.NextKey;
-				ctsDate = response.t8416OutBlock.cts_date;
+				ctsDate = response.T8416OutBlock.CtsDate;
 			} while (!string.IsNullOrEmpty(nextKey) && nextKey != "0" && !string.IsNullOrEmpty(ctsDate));
 
 			quotes.Capacity = list.Count;
@@ -410,13 +410,13 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			{
 				quotes.Add(new QuoteExt
 				{
-					T = $"{f.date}000000".ToDateTime(),
-					O = f.open,
-					H = f.high,
-					L = f.low,
-					C = f.close,
-					V = f.jdiff_vol,
-					OI = f.openyak,
+					T = $"{f.Date}000000".ToDateTime(),
+					O = f.Open,
+					H = f.High,
+					L = f.Low,
+					C = f.Close,
+					V = f.JdiffVol,
+					OI = f.Openyak,
 				});
 			});
 
@@ -444,28 +444,28 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	private async Task<ResponseResult<QuotePack<T>>> RequestPricePackMinutes<T>(QuoteRequest request) where T : Quote
 	{
 		List<Quote> quotes = [];
-		List<t8415OutBlock1> list = [];
+		List<T8415OutBlock1> list = [];
 		var nextKey = string.Empty;
 		var ctsDate = string.Empty;
 		do
 		{
-			var response = await RequestContinuousAsync<t8415>(LsEndpoint.FuturesChart.ToDescription(), new
+			var response = await RequestContinuousAsync<T8415>(LsEndpoint.FuturesChart.ToDescription(), new
 			{
-				t8415InBlock = new t8415InBlock
+				t8415InBlock = new T8415InBlock
 				{
-					shcode = request.Symbol,
-					ncnt = request.TimeInterval,
-					sdate = request.Amount < 500 ? request.DateTimeBegin.ToString(_date8txt) : " ",
-					edate = request.DateTimeEnd.ToString(_date8txt),
-					cts_date = ctsDate
+					Shcode = request.Symbol,
+					Ncnt = request.TimeInterval,
+					Sdate = request.Amount < 500 ? request.DateTimeBegin.ToString(_date8txt) : " ",
+					Edate = request.DateTimeEnd.ToString(_date8txt),
+					CtsDate = ctsDate
 				}
 			}, nextKey);
 
-			if (response is null || response.t8415OutBlock1.Count == 0) break;
+			if (response is null || response.T8415OutBlock1.Count == 0) break;
 
-			list.AddRange(response.t8415OutBlock1);
+			list.AddRange(response.T8415OutBlock1);
 			nextKey = response.NextKey;
-			ctsDate = response.t8415OutBlock.cts_date;
+			ctsDate = response.T8415OutBlock.CtsDate;
 		} while (!string.IsNullOrEmpty(nextKey));
 
 		quotes.Capacity = list.Count;
@@ -473,12 +473,12 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		{
 			quotes.Add(new Quote
 			{
-				T = $"{f.date}{f.time}".ToDateTime(),
-				O = f.open,
-				H = f.high,
-				L = f.low,
-				C = f.close,
-				V = f.jdiff_vol,
+				T = $"{f.Date}{f.Time}".ToDateTime(),
+				O = f.Open,
+				H = f.High,
+				L = f.Low,
+				C = f.Close,
+				V = f.JdiffVol,
 			});
 		});
 
