@@ -1,9 +1,9 @@
 ﻿using System.Net.WebSockets;
 using System.Text.Json;
-using LsOpenApi.Models;
-using OpenBroker.Models;
 using RestSharp;
 using Websocket.Client;
+using LsOpenApi.Models;
+using OpenBroker.Models;
 
 namespace LsOpenApi;
 public class ConnectionBase
@@ -34,7 +34,7 @@ public class ConnectionBase
 
 	private readonly List<Request> Requests = [];
 
-	private Dictionary<string, SubscriptionPack> _subscriptions = new()
+	private readonly Dictionary<string, SubscriptionPack> _subscriptions = new()
 	{
 		{ "JIF", new SubscriptionPack{ TrCode = "JIF", Key = "0", Subscriber = ["INIT"]} },
 	};
@@ -311,7 +311,7 @@ public class ConnectionBase
 			}
 		}
 
-		SendErrorMessage("RECONNECTION", $"{info.Type} and reconnected");
+		SendErrorMessage("CONNECTION", $"Reconnected : {info.Type}");
 	}
 	#endregion
 
@@ -321,7 +321,7 @@ public class ConnectionBase
 	/// </summary>
 	/// <param name="trCode"></param>
 	/// <param name="callbackTxt"></param>
-	protected void ParseCallbackMessage(string trCode, string callbackTxt) { }
+	protected static void ParseCallbackMessage(string trCode, string callbackTxt) { }
 
 	/// <summary>
 	/// Parse Callback Response Data
@@ -336,12 +336,9 @@ public class ConnectionBase
 	/// </summary>
 	/// <param name="additionalOption"></param>
 	/// <returns></returns>
-	protected Dictionary<string, string?> GenerateParameters(Dictionary<string, string?> additionalOption)
+	protected static Dictionary<string, string?> GenerateParameters(Dictionary<string, string?> additionalOption)
 	{
-		var basicParameters = new
-		{
-		};
-
+		var basicParameters = new { };
 		var parameters = basicParameters.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(basicParameters, null)?.ToString());
 		foreach (var parameter in additionalOption)
 		{
@@ -356,7 +353,7 @@ public class ConnectionBase
 	/// </summary>
 	/// <param name="additionalOption"></param>
 	/// <returns></returns>
-	protected Dictionary<string, string?> GenerateParameters(object additionalOption) =>
+	protected static Dictionary<string, string?> GenerateParameters(object additionalOption) =>
 		GenerateParameters(additionalOption.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(additionalOption, null)?.ToString()));
 	#endregion
 
@@ -392,7 +389,7 @@ public class ConnectionBase
 		{
 			{ "content-type", "application/json; charset=utf-8" },
 			{ "authorization", $"Bearer {KeyInfo.AccessToken}"},
-			{ "tr_cd", tr.StartsWith("T") ? tr.ToLower() : tr},
+			{ "tr_cd", tr.StartsWith('T') ? tr.ToLower() : tr},
 			{ "tr_cont", string.IsNullOrEmpty(nextKey) ? "N" : "Y" },
 			{ "tr_cont_key", nextKey },
 			{ "mac_address", ""}
@@ -559,6 +556,7 @@ public class ConnectionBase
 		Typ = typ,
 		Code = code,
 		Message = message,
+		Remark = remark
 	});
 
 	protected void SendErrorMessage(string code, string message, string remark = "") => Message(this, new ResponseCore

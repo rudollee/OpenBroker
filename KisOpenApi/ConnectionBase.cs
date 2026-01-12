@@ -15,15 +15,15 @@ public class ConnectionBase
     internal readonly string grant_type = "client_credentials";
 
 	public KeyPack KeyInfo { get => _keyInfo; }
-	private KeyPack _keyInfo = new KeyPack();
+	private KeyPack _keyInfo = new();
 	public void SetKeyPack(KeyPack keyInfo) => _keyInfo = keyInfo;
 
 	public Account AccountInfo { get => _accountInfo; }
-	private Account _accountInfo = new Account();
+	private Account _accountInfo = new();
 	public void SetAccount(Account account) => _accountInfo = account;
 
 	public BankAccount BankAccountInfo { get => _bankAccountInfo; }
-	private BankAccount _bankAccountInfo = new BankAccount();
+	private BankAccount _bankAccountInfo = new();
 	public void SetBankAccount(BankAccount bankAccount) => _bankAccountInfo = bankAccount;
 
 	public bool IsConnected { get => _connected; }
@@ -37,9 +37,9 @@ public class ConnectionBase
 	protected string _iv = string.Empty;
 	protected string _key = string.Empty;
 
-	private Dictionary<string, SubscriptionPack> _subscriptions = [];
+	private readonly Dictionary<string, SubscriptionPack> _subscriptions = [];
 
-	private List<Request> Requests = [];
+	private readonly List<Request> Requests = [];
 
 	#region Request Access Token using appkey & secret
 	/// <summary>
@@ -295,7 +295,7 @@ public class ConnectionBase
 					{
 						TrCode = trCode,
 						Key = key,
-						Subscriber = new List<string> { subscriber }
+						Subscriber = [subscriber]
 					});
 					needsAction = true;
 				}
@@ -312,7 +312,7 @@ public class ConnectionBase
 					else if (_subscriptions[$"{trCode}-{key}"].Subscriber.Contains(subscriber))
 					{
 						_subscriptions[$"{trCode}-{key}"].Subscriber.Remove(subscriber);
-						if (!_subscriptions[$"{trCode}-{key}"].Subscriber.Any())
+						if (_subscriptions[$"{trCode}-{key}"].Subscriber.Count == 0)
 						{
 							_subscriptions.Remove($"{trCode}-{key}");
 							needsAction = true;
@@ -380,8 +380,8 @@ public class ConnectionBase
 				return;
 			}
 
-			if (message.Text.StartsWith("{")) ParseCallbackMessage(message.Text);
-			else if (new string[] { "0", "1" }.Contains(message.Text.Substring(0, 1))) ParseCallbackResponse(message.Text);
+			if (message.Text.StartsWith('{')) ParseCallbackMessage(message.Text);
+			else if (new string[] { "0", "1" }.Contains(message.Text[..1])) ParseCallbackResponse(message.Text);
 			else
 			{
 				SendErrorMessage("WEIRD_MESSAGE", "message format is weird", message.Text);
@@ -413,9 +413,8 @@ public class ConnectionBase
 			}
 		}
 
-		SendErrorMessage("RECONNECTION", $"{info.Type} and reconnected");
+		SendErrorMessage("CONNECTION", $"Reconnected : {info.Type}");
 	}
-
 	#endregion
 
 	#region Parse Callback Message / Response Data
@@ -492,8 +491,8 @@ public class ConnectionBase
 		{
 			var accountInfo = new
 			{
-				CANO = BankAccountInfo.AccountNumber.Substring(0, 8),
-				ACNT_PRDT_CD = BankAccountInfo.AccountNumber.Substring(8),
+				CANO = BankAccountInfo.AccountNumber[..8],
+				ACNT_PRDT_CD = BankAccountInfo.AccountNumber[8..],
 			};
 
 			parameters = accountInfo.GetType().GetProperties().ToDictionary(x => x.Name, x => x.GetValue(accountInfo, null)?.ToString());
@@ -504,7 +503,7 @@ public class ConnectionBase
 			parameters.Add(parameter.Key, parameter.Value?.ToString());
 		}
 
-		return parameters ?? new Dictionary<string, string?>();
+		return parameters ?? [];
 	}
 
 	/// <summary>
@@ -589,7 +588,7 @@ public class ConnectionBase
 			return false;
 		}
 
-		if (Requests.Count() < 20)
+		if (Requests.Count < 20)
 		{
 			Requests.Add(new Request { TrCode = trCode });
 			return true;
@@ -603,7 +602,7 @@ public class ConnectionBase
 			{
 				StatusCode = Status.SUCCESS,
 				Code = trCode,
-				Message = $"request to KIS forcely delayed {(delaying.TotalMilliseconds * 0.001).ToString("N3")} sec."
+				Message = $"request to KIS forcely delayed {delaying.TotalMilliseconds * 0.001:N3} sec."
 			});
 		}
 
@@ -692,6 +691,7 @@ public class ConnectionBase
 		Typ = typ,
 		Code = code,
 		Message = message,
+		Remark = remark
 	});
 
 	protected void SendErrorMessage(string code, string message, string remark = "", MessageType typ = MessageType.SYSERR) => Message(this, new ResponseCore
@@ -701,6 +701,7 @@ public class ConnectionBase
 		Typ = typ,
 		Code = code,
 		Message = message,
+		Remark = remark
 	});
 	#endregion
 }
