@@ -309,7 +309,7 @@ public class ConnectionBase
 						needsAction = true;
 						_subscriptions.Remove($"{trCode}-{key}");
 					}
-					else if (_subscriptions[$"{trCode}-{key}"].Subscriber.Contains(subscriber))
+					else
 					{
 						_subscriptions[$"{trCode}-{key}"].Subscriber.Remove(subscriber);
 						if (_subscriptions[$"{trCode}-{key}"].Subscriber.Count == 0)
@@ -317,10 +317,6 @@ public class ConnectionBase
 							_subscriptions.Remove($"{trCode}-{key}");
 							needsAction = true;
 						}
-					}
-					else
-					{
-						message = "not subscribing";
 					}
 				}
 			}
