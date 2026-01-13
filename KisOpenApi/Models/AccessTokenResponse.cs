@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
-namespace KisOpenApi;
+namespace KisOpenApi.Models;
 internal class AccessTokenResponse : KisResponseBase
 {
     [JsonPropertyName("access_token")]
@@ -14,14 +9,7 @@ internal class AccessTokenResponse : KisResponseBase
     [JsonPropertyName("access_token_token_expired")]
     public string? DateExpiredString { get; set; }
 
-    public DateTime DateExpired
-    {
-        get
-        {
-            DateTime result;
-            return DateTime.TryParse(DateExpiredString, out result) ? result : DateTime.Now.AddDays(-1);
-        }
-    }
+    public DateTime DateExpired => DateTime.UtcNow.AddSeconds(Duration);
 
     [JsonPropertyName("Bearer")]
     public string TokenType { get; set; } = string.Empty;
