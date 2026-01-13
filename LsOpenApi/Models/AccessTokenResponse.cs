@@ -9,8 +9,5 @@ internal class AccessTokenResponse
 	[JsonPropertyName("expires_in")]
 	public int DateRemained { get; set; }
 
-	public DateTime DateExpired
-	{
-		get => DateTime.Now.AddSeconds(DateRemained);
-	}
+    public DateTime DateExpired => DateTime.UtcNow.AddSeconds(DateRemained);
 }
