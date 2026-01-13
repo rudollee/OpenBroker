@@ -48,9 +48,14 @@ public interface IConnection
 	void SetBankAccount(BankAccount bankAccount);
 
 	/// <summary>
-	/// 메시지
+	/// 일반 메시지 Callback
 	/// </summary>
 	EventHandler<ResponseCore> Message { get; set; }
+
+    /// <summary>
+    /// 연결 Callback
+    /// </summary>
+    EventHandler<ResponseCore> Connected { get; set; }
 
 	/// <summary>
 	/// WebsocketCode 요청

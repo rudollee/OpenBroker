@@ -14,23 +14,21 @@ public class ConnectionBase
     internal readonly string hostSocket = "ws://ops.koreainvestment.com:21000";
     internal readonly string grant_type = "client_credentials";
 
-	public KeyPack KeyInfo { get => _keyInfo; }
-	private KeyPack _keyInfo = new();
-	public void SetKeyPack(KeyPack keyInfo) => _keyInfo = keyInfo;
+    public KeyPack KeyInfo { get; private set; } = new();
+    public void SetKeyPack(KeyPack keyInfo) => KeyInfo = keyInfo;
 
-	public Account AccountInfo { get => _accountInfo; }
-	private Account _accountInfo = new();
-	public void SetAccount(Account account) => _accountInfo = account;
+    public Account AccountInfo { get; private set; } = new();
+    public void SetAccount(Account account) => AccountInfo = account;
 
-	public BankAccount BankAccountInfo { get => _bankAccountInfo; }
-	private BankAccount _bankAccountInfo = new();
-	public void SetBankAccount(BankAccount bankAccount) => _bankAccountInfo = bankAccount;
+    public BankAccount BankAccountInfo { get; private set; } = new();
+    public void SetBankAccount(BankAccount bankAccount) => BankAccountInfo = bankAccount;
 
-	public bool IsConnected { get => _connected; }
-	private bool _connected = false;
-	protected void SetConnect(bool connecting = true) => _connected = connecting;
+    public bool IsConnected { get; private set; }
+    protected void SetConnect(bool connecting = true) => IsConnected = connecting;
 
 	public required EventHandler<ResponseCore> Message { get; set; }
+
+	public required EventHandler<ResponseCore> Connected { get; set; }
 
 	protected IWebsocketClient? Client;
 
@@ -186,7 +184,7 @@ public class ConnectionBase
 				ErrorReconnectTimeout = TimeSpan.FromSeconds(30),
 			};
 
-			Client.MessageReceived.Subscribe(message => SubscribeCallback(message));
+			Client.MessageReceived.Subscribe(SubscribeCallback);
 			Client.ReconnectionHappened.Subscribe(async info => await ReconnectCallback(info));
 			await Client.Start();
 
@@ -393,6 +391,22 @@ public class ConnectionBase
 	{
 		if (info.Type is ReconnectionType.Initial) return;
 
+		if (info.Type is ReconnectionType.ByServer)
+		{
+			var response = await DisconnectAsync();
+			response.Code = $"{info.Type}";
+			Connected(this, response);
+			return;
+		}
+
+		Connected(this, new()
+		{
+			Broker = Brkr.KI,
+			Typ = MessageType.CONNECTION,
+			Code = $"{info.Type}",
+			Message = $"Reconnected : {info.Type}"
+		});
+
 		foreach (var subscirption in _subscriptions)
 		{
 			var response = await SubscribeAsync("RECONNECTION", subscirption.Key, subscirption.Value.Key);
@@ -408,8 +422,6 @@ public class ConnectionBase
 				});
 			}
 		}
-
-		SendErrorMessage("CONNECTION", $"Reconnected : {info.Type}");
 	}
 	#endregion
 

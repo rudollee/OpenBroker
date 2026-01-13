@@ -30,6 +30,8 @@ public class ConnectionBase
 
 	public required EventHandler<ResponseCore> Message { get; set; }
 
+	public required EventHandler<ResponseCore> Connected { get; set; }
+
 	protected IWebsocketClient? Client;
 
 	private readonly List<Request> Requests = [];
@@ -297,6 +299,22 @@ public class ConnectionBase
 	{
 		if (info.Type == ReconnectionType.Initial) return;
 
+		if (info.Type is ReconnectionType.ByServer)
+		{
+			var response = await DisconnectAsync();
+			response.Code = $"{info.Type}";
+			Connected(this, response);
+			return;
+		}
+
+		Connected(this, new()
+		{
+			Broker = Brkr.LS,
+			Typ = MessageType.CONNECTION,
+			Code = $"{info.Type}",
+			Message = $"Reconnected : {info.Type}"
+		});
+
 		foreach (var subscirption in _subscriptions)
 		{
 			var response = await SubscribeAsync("RECONNECTION", subscirption.Key, subscirption.Value.Key);
@@ -306,8 +324,6 @@ public class ConnectionBase
 				return;
 			}
 		}
-
-		SendErrorMessage("CONNECTION", $"Reconnected : {info.Type}");
 	}
 	#endregion
 
