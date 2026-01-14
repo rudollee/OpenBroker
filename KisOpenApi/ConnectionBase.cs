@@ -66,11 +66,7 @@ public class ConnectionBase
 				.AddJsonBody(body);
 			var response = await client.PostAsync<AccessTokenResponse>(request);
 
-			if (response is null) return new ResponseResult<KeyPack>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = "response is null"
-			};
+			if (response is null) return ReturnErrorResult<KeyPack>("TOKEN", "response is null");
 
 			if (string.IsNullOrEmpty(response.AccessToken)) return new ResponseResult<KeyPack>
 			{
@@ -80,23 +76,15 @@ public class ConnectionBase
 				Remark = response.ReturnCode
 			};
 
-			return new ResponseResult<KeyPack>
+			return ReturnResult<KeyPack>(new()
 			{
-				StatusCode = Status.SUCCESS,
-				Info = new KeyPack
-				{
-					AccessToken = response.AccessToken,
-					AccessTokenExpired = response.DateExpired
-				},
-			};
+				AccessToken = response.AccessToken,
+				AccessTokenExpired = response.DateExpired
+			});
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResult<KeyPack>
-			{
-				StatusCode = Status.INTERNALSERVERERROR,
-				Message = $"catch error: {ex.Message}"
-			};
+			return ReturnErrorResult<KeyPack>("TOKEN", $"error-catched: {ex.Message}");
 		}
 	}
 	#endregion
@@ -129,11 +117,7 @@ public class ConnectionBase
 				.AddJsonBody(body);
 			var response = await client.PostAsync<ApprovalKeyResponse>(request);
 
-			if (response is null) return new ResponseResult<KeyPack>
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = "/auth2/approval: response is null",
-			};
+			if (response is null) return ReturnErrorResult<KeyPack>("WEBSOCKET-CODE", "response is null");
 
 			if (string.IsNullOrEmpty(response.ApprovalKey)) return new ResponseResult<KeyPack>
 			{
@@ -143,22 +127,11 @@ public class ConnectionBase
 				Remark = response.ReturnCode
 			};
 
-			return new ResponseResult<KeyPack>
-			{
-				StatusCode = Status.SUCCESS,
-				Code = response.MessageCode,
-				Message = response.Message,
-				Remark = response.ReturnCode,
-				Info = new KeyPack { WebsocketCode = response.ApprovalKey },
-			};
+			return ReturnResult<KeyPack>(new() { WebsocketCode = response.ApprovalKey }, response.MessageCode, response.Message);
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResult<KeyPack>
-			{
-				StatusCode = Status.INTERNALSERVERERROR,
-				Message = $"catch error from /oauth2/Approval: ${ex.Message}"
-			};
+			return ReturnErrorResult<KeyPack>("WEBSOCKET-CODE", $"error catched: {ex.Message}");
 		}
 	}
 	#endregion
@@ -195,13 +168,7 @@ public class ConnectionBase
 				await SubscribeAsync("RECONNECTION", subscription.Key, subscription.Value.Key);
 			}
 
-			return new ResponseCore
-			{
-				Broker = Brkr.KI,
-				StatusCode = Status.SUCCESS,
-				Typ = MessageType.CONNECTION,
-				Message = "Connected"
-			};
+			return ReturnCore("CONNECTION", "Connected", MessageType.CONNECTION);
 		}
 		catch (Exception ex)
 		{
@@ -218,14 +185,7 @@ public class ConnectionBase
 
 	public async Task<ResponseCore> DisconnectAsync()
 	{
-		if (Client is null) return new ResponseCore
-		{
-			Broker = Brkr.KI,
-			StatusCode = Status.ERROR_OPEN_API,
-			Typ = MessageType.CONNECTION,
-			Code = "NOCONNECTION",
-			Message = "no connection to disconnect or already disconnected"
-		};
+		if (Client is null) return ReturnError("DISCONNECTION", "no connection to disconnect or already disconnected", typ: MessageType.CONNECTION);
 
 		await Client.Stop(WebSocketCloseStatus.NormalClosure, "");
 		Client.Dispose();
@@ -236,27 +196,14 @@ public class ConnectionBase
 			await SubscribeAsync("SYS", subscription.Key, subscription.Value.Key, false);
 		}
 
-		return new ResponseCore
-		{
-			Broker = Brkr.KI,
-			Typ = MessageType.CONNECTION,
-			Message = "disconnected"
-		};
+		return ReturnCore("DISCONNECTION", "Disconnected", typ: MessageType.CONNECTION);
 	}
 	#endregion
 
 	#region Subscribe / Unsubscribe
 	protected async Task<ResponseCore> SubscribeAsync(string subscriber, string trCode, string key, bool connecting = true)
 	{
-		if (Client is null) return new ResponseCore
-		{
-			Broker = Brkr.KI,
-			StatusCode = Status.ERROR_OPEN_API,
-			Typ = MessageType.SUB,
-			Code = "NULLERR",
-			Message = "Client is null",
-			Remark = subscriber
-		};
+		if (Client is null) return ReturnError("NULL-WEBSOCKET", "Websocket Client is null", typ: MessageType.CONNECTION);
 
 		string GenerateSubscriptionRequest(string id, string key = "", bool connecting = true)
 		{
@@ -319,25 +266,13 @@ public class ConnectionBase
 				}
 			}
 
-			if (!needsAction) return new ResponseCore
-			{
-				Broker = Brkr.KI,
-				Typ = MessageType.SUB,
-				StatusCode = Status.SUCCESS,
-				Code = "NOACTION",
-				Message = message
-			};
+			if (!needsAction) return ReturnCore("NOACTION", message, MessageType.SUB, $"{trCode}-{key}:{subscriber}");
 
 			var result = await Task.Run(() => Client.Send(GenerateSubscriptionRequest(trCode, key, connecting)));
 
 			SendMessage($"{trCode}({key})", $"Sent {(connecting ? "subscribe" : "unsubscribe")} request.", MessageType.SUB);
 
-			return new ResponseCore
-			{
-				Broker = Brkr.KI,
-				StatusCode = result ? Status.SUCCESS : Status.ERROR_OPEN_API,
-				Typ = MessageType.SUB
-			};
+			return ReturnError(string.Empty, string.Empty, typ: MessageType.SUB, statusCode: result ? Status.SUCCESS : Status.ERROR_OPEN_API);
 		}
 		catch (Exception ex)
 		{
@@ -376,10 +311,7 @@ public class ConnectionBase
 
 			if (message.Text.StartsWith('{')) ParseCallbackMessage(message.Text);
 			else if (new string[] { "0", "1" }.Contains(message.Text[..1])) ParseCallbackResponse(message.Text);
-			else
-			{
-				SendErrorMessage("WEIRD_MESSAGE", "message format is weird", message.Text);
-			}
+			else SendErrorMessage("WEIRD_MESSAGE", "message format is weird", message.Text);
 		}
 		catch (Exception ex)
 		{

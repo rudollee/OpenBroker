@@ -36,11 +36,6 @@ public partial class KisKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		try
 		{
 			var response = await RequestStandardAsync<CTPF1002R>(EndpointRef.EndpointDic[TrId.CTPF1002R], parameters);
-			if (response is null) return new ResponseResult<EquityPack>
-			{
-				StatusCode = Status.NODATA,
-				Message = "response is null"
-			};
 
 			var equity = new EquityPack
 			{
@@ -55,19 +50,11 @@ public partial class KisKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				DiscardStatus = DiscardStatus.TRADABLE,
 			};
 
-			return new ResponseResult<EquityPack>
-			{
-				Info = equity,
-			};
+			return ReturnResult(equity, response.ReturnCode);
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResult<EquityPack>
-			{
-				Broker = Brkr.KI,
-				StatusCode = Status.ERROR_OPEN_API,
-				Message = ex.Message
-			};
+			return ReturnErrorResult<EquityPack>(nameof(CTPF1002R), ex.Message);
 		}
 	} 
 	#endregion
@@ -120,16 +107,13 @@ public partial class KisKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			}
 		});
 
-		return new ResponseResult<QuotePack<T>>
+		return ReturnResult<QuotePack<T>>(new()
 		{
-			Info = new QuotePack<T>
-			{
-				Symbol = request.Symbol,
-				TimeIntervalUnit = request.TimeIntervalUnit,
-				TimeInterval = request.TimeInterval,
-				PrimaryList = quotes as List<T> ?? [],
-			},
-		};
+			Symbol = request.Symbol,
+			TimeIntervalUnit = request.TimeIntervalUnit,
+			TimeInterval = request.TimeInterval,
+			PrimaryList = quotes as List<T> ?? [],
+		});
 	} 
 	#endregion
 

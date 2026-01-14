@@ -64,28 +64,13 @@ public partial class KisKrxEquity : ConnectionBase, IExecution
 		try
 		{
 			var response = await client.PostAsync<TTTC080XU>(request);
-			if (response is null || response.Output is null || response.ReturnCode != "0") return new ResponseCore
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Code = response?.MessageCode ?? "NULL",
-				Message = response?.Message ?? "response is null",
-			};
-
-			return new ResponseCore
-			{
-				StatusCode = Status.SUCCESS,
-				Code = response.MessageCode,
-				Message = response.Message,
-				Remark = $"{response.Output.OrderTime6}-{response.Output.OrderNumber}"
-			};
-		}
-		catch (Exception ex)
+            return response is null || response.Output is null || response.ReturnCode != "0"
+                ? ReturnError(response?.MessageCode ?? trId, response?.Message ?? "response is null")
+                : ReturnCore(response.MessageCode, response.Message, remark: $"{response.Output.OrderTime6}-{response.Output.OrderNumber}");
+        }
+        catch (Exception ex)
 		{
-			return new ResponseCore
-			{
-				StatusCode = Status.INTERNALSERVERERROR,
-				Message = $"error catch: {ex.Message}"
-			};
+			return ReturnError(nameof(TTTC080XU), $"error catched: {ex.Message}");
 		}
 	}
 	#endregion
