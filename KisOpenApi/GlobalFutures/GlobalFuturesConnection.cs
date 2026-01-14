@@ -152,14 +152,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 				break; 
 			#endregion
 			default:
-				Message(this, new ResponseCore
-				{
-					Typ = MessageType.SYSERR,
-					StatusCode = Status.ERROR_OPEN_API,
-					Code = rawData[2],
-					Message = "during parsing callback to swich",
-					Remark = plainTxt,
-				});
+				SendErrorMessage(rawData[2], "during parsing callback to swich", plainTxt);
 				break;
 		}
 	}

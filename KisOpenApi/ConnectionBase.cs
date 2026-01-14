@@ -410,16 +410,9 @@ public class ConnectionBase
 		foreach (var subscirption in _subscriptions)
 		{
 			var response = await SubscribeAsync("RECONNECTION", subscirption.Key, subscirption.Value.Key);
-			if (response is null || response.StatusCode != Status.SUCCESS)
+			if (response.StatusCode != Status.SUCCESS)
 			{
-				Message(this, new ResponseCore
-				{
-					Broker = Brkr.KI,
-					Typ = MessageType.SYSERR,
-					Code = "RECON-FAIL",
-					Message = $"subscription {subscirption.Key} failed during reconnection",
-					Remark = subscirption.Value.Key
-				});
+				SendErrorMessage("RECON-FAIL", $"subscription {subscirption.Key} failed during reconnection", subscirption.Value.Key);
 			}
 		}
 	}
@@ -437,14 +430,7 @@ public class ConnectionBase
 			var messageInfo = JsonSerializer.Deserialize<KisSubscriptionResponse>(callbackTxt);
 			if (messageInfo is null || messageInfo.Header is null || messageInfo.Header.ID is null)
 			{
-				Message(this, new ResponseCore
-				{
-					Broker = Brkr.KI,
-					Typ= MessageType.SYSERR,
-					Code = "JSON_PARSING_ERR",
-					Message = $"messageInfo is null",
-					Remark = "from ParseCallbackMessage during message deserializing"
-				});
+				SendErrorMessage("JSON_PARSING_ERR", "messageInfo is null", callbackTxt);
 				return;
 			};
 
@@ -463,19 +449,11 @@ public class ConnectionBase
 					break;
 			}
 
-			Message(this, new ResponseCore
-			{
-				Broker= Brkr.KI,
-				Typ = MessageType.SUB,
-				Code = $"{messageInfo.Body.ResultCode}.{messageInfo.Body.MessageCode}",
-				Message = messageInfo.Body.Message,
-				Remark = $"{messageInfo.Header.ID}: {messageInfo.Header.Key}"
-			});
-
+			SendMessage($"{messageInfo.Body.ResultCode}.{messageInfo.Body.MessageCode}", messageInfo.Body.Message, MessageType.SUB, $"{messageInfo.Header.ID}: {messageInfo.Header.Key}");
 		}
 		catch (Exception ex)
 		{
-			SendMessage("JSON_PARSING_ERR", $"catch err: ${ex.Message}", MessageType.SYSERR, "from ParseCallbackMessage");
+			SendErrorMessage("JSON_PARSING_ERR", $"catch err: ${ex.Message}", callbackTxt);
 		}
 	}
 
@@ -582,13 +560,7 @@ public class ConnectionBase
 		}
 		catch (Exception ex)
 		{
-			Message(this, new ResponseCore
-			{
-				StatusCode = Status.ERROR_OPEN_API,
-				Code = "OPENAPI_ERR",
-				Message = $"delayRequest.remove: {ex.Message}",
-			});
-
+			SendErrorMessage(trCode, $"error catched during removing old delayed request: {ex.Message}");
 			return false;
 		}
 
@@ -600,15 +572,7 @@ public class ConnectionBase
 
 		var delaying = Requests[0].RequestTime.Subtract(DateTime.UtcNow.AddMilliseconds(-1001));
 
-		if (needsMessage)
-		{
-			Message(this, new ResponseCore
-			{
-				StatusCode = Status.SUCCESS,
-				Code = trCode,
-				Message = $"request to KIS forcely delayed {delaying.TotalMilliseconds * 0.001:N3} sec."
-			});
-		}
+		if (needsMessage) SendMessage(trCode, $"request forcely to delay for {delaying.TotalMilliseconds * 0.001:N3} sec.");
 
 		Thread.Sleep(delaying);
 		Requests.Add(new Request { TrCode = trCode });
@@ -639,17 +603,17 @@ public class ConnectionBase
 		}
 
 		var response = await client.GetAsync<T>(request) ?? (T)new KisResponseBase();
-		if (response is null) return (T)new KisResponseBase
-		{
-			ReturnCode = "ERR",
-			MessageCode = $"{typeof(T).Name}-ERR",
-			Message = "failed to response",
-		};
+        return response is null
+            ? (T)new KisResponseBase
+			{
+				ReturnCode = "ERR",
+				MessageCode = $"{typeof(T).Name}-ERR",
+				Message = "failed to response",
+			}
+            : response;
+    }
 
-		return response;
-	}
-	
-	internal async Task<T> RequestStandardAsync<T>(EndpointPack ep, Dictionary<string, string?> parameters) where T : KisResponseBase
+    internal async Task<T> RequestStandardAsync<T>(EndpointPack ep, Dictionary<string, string?> parameters) where T : KisResponseBase
 	{
 		var delaying = DelayRequest(typeof(T).Name);
 		if (!delaying)
