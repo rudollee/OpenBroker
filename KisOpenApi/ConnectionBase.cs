@@ -652,7 +652,7 @@ public class ConnectionBase
 	}
 	#endregion
 
-	#region simple response callback
+	#region simple response callback or return
 	protected void SendMessage(string code, string message, MessageType typ = MessageType.SYS, string remark = "") => Message(this, new ResponseCore
 	{
 		Broker = Brkr.KI,
@@ -671,5 +671,68 @@ public class ConnectionBase
 		Message = message,
 		Remark = remark
 	});
+
+	protected static ResponseCore ReturnError(string code, string message, string remark = "", MessageType typ = MessageType.SYSERR, Status statusCode = Status.ERROR_OPEN_API) => new()
+	{
+		Broker = Brkr.KI,
+		Typ = typ,
+		StatusCode = statusCode,
+		Code = code,
+		Message = message,
+		Remark = remark
+	};
+
+	protected static ResponseCore ReturnCore(string code = "", string message = "", MessageType typ = MessageType.SYS, string remark = "") => new()
+	{
+		Broker = Brkr.KI,
+		Typ = typ,
+		Code = code,
+		Message = message,
+		Remark = remark
+	};
+
+	protected static ResponseResult<T> ReturnErrorResult<T>(string code, string meesage, string remark = "") where T : class => new()
+	{
+		Broker = Brkr.KI,
+		Typ = MessageType.SYSERR,
+		Code = code,
+		StatusCode = Status.ERROR_OPEN_API,
+		Message = meesage,
+		Remark = remark
+	};
+
+	protected static ResponseResult<T> ReturnResult<T>(T info, string code = "", string message = "", MessageType typ = MessageType.SYS, string remark = "") where T : class => new()
+	{
+		Broker = Brkr.KI,
+		StatusCode = info is null ? Status.NODATA : Status.SUCCESS,
+		Typ = typ,
+		Code = code,
+		Message = message,
+		Info = info,
+		Remark = remark
+	};
+
+	protected static ResponseResults<T> ReturnErrorResults<T>(string code = "", string message = "", string remark = "", Status statusCode = Status.ERROR_OPEN_API) where T : class => new()
+	{
+		Broker = Brkr.KI,
+		StatusCode = statusCode,
+		Typ = MessageType.SYSERR,
+		Code = code,
+		Message = message,
+		Remark = remark,
+		List = []
+	};
+
+	protected static ResponseResults<T> ReturnResults<T>(List<T> list, string code = "", string message = "", MessageType typ = MessageType.SYS, string remark = "", Dictionary<string, decimal>? extraData = null) where T : class => new()
+	{
+		Broker = Brkr.KI,
+		StatusCode = list.Count > 0 ? Status.SUCCESS : Status.NODATA,
+		Typ = typ,
+		Code = code,
+		Message = string.IsNullOrEmpty(message) && list.Count == 0 ? "no data" : message,
+		List = list,
+		Remark = remark,
+		ExtraData = extraData ?? []
+	};
 	#endregion
 }
