@@ -576,13 +576,9 @@ public class ConnectionBase
 	#region Delay Request
 	protected bool DelayRequest(string trCode, bool needsMessage = true)
 	{
-		var requestsOld = Requests.Where(w => w.RequestTime < DateTime.UtcNow.AddSeconds(-1)).ToList();
 		try
 		{
-			foreach (var request in requestsOld)
-			{
-				Requests.Remove(request);
-			}
+			Requests.RemoveAll(r => r.RequestTime < DateTime.UtcNow.AddMilliseconds(-999));
 		}
 		catch (Exception ex)
 		{
