@@ -36,6 +36,8 @@ public class ConnectionBase
 
 	private readonly List<Request> Requests = [];
 
+	private readonly List<DateTime> Reconnections = [];
+
 	private readonly Dictionary<string, SubscriptionPack> _subscriptions = new()
 	{
 		{ "JIF", new SubscriptionPack{ TrCode = "JIF", Key = "0", Subscriber = ["INIT"]} },
@@ -133,7 +135,11 @@ public class ConnectionBase
 
 			foreach (var subscription in _subscriptions)
 			{
-				await SubscribeAsync("RECONNECTION", subscription.Key, subscription.Value.Key);
+				var response = await SubscribeAsync("RECONNECTION", subscription.Key, subscription.Value.Key);
+				if (response.StatusCode != Status.SUCCESS)
+				{
+					return response;
+				}
 			}
 
 			return new ResponseCore
@@ -307,6 +313,17 @@ public class ConnectionBase
 			return;
 		}
 
+		Reconnections.RemoveAll(r => r < DateTime.UtcNow.AddSeconds(-60));
+		if (Reconnections.Count > 1)
+		{
+			var response = await DisconnectAsync();
+			response.Code = $"REPEAT-RECONNECTION";
+			Connected(this, response);
+			return;
+		}
+
+		Reconnections.Add(DateTime.UtcNow);
+
 		Connected(this, new()
 		{
 			Broker = Brkr.LS,
@@ -315,12 +332,12 @@ public class ConnectionBase
 			Message = $"Reconnected : {info.Type}"
 		});
 
-		foreach (var subscirption in _subscriptions)
+		foreach (var subscription in _subscriptions)
 		{
-			var response = await SubscribeAsync("RECONNECTION", subscirption.Key, subscirption.Value.Key);
+			var response = await SubscribeAsync("RECONNECTION", subscription.Key, subscription.Value.Key);
 			if (response is null || response.StatusCode != Status.SUCCESS)
 			{
-				SendErrorMessage("RECON-FAIL", $"subscription {subscirption.Key} failed during reconnection", subscirption.Value.Key);
+				SendErrorMessage(subscription.Key, $"subscription {subscription.Key} failed during reconnection", subscription.Value.Key);
 				return;
 			}
 		}
