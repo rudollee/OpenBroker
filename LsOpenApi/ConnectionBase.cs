@@ -160,7 +160,11 @@ public class ConnectionBase
     public async Task<ResponseCore> DisconnectAsync()
 	{
 		if (Client is null) return ReturnError("NOCONNECTION", "no connection to disconnect or already disconnected");
-		if (Client.IsRunning) await Client.Stop(WebSocketCloseStatus.NormalClosure, "");
+		if (Client.IsRunning)
+		{
+			Client.IsReconnectionEnabled = false;
+			await Client.Stop(WebSocketCloseStatus.NormalClosure, "");
+		}
 
 		SetConnect(false);
 
@@ -182,7 +186,7 @@ public class ConnectionBase
 
 		string GenerateSubscriptionRequest(string trCode, string key = "", bool connecting = true)
 		{
-			if (trCode.Length > 3)
+			if (trCode.Length > 3 && !trCode.Contains('@'))
 			{
 				SendErrorMessage(trCode, $"{trCode} should be 3-digit");
 				trCode = trCode[..3];
@@ -303,16 +307,6 @@ public class ConnectionBase
 
 	protected async Task ReconnectCallback(ReconnectionInfo info)
 	{
-		if (info.Type == ReconnectionType.Initial) return;
-
-		//if (info.Type is ReconnectionType.ByServer)
-		//{
-		//	var response = await DisconnectAsync();
-		//	response.Code = $"{info.Type}";
-		//	Connected(this, response);
-		//	return;
-		//}
-
 		Reconnections.RemoveAll(r => r < DateTime.UtcNow.AddSeconds(-60));
 		if (Reconnections.Count > 1)
 		{
@@ -343,7 +337,10 @@ public class ConnectionBase
 		}
 	}
 
-	protected async Task DisconnectCallback(DisconnectionInfo info) =>
+	protected async Task DisconnectCallback(DisconnectionInfo info) 
+	{
+		if (info.Type == DisconnectionType.ByServer && Client is not null) await DisconnectAsync();
+
 		Connected(this, new()
 		{
 			Broker = Brkr.LS,
@@ -351,6 +348,7 @@ public class ConnectionBase
 			Code = $"{info.Type}",
 			Message = $"Disconnected : {info.Type}"
 		});
+	}
 	#endregion
 
 	#region Parse Callback Message & Response
