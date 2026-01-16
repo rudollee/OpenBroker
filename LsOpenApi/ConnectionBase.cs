@@ -334,10 +334,10 @@ public class ConnectionBase
 
 		foreach (var subscription in _subscriptions)
 		{
-			var response = await SubscribeAsync("RECONNECTION", subscription.Key, subscription.Value.Key);
+			var response = await SubscribeAsync("RECONNECTION", subscription.Value.TrCode, subscription.Value.Key);
 			if (response.StatusCode != Status.SUCCESS)
 			{
-				SendErrorMessage(subscription.Key, $"subscription {subscription.Key} failed during reconnection", subscription.Value.Key);
+				SendErrorMessage(subscription.Value.TrCode, $"subscription {subscription.Value.TrCode}:{subscription.Value.Key} failed during reconnection");
 				return;
 			}
 		}
