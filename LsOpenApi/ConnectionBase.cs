@@ -180,8 +180,17 @@ public class ConnectionBase
 			Remark = subscriber
 		};
 
-		string GenerateSubscriptionRequest(string trCode, string key = "", bool connecting = true) =>
-			JsonSerializer.Serialize(new LsSubscriptionRequest(KeyInfo.AccessToken, trCode, key, connecting));
+		string GenerateSubscriptionRequest(string trCode, string key = "", bool connecting = true)
+		{
+			if (trCode.Length > 3)
+			{
+				SendErrorMessage(trCode, $"{trCode} should be 3-digit");
+				trCode = trCode[..3];
+			}
+
+			return JsonSerializer.Serialize(new LsSubscriptionRequest(KeyInfo.AccessToken, trCode, key, connecting));
+		}
+			
 
 		if (Client is null) return ReturnError("NOCONNECTION", "client is null");
 
