@@ -1,11 +1,10 @@
-﻿using System;
-using System.Net.WebSockets;
+﻿using System.Net.WebSockets;
 using System.Text.Json;
+using RestSharp;
+using Websocket.Client;
 using KisOpenApi.Models;
 using OpenBroker.Extensions;
 using OpenBroker.Models;
-using RestSharp;
-using Websocket.Client;
 
 namespace KisOpenApi;
 public class ConnectionBase

@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OpenBroker.Models;
+﻿namespace OpenBroker.Models;
 /// <summary>
 /// 계좌 정보
 /// </summary>
-public class BankAccount
+public class BankAccount : KeyPack
 {
     /// <summary>
     /// AccounT Type
@@ -29,5 +23,4 @@ public class BankAccount
     /// 계좌 비밀번호 optional
     /// </summary>
     public string AccountPassword { get; set; } = string.Empty;
-
 }
