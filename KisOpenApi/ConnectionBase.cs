@@ -163,11 +163,6 @@ public class ConnectionBase
 
 			SetConnect();
 
-			foreach (KeyValuePair<string, SubscriptionPack> subscription in _subscriptions)
-			{
-				await SubscribeAsync("RECONNECTION", subscription.Value.TrCode, subscription.Value.Key);
-			}
-
 			return ReturnCore("CONNECTION", "Connected", MessageType.CONNECTION);
 		}
 		catch (Exception ex)
@@ -315,8 +310,6 @@ public class ConnectionBase
 
 	protected async Task ReconnectCallback(ReconnectionInfo info)
 	{
-		if (info.Type is ReconnectionType.Initial) return;
-
 		if (info.Type is ReconnectionType.ByServer)
 		{
 			var response = await DisconnectAsync();
@@ -333,7 +326,7 @@ public class ConnectionBase
 			Message = $"Reconnected : {info.Type}"
 		});
 
-		foreach (var subscirption in _subscriptions)
+		foreach (var subscirption in _subscriptions.ToArray())
 		{
 			var response = await SubscribeAsync("RECONNECTION", subscirption.Value.TrCode, subscirption.Value.Key);
 			if (response.StatusCode != Status.SUCCESS)

@@ -134,13 +134,7 @@ public class ConnectionBase
 
 			SetConnect();
 
-			return new ResponseCore
-			{
-				Broker = Brkr.LS,
-				Typ = MessageType.CONNECTION,
-				StatusCode = Status.SUCCESS,
-				Message = "Connected"
-			};
+			return ReturnCore("CONNECTION", "Connected", MessageType.CONNECTION);
 		}
 		catch (Exception ex)
 		{
