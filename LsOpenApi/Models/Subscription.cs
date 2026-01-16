@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace LsOpenApi.Models;
 /// <summary>
@@ -28,6 +29,7 @@ internal class LsSubscriptionRequest(string token, string trCode, string key, bo
 	public class LsBody(string trCode, string key)
 	{
 		[JsonPropertyName("tr_cd")]
+		[StringLength(3, ErrorMessage = "TR code should be 3-digit"), MinLength(3, ErrorMessage = "TR code should be 3-digit")]
 		public string TrCd { get; set; } = trCode;
 
 		[JsonPropertyName("tr_key")]

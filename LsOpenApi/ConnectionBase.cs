@@ -180,12 +180,8 @@ public class ConnectionBase
 			Remark = subscriber
 		};
 
-		string GenerateSubscriptionRequest(string id, string key = "", bool connecting = true)
-		{
-			if (string.IsNullOrWhiteSpace(key)) key = AccountInfo.ID;
-
-			return JsonSerializer.Serialize(new LsSubscriptionRequest(KeyInfo.AccessToken, id, key, connecting));
-		}
+		string GenerateSubscriptionRequest(string trCode, string key = "", bool connecting = true) =>
+			JsonSerializer.Serialize(new LsSubscriptionRequest(KeyInfo.AccessToken, trCode, key, connecting));
 
 		if (Client is null) return ReturnError("NOCONNECTION", "client is null");
 
