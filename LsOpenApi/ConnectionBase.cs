@@ -116,18 +116,19 @@ public class ConnectionBase
 		{
 			var options = new Func<ClientWebSocket>(() => new ClientWebSocket
 			{
-				Options = { KeepAliveInterval = TimeSpan.Zero }
+				Options = { KeepAliveInterval = TimeSpan.FromSeconds(15) }
 			});
 
 			Client = new WebsocketClient(new Uri(hostSocket), options)
 			{
 				Name = "LS",
-				ReconnectTimeout = TimeSpan.FromSeconds(20),
-				ErrorReconnectTimeout = TimeSpan.FromSeconds(30),
+				ReconnectTimeout = TimeSpan.FromSeconds(30),
+				ErrorReconnectTimeout = TimeSpan.FromSeconds(60),
 			};
 
 			Client.MessageReceived.Subscribe(message => callback(message));
 			Client.ReconnectionHappened.Subscribe(async info => await ReconnectCallback(info));
+			Client.DisconnectionHappened.Subscribe(async info => await DisconnectCallback(info));
 			Client.IsReconnectionEnabled = true;
 			await Client.Start();
 
@@ -156,18 +157,12 @@ public class ConnectionBase
 		}
 	}
 
-	public async Task<ResponseCore> DisconnectAsync()
+    public async Task<ResponseCore> DisconnectAsync()
 	{
 		if (Client is null) return ReturnError("NOCONNECTION", "no connection to disconnect or already disconnected");
+		if (Client.IsRunning) await Client.Stop(WebSocketCloseStatus.NormalClosure, "");
 
-		await Client.Stop(WebSocketCloseStatus.NormalClosure, "");
-		Client.Dispose();
 		SetConnect(false);
-
-		foreach (var subscription in _subscriptions)
-		{
-			await SubscribeAsync("SYS", subscription.Key, subscription.Value.Key, false);
-		}
 
 		return ReturnCore("DISCONNECTION", "disconnected", MessageType.SYS);
 	}
@@ -305,13 +300,13 @@ public class ConnectionBase
 	{
 		if (info.Type == ReconnectionType.Initial) return;
 
-		if (info.Type is ReconnectionType.ByServer)
-		{
-			var response = await DisconnectAsync();
-			response.Code = $"{info.Type}";
-			Connected(this, response);
-			return;
-		}
+		//if (info.Type is ReconnectionType.ByServer)
+		//{
+		//	var response = await DisconnectAsync();
+		//	response.Code = $"{info.Type}";
+		//	Connected(this, response);
+		//	return;
+		//}
 
 		Reconnections.RemoveAll(r => r < DateTime.UtcNow.AddSeconds(-60));
 		if (Reconnections.Count > 1)
@@ -335,13 +330,22 @@ public class ConnectionBase
 		foreach (var subscription in _subscriptions)
 		{
 			var response = await SubscribeAsync("RECONNECTION", subscription.Key, subscription.Value.Key);
-			if (response is null || response.StatusCode != Status.SUCCESS)
+			if (response.StatusCode != Status.SUCCESS)
 			{
 				SendErrorMessage(subscription.Key, $"subscription {subscription.Key} failed during reconnection", subscription.Value.Key);
 				return;
 			}
 		}
 	}
+
+	protected async Task DisconnectCallback(DisconnectionInfo info) =>
+		Connected(this, new()
+		{
+			Broker = Brkr.LS,
+			Typ = MessageType.CONNECTION,
+			Code = $"{info.Type}",
+			Message = $"Disconnected : {info.Type}"
+		});
 	#endregion
 
 	#region Parse Callback Message & Response

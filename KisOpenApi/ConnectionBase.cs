@@ -147,18 +147,19 @@ public class ConnectionBase
 		{
 			var options = new Func<ClientWebSocket>(() => new ClientWebSocket
 			{
-				Options = { KeepAliveInterval = TimeSpan.Zero }
+				Options = { KeepAliveInterval = TimeSpan.FromSeconds(15) }
 			});
 
 			Client = new WebsocketClient(new Uri(hostSocket), options)
 			{
 				Name = "KIS",
-				ReconnectTimeout = TimeSpan.FromSeconds(20),
-				ErrorReconnectTimeout = TimeSpan.FromSeconds(30),
+				ReconnectTimeout = TimeSpan.FromSeconds(30),
+				ErrorReconnectTimeout = TimeSpan.FromSeconds(60),
 			};
 
 			Client.MessageReceived.Subscribe(SubscribeCallback);
 			Client.ReconnectionHappened.Subscribe(async info => await ReconnectCallback(info));
+			Client.DisconnectionHappened.Subscribe(async info => await DisconnectCallback(info));
 			await Client.Start();
 
 			SetConnect();
@@ -183,18 +184,12 @@ public class ConnectionBase
 		}
 	}
 
-	public async Task<ResponseCore> DisconnectAsync()
+    public async Task<ResponseCore> DisconnectAsync()
 	{
 		if (Client is null) return ReturnError("DISCONNECTION", "no connection to disconnect or already disconnected", typ: MessageType.CONNECTION);
+		if (Client.IsRunning) await Client.Stop(WebSocketCloseStatus.NormalClosure, "");
 
-		await Client.Stop(WebSocketCloseStatus.NormalClosure, "");
-		Client.Dispose();
 		SetConnect(false);
-
-		foreach (KeyValuePair<string, SubscriptionPack> subscription in _subscriptions)
-		{
-			await SubscribeAsync("SYS", subscription.Key, subscription.Value.Key, false);
-		}
 
 		return ReturnCore("DISCONNECTION", "Disconnected", typ: MessageType.CONNECTION);
 	}
@@ -349,6 +344,17 @@ public class ConnectionBase
 		}
 	}
 	#endregion
+
+	protected async Task DisconnectCallback(DisconnectionInfo info)
+	{
+		Connected(this, new()
+		{
+			Broker = Brkr.KI,
+			Typ= MessageType.CONNECTION,
+			Code = $"{info.Type}",
+			Message = $"Disconnected : {info.Type}"
+		});
+	}
 
 	#region Parse Callback Message / Response Data
 	/// <summary>
