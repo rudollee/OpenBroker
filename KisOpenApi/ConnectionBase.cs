@@ -166,7 +166,7 @@ public class ConnectionBase
 
 			foreach (KeyValuePair<string, SubscriptionPack> subscription in _subscriptions)
 			{
-				await SubscribeAsync("RECONNECTION", subscription.Key, subscription.Value.Key);
+				await SubscribeAsync("RECONNECTION", subscription.Value.TrCode, subscription.Value.Key);
 			}
 
 			return ReturnCore("CONNECTION", "Connected", MessageType.CONNECTION);
@@ -336,10 +336,10 @@ public class ConnectionBase
 
 		foreach (var subscirption in _subscriptions)
 		{
-			var response = await SubscribeAsync("RECONNECTION", subscirption.Key, subscirption.Value.Key);
+			var response = await SubscribeAsync("RECONNECTION", subscirption.Value.TrCode, subscirption.Value.Key);
 			if (response.StatusCode != Status.SUCCESS)
 			{
-				SendErrorMessage("RECON-FAIL", $"subscription {subscirption.Key} failed during reconnection", subscirption.Value.Key);
+				SendErrorMessage(subscirption.Value.TrCode, $"subscription {subscirption.Key} failed during reconnection", subscirption.Value.Key);
 			}
 		}
 	}

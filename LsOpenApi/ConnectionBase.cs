@@ -136,7 +136,7 @@ public class ConnectionBase
 
 			foreach (var subscription in _subscriptions)
 			{
-				var response = await SubscribeAsync("RECONNECTION", subscription.Key, subscription.Value.Key);
+				var response = await SubscribeAsync("RECONNECTION", subscription.Value.TrCode, subscription.Value.Key);
 				if (response.StatusCode != Status.SUCCESS)
 				{
 					return response;
@@ -195,9 +195,6 @@ public class ConnectionBase
 			return JsonSerializer.Serialize(new LsSubscriptionRequest(KeyInfo.AccessToken, trCode, key, connecting));
 		}
 			
-
-		if (Client is null) return ReturnError("NOCONNECTION", "client is null");
-
 		try
 		{
 			var needsAction = false;
@@ -253,6 +250,9 @@ public class ConnectionBase
 			}
 
 			if (!needsAction) return ReturnCore("NOACTION", message);
+
+			if (Client is null) return ReturnError("NOCONNECTION", "client is null", statusCode: Status.PARTIALLY_SUCCESS);
+			if (!Client.IsRunning) return ReturnError("NoRunning", "just queued", statusCode: Status.PARTIALLY_SUCCESS);
 
 			var result = await Task.Run(() => Client.Send(GenerateSubscriptionRequest(trCode, key, connecting)));
 
@@ -326,7 +326,7 @@ public class ConnectionBase
 			Message = $"Reconnected : {info.Type}"
 		});
 
-		foreach (var subscription in _subscriptions)
+		foreach (var subscription in _subscriptions.ToArray())
 		{
 			var response = await SubscribeAsync("RECONNECTION", subscription.Value.TrCode, subscription.Value.Key);
 			if (response.StatusCode != Status.SUCCESS)
