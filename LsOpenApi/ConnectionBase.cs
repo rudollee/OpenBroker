@@ -134,15 +134,6 @@ public class ConnectionBase
 
 			SetConnect();
 
-			foreach (var subscription in _subscriptions)
-			{
-				var response = await SubscribeAsync("RECONNECTION", subscription.Value.TrCode, subscription.Value.Key);
-				if (response.StatusCode != Status.SUCCESS)
-				{
-					return response;
-				}
-			}
-
 			return new ResponseCore
 			{
 				Broker = Brkr.LS,
@@ -308,7 +299,7 @@ public class ConnectionBase
 	protected async Task ReconnectCallback(ReconnectionInfo info)
 	{
 		Reconnections.RemoveAll(r => r < DateTime.UtcNow.AddSeconds(-60));
-		if (Reconnections.Count > 1)
+		if (Reconnections.Count > 2)
 		{
 			var response = await DisconnectAsync();
 			response.Code = $"REPEAT-RECONNECTION";
