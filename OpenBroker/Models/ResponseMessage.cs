@@ -1,10 +1,15 @@
 ﻿namespace OpenBroker.Models;
 public class ResponseCore
 {
-    /// <summary>
-    /// Message Type
-    /// </summary>
-    public MessageType Typ { get; set; } = MessageType.SYS;
+	/// <summary>
+	/// Response Time
+	/// </summary>
+	public DateTime Time { get; set; } = DateTime.UtcNow;
+
+	/// <summary>
+	/// Message Type
+	/// </summary>
+	public MessageType Typ { get; set; } = MessageType.SYS;
 
     /// <summary>
     /// 상태 코드
