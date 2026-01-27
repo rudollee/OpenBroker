@@ -192,8 +192,6 @@ public class ConnectionBase
 	#region Subscribe / Unsubscribe
 	protected async Task<ResponseCore> SubscribeAsync(string subscriber, string trCode, string key, bool connecting = true)
 	{
-		if (Client is null) return ReturnError("NULL-WEBSOCKET", "Websocket Client is null", typ: MessageType.CONNECTION);
-
 		string GenerateSubscriptionRequest(string id, string key = "", bool connecting = true)
 		{
 			if (string.IsNullOrWhiteSpace(key)) key = AccountInfo.ID;
@@ -257,11 +255,19 @@ public class ConnectionBase
 
 			if (!needsAction) return ReturnCore("NOACTION", message, MessageType.SUB, $"{trCode}-{key}:{subscriber}");
 
+			if (Client is null) return ReturnError("NOCONNECTION", "client is null", statusCode: Status.PARTIALLY_SUCCESS);
+			if (!Client.IsRunning) return ReturnError("NoRunning", "just queued", statusCode: Status.PARTIALLY_SUCCESS);
+
 			var result = await Task.Run(() => Client.Send(GenerateSubscriptionRequest(trCode, key, connecting)));
 
 			SendMessage($"{trCode}({key})", $"Sent {(connecting ? "subscribe" : "unsubscribe")} request.", MessageType.SUB);
 
-			return ReturnError(string.Empty, string.Empty, typ: MessageType.SUB, statusCode: result ? Status.SUCCESS : Status.ERROR_OPEN_API);
+			return new ResponseCore
+			{
+				StatusCode = result ? Status.SUCCESS : Status.ERROR_OPEN_API,
+				Broker = Brkr.KI,
+				Typ = result ? MessageType.SUB : MessageType.SYSERR,
+			};
 		}
 		catch (Exception ex)
 		{
