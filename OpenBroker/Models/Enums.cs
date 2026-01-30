@@ -163,14 +163,6 @@ public enum Exchange
 	FTX = 8860,
 }
 
-public enum MarketCode
-{
-    KOSPI = 1,
-    KOSDAQ = 2,
-    DERIVATIVES = 5,
-    CME = 20,
-}
-
 public enum ExchangeSection
 {
 	NONE = 0,
