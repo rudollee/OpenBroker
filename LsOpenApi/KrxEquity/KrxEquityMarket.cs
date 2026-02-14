@@ -360,6 +360,9 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 		List<MarketOrder> asks = [];
 		List<MarketOrder> bids = [];
+		Dictionary<decimal, MarketOrder> asksx = [];
+		Dictionary<decimal, MarketOrder> bidsx = [];
+
 		var exchangePrefix = exchange switch
 		{
 			Exchange.KRX => "",
@@ -369,19 +372,43 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 		for (int i = 0; i < 10; i++)
 		{
+			var price = Convert.ToDecimal(response.t8450OutBlock.GetPropValue($"offerho{i + 1}"));
+			if (price == 0) continue;
+		
 			asks.Add(new MarketOrder
 			{
 				Seq = Convert.ToByte(i + 1),
-				Price = Convert.ToDecimal(response.t8450OutBlock.GetPropValue($"offerho{(i + 1)}")),
+				Price = price,
 				Amount = Convert.ToDecimal(response.t8450OutBlock.GetPropValue($"{exchangePrefix}offerrem{(i + 1)}"))
 			});
+
+			asksx[price] = new()
+			{
+				Seq = Convert.ToByte(i + 1),
+				Price = price,
+				Amount = Convert.ToDecimal(response.t8450OutBlock.GetPropValue($"{exchangePrefix}offerrem{(i + 1)}"))
+			};
+
+		}
+
+		for	(int i = 0; i < 10; i++)
+		{
+			var price = Convert.ToDecimal(response.t8450OutBlock.GetPropValue($"bidho{(i + 1)}"));
+			if (price == 0) continue;
 
 			bids.Add(new MarketOrder
 			{
 				Seq = Convert.ToByte(i + 1),
-				Price = Convert.ToDecimal(response.t8450OutBlock.GetPropValue($"bidho{(i + 1)}")),
+				Price = price,
 				Amount = Convert.ToDecimal(response.t8450OutBlock.GetPropValue($"{exchangePrefix}bidrem{(i + 1)}"))
 			});
+
+			bidsx[price] = new()
+			{
+				Seq = Convert.ToByte(i + 1),
+				Price = price,
+				Amount = Convert.ToDecimal(response.t8450OutBlock.GetPropValue($"{exchangePrefix}bidrem{(i + 1)}"))
+			};
 		}
 
 		return new ResponseResult<OrderBook>
@@ -392,7 +419,9 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			{
 				TimeTaken = response.t8450OutBlock.hotime.ToTime(),
 				Ask = asks,
+				Asks = asksx,
 				Bid = bids,
+				Bids = bidsx,
 				AskAgg = Convert.ToDecimal(response.t8450OutBlock.GetPropValue($"{exchangePrefix}offer")),
 				BidAgg = Convert.ToDecimal(response.t8450OutBlock.GetPropValue($"{exchangePrefix}bid")),
 			}

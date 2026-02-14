@@ -295,25 +295,44 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 			if (response is null || response.Body is null) return false;
 
 			var asks = new List<MarketOrder>();
+			Dictionary<decimal, MarketOrder> asksx = [];
 			for (int i = 0; i < 10; i++)
 			{
+				var price = Convert.ToDecimal(response.Body.GetPropValue($"offerho{(i + 1)}"));
+				if (price == 0) continue;
 				asks.Add(new MarketOrder
 				{
 					Seq = Convert.ToByte(i + 1),
-					Price = Convert.ToDecimal(response.Body.GetPropValue($"offerho{(i + 1)}")),
+					Price = price,
 					Amount = Convert.ToDecimal(response.Body.GetPropValue($"offerrem{(i + 1)}")),
 				});
+
+				asksx[price] = new()
+				{
+					Seq = Convert.ToByte(i + 1),
+					Price = price,
+					Amount = Convert.ToDecimal(response.Body.GetPropValue($"offerrem{(i + 1)}")),
+				};
 			}
 
 			var bids = new List<MarketOrder>();
+			Dictionary<decimal, MarketOrder> bidsx = [];
 			for (int i = 0; i < 10; i++)
 			{
+				var price = Convert.ToDecimal(response.Body.GetPropValue($"bidho{(i + 1)}"));
 				bids.Add(new MarketOrder
 				{
 					Seq = Convert.ToByte(i + 1),
-					Price = Convert.ToDecimal(response.Body.GetPropValue($"bidho{(i + 1)}")),
+					Price = price,
 					Amount = Convert.ToDecimal(response.Body.GetPropValue($"bidrem{(i + 1)}"))
 				});
+
+				bidsx[price] = new()
+				{
+					Seq = Convert.ToByte(i + 1),
+					Price = price,
+					Amount = Convert.ToDecimal(response.Body.GetPropValue($"bidrem{(i + 1)}"))
+				};
 			}
 
 			OrderBookTaken(this, new ResponseResult<OrderBook>
@@ -326,7 +345,9 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					Symbol = response.Body.shcode,
 					TimeTaken = response.Body.hotime.ToTime(),
 					Ask = asks,
+					Asks = asksx,
 					Bid = bids,
+					Bids = bidsx,
 					AskAgg = Convert.ToDecimal(response.Body.totofferrem),
 					BidAgg = Convert.ToDecimal(response.Body.totbidrem),
 				},
@@ -366,40 +387,68 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 			var asks = new List<MarketOrder>();
 			var asksKrx = new List<MarketOrder>();
 			var asksNxt = new List<MarketOrder>();
+			Dictionary<decimal, MarketOrder> asksx = [];
+			Dictionary<decimal, MarketOrder> asksKrxx = [];
+			Dictionary<decimal, MarketOrder> asksNxtx = [];
 			for (int i = 0; i < 10; i++)
 			{
 				var seq = Convert.ToByte(i + 1);
 				var price = Convert.ToDecimal(response.Body.GetPropValue($"offerho{(i + 1)}"));
+				if (price == 0) continue;
 
-				asks.Add(new MarketOrder
+				asks.Add(new()
 				{
 					Seq = seq,
 					Price = price,
 					Amount = Convert.ToDecimal(response.Body.GetPropValue($"unt_offerrem{(i + 1)}")),
 				});
 
-				asksKrx.Add(new MarketOrder
+				asksKrx.Add(new()
 				{
 					Seq = seq,
 					Price = price,
 					Amount = Convert.ToDecimal(response.Body.GetPropValue($"krx_offerrem{(i + 1)}")),
 				});
 
-				asksNxt.Add(new MarketOrder
+				asksNxt.Add(new()
 				{
 					Seq = seq,
 					Price = price,
 					Amount = Convert.ToDecimal(response.Body.GetPropValue($"nxt_offerrem{(i + 1)}")),
 				});
+
+				asksx[price] = new()
+				{
+					Seq = seq,
+					Price = price,
+					Amount = Convert.ToDecimal(response.Body.GetPropValue($"unt_offerrem{(i + 1)}")),
+				};
+				asksKrxx[price] = new()
+				{
+					Seq = seq,
+					Price = price,
+					Amount = Convert.ToDecimal(response.Body.GetPropValue($"krx_offerrem{(i + 1)}")),
+				};
+				asksNxtx[price] = new()
+				{
+					Seq = seq,
+					Price = price,
+					Amount = Convert.ToDecimal(response.Body.GetPropValue($"nxt_offerrem{(i + 1)}")),
+				};
 			}
 
 			var bids = new List<MarketOrder>();
 			var bidsKrx = new List<MarketOrder>();
 			var bidsNxt = new List<MarketOrder>();
+			Dictionary<decimal, MarketOrder> bidsx = [];
+			Dictionary<decimal, MarketOrder> bidsKrxx = [];
+			Dictionary<decimal, MarketOrder> bidsNxtx = [];
 			for (int i = 0; i < 10; i++)
 			{
 				var seq = Convert.ToByte(i + 1);
 				var price = Convert.ToDecimal(response.Body.GetPropValue($"bidho{(i + 1)}"));
+
+				if (price == 0) continue;
 
 				bids.Add(new MarketOrder
 				{
@@ -421,6 +470,27 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					Price = price,
 					Amount = Convert.ToDecimal(response.Body.GetPropValue($"nxt_bidrem{(i + 1)}"))
 				});
+
+				bidsx[price] = new()
+				{
+					Seq = seq,
+					Price = price,
+					Amount = Convert.ToDecimal(response.Body.GetPropValue($"unt_bidrem{(i + 1)}"))
+				};
+
+				bidsKrxx[price] = new()
+				{
+					Seq = seq,
+					Price = price,
+					Amount = Convert.ToDecimal(response.Body.GetPropValue($"krx_bidrem{(i + 1)}"))
+				};
+
+				bidsNxtx[price] = new()
+				{
+					Seq = seq,
+					Price = price,
+					Amount = Convert.ToDecimal(response.Body.GetPropValue($"nxt_bidrem{(i + 1)}"))
+				};
 			}
 
 			OrderBookTaken(this, new ResponseResult<OrderBook>
@@ -433,7 +503,9 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					Symbol = response.Body.shcode,
 					TimeTaken = response.Body.hotime.ToTime(),
 					Ask = asks,
+					Asks = asksx,
 					Bid = bids,
+					Bids = bidsx,
 					AskAgg = Convert.ToDecimal(response.Body.unt_totofferrem),
 					BidAgg = Convert.ToDecimal(response.Body.unt_totbidrem),
 				},
@@ -451,7 +523,9 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					Symbol = response.Body.shcode,
 					TimeTaken = response.Body.hotime.ToTime(),
 					Ask = asksKrx,
+					Asks = asksKrxx,
 					Bid = bidsNxt,
+					Bids = bidsKrxx,
 					AskAgg = Convert.ToDecimal(response.Body.krx_totofferrem),
 					BidAgg = Convert.ToDecimal(response.Body.krx_totbidrem),
 				},
@@ -469,7 +543,9 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					Symbol = response.Body.shcode,
 					TimeTaken = response.Body.hotime.ToTime(),
 					Ask = asksNxt,
+					Asks = asksNxtx,
 					Bid = bidsNxt,
+					Bids = bidsNxtx,
 					AskAgg = Convert.ToDecimal(response.Body.nxt_totofferrem),
 					BidAgg = Convert.ToDecimal(response.Body.nxt_totbidrem),
 				},
