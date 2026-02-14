@@ -138,6 +138,10 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 
 			IList<MarketOrder> asks = [];
 			IList<MarketOrder> bids = [];
+
+			Dictionary<decimal, MarketOrder> asksx = [];
+			Dictionary<decimal, MarketOrder> bidsx = [];
+
 			for (int i = 0; i < 5; i++)
 			{
 				asks.Add(new MarketOrder
@@ -155,6 +159,30 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 					Amount = Convert.ToDecimal(response.Body.GetPropValue($"Bidrem{i + 1}")),
 					AmountGroup = Convert.ToDecimal(response.Body.GetPropValue($"Bidcnt{i + 1}"))
 				});
+
+				var askPrice = Convert.ToDecimal(response.Body.GetPropValue($"Offerho{i + 1}"));
+				if (askPrice != 0)
+				{
+					asksx[askPrice] = new()
+					{
+						Seq = Convert.ToByte(i + 1),
+						Price = askPrice,
+						Amount = Convert.ToDecimal(response.Body.GetPropValue($"Offerrem{i + 1}")),
+						AmountGroup = Convert.ToDecimal(response.Body.GetPropValue($"Offercnt{i + 1}"))
+					};
+				}
+
+				var bidPrice = Convert.ToDecimal(response.Body.GetPropValue($"Bidho{i + 1}"));
+				if (bidPrice != 0)
+				{
+					bidsx[bidPrice] = new()
+					{
+						Seq = Convert.ToByte(i + 1),
+						Price = bidPrice,
+						Amount = Convert.ToDecimal(response.Body.GetPropValue($"Bidrem{i + 1}")),
+						AmountGroup = Convert.ToDecimal(response.Body.GetPropValue($"Bidcnt{i + 1}"))
+					};
+				}
 			}
 
 			OrderBookTaken(this, new ResponseResult<OrderBook>
@@ -168,8 +196,10 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 					Symbol = response.Body.Futcode,
 					TimeTaken = response.Body.Hotime.ToTime(),
 					Ask = asks,
+					Asks = asksx,
 					AskAgg = Convert.ToDecimal(response.Body.Totofferrem),
 					Bid = bids,
+					Bids = bidsx,
 					BidAgg = Convert.ToDecimal(response.Body.Totbidrem),
 				}
 			});

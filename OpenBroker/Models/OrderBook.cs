@@ -8,6 +8,10 @@ public class OrderBook : MarketExecution
     public TimeOnly TimeTaken { get; set; }
     public IList<MarketOrder> Ask { get; set; } = [];
     public IList<MarketOrder> Bid { get; set; } = [];
+
+    public Dictionary<decimal, MarketOrder> Asks { get; set; } = [];
+    public Dictionary<decimal, MarketOrder> Bids { get; set; } = [];
+
     public decimal AskAgg { get; set; }
     public decimal BidAgg { get; set; }
 }
