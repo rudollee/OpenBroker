@@ -534,7 +534,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	}
 	#endregion
 
-	public Task<ResponseResult<OrderBook>> RequestOrderbook(string symbol) => throw new NotImplementedException();
+	public async Task<ResponseResult<OrderBook>> RequestOrderbook(string symbol) => await RequestOrderbookAsync(symbol);
 
 	#region request sectors using t1531
 	public async Task<ResponseResults<Sector>> RequestSectors(string code = "", string name = "")
