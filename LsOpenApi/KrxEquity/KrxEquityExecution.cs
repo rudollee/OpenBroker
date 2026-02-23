@@ -78,13 +78,13 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 		try
 		{
 			var response = await client.PostAsync<T>(request);
-			if (response is null) return ReturnError(typeof(T).Name, "response is null");
+			if (response is null) return ReturnError(typeof(T).Name, "response is null", MessageSeverity.Critical);
 
-			return ReturnCore(response.Code, response.Message, MessageType.ORDER, response.OrderNo.ToString());
+			return ReturnCore(response.Code, response.Message, typ: MessageType.ORDER, remark: response.OrderNo.ToString());
 		}
 		catch (Exception ex)
 		{
-			return ReturnError(typeof(T).Name, ex.Message);
+			return ReturnError(typeof(T).Name, ex.Message, MessageSeverity.Critical);
 		}
 	}
 	#endregion
@@ -104,7 +104,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 
 			if (response.CSPAQ22200OutBlock2 is null)
 			{
-				return ReturnErrorResult<Balance>($"{nameof(CSPAQ22200)}.{response.Code}", response?.Message ?? "response is null");
+				return ReturnErrorResult<Balance>($"{nameof(CSPAQ22200)}.{response.Code}", response?.Message ?? "response is null", MessageSeverity.Critical);
 			}
 
 			return ReturnResult<Balance>(new Balance
@@ -121,7 +121,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResult<Balance>(nameof(CSPAQ22200), ex.Message);
+			return ReturnErrorResult<Balance>(nameof(CSPAQ22200), ex.Message, MessageSeverity.Critical);
 		}
 	} 
 	#endregion
@@ -181,7 +181,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<Execution>(nameof(T0425), ex.Message);
+			return ReturnErrorResults<Execution>(nameof(T0425), ex.Message, MessageSeverity.Critical);
 		}
 	}
 	#endregion
@@ -275,7 +275,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<Execution>(nameof(CSPAQ13700), ex.Message);
+			return ReturnErrorResults<Execution>(nameof(CSPAQ13700), ex.Message, MessageSeverity.Critical);
 		}
 	} 
 	#endregion
@@ -334,7 +334,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 		}
 		catch (Exception ex)
 		{
-			return ReturnError(nameof(CSPBQ00200), ex.Message);
+			return ReturnError(nameof(CSPBQ00200), ex.Message, MessageSeverity.Critical);
 		}
 	} 
 	#endregion
@@ -394,7 +394,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<Order>(nameof(CSPAQ13700), ex.Message);
+			return ReturnErrorResults<Order>(nameof(CSPAQ13700), ex.Message, MessageSeverity.Critical);
 		}
 	}
 	#endregion
@@ -439,11 +439,11 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 				});
 			});
 
-			return ReturnResults(positions, $"{nameof(T0424)}.{response.Code}", string.Empty, MessageType.SYS, response.T0424OutBlock.Dtsunik.ToString());
+			return ReturnResults(positions, $"{nameof(T0424)}.{response.Code}", string.Empty, MessageSeverity.Medium, MessageType.SYS, response.T0424OutBlock.Dtsunik.ToString());
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<Position>(nameof(T0424), ex.Message);
+			return ReturnErrorResults<Position>(nameof(T0424), ex.Message, MessageSeverity.Critical);
 		}
 	}
 	#endregion
@@ -460,14 +460,14 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 				t0151InBlock = new T0151InBlock { Date = date.ToDate8Txt() }
 			});
 
-			if (response is null) return ReturnErrorResults<Execution>(nameof(T0151), "response is null");
+			if (response is null) return ReturnErrorResults<Execution>(nameof(T0151), "response is null", MessageSeverity.Critical);
 			if (response.T0151OutBlock1.Count == 0) return ReturnResults<Execution>([], $"{nameof(T0151)}.{response.Code}", "no execution");
 
 			return GenerateExecutions(date, response.T0151OutBlock1);
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<Execution>(nameof(T0151), ex.Message);
+			return ReturnErrorResults<Execution>(nameof(T0151), ex.Message, MessageSeverity.Critical);
 		}
 	}
 
@@ -478,7 +478,7 @@ public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEqui
 			t0150InBlock = new T0150InBlock { }
 		});
 
-		if (response is null) return ReturnErrorResults<Execution>(nameof(T0150), "response is null");
+		if (response is null) return ReturnErrorResults<Execution>(nameof(T0150), "response is null", MessageSeverity.Critical);
 		if (response.T0150OutBlock1.Count == 0) return ReturnResults<Execution>([], $"{nameof(T0150)}.{response.Code}", response.Message);
 
 		return GenerateExecutions(DateTime.Now.ToKrxTradingDay(), response.T0150OutBlock1);

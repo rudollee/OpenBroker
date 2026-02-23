@@ -101,7 +101,7 @@ public class ConnectionBase
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResult<KeyPack>("ACCESS-TOKEN", ex.Message, "error catch");
+			return ReturnErrorResult<KeyPack>("ACCESS-TOKEN", ex.Message, MessageSeverity.Critical, remark: "error catch");
 		}
 	}
 
@@ -134,11 +134,11 @@ public class ConnectionBase
 
 			SetConnect();
 
-			return ReturnCore("CONNECTION", "Connected", MessageType.CONNECTION);
+			return ReturnCore("CONNECTION", "Connected", typ: MessageType.CONNECTION);
 		}
 		catch (Exception ex)
 		{
-			return ReturnError("CONNECTION", ex.Message, "during connect websocket", typ: MessageType.CONNECTION);
+			return ReturnError("CONNECTION", ex.Message, MessageSeverity.Critical, remark: "during connect websocket", typ: MessageType.CONNECTION);
 		}
 	}
 
@@ -153,7 +153,7 @@ public class ConnectionBase
 
 		SetConnect(false);
 
-		return ReturnCore("DISCONNECTION", "disconnected", MessageType.SYS);
+		return ReturnCore("DISCONNECTION", "disconnected", typ: MessageType.SYS);
 	}
 	#endregion
 
@@ -252,7 +252,7 @@ public class ConnectionBase
 		}
 		catch (Exception ex)
 		{
-			return ReturnError($"{trCode}:{key}", $"{subscriber} : {ex.Message}", $"from {System.Reflection.MethodBase.GetCurrentMethod()?.Name} connecting is {connecting}");
+			return ReturnError($"{trCode}:{key}", $"{subscriber} : {ex.Message}", MessageSeverity.Critical, remark: $"from {System.Reflection.MethodBase.GetCurrentMethod()?.Name} connecting is {connecting}");
 		};
 	}
 	#endregion
@@ -439,7 +439,7 @@ public class ConnectionBase
 		}
 		catch (Exception ex)
 		{
-			SendErrorMessage(trCode, ex.Message);
+			SendErrorMessage(trCode, ex.Message, MessageSeverity.Critical);
 			return false;
 		}
 
@@ -564,88 +564,96 @@ public class ConnectionBase
 		}
 		catch (Exception ex)
 		{
-			SendErrorMessage(nameof(JIF), ex.Message);
+			SendErrorMessage(nameof(JIF), ex.Message, MessageSeverity.Critical);
 			return false;
 		}
 	}
 	#endregion
 
 	#region simple response callback or return
-	protected void SendMessage(string code, string message, MessageType typ = MessageType.SYS, string remark = "") => Message(this, new ResponseCore
+	protected void SendMessage(string code, string message, MessageType typ = MessageType.SYS, MessageSeverity severity = MessageSeverity.Medium, string remark = "") => Message(this, new ResponseCore
 	{
 		Broker = Brkr.LS,
 		Typ = typ,
+		Severity = severity,
 		Code = code,
 		Message = message,
 		Remark = remark
 	});
 
-	protected void SendErrorMessage(string code, string message, string remark = "") => Message(this, new ResponseCore
+	protected void SendErrorMessage(string code, string message, MessageSeverity severity = MessageSeverity.High, string remark = "") => Message(this, new ResponseCore
 	{
 		StatusCode = Status.ERROR_OPEN_API,
 		Broker = Brkr.LS,
 		Typ = MessageType.SYSERR,
+		Severity = severity,
 		Code = code,
 		Message = message,
 		Remark = remark
 	});
 
-	protected static ResponseCore ReturnError(string code, string message, string remark = "", MessageType typ = MessageType.SYSERR, Status statusCode = Status.ERROR_OPEN_API) => new() 
+	protected static ResponseCore ReturnError(string code, string message, MessageSeverity severity = MessageSeverity.High, string remark = "", MessageType typ = MessageType.SYSERR, Status statusCode = Status.ERROR_OPEN_API) => new() 
 	{
 		Broker = Brkr.LS,
 		Typ = typ,
+		Severity = severity,
 		StatusCode = statusCode,
 		Code = code,
 		Message = message,
 		Remark = remark
 	};
 
-	protected static ResponseCore ReturnCore(string code = "", string message = "", MessageType typ = MessageType.SYS, string remark = "") => new()
+	protected static ResponseCore ReturnCore(string code = "", string message = "", MessageSeverity severity = MessageSeverity.Medium, MessageType typ = MessageType.SYS, string remark = "") => new()
 	{
 		Broker = Brkr.LS,
 		Typ = typ,
+		Severity = severity,
 		Code = code,
 		Message = message,
 		Remark = remark
 	};
 
-	protected static ResponseResult<T> ReturnErrorResult<T>(string code, string meesage, string remark = "") where T : class => new()
+	protected static ResponseResult<T> ReturnErrorResult<T>(string code, string meesage, MessageSeverity severity = MessageSeverity.High, string remark = "") where T : class => new()
 	{
 		Broker = Brkr.LS,
 		Typ = MessageType.SYSERR,
+		Severity = severity,
 		Code = code,
 		StatusCode = Status.ERROR_OPEN_API,
 		Message = meesage,
 		Remark = remark
 	};
 
-	protected static ResponseResult<T> ReturnResult<T>(T info, string code = "", string message = "", MessageType typ = MessageType.SYS, string remark = "") where T : class => new()
+	protected static ResponseResult<T> ReturnResult<T>(T info, string code = "", string message = "", MessageSeverity severity = MessageSeverity.Medium, MessageType typ = MessageType.SYS, string remark = "") where T : class => new()
 	{
 		Broker = Brkr.LS,
 		StatusCode = info is null ? Status.NODATA : Status.SUCCESS,
 		Typ = typ,
+		Severity = severity,
 		Code = code,
 		Message = message,
 		Info = info,
 		Remark = remark
 	};
 
-	protected static ResponseResults<T> ReturnErrorResults<T>(string code = "", string message = "", string remark = "", Status statusCode = Status.ERROR_OPEN_API) where T : class => new()
+	protected static ResponseResults<T> ReturnErrorResults<T>(string code = "", string message = "", MessageSeverity severity = MessageSeverity.High, string remark = "", Status statusCode = Status.ERROR_OPEN_API) where T : class => new()
 	{
 		Broker = Brkr.LS,
 		StatusCode = statusCode,
 		Typ = MessageType.SYSERR,
+		Severity = severity,
 		Code = code,
 		Message = message,
 		Remark = remark,
 		List = []
 	};
 
-	protected static ResponseResults<T> ReturnResults<T>(List<T> list, string code = "", string message = "", MessageType typ = MessageType.SYS, string remark = "", Dictionary<string, decimal>? extraData = null) where T : class => new()
+	protected static ResponseResults<T> ReturnResults<T>(List<T> list, string code = "", string message = "", MessageSeverity severity = MessageSeverity.Medium, MessageType typ = MessageType.SYS, string remark = "", Dictionary<string, decimal>? extraData = null) where T : class => new()
 	{
 		Broker = Brkr.LS,
 		StatusCode = list.Count > 0 ? Status.SUCCESS : Status.NODATA,
 		Typ = typ,
+		Severity = severity,
 		Code = code,
 		Message = string.IsNullOrEmpty(message) && list.Count == 0 ? "no data" : message,
 		List = list,

@@ -100,7 +100,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResult<News>(nameof(News), ex.Message);
+			return ReturnErrorResult<News>(nameof(News), ex.Message, MessageSeverity.Critical);
 		}
 	}
 	#endregion
@@ -138,7 +138,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<Equity>(nameof(t8436), ex.Message);
+			return ReturnErrorResults<Equity>(nameof(t8436), ex.Message, MessageSeverity.Critical);
 		}
 	}
 
@@ -185,6 +185,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = ex.Message,
+				Severity = MessageSeverity.Critical
 			};
 		}
 	}
@@ -217,11 +218,11 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				});
 			}
 
-			return ReturnResults(equities, nameof(T1403), string.Empty, MessageType.MKT, response.T1403OutBlock1.Select(s => s.Date).Max() ?? string.Empty);
+			return ReturnResults(equities, nameof(T1403), string.Empty, MessageSeverity.Medium, MessageType.MKT, response.T1403OutBlock1.Select(s => s.Date).Max() ?? string.Empty);
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<Equity>(nameof(T1403), ex.Message);
+			return ReturnErrorResults<Equity>(nameof(T1403), ex.Message, MessageSeverity.Critical);
 		}
 	}
 	#endregion
@@ -287,11 +288,11 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				equity.OrderBook = responseOrderbook.Info;
 			}
 
-			return ReturnResult(equity, nameof(T1102), string.Empty, MessageType.MKT, "MoneyAgg multiple: M");
+			return ReturnResult(equity, nameof(T1102), string.Empty, typ: MessageType.MKT, remark: "MoneyAgg multiple: M");
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResult<EquityPack>(nameof(T1102), ex.Message);
+			return ReturnErrorResult<EquityPack>(nameof(T1102), ex.Message, MessageSeverity.Critical);
 		}
 	}
 
@@ -489,7 +490,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<MarketExecution>(nameof(T8407), ex.Message);
+			return ReturnErrorResults<MarketExecution>(nameof(T8407), ex.Message, MessageSeverity.Critical);
 		}
 	}
 	#endregion
@@ -529,7 +530,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<MarketExecution>(nameof(T1301), ex.Message);
+			return ReturnErrorResults<MarketExecution>(nameof(T1301), ex.Message, MessageSeverity.Critical);
 		}
 	}
 	#endregion
@@ -564,7 +565,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<Sector>(nameof(T1531), ex.Message);
+			return ReturnErrorResults<Sector>(nameof(T1531), ex.Message, MessageSeverity.Critical);
 		}
 	}
 	#endregion
@@ -596,7 +597,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<Sector>(nameof(T1532), ex.Message);
+			return ReturnErrorResults<Sector>(nameof(T1532), ex.Message, MessageSeverity.Critical);
 		}
 	}
 	#endregion
@@ -637,7 +638,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<MarketExecution>(nameof(T1537), ex.Message);
+			return ReturnErrorResults<MarketExecution>(nameof(T1537), ex.Message, MessageSeverity.Critical);
 		}
 	}
 	#endregion
@@ -656,7 +657,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResult<QuotePack<T>>("QUOTE", ex.Message);
+			return ReturnErrorResult<QuotePack<T>>("QUOTE", ex.Message, MessageSeverity.Critical);
 		}
 	}
 
@@ -674,7 +675,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			}
 		});
 
-		if (typeof(T) != typeof(Quote)) return ReturnErrorResult<QuotePack<T>>(nameof(t8411), "Invalid type parameter for RequestPricePackTick", "type mismatch");
+		if (typeof(T) != typeof(Quote)) return ReturnErrorResult<QuotePack<T>>(nameof(t8411), "Invalid type parameter for RequestPricePackTick", remark: "type mismatch");
 
 		if (response.t8411OutBlock1.Count == 0) return ReturnResult<QuotePack<T>>(new() { PrimaryList = [] }, nameof(T8410), response.Message);
 
@@ -876,7 +877,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 		catch (Exception ex)
 		{
-			return ReturnResults<SearchFilter>([], nameof(T1866), ex.Message);
+			return ReturnResults<SearchFilter>([], nameof(T1866), ex.Message, MessageSeverity.Critical);
 		}
 	}
 
@@ -907,7 +908,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<MarketExecution>(nameof(T1859), ex.Message);
+			return ReturnErrorResults<MarketExecution>(nameof(T1859), ex.Message, MessageSeverity.Critical);
 		}
 	}
 	#endregion

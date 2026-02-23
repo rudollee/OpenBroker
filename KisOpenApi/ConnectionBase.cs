@@ -83,7 +83,7 @@ public class ConnectionBase
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResult<KeyPack>("TOKEN", $"error-catched: {ex.Message}");
+			return ReturnErrorResult<KeyPack>("TOKEN", $"error-catched: {ex.Message}", MessageSeverity.Critical);
 		}
 	}
 	#endregion
@@ -130,7 +130,7 @@ public class ConnectionBase
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResult<KeyPack>("WEBSOCKET-CODE", $"error catched: {ex.Message}");
+			return ReturnErrorResult<KeyPack>("WEBSOCKET-CODE", $"error catched: {ex.Message}", MessageSeverity.Critical);
 		}
 	}
 	#endregion
@@ -163,7 +163,7 @@ public class ConnectionBase
 
 			SetConnect();
 
-			return ReturnCore("CONNECTION", "Connected", MessageType.CONNECTION);
+			return ReturnCore("CONNECTION", "Connected", typ: MessageType.CONNECTION);
 		}
 		catch (Exception ex)
 		{
@@ -172,6 +172,7 @@ public class ConnectionBase
 				Broker = Brkr.KI,
 				StatusCode = Status.INTERNALSERVERERROR,
 				Typ = MessageType.CONNECTION,
+				Severity = MessageSeverity.Critical,
 				Message = ex.Message,
 				Remark = "during connect websocket"
 			};
@@ -253,14 +254,14 @@ public class ConnectionBase
 				}
 			}
 
-			if (!needsAction) return ReturnCore("NOACTION", message, MessageType.SUB, $"{trCode}-{key}:{subscriber}");
+			if (!needsAction) return ReturnCore("NOACTION", message, typ: MessageType.SUB, remark: $"{trCode}-{key}:{subscriber}");
 
 			if (Client is null) return ReturnError("NOCONNECTION", "client is null", statusCode: Status.PARTIALLY_SUCCESS);
 			if (!Client.IsRunning) return ReturnError("NoRunning", "just queued", statusCode: Status.PARTIALLY_SUCCESS);
 
 			var result = await Task.Run(() => Client.Send(GenerateSubscriptionRequest(trCode, key, connecting)));
 
-			SendMessage($"{trCode}({key})", $"Sent {(connecting ? "subscribe" : "unsubscribe")} request.", MessageType.SUB);
+			SendMessage($"{trCode}({key})", $"Sent {(connecting ? "subscribe" : "unsubscribe")} request.", typ: MessageType.SUB);
 
 			return new ResponseCore
 			{
@@ -275,6 +276,7 @@ public class ConnectionBase
 			{
 				Broker = Brkr.KI,
 				Typ = MessageType.SUB,
+				Severity = MessageSeverity.Critical,
 				StatusCode = Status.INTERNALSERVERERROR,
 				Message = $"catch error : {ex.Message}",
 				Remark = $"from {System.Reflection.MethodBase.GetCurrentMethod()?.Name} connecting is {connecting}"
@@ -306,11 +308,11 @@ public class ConnectionBase
 
 			if (message.Text.StartsWith('{')) ParseCallbackMessage(message.Text);
 			else if (new string[] { "0", "1" }.Contains(message.Text[..1])) ParseCallbackResponse(message.Text);
-			else SendErrorMessage("WEIRD_MESSAGE", "message format is weird", message.Text);
+			else SendErrorMessage("WEIRD_MESSAGE", "message format is weird", remark: message.Text);
 		}
 		catch (Exception ex)
 		{
-			SendErrorMessage("SUB-CALLBACK-ERR", ex.Message, message?.Text ?? string.Empty);
+			SendErrorMessage("SUB-CALLBACK-ERR", ex.Message, severity: MessageSeverity.Critical, remark: message?.Text ?? string.Empty);
 		}
 	}
 
@@ -337,7 +339,7 @@ public class ConnectionBase
 			var response = await SubscribeAsync("RECONNECTION", subscirption.Value.TrCode, subscirption.Value.Key);
 			if (response.StatusCode != Status.SUCCESS)
 			{
-				SendErrorMessage(subscirption.Value.TrCode, $"subscription {subscirption.Key} failed during reconnection", subscirption.Value.Key);
+				SendErrorMessage(subscirption.Value.TrCode, $"subscription {subscirption.Key} failed during reconnection", remark: subscirption.Value.Key);
 			}
 		}
 	}
@@ -366,7 +368,7 @@ public class ConnectionBase
 			var messageInfo = JsonSerializer.Deserialize<KisSubscriptionResponse>(callbackTxt);
 			if (messageInfo is null || messageInfo.Header is null || messageInfo.Header.ID is null)
 			{
-				SendErrorMessage("JSON_PARSING_ERR", "messageInfo is null", callbackTxt);
+				SendErrorMessage("JSON_PARSING_ERR", "messageInfo is null", remark: callbackTxt);
 				return;
 			};
 
@@ -385,11 +387,11 @@ public class ConnectionBase
 					break;
 			}
 
-			SendMessage($"{messageInfo.Body.ResultCode}.{messageInfo.Body.MessageCode}", messageInfo.Body.Message, MessageType.SUB, $"{messageInfo.Header.ID}: {messageInfo.Header.Key}");
+			SendMessage($"{messageInfo.Body.ResultCode}.{messageInfo.Body.MessageCode}", messageInfo.Body.Message, typ: MessageType.SUB, remark: $"{messageInfo.Header.ID}: {messageInfo.Header.Key}");
 		}
 		catch (Exception ex)
 		{
-			SendErrorMessage("JSON_PARSING_ERR", $"catch err: ${ex.Message}", callbackTxt);
+			SendErrorMessage("JSON_PARSING_ERR", $"catch err: ${ex.Message}", severity: MessageSeverity.Critical, remark: callbackTxt);
 		}
 	}
 
@@ -496,7 +498,7 @@ public class ConnectionBase
 		}
 		catch (Exception ex)
 		{
-			SendErrorMessage(trCode, $"error catched during removing old delayed request: {ex.Message}");
+			SendErrorMessage(trCode, $"error catched during removing old delayed request: {ex.Message}", MessageSeverity.Critical);
 			return false;
 		}
 
@@ -589,81 +591,89 @@ public class ConnectionBase
 	#endregion
 
 	#region simple response callback or return
-	protected void SendMessage(string code, string message, MessageType typ = MessageType.SYS, string remark = "") => Message(this, new ResponseCore
+	protected void SendMessage(string code, string message, MessageSeverity severity = MessageSeverity.Medium, MessageType typ = MessageType.SYS, string remark = "") => Message(this, new ResponseCore
 	{
 		Broker = Brkr.KI,
 		Typ = typ,
+		Severity = severity,
 		Code = code,
 		Message = message,
 		Remark = remark
 	});
 
-	protected void SendErrorMessage(string code, string message, string remark = "", MessageType typ = MessageType.SYSERR) => Message(this, new ResponseCore
+	protected void SendErrorMessage(string code, string message, MessageSeverity severity = MessageSeverity.High, string remark = "", MessageType typ = MessageType.SYSERR) => Message(this, new ResponseCore
 	{
 		StatusCode = Status.ERROR_OPEN_API,
 		Broker = Brkr.KI,
 		Typ = typ,
+		Severity = severity,
 		Code = code,
 		Message = message,
 		Remark = remark
 	});
 
-	protected static ResponseCore ReturnError(string code, string message, string remark = "", MessageType typ = MessageType.SYSERR, Status statusCode = Status.ERROR_OPEN_API) => new()
+	protected static ResponseCore ReturnError(string code, string message, MessageSeverity severity = MessageSeverity.High, string remark = "", MessageType typ = MessageType.SYSERR, Status statusCode = Status.ERROR_OPEN_API) => new()
 	{
-		Broker = Brkr.KI,
-		Typ = typ,
 		StatusCode = statusCode,
+		Broker = Brkr.KI,
+		Typ = typ,
+		Severity = severity,
 		Code = code,
 		Message = message,
 		Remark = remark
 	};
 
-	protected static ResponseCore ReturnCore(string code = "", string message = "", MessageType typ = MessageType.SYS, string remark = "") => new()
+	protected static ResponseCore ReturnCore(string code = "", string message = "", MessageSeverity severity = MessageSeverity.Medium, MessageType typ = MessageType.SYS, string remark = "") => new()
 	{
 		Broker = Brkr.KI,
 		Typ = typ,
+		Severity = severity,
 		Code = code,
 		Message = message,
 		Remark = remark
 	};
 
-	protected static ResponseResult<T> ReturnErrorResult<T>(string code, string meesage, string remark = "") where T : class => new()
+	protected static ResponseResult<T> ReturnErrorResult<T>(string code, string meesage, MessageSeverity severity = MessageSeverity.High, string remark = "") where T : class => new()
 	{
 		Broker = Brkr.KI,
 		Typ = MessageType.SYSERR,
+		Severity = severity,
 		Code = code,
 		StatusCode = Status.ERROR_OPEN_API,
 		Message = meesage,
 		Remark = remark
 	};
 
-	protected static ResponseResult<T> ReturnResult<T>(T info, string code = "", string message = "", MessageType typ = MessageType.SYS, string remark = "") where T : class => new()
+	protected static ResponseResult<T> ReturnResult<T>(T info, string code = "", string message = "", MessageSeverity severity = MessageSeverity.Medium, MessageType typ = MessageType.SYS, string remark = "") where T : class => new()
 	{
 		Broker = Brkr.KI,
 		StatusCode = info is null ? Status.NODATA : Status.SUCCESS,
 		Typ = typ,
+		Severity = severity,
 		Code = code,
 		Message = message,
 		Info = info,
 		Remark = remark
 	};
 
-	protected static ResponseResults<T> ReturnErrorResults<T>(string code = "", string message = "", string remark = "", Status statusCode = Status.ERROR_OPEN_API) where T : class => new()
+	protected static ResponseResults<T> ReturnErrorResults<T>(string code = "", string message = "", MessageSeverity severity = MessageSeverity.High, string remark = "", Status statusCode = Status.ERROR_OPEN_API) where T : class => new()
 	{
 		Broker = Brkr.KI,
 		StatusCode = statusCode,
 		Typ = MessageType.SYSERR,
+		Severity = severity,
 		Code = code,
 		Message = message,
 		Remark = remark,
 		List = []
 	};
 
-	protected static ResponseResults<T> ReturnResults<T>(List<T> list, string code = "", string message = "", MessageType typ = MessageType.SYS, string remark = "", Dictionary<string, decimal>? extraData = null) where T : class => new()
+	protected static ResponseResults<T> ReturnResults<T>(List<T> list, string code = "", string message = "", MessageSeverity severity = MessageSeverity.Medium, MessageType typ = MessageType.SYS, string remark = "", Dictionary<string, decimal>? extraData = null) where T : class => new()
 	{
 		Broker = Brkr.KI,
 		StatusCode = list.Count > 0 ? Status.SUCCESS : Status.NODATA,
 		Typ = typ,
+		Severity = severity,
 		Code = code,
 		Message = string.IsNullOrEmpty(message) && list.Count == 0 ? "no data" : message,
 		List = list,

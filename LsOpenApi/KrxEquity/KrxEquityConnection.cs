@@ -18,13 +18,13 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 	{
 		if (message is null || message.MessageType != WebSocketMessageType.Text)
 		{
-			SendErrorMessage("BINARY", "binary message type");
+			SendErrorMessage("BINARY", "binary message type", MessageSeverity.Critical);
 			return;
 		}
 
 		if (message.Text is null)
 		{
-			SendErrorMessage("TEXTNULL", "message.Text is null");
+			SendErrorMessage("TEXTNULL", "message.Text is null", MessageSeverity.Critical);
 			return;
 		}
 
@@ -89,7 +89,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			SendErrorMessage(nameof(NWS), ex.Message);
+			SendErrorMessage(nameof(NWS), ex.Message, MessageSeverity.Critical);
 			return false;
 		}
 	}
@@ -150,7 +150,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			SendErrorMessage(trCode, ex.Message);
+			SendErrorMessage(trCode, ex.Message, MessageSeverity.Critical);
 			return false;
 		}
 	}
@@ -194,7 +194,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			SendErrorMessage(trCode, ex.Message);
+			SendErrorMessage(trCode, ex.Message, MessageSeverity.Critical);
 			return false;
 		}
 	}
@@ -232,7 +232,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			SendErrorMessage(nameof(CUR), ex.Message);
+			SendErrorMessage(nameof(CUR), ex.Message, MessageSeverity.Critical);
 			return false;
 		}
 	}
@@ -272,7 +272,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			SendErrorMessage(nameof(MK2), ex.Message);
+			SendErrorMessage(nameof(MK2), ex.Message, MessageSeverity.Critical);
 			return false;
 		}
 	}
@@ -363,6 +363,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 			{
 				Broker = Brkr.LS,
 				StatusCode = Status.ERROR_OPEN_API,
+				Severity = MessageSeverity.Critical,
 				Code = trCode,
 				Message = ex.Message
 			});
@@ -557,7 +558,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			SendErrorMessage(nameof(UH1), ex.Message);
+			SendErrorMessage(nameof(UH1), ex.Message, MessageSeverity.Critical);
 			return false;
 		}
 	}
@@ -600,7 +601,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			SendErrorMessage(nameof(VI_), ex.Message);
+			SendErrorMessage(nameof(VI_), ex.Message, MessageSeverity.Critical);
 			return false;
 		}
 	}
@@ -631,7 +632,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					OID = Convert.ToInt64(response.Body.ordno),
 					IdOrigin = Convert.ToInt64(response.Body.orgordno),
 					TimeOrdered = response.Body.ordtm.ToDateTimeM(),
-					Symbol = response.Body.shtcode.Substring(1),
+					Symbol = response.Body.shtcode[1..],
 					InstrumentName = response.Body.hname,
 					Mode = response.Body.ordchegb switch
 					{
@@ -652,7 +653,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			SendErrorMessage(nameof(SC0), ex.Message);
+			SendErrorMessage(nameof(SC0), ex.Message, MessageSeverity.Critical);
 			return false;
 		}
 	}
@@ -685,7 +686,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					Currency = Currency.KRW,
 					Precision = 0,
 					NumeralSystem = 10,
-					Symbol = response.Body.shtnIsuno.Substring(1),
+					Symbol = response.Body.shtnIsuno[1..],
 					InstrumentName = response.Body.Isunm,
 					OID = Convert.ToInt64(response.Body.ordno),
 					IdOrigin = Convert.ToInt64(response.Body.orgordno),
@@ -710,7 +711,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			SendErrorMessage(trCode, ex.Message);
+			SendErrorMessage(trCode, ex.Message, MessageSeverity.Critical);
 			return false;
 		}
 	}
@@ -739,7 +740,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					DateBiz = DateTime.Now.ToKrxTradingDay(),
 					OID = Convert.ToInt64(response.Body.ordno),
 					EID = Convert.ToInt64(response.Body.execno),
-					Symbol = response.Body.shtnIsuno.Substring(1),
+					Symbol = response.Body.shtnIsuno[1..],
 					InstrumentName = response.Body.Isunm,
 					IsLong = response.Body.bnstp == "2",
 					Price = Convert.ToDecimal(response.Body.execprc),
@@ -756,7 +757,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			SendErrorMessage(nameof(SC1), ex.Message);
+			SendErrorMessage(nameof(SC1), ex.Message, MessageSeverity.Critical);
 			return false;
 		}
 	} 

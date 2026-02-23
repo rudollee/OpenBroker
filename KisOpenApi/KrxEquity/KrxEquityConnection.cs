@@ -34,7 +34,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 			var plainTxt = rawData[0] == "0" ? rawData[3] : decrypt(rawData[3]);
 
 			var data = plainTxt.Split("^");
-			if (data is null || !data.Any()) return;
+			if (data is null || data.Length == 0) return;
 
 			var result = rawData[1] switch
 			{
@@ -48,7 +48,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			SendErrorMessage("PARSING-ERR", ex.Message, callbackTxt);
+			SendErrorMessage("PARSING-ERR", ex.Message, severity: MessageSeverity.Critical, remark: callbackTxt);
 		}
 	}
 	#endregion
@@ -121,7 +121,7 @@ public partial class KisKrxEquity : ConnectionBase, IConnection
 				Info = new MarketExecution
 				{
 					Exchange = trId == nameof(H0STCNT0) ? Exchange.KRX : Exchange.NXT,
-					MarketSessionInfo = data[(int)H0STCNT0.NEW_MKOP_CLS_CODE].Substring(0, 1) switch
+					MarketSessionInfo = data[(int)H0STCNT0.NEW_MKOP_CLS_CODE][..1] switch
 					{
 						"1" => MarketSession.PRE,
 						"2" => MarketSession.REGULAR,

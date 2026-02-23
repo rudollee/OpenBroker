@@ -152,7 +152,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 				break; 
 			#endregion
 			default:
-				SendErrorMessage(rawData[2], "during parsing callback to swich", plainTxt);
+				SendErrorMessage(rawData[2], "during parsing callback to swich", remark: plainTxt);
 				break;
 		}
 	}

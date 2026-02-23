@@ -82,7 +82,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<Execution>(nameof(T0434), ex.Message, statusCode: Status.INTERNALSERVERERROR);
+			return ReturnErrorResults<Execution>(nameof(T0434), ex.Message, MessageSeverity.Critical, statusCode: Status.INTERNALSERVERERROR);
 		}
 	}
 
@@ -124,7 +124,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 			if (executionsRaw.Count == 0)
 			{
 				var periodTxt = dateBegun == dateFin ? $"on {dateBegun:yyyy-MM-dd}" : $"between {dateBegun:yyyy-MM-dd} and {dateFin:yyyy-MM-dd}";
-				return ReturnErrorResults<Execution>(nameof(CFOAQ00600), $"No trading data found {periodTxt}", "", Status.NODATA);
+				return ReturnErrorResults<Execution>(nameof(CFOAQ00600), $"No trading data found {periodTxt}", statusCode: Status.NODATA);
 			}
 
 			Execution previousExecution = new();
@@ -194,7 +194,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<Execution>(nameof(CFOAQ00600), ex.Message);
+			return ReturnErrorResults<Execution>(nameof(CFOAQ00600), ex.Message, MessageSeverity.Critical);
 		}
 
 		if (dateBegun.Date != dateFin.Date) return new ResponseResults<Execution> { List = executions };
@@ -228,6 +228,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 			return new()
 			{
 				StatusCode = Status.PARTIALLY_SUCCESS,
+				Severity = MessageSeverity.Critical,
 				Message = ex.Message,
 				List = executions,
 			};
@@ -301,7 +302,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<Order>(nameof(T0434), ex.Message, statusCode: Status.INTERNALSERVERERROR);
+			return ReturnErrorResults<Order>(nameof(T0434), ex.Message, MessageSeverity.Critical, statusCode: Status.INTERNALSERVERERROR);
 		}
 	}
 
@@ -364,7 +365,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<Order>(nameof(CFOAQ00600), ex.Message, statusCode: Status.INTERNALSERVERERROR);
+			return ReturnErrorResults<Order>(nameof(CFOAQ00600), ex.Message, MessageSeverity.Critical, statusCode: Status.INTERNALSERVERERROR);
 		}
 	}
 	#endregion
@@ -403,7 +404,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<Position>(nameof(T0441), ex.Message, string.Empty, Status.INTERNALSERVERERROR);
+			return ReturnErrorResults<Position>(nameof(T0441), ex.Message, MessageSeverity.Critical, statusCode: Status.INTERNALSERVERERROR);
 		}
 	}
 	#endregion

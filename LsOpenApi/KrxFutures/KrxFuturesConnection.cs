@@ -116,6 +116,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Typ = MessageType.MKTS,
+				Severity = MessageSeverity.Critical,
 				Code = trCode,
 				Message = ex.Message,
 				Broker = Brkr.LS
@@ -206,7 +207,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			SendErrorMessage(tr, ex.Message);
+			SendErrorMessage(tr, ex.Message, MessageSeverity.Critical);
 			return false;
 		}
 
@@ -253,7 +254,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-            SendErrorMessage(tr, ex.Message);
+            SendErrorMessage(tr, ex.Message, MessageSeverity.Critical);
             return false;
 		}
 	}
@@ -304,7 +305,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			SendErrorMessage(tr, ex.Message);
+			SendErrorMessage(tr, ex.Message, MessageSeverity.Critical);
 			return false;
 		}
 	}

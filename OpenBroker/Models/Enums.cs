@@ -353,6 +353,14 @@ public enum MessageType
     WATCH,
 }
 
+public enum MessageSeverity
+{
+    Low = 0,
+    Medium = 1,
+    High = 2,
+    Critical = 3,
+}
+
 public enum IntervalUnit
 {
     [Description("T")]

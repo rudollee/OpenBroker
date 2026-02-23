@@ -16,10 +16,15 @@ public class ResponseCore
     /// </summary>
     public Status StatusCode { get; set; } = Status.SUCCESS;
 
-    /// <summary>
-    /// 상세 코드
-    /// </summary>
-    public string Code { get; set; } = string.Empty;
+	/// <summary>
+	/// 중요도
+	/// </summary>
+	public MessageSeverity Severity { get; set; } = MessageSeverity.Medium;
+
+	/// <summary>
+	/// 상세 코드
+	/// </summary>
+	public string Code { get; set; } = string.Empty;
 
 	/// <summary>
 	/// 상태 메시지
@@ -29,7 +34,7 @@ public class ResponseCore
 	/// <summary>
 	/// 추가 데이터
 	/// </summary>
-	public Dictionary<string, decimal> ExtraData { get; set; } = new();
+	public Dictionary<string, decimal> ExtraData { get; set; } = [];
 
 	/// <summary>
 	/// 비고
@@ -54,7 +59,7 @@ public class ResponseResults<T> : ResponseCore where T : class
 
 public class ResponseResultsWithPaging<T> : ResponseCore where T : class
 {
-	public IEnumerable<T> List { get; set; } = new List<T>();
+	public IEnumerable<T> List { get; set; } = [];
 
 	public int Total { get; set; } = 0;
 
@@ -67,5 +72,5 @@ public class ResponseResultsWithPaging<T> : ResponseCore where T : class
 
 public class ResponseDictionary<TKey, TValue> : ResponseCore where TKey : notnull
 {
-    public Dictionary<TKey, TValue> Dic { get; set; } = new(); 
+	public Dictionary<TKey, TValue> Dic { get; set; } = [];
 }

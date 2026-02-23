@@ -68,7 +68,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResult<MarketExecution>(symbol, ex.Message);
+			return ReturnErrorResult<MarketExecution>(symbol, ex.Message, MessageSeverity.Critical);
 		}
 	}
 
@@ -113,7 +113,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResult<MarketExecution>(symbol, ex.Message);
+			return ReturnErrorResult<MarketExecution>(symbol, ex.Message, MessageSeverity.Critical);
 		}
 	}
 
@@ -157,7 +157,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResult<MarketExecution>(symbol, ex.Message);
+			return ReturnErrorResult<MarketExecution>(symbol, ex.Message, MessageSeverity.Critical);
 		}
 	}
 	#endregion
@@ -217,7 +217,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResults<MarketExecution>("ERR-CATch", ex.Message);
+			return ReturnErrorResults<MarketExecution>("ERR-CATch", ex.Message, MessageSeverity.Critical);
 		}
 	} 
 	#endregion
@@ -317,7 +317,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResult<OrderBook>("CATCH", ex.Message);
+			return ReturnErrorResult<OrderBook>("CATCH", ex.Message, MessageSeverity.Critical);
 		}
 	}
 
@@ -367,7 +367,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResult<OrderBook>(symbol, ex.Message);
+			return ReturnErrorResult<OrderBook>(symbol, ex.Message, MessageSeverity.Critical);
 		}
 	} 
 	#endregion
@@ -397,6 +397,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 					Broker = Brkr.LS,
 					StatusCode = Status.INTERNALSERVERERROR,
 					Message = ex.Message,
+					Severity = MessageSeverity.Critical,
 				};
 			}
 		}
@@ -467,6 +468,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			{
 				StatusCode = Status.INTERNALSERVERERROR,
 				Message = ex.Message,
+				Severity = MessageSeverity.Critical,
 			};
 		}
 	}
@@ -588,6 +590,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				Broker = Brkr.LS,
 				Code = "OPENAPI-ERR",
 				Message = ex.Message,
+				Severity = MessageSeverity.Critical,
 			};
 		}
 	} 
@@ -691,6 +694,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				Broker = Brkr.LS,
 				Code = "OPENAPI-ERR",
 				Message = ex.Message,
+				Severity = MessageSeverity.Critical,
 			};
 		}
 	}
