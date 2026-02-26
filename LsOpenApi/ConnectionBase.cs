@@ -454,7 +454,7 @@ public class ConnectionBase
 
 		if (needsMessage && delaying.TotalMilliseconds > 250)
 		{
-			SendMessage(trCode, $"request forcely delayed {delaying.TotalMilliseconds * 0.001:N3} sec.");
+			SendMessage(trCode, $"request forcely delayed {delaying.TotalMilliseconds * 0.001:N3} sec.", severity: MessageSeverity.Low);
 		}
 
 		Thread.Sleep(delaying);

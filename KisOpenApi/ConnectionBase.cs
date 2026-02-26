@@ -510,7 +510,7 @@ public class ConnectionBase
 
 		var delaying = Requests[0].RequestTime.Subtract(DateTime.UtcNow.AddMilliseconds(-1001));
 
-		if (needsMessage) SendMessage(trCode, $"request forcely to delay for {delaying.TotalMilliseconds * 0.001:N3} sec.", MessageSeverity.Low);
+		if (needsMessage) SendMessage(trCode, $"request forcely to delay for {delaying.TotalMilliseconds * 0.001:N3} sec.", severity: MessageSeverity.Low);
 
 		Thread.Sleep(delaying);
 		Requests.Add(new Request { TrCode = trCode });
