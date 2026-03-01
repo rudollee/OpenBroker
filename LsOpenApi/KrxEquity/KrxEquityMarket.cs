@@ -265,8 +265,8 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 					L = response.T1102OutBlock.Low,
 					V = response.T1102OutBlock.Volume,
 					Turnover = response.T1102OutBlock.Value,
-					HighLimit = response.T1102OutBlock.Uplmtprice,
-					LowLimit = response.T1102OutBlock.Dnlmtprice,
+					HighLimit = response.T1102OutBlock.UpLmtPrice,
+					LowLimit = response.T1102OutBlock.DnLmtPrice,
 				},
 				DiscardStatus = DiscardStatus.TRADABLE,
 				TradingInfo = new EquityPack.TradingData
@@ -358,16 +358,16 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			_ => "U"
 		};
 
-		var response = await RequestStandardAsync<t8450>(LsEndpoint.EquityMarketData.ToDescription(), new
+		var response = await RequestStandardAsync<T8450>(LsEndpoint.EquityMarketData.ToDescription(), new
 		{
-			t8450InBlock = new t8450InBlock
+			t8450InBlock = new T8450InBlock
 			{
-				shcode = symbol,
-				exchgubun = exchangeCode
+				Shcode = symbol,
+				ExchGubun = exchangeCode
 			}
 		});
 
-		if (response.t8450OutBlock is null) return ReturnErrorResult<OrderBook>(nameof(t8450), response?.Message ?? "response is null");
+		if (response.t8450OutBlock is null) return ReturnErrorResult<OrderBook>(nameof(T8450), response?.Message ?? "response is null");
 
 		List<MarketOrder> asks = [];
 		List<MarketOrder> bids = [];
@@ -386,20 +386,15 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			var price = Convert.ToDecimal(response.t8450OutBlock.GetPropValue($"offerho{i + 1}"));
 			if (price == 0) continue;
 		
-			asks.Add(new MarketOrder
-			{
-				Seq = Convert.ToByte(i + 1),
-				Price = price,
-				Amount = Convert.ToDecimal(response.t8450OutBlock.GetPropValue($"{exchangePrefix}offerrem{(i + 1)}"))
-			});
-
-			asksx[price] = new()
+			MarketOrder ask = new()
 			{
 				Seq = Convert.ToByte(i + 1),
 				Price = price,
 				Amount = Convert.ToDecimal(response.t8450OutBlock.GetPropValue($"{exchangePrefix}offerrem{(i + 1)}"))
 			};
 
+			asks.Add(ask);
+			asksx[price] = ask;
 		}
 
 		for	(int i = 0; i < 10; i++)
@@ -407,19 +402,15 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			var price = Convert.ToDecimal(response.t8450OutBlock.GetPropValue($"bidho{(i + 1)}"));
 			if (price == 0) continue;
 
-			bids.Add(new MarketOrder
-			{
-				Seq = Convert.ToByte(i + 1),
-				Price = price,
-				Amount = Convert.ToDecimal(response.t8450OutBlock.GetPropValue($"{exchangePrefix}bidrem{(i + 1)}"))
-			});
-
-			bidsx[price] = new()
+			MarketOrder bid = new()
 			{
 				Seq = Convert.ToByte(i + 1),
 				Price = price,
 				Amount = Convert.ToDecimal(response.t8450OutBlock.GetPropValue($"{exchangePrefix}bidrem{(i + 1)}"))
 			};
+
+			bids.Add(bid);
+			bidsx[price] = bid;
 		}
 
 		return new ResponseResult<OrderBook>
@@ -443,19 +434,37 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#region request marketExecution using t8407
 	public async Task<ResponseResult<MarketExecution>> RequestMarketExecution(string symbol)
 	{
-		var response = await RequestMarketExecution([symbol]);
-		if (!response.List.Any()) return new ResponseResult<MarketExecution>
+		var response = await RequestStandardAsync<T1102>(LsEndpoint.EquityMarketData.ToDescription(), new
 		{
-			StatusCode = Status.NODATA,
-			Message = response.Message,
-			Code = response.Code,
-			Remark = "no data"
-		};
+			t1102InBlock = new T1102InBlock
+			{
+				Shcode = symbol
+			}
+		});
 
-		return new ResponseResult<MarketExecution>
+		return response.T1102OutBlock is null
+			? ReturnResult<MarketExecution>(new(), nameof(T1102), response.Message)
+			: new()
 		{
 			Code = response.Code,
-			Info = response.List.FirstOrDefault()
+			Info = new()
+			{
+				TimeExecuted = DateTime.UtcNow.AddHours(9),
+				Symbol = response.T1102OutBlock.Shcode,
+				C = response.T1102OutBlock.Price,
+				BasePrice = response.T1102OutBlock.Price + (response.T1102OutBlock.Change * (response.T1102OutBlock.Diff < 0 ? -1 : 1)),
+				QuoteDaily = new Quote
+				{
+					C = response.T1102OutBlock.Price,
+					O = response.T1102OutBlock.Open,
+					H = response.T1102OutBlock.High,
+					L = response.T1102OutBlock.Low,
+					V = response.T1102OutBlock.Volume,
+					Turnover = response.T1102OutBlock.Value,
+				},
+				VolumeExecuted = 0,
+			},
+			ExtraData = new() { { "HighLimit", response.T1102OutBlock.UpLmtPrice }, { "LowLimit", response.T1102OutBlock.DnLmtPrice } }
 		};
 	}
 

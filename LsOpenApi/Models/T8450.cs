@@ -1,29 +1,35 @@
-﻿namespace LsOpenApi.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace LsOpenApi.Models;
 /// <summary>
 /// 주식현재가호가조회(t8450)
 /// </summary>
-internal class t8450 : LsResponseCore
+internal class T8450 : LsResponseCore
 {
-	public t8450InBlock t8450InBlock { get; set; } = new();
-	public t8450OutBlock t8450OutBlock { get; set; } = new();
+	[JsonPropertyName("t8450InBlock")]
+	public T8450InBlock t8450InBlock { get; set; } = new();
+	[JsonPropertyName("t8450OutBlock")]
+	public T8450OutBlock t8450OutBlock { get; set; } = new();
 }
 
 /// <summary>
 /// 주식현재가호가조회(t8450) - InBlock
 /// </summary>
-internal class t8450InBlock
+internal class T8450InBlock
 {
 	/// <summary>단축코드</summary>
-	public string shcode { get; set; } = string.Empty;
+	[JsonPropertyName("shcode")]
+	public string Shcode { get; set; } = string.Empty;
 
 	/// <summary>거래소구분코드</summary>
-	public string exchgubun { get; set; } = string.Empty;
+	[JsonPropertyName("exchgubun")]
+	public string ExchGubun { get; set; } = string.Empty;
 }
 
 /// <summary>
 /// 주식현재가호가조회(t8450) - OutBlock
 /// </summary>
-internal class t8450OutBlock
+internal class T8450OutBlock
 {
 	/// <summary>한글명</summary>
 	public string hname { get; set; } = string.Empty;

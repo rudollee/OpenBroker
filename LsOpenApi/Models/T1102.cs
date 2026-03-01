@@ -23,7 +23,7 @@ internal class T1102InBlock
 
 	/// <summary>거래소구분코드</summary>
 	[JsonPropertyName("exchgubun")]
-	public string Exchgubun { get; set; } = string.Empty;
+	public string Exchgubun { get; set; } = "K";
 }
 
 /// <summary>
@@ -39,7 +39,7 @@ internal class T1102OutBlock
 	[JsonPropertyName("price")]
 	public long Price { get; set; }
 
-	/// <summary>전일대비구분</summary>
+	/// <summary>전일대비구분(1.상한, 2.상승, 3.보합, 4.하한, 5.하락)</summary>
 	[JsonPropertyName("sign")]
 	public string Sign { get; set; } = string.Empty;
 
@@ -65,11 +65,11 @@ internal class T1102OutBlock
 
 	/// <summary>상한가(최고호가가격)</summary>
 	[JsonPropertyName("uplmtprice")]
-	public long Uplmtprice { get; set; }
+	public long UpLmtPrice { get; set; }
 
 	/// <summary>하한가(최저호가가격)</summary>
 	[JsonPropertyName("dnlmtprice")]
-	public long Dnlmtprice { get; set; }
+	public long DnLmtPrice { get; set; }
 
 	/// <summary>전일거래량</summary>
 	[JsonPropertyName("jnilvolume")]
