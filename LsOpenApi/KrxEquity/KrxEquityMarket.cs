@@ -307,32 +307,42 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 		List<MarketOrder> asks = [];
 		List<MarketOrder> bids = [];
+		Dictionary<decimal, MarketOrder> asksx = [];
+		Dictionary<decimal, MarketOrder> bidsx = [];
 		for (int i = 0; i < 10; i++)
 		{
-			asks.Add(new MarketOrder
+			var price = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"OfferHo{(i + 1)}"));
+			MarketOrder ask = new()
 			{
 				Seq = Convert.ToByte(i + 1),
-				Price = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"Offerho{(i + 1)}")),
-				Amount = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"Offerrem{(i + 1)}")),
-			});
+				Price = price,
+				Amount = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"OfferRem{(i + 1)}")),
+			};
+			asks.Add(ask);
+			if (price > 0) asksx[price] = ask;
 
-			bids.Add(new MarketOrder
+			price = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"BidHo{(i + 1)}"));
+			MarketOrder bid = new()
 			{
 				Seq = Convert.ToByte(i + 1),
-				Price = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"Bidho{(i + 1)}")),
-				Amount = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"Bidrem{(i + 1)}"))
-			});
+				Price = price,
+				Amount = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"BidRem{(i + 1)}"))
+			};
+			bids.Add(bid);
+			if (price > 0) bidsx[price] = bid;
 		}
 
-		return new ResponseResult<OrderBook>
+		return new()
 		{
 			Broker = Brkr.LS,
 			Typ = MessageType.MKT,
-			Info = new OrderBook
+			Info = new()
 			{
-				TimeTaken = response.T1101OutBlock.Hotime.ToTime(),
+				TimeTaken = response.T1101OutBlock.HoTime.ToTime(),
 				Ask = asks,
+				Asks = asksx,
 				Bid = bids,
+				Bids = bidsx,
 				AskAgg = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"Offer")),
 				BidAgg = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"Bid")),
 			}

@@ -53,247 +53,247 @@ internal class T1101OutBlock
 
 	/// <summary>전일종가(기준가)</summary>
 	[JsonPropertyName("jnilclose")]
-	public long Jnilclose { get; set; }
+	public long JnilClose { get; set; }
 
 	/// <summary>매도호가1</summary>
 	[JsonPropertyName("offerho1")]
-	public long Offerho1 { get; set; }
+	public long OfferHo1 { get; set; }
 
 	/// <summary>매수호가1</summary>
 	[JsonPropertyName("bidho1")]
-	public long Bidho1 { get; set; }
+	public long BidHo1 { get; set; }
 
 	/// <summary>매도호가수량1</summary>
 	[JsonPropertyName("offerrem1")]
-	public long Offerrem1 { get; set; }
+	public long OfferRem1 { get; set; }
 
 	/// <summary>매수호가수량1</summary>
 	[JsonPropertyName("bidrem1")]
-	public long Bidrem1 { get; set; }
+	public long BidRem1 { get; set; }
 
 	/// <summary>직전매도대비수량1</summary>
 	[JsonPropertyName("preoffercha1")]
-	public long Preoffercha1 { get; set; }
+	public long PreOfferCha1 { get; set; }
 
 	/// <summary>직전매수대비수량1</summary>
 	[JsonPropertyName("prebidcha1")]
-	public long Prebidcha1 { get; set; }
+	public long PreBidCha1 { get; set; }
 
 	/// <summary>매도호가2</summary>
 	[JsonPropertyName("offerho2")]
-	public long Offerho2 { get; set; }
+	public long OfferHo2 { get; set; }
 
 	/// <summary>매수호가2</summary>
 	[JsonPropertyName("bidho2")]
-	public long Bidho2 { get; set; }
+	public long BidHo2 { get; set; }
 
 	/// <summary>매도호가수량2</summary>
 	[JsonPropertyName("offerrem2")]
-	public long Offerrem2 { get; set; }
+	public long OfferRem2 { get; set; }
 
 	/// <summary>매수호가수량2</summary>
 	[JsonPropertyName("bidrem2")]
-	public long Bidrem2 { get; set; }
+	public long BidRem2 { get; set; }
 
 	/// <summary>직전매도대비수량2</summary>
 	[JsonPropertyName("preoffercha2")]
-	public long Preoffercha2 { get; set; }
+	public long PreOfferCha2 { get; set; }
 
 	/// <summary>직전매수대비수량2</summary>
 	[JsonPropertyName("prebidcha2")]
-	public long Prebidcha2 { get; set; }
+	public long PreBidCha2 { get; set; }
 
 	/// <summary>매도호가3</summary>
 	[JsonPropertyName("offerho3")]
-	public long Offerho3 { get; set; }
+	public long OfferHo3 { get; set; }
 
 	/// <summary>매수호가3</summary>
 	[JsonPropertyName("bidho3")]
-	public long Bidho3 { get; set; }
+	public long BidHo3 { get; set; }
 
 	/// <summary>매도호가수량3</summary>
 	[JsonPropertyName("offerrem3")]
-	public long Offerrem3 { get; set; }
+	public long OfferRem3 { get; set; }
 
 	/// <summary>매수호가수량3</summary>
 	[JsonPropertyName("bidrem3")]
-	public long Bidrem3 { get; set; }
+	public long BidRem3 { get; set; }
 
 	/// <summary>직전매도대비수량3</summary>
 	[JsonPropertyName("preoffercha3")]
-	public long Preoffercha3 { get; set; }
+	public long PreOfferCha3 { get; set; }
 
 	/// <summary>직전매수대비수량3</summary>
 	[JsonPropertyName("prebidcha3")]
-	public long Prebidcha3 { get; set; }
+	public long PreBidCha3 { get; set; }
 
 	/// <summary>매도호가4</summary>
 	[JsonPropertyName("offerho4")]
-	public long Offerho4 { get; set; }
+	public long OfferHo4 { get; set; }
 
 	/// <summary>매수호가4</summary>
 	[JsonPropertyName("bidho4")]
-	public long Bidho4 { get; set; }
+	public long BidHo4 { get; set; }
 
 	/// <summary>매도호가수량4</summary>
 	[JsonPropertyName("offerrem4")]
-	public long Offerrem4 { get; set; }
+	public long OfferRem4 { get; set; }
 
 	/// <summary>매수호가수량4</summary>
 	[JsonPropertyName("bidrem4")]
-	public long Bidrem4 { get; set; }
+	public long BidRem4 { get; set; }
 
 	/// <summary>직전매도대비수량4</summary>
 	[JsonPropertyName("preoffercha4")]
-	public long Preoffercha4 { get; set; }
+	public long PreOfferCha4 { get; set; }
 
 	/// <summary>직전매수대비수량4</summary>
 	[JsonPropertyName("prebidcha4")]
-	public long Prebidcha4 { get; set; }
+	public long PreBidCha4 { get; set; }
 
 	/// <summary>매도호가5</summary>
 	[JsonPropertyName("offerho5")]
-	public long Offerho5 { get; set; }
+	public long OfferHo5 { get; set; }
 
 	/// <summary>매수호가5</summary>
 	[JsonPropertyName("bidho5")]
-	public long Bidho5 { get; set; }
+	public long BidHo5 { get; set; }
 
 	/// <summary>매도호가수량5</summary>
 	[JsonPropertyName("offerrem5")]
-	public long Offerrem5 { get; set; }
+	public long OfferRem5 { get; set; }
 
 	/// <summary>매수호가수량5</summary>
 	[JsonPropertyName("bidrem5")]
-	public long Bidrem5 { get; set; }
+	public long BidRem5 { get; set; }
 
 	/// <summary>직전매도대비수량5</summary>
 	[JsonPropertyName("preoffercha5")]
-	public long Preoffercha5 { get; set; }
+	public long PreOfferCha5 { get; set; }
 
 	/// <summary>직전매수대비수량5</summary>
 	[JsonPropertyName("prebidcha5")]
-	public long Prebidcha5 { get; set; }
+	public long PreBidCha5 { get; set; }
 
 	/// <summary>매도호가6</summary>
 	[JsonPropertyName("offerho6")]
-	public long Offerho6 { get; set; }
+	public long OfferHo6 { get; set; }
 
 	/// <summary>매수호가6</summary>
 	[JsonPropertyName("bidho6")]
-	public long Bidho6 { get; set; }
+	public long BidHo6 { get; set; }
 
 	/// <summary>매도호가수량6</summary>
 	[JsonPropertyName("offerrem6")]
-	public long Offerrem6 { get; set; }
+	public long OfferRem6 { get; set; }
 
 	/// <summary>매수호가수량6</summary>
 	[JsonPropertyName("bidrem6")]
-	public long Bidrem6 { get; set; }
+	public long BidRem6 { get; set; }
 
 	/// <summary>직전매도대비수량6</summary>
 	[JsonPropertyName("preoffercha6")]
-	public long Preoffercha6 { get; set; }
+	public long PreOfferCha6 { get; set; }
 
 	/// <summary>직전매수대비수량6</summary>
 	[JsonPropertyName("prebidcha6")]
-	public long Prebidcha6 { get; set; }
+	public long PreBidCha6 { get; set; }
 
 	/// <summary>매도호가7</summary>
 	[JsonPropertyName("offerho7")]
-	public long Offerho7 { get; set; }
+	public long OfferHo7 { get; set; }
 
 	/// <summary>매수호가7</summary>
 	[JsonPropertyName("bidho7")]
-	public long Bidho7 { get; set; }
+	public long BidHo7 { get; set; }
 
 	/// <summary>매도호가수량7</summary>
 	[JsonPropertyName("offerrem7")]
-	public long Offerrem7 { get; set; }
+	public long OfferRem7 { get; set; }
 
 	/// <summary>매수호가수량7</summary>
 	[JsonPropertyName("bidrem7")]
-	public long Bidrem7 { get; set; }
+	public long BidRem7 { get; set; }
 
 	/// <summary>직전매도대비수량7</summary>
 	[JsonPropertyName("preoffercha7")]
-	public long Preoffercha7 { get; set; }
+	public long PreOfferCha7 { get; set; }
 
 	/// <summary>직전매수대비수량7</summary>
 	[JsonPropertyName("prebidcha7")]
-	public long Prebidcha7 { get; set; }
+	public long PreBidCha7 { get; set; }
 
 	/// <summary>매도호가8</summary>
 	[JsonPropertyName("offerho8")]
-	public long Offerho8 { get; set; }
+	public long OfferHo8 { get; set; }
 
 	/// <summary>매수호가8</summary>
 	[JsonPropertyName("bidho8")]
-	public long Bidho8 { get; set; }
+	public long BidHo8 { get; set; }
 
 	/// <summary>매도호가수량8</summary>
 	[JsonPropertyName("offerrem8")]
-	public long Offerrem8 { get; set; }
+	public long OfferRem8 { get; set; }
 
 	/// <summary>매수호가수량8</summary>
 	[JsonPropertyName("bidrem8")]
-	public long Bidrem8 { get; set; }
+	public long BidRem8 { get; set; }
 
 	/// <summary>직전매도대비수량8</summary>
 	[JsonPropertyName("preoffercha8")]
-	public long Preoffercha8 { get; set; }
+	public long PreOfferCha8 { get; set; }
 
 	/// <summary>직전매수대비수량8</summary>
 	[JsonPropertyName("prebidcha8")]
-	public long Prebidcha8 { get; set; }
+	public long PreBidCha8 { get; set; }
 
 	/// <summary>매도호가9</summary>
 	[JsonPropertyName("offerho9")]
-	public long Offerho9 { get; set; }
+	public long OfferHo9 { get; set; }
 
 	/// <summary>매수호가9</summary>
 	[JsonPropertyName("bidho9")]
-	public long Bidho9 { get; set; }
+	public long BidHo9 { get; set; }
 
 	/// <summary>매도호가수량9</summary>
 	[JsonPropertyName("offerrem9")]
-	public long Offerrem9 { get; set; }
+	public long OfferRem9 { get; set; }
 
 	/// <summary>매수호가수량9</summary>
 	[JsonPropertyName("bidrem9")]
-	public long Bidrem9 { get; set; }
+	public long BidRem9 { get; set; }
 
 	/// <summary>직전매도대비수량9</summary>
 	[JsonPropertyName("preoffercha9")]
-	public long Preoffercha9 { get; set; }
+	public long PreOfferCha9 { get; set; }
 
 	/// <summary>직전매수대비수량9</summary>
 	[JsonPropertyName("prebidcha9")]
-	public long Prebidcha9 { get; set; }
+	public long PreBidCha9 { get; set; }
 
 	/// <summary>매도호가10</summary>
 	[JsonPropertyName("offerho10")]
-	public long Offerho10 { get; set; }
+	public long OfferHo10 { get; set; }
 
 	/// <summary>매수호가10</summary>
 	[JsonPropertyName("bidho10")]
-	public long Bidho10 { get; set; }
+	public long BidHo10 { get; set; }
 
 	/// <summary>매도호가수량10</summary>
 	[JsonPropertyName("offerrem10")]
-	public long Offerrem10 { get; set; }
+	public long OfferRem10 { get; set; }
 
 	/// <summary>매수호가수량10</summary>
 	[JsonPropertyName("bidrem10")]
-	public long Bidrem10 { get; set; }
+	public long BidRem10 { get; set; }
 
 	/// <summary>직전매도대비수량10</summary>
 	[JsonPropertyName("preoffercha10")]
-	public long Preoffercha10 { get; set; }
+	public long PreOfferCha10 { get; set; }
 
 	/// <summary>직전매수대비수량10</summary>
 	[JsonPropertyName("prebidcha10")]
-	public long Prebidcha10 { get; set; }
+	public long PreBidCha10 { get; set; }
 
 	/// <summary>매도호가수량합</summary>
 	[JsonPropertyName("offer")]
@@ -305,31 +305,31 @@ internal class T1101OutBlock
 
 	/// <summary>직전매도대비수량합</summary>
 	[JsonPropertyName("preoffercha")]
-	public long Preoffercha { get; set; }
+	public long PreOfferCha { get; set; }
 
 	/// <summary>직전매수대비수량합</summary>
 	[JsonPropertyName("prebidcha")]
-	public long Prebidcha { get; set; }
+	public long PreBidCha { get; set; }
 
 	/// <summary>수신시간</summary>
 	[JsonPropertyName("hotime")]
-	public string Hotime { get; set; } = string.Empty;
+	public string HoTime { get; set; } = string.Empty;
 
 	/// <summary>예상체결가격</summary>
 	[JsonPropertyName("yeprice")]
-	public long Yeprice { get; set; }
+	public long YePrice { get; set; }
 
 	/// <summary>예상체결수량</summary>
 	[JsonPropertyName("yevolume")]
-	public long Yevolume { get; set; }
+	public long YeVolume { get; set; }
 
 	/// <summary>예상체결전일구분</summary>
 	[JsonPropertyName("yesign")]
-	public string Yesign { get; set; } = string.Empty;
+	public string YeSign { get; set; } = string.Empty;
 
 	/// <summary>예상체결전일대비</summary>
 	[JsonPropertyName("yechange")]
-	public long Yechange { get; set; }
+	public long YeChange { get; set; }
 
 	/// <summary>예상체결등락율</summary>
 	[JsonPropertyName("yediff")]
@@ -353,11 +353,11 @@ internal class T1101OutBlock
 
 	/// <summary>상한가</summary>
 	[JsonPropertyName("uplmtprice")]
-	public long Uplmtprice { get; set; }
+	public long UpLmtPrice { get; set; }
 
 	/// <summary>하한가</summary>
 	[JsonPropertyName("dnlmtprice")]
-	public long Dnlmtprice { get; set; }
+	public long DnLmtPrice { get; set; }
 
 	/// <summary>시가</summary>
 	[JsonPropertyName("open")]
