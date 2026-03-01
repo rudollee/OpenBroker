@@ -452,7 +452,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				TimeExecuted = DateTime.UtcNow.AddHours(9),
 				Symbol = response.T1102OutBlock.Shcode,
 				C = response.T1102OutBlock.Price,
-				BasePrice = response.T1102OutBlock.Price + (response.T1102OutBlock.Change * (response.T1102OutBlock.Diff < 0 ? -1 : 1)),
+				BasePrice = response.T1102OutBlock.Price + (response.T1102OutBlock.Change * (response.T1102OutBlock.Diff < 0 ? 1 : -1)),
 				QuoteDaily = new Quote
 				{
 					C = response.T1102OutBlock.Price,
