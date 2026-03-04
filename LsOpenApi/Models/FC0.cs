@@ -162,7 +162,8 @@ internal class JC0InBlock : FC0InBlock { }
 internal class JC0OutBlock : FC0OutBlock
 {
 	/// <summary>기초자산현재가</summary>
-	public string basprice { get; set; } = string.Empty;
+	[JsonPropertyName("basprice")]
+	public string BasPrice { get; set; } = string.Empty;
 }
 
 /// <summary>

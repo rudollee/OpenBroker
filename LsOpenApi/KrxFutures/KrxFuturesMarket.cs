@@ -767,7 +767,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				//"05" => "FC0",
 				//"07" => "EU1",
 				"75" => nameof(FH0),
-				_ => nameof(JC0)
+				_ => nameof(JH0)
 			};
 		}
 		else trCode = "OC0";

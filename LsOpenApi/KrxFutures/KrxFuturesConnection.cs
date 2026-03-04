@@ -52,6 +52,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			nameof(DC0) => CallbackXC0(message.Text, trCode),
 			nameof(FH0) => CallbackXH0(message.Text, trCode),
 			nameof(DH0) => CallbackXH0(message.Text, trCode),
+			nameof(JH0) => CallbackXH0(message.Text, trCode),
 			nameof(O01) => CallbackO0X(message.Text, trCode),
 			nameof(O02) => CallbackO0X(message.Text, trCode),
 			//nameof(H01) => CallbackH01(message.Text),
@@ -127,14 +128,14 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 	}
 	#endregion
 
-	#region XH0 callback - FH0, DH0
+	#region XH0 callback - FH0, DH0, JH0
 	private bool CallbackXH0(string message, string tr)
 	{
 		if (OrderBookTaken is null) return false;
 
 		try
 		{
-			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<FH0OutBlock>>(message);
+			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<JH0OutBlock>>(message);
 			if (response is null || response.Body is null) return false;
 
 			IList<MarketOrder> asks = [];
@@ -143,45 +144,47 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			Dictionary<decimal, MarketOrder> asksx = [];
 			Dictionary<decimal, MarketOrder> bidsx = [];
 
-			for (int i = 0; i < 5; i++)
+			var depth = tr == nameof(JH0) ? 10 : 5;
+
+			for (int i = 0; i < depth; i++)
 			{
 				asks.Add(new MarketOrder
 				{
 					Seq = Convert.ToByte(i + 1),
-					Price = Convert.ToDecimal(response.Body.GetPropValue($"Offerho{i + 1}")),
-					Amount = Convert.ToDecimal(response.Body.GetPropValue($"Offerrem{i + 1}")),
-					AmountGroup = Convert.ToDecimal(response.Body.GetPropValue($"Offercnt{i + 1}"))
+					Price = Convert.ToDecimal(response.Body.GetPropValue($"OfferHo{i + 1}")),
+					Amount = Convert.ToDecimal(response.Body.GetPropValue($"OfferRem{i + 1}")),
+					AmountGroup = Convert.ToDecimal(response.Body.GetPropValue($"OfferCnt{i + 1}"))
 				});
 
 				bids.Add(new MarketOrder
 				{
 					Seq = Convert.ToByte(i + 1),
-					Price = Convert.ToDecimal(response.Body.GetPropValue($"Bidho{i + 1}")),
-					Amount = Convert.ToDecimal(response.Body.GetPropValue($"Bidrem{i + 1}")),
-					AmountGroup = Convert.ToDecimal(response.Body.GetPropValue($"Bidcnt{i + 1}"))
+					Price = Convert.ToDecimal(response.Body.GetPropValue($"BidHo{i + 1}")),
+					Amount = Convert.ToDecimal(response.Body.GetPropValue($"BidRem{i + 1}")),
+					AmountGroup = Convert.ToDecimal(response.Body.GetPropValue($"BidCnt{i + 1}"))
 				});
 
-				var askPrice = Convert.ToDecimal(response.Body.GetPropValue($"Offerho{i + 1}"));
+				var askPrice = Convert.ToDecimal(response.Body.GetPropValue($"OfferHo{i + 1}"));
 				if (askPrice != 0)
 				{
 					asksx[askPrice] = new()
 					{
 						Seq = Convert.ToByte(i + 1),
 						Price = askPrice,
-						Amount = Convert.ToDecimal(response.Body.GetPropValue($"Offerrem{i + 1}")),
-						AmountGroup = Convert.ToDecimal(response.Body.GetPropValue($"Offercnt{i + 1}"))
+						Amount = Convert.ToDecimal(response.Body.GetPropValue($"OfferRem{i + 1}")),
+						AmountGroup = Convert.ToDecimal(response.Body.GetPropValue($"OfferCnt{i + 1}"))
 					};
 				}
 
-				var bidPrice = Convert.ToDecimal(response.Body.GetPropValue($"Bidho{i + 1}"));
+				var bidPrice = Convert.ToDecimal(response.Body.GetPropValue($"BidHo{i + 1}"));
 				if (bidPrice != 0)
 				{
 					bidsx[bidPrice] = new()
 					{
 						Seq = Convert.ToByte(i + 1),
 						Price = bidPrice,
-						Amount = Convert.ToDecimal(response.Body.GetPropValue($"Bidrem{i + 1}")),
-						AmountGroup = Convert.ToDecimal(response.Body.GetPropValue($"Bidcnt{i + 1}"))
+						Amount = Convert.ToDecimal(response.Body.GetPropValue($"BidRem{i + 1}")),
+						AmountGroup = Convert.ToDecimal(response.Body.GetPropValue($"BidCnt{i + 1}"))
 					};
 				}
 			}
@@ -190,18 +193,19 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			{
 				Broker = Brkr.LS,
 				Typ = MessageType.MKT,
+				Code = tr,
 				Info = new()
 				{
 					Exchange = Exchange.KRX,
-					MarketSessionInfo = tr == nameof(FH0) ? MarketSession.REGULAR : MarketSession.EXTENDED,
-					Symbol = response.Body.Futcode,
-					TimeTaken = response.Body.Hotime.ToTime(),
+					MarketSessionInfo = new string[] { nameof(FH0), nameof(JH0) }.Contains(tr) ? MarketSession.REGULAR : MarketSession.EXTENDED,
+					Symbol = response.Body.FutCode,
+					TimeTaken = response.Body.HoTime.ToTime(),
 					Ask = asks,
 					Asks = asksx,
-					AskAgg = Convert.ToDecimal(response.Body.Totofferrem),
+					AskAgg = Convert.ToDecimal(response.Body.TotOfferRem),
 					Bid = bids,
 					Bids = bidsx,
-					BidAgg = Convert.ToDecimal(response.Body.Totbidrem),
+					BidAgg = Convert.ToDecimal(response.Body.TotBidRem),
 				}
 			});
 		}
