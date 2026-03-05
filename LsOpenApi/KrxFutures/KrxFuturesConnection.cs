@@ -72,6 +72,11 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<JC0OutBlock>>(message);
 			if (response is null || response.Body is null) return false;
 
+			var close = Convert.ToDecimal(response.Body.Price);
+			var basePrice = new string[] { "0", "" }.Contains(response.Body.BasPrice)
+				? close - Convert.ToDecimal(response.Body.Change) * (Convert.ToDecimal(response.Body.DiffRate) > 0 ? 1 : -1)
+				: Convert.ToDecimal(response.Body.BasPrice);
+
 			MarketExecuted(this, new ResponseResult<MarketExecution>
 			{
 				Typ = MessageType.MKT,
@@ -89,12 +94,17 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 					},
 					Symbol = response.Body.Futcode,
 					TimeExecuted = response.Body.Chetime.ToDateTime(),
-					C = Convert.ToDecimal(response.Body.Price),
+					C = close,
 					VolumeExecuted = Convert.ToDecimal(response.Body.Cvolume),
 					ExecutionSide = response.Body.Cgubun == "+" ? ExecutionSide.ASK : ExecutionSide.BID,
 					BasePrice = Convert.ToDecimal(response.Body.Price) - Convert.ToDecimal((DeclineCodes.Contains(response.Body.Sign) ? "-" : "") + response.Body.Change),
 					QuoteDaily = new Quote
 					{
+						BasePrice = basePrice,
+						C = close,
+						O = Convert.ToDecimal(response.Body.Open),
+						H = Convert.ToDecimal(response.Body.High),
+						L = Convert.ToDecimal(response.Body.Low),
 						V = Convert.ToDecimal(response.Body.Volume),
 						Turnover = Convert.ToDecimal(response.Body.Value),
 					}

@@ -39,7 +39,7 @@ internal class FC0OutBlock
 
 	/// <summary>등락율</summary>
 	[JsonPropertyName("drate")]
-	public string Drate { get; set; } = string.Empty;
+	public string DiffRate { get; set; } = string.Empty;
 
 	/// <summary>현재가</summary>
 	[JsonPropertyName("price")]
