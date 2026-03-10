@@ -12,21 +12,19 @@ public class ConnectionBase
 	internal readonly string hostSocket = "wss://openapi.ls-sec.co.kr:9443/websocket";
 	internal readonly string grant_type = "client_credentials";
 
-	public KeyPack KeyInfo { get => _keyInfo; }
-	private KeyPack _keyInfo = new();
-	public void SetKeyPack(KeyPack keyInfo) => _keyInfo = keyInfo;
+	public KeyPack KeyInfo { get; private set; } = new();
+	public void SetKeyPack(KeyPack keyInfo) => KeyInfo = keyInfo;
 
-	public Account AccountInfo { get => _accountInfo; }
-	private Account _accountInfo = new();
-	public void SetAccount(Account account) => _accountInfo = account;
+	public Account AccountInfo { get; private set; } = new();
+	public void SetAccount(Account account) => AccountInfo = account;
 
-	public BankAccount BankAccountInfo { get => _bankAccountInfo; }
-	private BankAccount _bankAccountInfo = new();
-	public void SetBankAccount(BankAccount bankAccount) => _bankAccountInfo = bankAccount;
+	public BankAccount BankAccountInfo { get; private set; } = new();
+	public void SetBankAccount(BankAccount bankAccount) => BankAccountInfo = bankAccount;
 
-	public bool IsConnected { get => _connected; }
-	private bool _connected = false;
-	protected void SetConnect(bool connecting = true) => _connected = connecting;
+	public bool IsInitialized => KeyInfo is not null && !string.IsNullOrEmpty(KeyInfo.AccessToken) && KeyInfo.AccessTokenExpired > DateTime.UtcNow.AddHours(2);
+
+	public bool IsConnected { get; private set; } = false;
+	protected void SetConnect(bool connecting = true) => IsConnected = connecting;
 
 	public required EventHandler<ResponseCore> Message { get; set; }
 

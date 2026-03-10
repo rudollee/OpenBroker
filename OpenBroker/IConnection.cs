@@ -1,9 +1,4 @@
 ﻿using OpenBroker.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OpenBroker;
 
@@ -23,7 +18,12 @@ public interface IConnection
     BankAccount BankAccountInfo { get; }
 
     /// <summary>
-    /// 접속 상태
+    /// Rest API 설정 완료 여부
+    /// </summary>
+    bool IsInitialized { get; }
+
+    /// <summary>
+    /// WebSocket 연결 여부
     /// </summary>
     bool IsConnected { get; }
 

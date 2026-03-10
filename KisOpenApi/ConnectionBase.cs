@@ -22,7 +22,9 @@ public class ConnectionBase
     public BankAccount BankAccountInfo { get; private set; } = new();
     public void SetBankAccount(BankAccount bankAccount) => BankAccountInfo = bankAccount;
 
-    public bool IsConnected { get; private set; }
+	public bool IsInitialized => KeyInfo is not null && !string.IsNullOrEmpty(KeyInfo.AccessToken) && KeyInfo.AccessTokenExpired > DateTime.UtcNow.AddHours(2);
+
+	public bool IsConnected { get; private set; }
     protected void SetConnect(bool connecting = true) => IsConnected = connecting;
 
 	public required EventHandler<ResponseCore> Message { get; set; }
