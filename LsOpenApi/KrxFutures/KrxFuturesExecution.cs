@@ -136,7 +136,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 					var executionFromPrevious = (Execution)previousExecution.Clone();
 					executionFromPrevious.TimeExecuted = $"{executionFromPrevious.TimeExecuted:yyyyMMdd}{execution.CtrctTime}".ToDateTimeM();
 					executionFromPrevious.EID = execution.CtrctNo;
-					executionFromPrevious.Qty = execution.ExecQty;
+					executionFromPrevious.QtyExecuted = execution.ExecQty;
 					executionFromPrevious.Price = execution.ExecPrc;
 
 					executions.Add(executionFromPrevious);
