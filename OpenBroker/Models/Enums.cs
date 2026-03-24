@@ -451,3 +451,18 @@ public enum OptionsType
     /// </summary>
     B = 30
 }
+
+public enum MarketZone
+{
+	Utc,
+	Chicago,
+	NewYork,
+	London,
+	Frankfurt,
+	Paris,
+	Tokyo,
+	Seoul,
+	HongKong,
+	Singapore,
+	Bangkok
+}
