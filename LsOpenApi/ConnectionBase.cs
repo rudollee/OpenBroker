@@ -483,12 +483,21 @@ public class ConnectionBase
 				TrCode = nameof(T)
 			};
 		}
-		var response = await client.PostAsync<T>(request) ?? (T)new LsResponseCore();
+
+		var responseRest = await client.PostAsync(request);
+		if (responseRest is null || !responseRest.IsSuccessful) return (T)new LsResponseCore
+		{
+			Code = $"ERR",
+			Message = responseRest?.ErrorMessage ?? "failed to response",
+			TrCode = nameof(T),
+		};
+
+		var response = client.Serializers.DeserializeContent<T>(responseRest);
 		if (response is null) return (T)new LsResponseCore
 		{
 			Code = "ERR",
-			Message = "failed to response",
-			TrCode = nameof(T),
+			Message = "failed to deserialize",
+			TrCode= nameof(T)
 		};
 
 		response.TrCode = nameof(T);
@@ -516,30 +525,30 @@ public class ConnectionBase
 			};
 		}
 
-		var response = await client.PostAsync(request);
-		if (response is null || !response.IsSuccessful) return (T)new LsResponseCore
+		var responseRest = await client.PostAsync(request);
+		if (responseRest is null || !responseRest.IsSuccessful) return (T)new LsResponseCore
 		{
 			Code = "ERR",
-			Message = response?.ErrorMessage ?? "failed to response",
+			Message = responseRest?.ErrorMessage ?? "failed to response",
 			TrCode = nameof(T),
 		};
 
-		var responseDeserialized = client.Serializers.DeserializeContent<T>(response);
-		if (responseDeserialized is null) return (T)new LsResponseCore
+		var response = client.Serializers.DeserializeContent<T>(responseRest);
+		if (response is null) return (T)new LsResponseCore
 		{
 			Code = "ERR",
 			Message = "failed to response",
 			TrCode = nameof(T),
 		};
 
-		var continueOption = response.Headers?.FirstOrDefault(f => f.Name == "tr_cont");
+		var continueOption = responseRest.Headers?.FirstOrDefault(f => f.Name == "tr_cont");
 		if (continueOption is not null && continueOption.Value == "Y")
 		{
-			responseDeserialized.NextKey = response.Headers?.First(f => f.Name == "tr_cont_key").Value ?? "";
-			responseDeserialized.TrCode = nameof(T);
+			response.NextKey = responseRest.Headers?.First(f => f.Name == "tr_cont_key").Value ?? "";
+			response.TrCode = nameof(T);
 		}
 
-		return responseDeserialized;
+		return response;
 	}
 	#endregion
 
