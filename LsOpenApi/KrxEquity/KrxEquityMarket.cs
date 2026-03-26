@@ -296,6 +296,18 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 	}
 
+	public async Task<ResponseResult<OrderBook>> RequestOrderbook(string symbol)
+	{
+		try
+		{
+			return await RequestOrderbookAsync(symbol);
+		}
+		catch (Exception ex)
+		{
+			return ReturnErrorResult<OrderBook>(nameof(T1101), ex.Message, MessageSeverity.Critical);
+		}
+	}
+
 	private async Task<ResponseResult<OrderBook>> RequestOrderbookAsync(string symbol)
 	{
 		var response = await RequestStandardAsync<T1101>(LsEndpoint.EquityMarketData.ToDescription(), new
@@ -553,8 +565,6 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 	}
 	#endregion
-
-	public async Task<ResponseResult<OrderBook>> RequestOrderbook(string symbol) => await RequestOrderbookAsync(symbol);
 
 	#region request sectors using t1531
 	public async Task<ResponseResults<Sector>> RequestSectors(string code = "", string name = "")
