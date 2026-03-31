@@ -310,55 +310,62 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 	private async Task<ResponseResult<OrderBook>> RequestOrderbookAsync(string symbol)
 	{
-		var response = await RequestStandardAsync<T1101>(LsEndpoint.EquityMarketData.ToDescription(), new
+		try
 		{
-			t1101InBlock = new T1101InBlock { Shcode = symbol }
-		});
-
-		if (response is null || response.T1101OutBlock is null) return ReturnErrorResult<OrderBook>(nameof(T1101), "response is null");
-
-		List<MarketOrder> asks = [];
-		List<MarketOrder> bids = [];
-		Dictionary<decimal, MarketOrder> asksx = [];
-		Dictionary<decimal, MarketOrder> bidsx = [];
-		for (int i = 0; i < 10; i++)
-		{
-			var price = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"OfferHo{(i + 1)}"));
-			MarketOrder ask = new()
+			var response = await RequestStandardAsync<T1101>(LsEndpoint.EquityMarketData.ToDescription(), new
 			{
-				Seq = Convert.ToByte(i + 1),
-				Price = price,
-				Amount = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"OfferRem{(i + 1)}")),
-			};
-			asks.Add(ask);
-			if (price > 0) asksx[price] = ask;
+				t1101InBlock = new T1101InBlock { Shcode = symbol }
+			});
 
-			price = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"BidHo{(i + 1)}"));
-			MarketOrder bid = new()
-			{
-				Seq = Convert.ToByte(i + 1),
-				Price = price,
-				Amount = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"BidRem{(i + 1)}"))
-			};
-			bids.Add(bid);
-			if (price > 0) bidsx[price] = bid;
-		}
+			if (response is null || response.T1101OutBlock is null) return ReturnErrorResult<OrderBook>(nameof(T1101), "response is null");
 
-		return new()
-		{
-			Broker = Brkr.LS,
-			Typ = MessageType.MKT,
-			Info = new()
+			List<MarketOrder> asks = [];
+			List<MarketOrder> bids = [];
+			Dictionary<decimal, MarketOrder> asksx = [];
+			Dictionary<decimal, MarketOrder> bidsx = [];
+			for (int i = 0; i < 10; i++)
 			{
-				TimeTaken = response.T1101OutBlock.HoTime.ToTime(),
-				Ask = asks,
-				Asks = asksx,
-				Bid = bids,
-				Bids = bidsx,
-				AskAgg = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"Offer")),
-				BidAgg = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"Bid")),
+				var price = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"OfferHo{(i + 1)}"));
+				MarketOrder ask = new()
+				{
+					Seq = Convert.ToByte(i + 1),
+					Price = price,
+					Amount = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"OfferRem{(i + 1)}")),
+				};
+				asks.Add(ask);
+				if (price > 0) asksx[price] = ask;
+
+				price = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"BidHo{(i + 1)}"));
+				MarketOrder bid = new()
+				{
+					Seq = Convert.ToByte(i + 1),
+					Price = price,
+					Amount = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"BidRem{(i + 1)}"))
+				};
+				bids.Add(bid);
+				if (price > 0) bidsx[price] = bid;
 			}
-		};
+
+			return new()
+			{
+				Broker = Brkr.LS,
+				Typ = MessageType.MKT,
+				Info = new()
+				{
+					TimeTaken = response.T1101OutBlock.HoTime.ToTime(),
+					Ask = asks,
+					Asks = asksx,
+					Bid = bids,
+					Bids = bidsx,
+					AskAgg = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"Offer")),
+					BidAgg = Convert.ToDecimal(response.T1101OutBlock.GetPropValue($"Bid")),
+				}
+			};
+		}
+		catch (Exception ex)
+		{
+			return ReturnErrorResult<OrderBook>(nameof(T1101), ex.Message, MessageSeverity.Critical);
+		}
 	}
 
 	private async Task<ResponseResult<OrderBook>> RequestOrderbookAsync(string symbol, Exchange exchange)
@@ -446,38 +453,45 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#region request marketExecution using t8407
 	public async Task<ResponseResult<MarketExecution>> RequestMarketExecution(string symbol)
 	{
-		var response = await RequestStandardAsync<T1102>(LsEndpoint.EquityMarketData.ToDescription(), new
+		try
 		{
-			t1102InBlock = new T1102InBlock
+			var response = await RequestStandardAsync<T1102>(LsEndpoint.EquityMarketData.ToDescription(), new
 			{
-				Shcode = symbol
-			}
-		});
-
-		return response.T1102OutBlock is null
-			? ReturnResult<MarketExecution>(new(), nameof(T1102), response.Message)
-			: new()
-		{
-			Code = response.Code,
-			Info = new()
-			{
-				TimeExecuted = DateTime.UtcNow.AddHours(9),
-				Symbol = response.T1102OutBlock.Shcode,
-				C = response.T1102OutBlock.Price,
-				BasePrice = response.T1102OutBlock.Price + (response.T1102OutBlock.Change * (response.T1102OutBlock.Diff < 0 ? 1 : -1)),
-				QuoteDaily = new Quote
+				t1102InBlock = new T1102InBlock
 				{
-					C = response.T1102OutBlock.Price,
-					O = response.T1102OutBlock.Open,
-					H = response.T1102OutBlock.High,
-					L = response.T1102OutBlock.Low,
-					V = response.T1102OutBlock.Volume,
-					Turnover = response.T1102OutBlock.Value,
-				},
-				VolumeExecuted = 0,
-			},
-			ExtraData = new() { { "HighLimit", response.T1102OutBlock.UpLmtPrice }, { "LowLimit", response.T1102OutBlock.DnLmtPrice } }
-		};
+					Shcode = symbol
+				}
+			});
+
+			return response.T1102OutBlock is null
+				? ReturnResult<MarketExecution>(new(), nameof(T1102), response.Message)
+				: new()
+				{
+					Code = response.Code,
+					Info = new()
+					{
+						TimeExecuted = DateTime.UtcNow.AddHours(9),
+						Symbol = response.T1102OutBlock.Shcode,
+						C = response.T1102OutBlock.Price,
+						BasePrice = response.T1102OutBlock.Price + (response.T1102OutBlock.Change * (response.T1102OutBlock.Diff < 0 ? 1 : -1)),
+						QuoteDaily = new Quote
+						{
+							C = response.T1102OutBlock.Price,
+							O = response.T1102OutBlock.Open,
+							H = response.T1102OutBlock.High,
+							L = response.T1102OutBlock.Low,
+							V = response.T1102OutBlock.Volume,
+							Turnover = response.T1102OutBlock.Value,
+						},
+						VolumeExecuted = 0,
+					},
+					ExtraData = new() { { "HighLimit", response.T1102OutBlock.UpLmtPrice }, { "LowLimit", response.T1102OutBlock.DnLmtPrice } }
+				};
+		}
+		catch (Exception ex)
+		{
+			return ReturnErrorResult<MarketExecution>(nameof(T1102), ex.Message, MessageSeverity.Critical);
+		}
 	}
 
 	public async Task<ResponseResults<MarketExecution>> RequestMarketExecution(IEnumerable<string> symbols)
