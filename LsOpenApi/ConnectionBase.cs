@@ -484,7 +484,7 @@ public class ConnectionBase
 			};
 		}
 
-		var responseRest = await client.PostAsync(request);
+		var responseRest = await client.ExecuteAsync(request, Method.Post);
 		if (responseRest is null || !responseRest.IsSuccessful) return (T)new LsResponseCore
 		{
 			Code = $"ERR",
@@ -525,7 +525,7 @@ public class ConnectionBase
 			};
 		}
 
-		var responseRest = await client.PostAsync(request);
+		var responseRest = await client.ExecuteAsync(request, Method.Post);
 		if (responseRest is null || !responseRest.IsSuccessful) return (T)new LsResponseCore
 		{
 			Code = "ERR",
