@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using OpenBroker.Extensions;
+using OpenBroker.Models;
+using System.Text.Json.Serialization;
 
 namespace LsOpenApi.Models;
 internal class AccessTokenResponse
@@ -9,5 +11,5 @@ internal class AccessTokenResponse
 	[JsonPropertyName("expires_in")]
 	public int DateRemained { get; set; }
 
-    public DateTime DateExpired => DateTime.UtcNow.AddSeconds(DateRemained);
+	public DateTime DateExpired => MarketZone.Utc.Now().AddSeconds(DateRemained);
 }
