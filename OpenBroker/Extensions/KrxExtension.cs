@@ -9,7 +9,10 @@ public static class KrxExtension
 		> 4 => symbol.Substring(1, 2),
 		_ => string.Empty,
 	};
-	
+
+	public static string ToKrxFrontMonthFuturesSymbol(this string instrumentCode, bool isLegacy = false) =>
+		$"{(isLegacy ? "1" : "A")}{instrumentCode}{MarketZone.Seoul.Now().ToKrxExpiryCode()}000";
+
 	public static decimal ToUpTick(this decimal price)
 		=> price switch
 		{
