@@ -155,4 +155,7 @@ internal class CSPAQ22200OutBlock2
 
 	/// <summary>매도대금담보대출금액</summary>
 	public long CslLoanAmtdt1 { get; set; }
+
+	/// <summary>미수불가주문가능금액</summary>
+	public long RcvblUablOrdAbleAmt { get; set; }
 }
