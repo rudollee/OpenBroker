@@ -2,20 +2,20 @@
 
 namespace LsOpenApi.Models;
 /// <summary>
-/// 선물/옵션현재가(시세)조회(t2101)
+/// 선물/옵션현재가(시세)조회_9자리(t2111)
 /// </summary>
-internal class T2101 : LsResponseCore
+internal class T2111 : LsResponseCore
 {
-	[JsonPropertyName("t2101InBlock")]
-	public T2101InBlock T2101InBlock { get; set; } = new();
-	[JsonPropertyName("t2101OutBlock")]
-	public T2101OutBlock T2101OutBlock { get; set; } = new();
+	[JsonPropertyName("t2111InBlock")]
+	public T2111InBlock T2111InBlock { get; set; } = new();
+	[JsonPropertyName("t2111OutBlock")]
+	public T2111OutBlock T2111OutBlock { get; set; } = new();
 }
 
 /// <summary>
-/// 선물/옵션현재가(시세)조회(t2101) - InBlock
+/// 선물/옵션현재가(시세)조회_9자리(t2111) - InBlock
 /// </summary>
-internal class T2101InBlock
+internal class T2111InBlock
 {
 	/// <summary>단축코드</summary>
 	[JsonPropertyName("focode")]
@@ -23,9 +23,9 @@ internal class T2101InBlock
 }
 
 /// <summary>
-/// 선물/옵션현재가(시세)조회(t2101) - OutBlock
+/// 선물/옵션현재가(시세)조회_9자리(t2111) - OutBlock
 /// </summary>
-internal class T2101OutBlock
+internal class T2111OutBlock
 {
 	/// <summary>한글명</summary>
 	[JsonPropertyName("hname")]

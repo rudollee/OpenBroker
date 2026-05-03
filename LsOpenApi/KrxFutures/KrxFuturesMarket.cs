@@ -29,39 +29,39 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 
 		try
 		{
-			var response = await RequestStandardAsync<T2101>(LsEndpoint.FuturesMarketData.ToDescription(), new
+			var response = await RequestStandardAsync<T2111>(LsEndpoint.FuturesMarketData.ToDescription(), new
 			{
-				t2101InBlock = new T2101InBlock { Focode = symbol }
+				t2111InBlock = new T2111InBlock { Focode = symbol }
 			});
 
-			if (response is null || response.T2101OutBlock is null) return ReturnResult<MarketExecution>(new(), nameof(T2101), response?.Message ?? string.Empty);
+			if (response is null || response.T2111OutBlock is null) return ReturnResult<MarketExecution>(new(), nameof(T2111), response?.Message ?? string.Empty);
 
 			var quote = new MarketExecution
 			{
 				Symbol = symbol,
-				C = response.T2101OutBlock.Price,
+				C = response.T2111OutBlock.Price,
 				QuoteDaily = new Quote
 				{
 					T = DateTime.Now,
-					BasePrice = response.T2101OutBlock.Jnilclose,
-                    C = response.T2101OutBlock.Price,
-					O = response.T2101OutBlock.Open,
-					H = response.T2101OutBlock.High,
-					L = response.T2101OutBlock.Low,
-					V = response.T2101OutBlock.Volume,
-					Turnover = response.T2101OutBlock.Value,
+					BasePrice = response.T2111OutBlock.Jnilclose,
+                    C = response.T2111OutBlock.Price,
+					O = response.T2111OutBlock.Open,
+					H = response.T2111OutBlock.High,
+					L = response.T2111OutBlock.Low,
+					V = response.T2111OutBlock.Volume,
+					Turnover = response.T2111OutBlock.Value,
 				},
-				BasePrice = response.T2101OutBlock.Jnilclose,
-				VolumeExecuted = response.T2101OutBlock.Volume,
+				BasePrice = response.T2111OutBlock.Jnilclose,
+				VolumeExecuted = response.T2111OutBlock.Volume,
 			};
 
 			var result = ReturnResult(quote);
 			result.ExtraData = new()
 			{
-				{ "HighLimit", response.T2101OutBlock.Uplmtprice },
-				{ "LowLimit", response.T2101OutBlock.Dnlmtprice },
-				{ "OI", response.T2101OutBlock.Mgjv }, // open interest
-				{ "UNDERLYINGPRICE", response.T2101OutBlock.Price - response.T2101OutBlock.Sbasis }, // Underlying Asset Price
+				{ "HighLimit", response.T2111OutBlock.Uplmtprice },
+				{ "LowLimit", response.T2111OutBlock.Dnlmtprice },
+				{ "OI", response.T2111OutBlock.Mgjv }, // open interest
+				{ "UNDERLYINGPRICE", response.T2111OutBlock.Price - response.T2111OutBlock.Sbasis }, // Underlying Asset Price
 			};
 
 			return result;

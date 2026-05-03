@@ -15,12 +15,12 @@ internal class T8456 : LsResponseCore
 /// <summary>
 /// KRX야간파생 시세조회(API용)(t8456) - InBlock
 /// </summary>
-internal class T8456InBlock : T2101InBlock { }
+internal class T8456InBlock : T2111InBlock { }
 
 /// <summary>
 /// KRX야간파생 시세조회(API용)(t8456) - OutBlock
 /// </summary>
-internal class T8456OutBlock : T2101OutBlock
+internal class T8456OutBlock : T2111OutBlock
 {
 	/// <summary>시간가치</summary>
 	[JsonPropertyName("timevl")]
