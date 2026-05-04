@@ -7,7 +7,7 @@ namespace LsOpenApi.Models;
 internal class T8403 : LsResponseCore
 {
 	[JsonPropertyName("t8403InBlock")]
-	public T2105InBlock T8403InBlock { get; set; } = new();
+	public T2112InBlock T8403InBlock { get; set; } = new();
 	[JsonPropertyName("t8403OutBlock")]
 	public T8403OutBlock T8403OutBlock { get; set; } = new();
 }
@@ -15,7 +15,7 @@ internal class T8403 : LsResponseCore
 /// <summary>
 /// 주식선물호가조회(API용)(t8403) - OutBlock
 /// </summary>
-internal class T8403OutBlock : T2105OutBlock
+internal class T8403OutBlock : T2112OutBlock
 {
 	/// <summary>매도호가6</summary>
 	[JsonPropertyName("offerho6")]

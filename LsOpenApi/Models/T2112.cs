@@ -2,20 +2,20 @@
 
 namespace LsOpenApi.Models;
 /// <summary>
-/// 선물/옵션현재가호가조회(t2105)
+/// 선물/옵션현재가호가조회(t2112)
 /// </summary>
-internal class T2105 : LsResponseCore
+internal class T2112 : LsResponseCore
 {
-	[JsonPropertyName("t2105InBlock")]
-	public T2105InBlock T2105InBlock { get; set; } = new();
-	[JsonPropertyName("t2105OutBlock")]
-	public T2105OutBlock T2105OutBlock { get; set; } = new();
+	[JsonPropertyName("t2112InBlock")]
+	public T2112InBlock T2112InBlock { get; set; } = new();
+	[JsonPropertyName("t2112OutBlock")]
+	public T2112OutBlock T2112OutBlock { get; set; } = new();
 }
 
 /// <summary>
-/// 선물/옵션현재가호가조회(t2105) - InBlock
+/// 선물/옵션현재가호가조회(t2112) - InBlock
 /// </summary>
-internal class T2105InBlock
+internal class T2112InBlock
 {
 	/// <summary>단축코드</summary>
 	[JsonPropertyName("shcode")]
@@ -23,9 +23,9 @@ internal class T2105InBlock
 }
 
 /// <summary>
-/// 선물/옵션현재가호가조회(t2105) - OutBlock
+/// 선물/옵션현재가호가조회(t2112) - OutBlock
 /// </summary>
-internal class T2105OutBlock
+internal class T2112OutBlock
 {
 	/// <summary>종목명</summary>
 	[JsonPropertyName("hname")]
@@ -210,7 +210,7 @@ internal class T2105OutBlock
 internal class T8457 : LsResponseCore
 {
 	[JsonPropertyName("t8457InBlock")]
-	public T2105InBlock T8457InBlock { get; set; } = new();
+	public T2112InBlock T8457InBlock { get; set; } = new();
 	[JsonPropertyName("t8457OutBlock")]
-	public T2105OutBlock T8457OutBlock { get; set; } = new();
+	public T2112OutBlock T8457OutBlock { get; set; } = new();
 }
