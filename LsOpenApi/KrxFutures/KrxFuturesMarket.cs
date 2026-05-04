@@ -404,7 +404,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 
 	public Task<ResponseResult<News>> RequestNews(string id) => throw new NotImplementedException();
 
-	#region request Price Pack using t8415/t8416
+	#region request Price Pack using t8465/t8416
 	public async Task<ResponseResult<QuotePack<T>>> RequestPricePack<T>(QuoteRequest request) where T : Quote
 	{
 		if (request.DateTimeBegin > request.DateTimeEnd) return new ResponseResult<QuotePack<T>>
@@ -506,14 +506,14 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	private async Task<ResponseResult<QuotePack<T>>> RequestPricePackMinutes<T>(QuoteRequest request) where T : Quote
 	{
 		List<Quote> quotes = [];
-		List<T8415OutBlock1> list = [];
+		List<T8465OutBlock1> list = [];
 		var nextKey = string.Empty;
 		var ctsDate = string.Empty;
 		do
 		{
-			var response = await RequestContinuousAsync<T8415>(LsEndpoint.FuturesChart.ToDescription(), new
+			var response = await RequestContinuousAsync<T8465>(LsEndpoint.FuturesChart.ToDescription(), new
 			{
-				t8415InBlock = new T8415InBlock
+				t8465InBlock = new T8465InBlock
 				{
 					Shcode = request.Symbol,
 					Ncnt = request.TimeInterval,
@@ -523,11 +523,11 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				}
 			}, nextKey);
 
-			if (response is null || response.T8415OutBlock1.Count == 0) break;
+			if (response is null || response.T8465OutBlock1.Count == 0) break;
 
-			list.AddRange(response.T8415OutBlock1);
+			list.AddRange(response.T8465OutBlock1);
 			nextKey = response.NextKey;
-			ctsDate = response.T8415OutBlock.CtsDate;
+			ctsDate = response.T8465OutBlock.CtsDate;
 		} while (!string.IsNullOrEmpty(nextKey));
 
 		quotes.Capacity = list.Count;

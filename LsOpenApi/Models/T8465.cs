@@ -2,22 +2,22 @@
 
 namespace LsOpenApi.Models;
 /// <summary>
-/// 선물/옵션챠트(N분)(t8415)
+/// 선물/옵션챠트(N분)(t8465)
 /// </summary>
-internal class T8415 : LsResponseCore
+internal class T8465 : LsResponseCore
 {
-	[JsonPropertyName("t8415InBlock")]
-	public T8415InBlock T8415InBlock { get; set; } = new();
-	[JsonPropertyName("t8415OutBlock")]
-	public T8415OutBlock T8415OutBlock { get; set; } = new();
-	[JsonPropertyName("t8415OutBlock1")]
-	public List<T8415OutBlock1> T8415OutBlock1 { get; set; } = [];
+	[JsonPropertyName("t8465InBlock")]
+	public T8465InBlock T8465InBlock { get; set; } = new();
+	[JsonPropertyName("t8465OutBlock")]
+	public T8465OutBlock T8465OutBlock { get; set; } = new();
+	[JsonPropertyName("t8465OutBlock1")]
+	public List<T8465OutBlock1> T8465OutBlock1 { get; set; } = [];
 }
 
 /// <summary>
-/// 선물/옵션챠트(N분)(t8415) - InBlock
+/// 선물/옵션챠트(N분)(t8465) - InBlock
 /// </summary>
-internal class T8415InBlock
+internal class T8465InBlock
 {
 	/// <summary>단축코드</summary>
 	[JsonPropertyName("shcode")]
@@ -65,9 +65,9 @@ internal class T8415InBlock
 }
 
 /// <summary>
-/// 선물/옵션챠트(N분)(t8415) - OutBlock
+/// 선물/옵션챠트(N분)(t8465) - OutBlock
 /// </summary>
-internal class T8415OutBlock
+internal class T8465OutBlock
 {
 	/// <summary>단축코드</summary>
 	[JsonPropertyName("shcode")]
@@ -143,9 +143,9 @@ internal class T8415OutBlock
 }
 
 /// <summary>
-/// 선물/옵션챠트(N분)(t8415) - OutBlock1
+/// 선물/옵션챠트(N분)(t8465) - OutBlock1
 /// </summary>
-internal class T8415OutBlock1
+internal class T8465OutBlock1
 {
 	/// <summary>날짜</summary>
 	[JsonPropertyName("date")]
