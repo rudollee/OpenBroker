@@ -557,17 +557,17 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	}
 	#endregion
 
-	#region request SSF instruments using t8401
+	#region request SSF instruments using t2522, MMDAQ91200
 	public async Task<ResponseDictionary<string, Instrument>> RequestInstruments(int option = 0)
 	{
 		try
 		{
-			var response = await RequestStandardAsync<T8401>(LsEndpoint.FuturesMarketData.ToDescription(), new
+			var response = await RequestStandardAsync<T2522>(LsEndpoint.FuturesMarketData.ToDescription(), new
 			{
-				t8401InBlock = new T8401InBlock { }
+				t2522InBlock = new T2522InBlock { }
 			});
 
-			if (response.T8401OutBlock.Count == 0) return new ResponseDictionary<string, Instrument>
+			if (response.T2522OutBlock1.Count == 0) return new ResponseDictionary<string, Instrument>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Message = "no data",
@@ -589,16 +589,16 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			} while (!string.IsNullOrEmpty(nextKey));
 
 			Instruments.Clear();
-			response.T8401OutBlock.ForEach(instrument =>
+			response.T2522OutBlock1.ForEach(instrument =>
 			{
-				var id = instrument.ShCode.ToKrxInstrumentCode();
+				var id = instrument.BscAstsId[1..]; //instrument.ShCode.ToKrxInstrumentCode();
 				var marginInfo = margins.FirstOrDefault(f => $"{f.IsuSmclssCode[1..]}" == id);
-				Instruments.Add(instrument.ShCode, new Instrument
+				Instruments.Add(instrument.NmcIsShrtCd, new Instrument
 				{
-					Symbol = instrument.ShCode,
+					Symbol = instrument.NmcIsShrtCd,
 					Inst = id,
-					InstrumentName = instrument.HName,
-					SymbolUnderlying = instrument.BaseCode[1..],
+					InstrumentName = instrument.BscAstsNm,
+					SymbolUnderlying = instrument.BscAstsIsCd,
 					AssetClass = AssetClass.SINGLE_STOCK,
 					Margin = marginInfo is null ? 0 : marginInfo.OnePrcntrOrdMgn * 0.1m,
 					MarginRate = marginInfo is null ? 0.00m : marginInfo.CsgnMgnrt * 0.01m,
