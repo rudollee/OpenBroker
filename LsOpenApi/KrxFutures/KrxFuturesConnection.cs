@@ -47,7 +47,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 		var callbackResult = trCode switch
 		{
 			nameof(JIF) => CallbackJIF(message.Text),
-			nameof(FC0) => CallbackXC0(message.Text, trCode),
+			nameof(FC9) => CallbackXC0(message.Text, trCode),
 			nameof(JC0) => CallbackXC0(message.Text, trCode),
 			nameof(DC0) => CallbackXC0(message.Text, trCode),
 			nameof(FH0) => CallbackXH0(message.Text, trCode),
@@ -62,7 +62,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 		};
 	}
 
-	#region XC0 callback - FC0, JC0, DC0
+	#region XC0 callback - FC9, JC0, DC0
 	private bool CallbackXC0(string message, string trCode)
 	{
 		if (MarketExecuted is null) return false;

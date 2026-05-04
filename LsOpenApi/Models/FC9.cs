@@ -2,18 +2,18 @@
 
 namespace LsOpenApi.Models;
 /// <summary>
-/// KOSPI200선물체결(C0)
+/// KOSPI200선물체결(FC9)
 /// </summary>
-internal class FC0
+internal class FC9
 {
-	public FC0InBlock FC0InBlock { get; set; } = new();
-	public FC0OutBlock FC0OutBlock { get; set; } = new();
+	public FC9InBlock FC9InBlock { get; set; } = new();
+	public FC9OutBlock FC9OutBlock { get; set; } = new();
 }
 
 /// <summary>
-/// KOSPI200선물체결(C0) - InBlock
+/// KOSPI200선물체결(FC9) - InBlock
 /// </summary>
-internal class FC0InBlock
+internal class FC9InBlock
 {
 	/// <summary>단축코드</summary>
 	[JsonPropertyName("futcode")]
@@ -21,9 +21,9 @@ internal class FC0InBlock
 }
 
 /// <summary>
-/// KOSPI200선물체결(C0) - OutBlock
+/// KOSPI200선물체결(FC9) - OutBlock
 /// </summary>
-internal class FC0OutBlock
+internal class FC9OutBlock
 {
 	/// <summary>체결시간</summary>
 	[JsonPropertyName("chetime")]
@@ -154,12 +154,12 @@ internal class JC0
 /// <summary>
 /// 주식선물체결(JC0) - InBlock
 /// </summary>
-internal class JC0InBlock : FC0InBlock { }
+internal class JC0InBlock : FC9InBlock { }
 
 /// <summary>
 /// 주식선물체결(JC0) - OutBlock
 /// </summary>
-internal class JC0OutBlock : FC0OutBlock
+internal class JC0OutBlock : FC9OutBlock
 {
 	/// <summary>기초자산현재가</summary>
 	[JsonPropertyName("basprice")]
@@ -178,12 +178,12 @@ internal class DC0
 /// <summary>
 /// KRX야간파생 체결(DC0) - InBlock
 /// </summary>
-internal class DC0InBlock : FC0InBlock { }
+internal class DC0InBlock : FC9InBlock { }
 
 /// <summary>
 /// KRX야간파생 체결(DC0) - OutBlock
 /// </summary>
-internal class DC0OutBlock : FC0OutBlock
+internal class DC0OutBlock : FC9OutBlock
 {
 	/// <summary>배분적용구분</summary>
 	[JsonPropertyName("alloc_gubun")]
