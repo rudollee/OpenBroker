@@ -13,12 +13,12 @@ internal class JH0
 /// <summary>
 /// 주식선물호가(JH0) - InBlock
 /// </summary>
-internal class JH0InBlock : FH0InBlock { }
+internal class JH0InBlock : FH9InBlock { }
 
 /// <summary>
 /// 주식선물호가(JH0) - OutBlock
 /// </summary>
-internal class JH0OutBlock : FH0OutBlock
+internal class JH0OutBlock : FH9OutBlock
 {
 	/// <summary>매도호가6</summary>
 	[JsonPropertyName("offerho6")]

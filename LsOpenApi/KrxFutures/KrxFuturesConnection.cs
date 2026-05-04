@@ -50,7 +50,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			nameof(FC9) => CallbackXC0(message.Text, trCode),
 			nameof(JC0) => CallbackXC0(message.Text, trCode),
 			nameof(DC0) => CallbackXC0(message.Text, trCode),
-			nameof(FH0) => CallbackXH0(message.Text, trCode),
+			nameof(FH9) => CallbackXH0(message.Text, trCode),
 			nameof(DH0) => CallbackXH0(message.Text, trCode),
 			nameof(JH0) => CallbackXH0(message.Text, trCode),
 			nameof(O01) => CallbackO0X(message.Text, trCode),
@@ -138,7 +138,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 	}
 	#endregion
 
-	#region XH0 callback - FH0, DH0, JH0
+	#region XH0 callback - FH9, DH0, JH0
 	private bool CallbackXH0(string message, string tr)
 	{
 		if (OrderBookTaken is null) return false;
@@ -207,7 +207,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 				Info = new()
 				{
 					Exchange = Exchange.KRX,
-					MarketSessionInfo = new string[] { nameof(FH0), nameof(JH0) }.Contains(tr) ? MarketSession.REGULAR : MarketSession.EXTENDED,
+					MarketSessionInfo = new string[] { nameof(FH9), nameof(JH0) }.Contains(tr) ? MarketSession.REGULAR : MarketSession.EXTENDED,
 					Symbol = response.Body.FutCode,
 					TimeTaken = response.Body.HoTime.ToTime(),
 					Ask = asks,

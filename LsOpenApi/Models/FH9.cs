@@ -2,18 +2,18 @@
 
 namespace LsOpenApi.Models;
 /// <summary>
-/// KOSPI200선물호가(H0)
+/// KOSPI200선물호가(FH9)
 /// </summary>
-internal class FH0
+internal class FH9
 {
-	public FH0InBlock FH0InBlock { get; set; } = new();
-	public FH0OutBlock FH0OutBlock { get; set; } = new();
+	public FH9InBlock FH9InBlock { get; set; } = new();
+	public FH9OutBlock FH9OutBlock { get; set; } = new();
 }
 
 /// <summary>
-/// KOSPI200선물호가(H0) - InBlock
+/// KOSPI200선물호가(FH9) - InBlock
 /// </summary>
-internal class FH0InBlock
+internal class FH9InBlock
 {
 	/// <summary>단축코드</summary>
 	[JsonPropertyName("futcode")]
@@ -21,9 +21,9 @@ internal class FH0InBlock
 }
 
 /// <summary>
-/// KOSPI200선물호가(H0) - OutBlock
+/// KOSPI200선물호가(FH9) - OutBlock
 /// </summary>
-internal class FH0OutBlock
+internal class FH9OutBlock
 {
 	/// <summary>호가시간</summary>
 	[JsonPropertyName("hotime")]
@@ -183,6 +183,6 @@ internal class FH0OutBlock
 /// </summary>
 internal class DH0
 {
-	public FH0InBlock DH0InBlock { get; set; } = new();
-	public FH0OutBlock DH0OutBlock { get; set; } = new();
+	public FH9InBlock DH0InBlock { get; set; } = new();
+	public FH9OutBlock DH0OutBlock { get; set; } = new();
 }

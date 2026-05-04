@@ -763,16 +763,16 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		{
 			trCode = symbol.Substring(1, 2) switch
 			{
-				"01" => nameof(FH0),
+				"01" => nameof(FH9),
 				//"05" => "FC9",
 				//"07" => "EU1",
-				"75" => nameof(FH0),
+				"75" => nameof(FH9),
 				_ => nameof(JH0)
 			};
 		}
 		else trCode = "OC0";
 
-		if (trCode == nameof(FH0)) await SubscribeAsync(subscriber, nameof(DH0), symbol, connecting); // KRX야간파생 호가
+		if (trCode == nameof(FH9)) await SubscribeAsync(subscriber, nameof(DH0), symbol, connecting); // KRX야간파생 호가
 
 		return await SubscribeAsync(subscriber, trCode, symbol, connecting);
 	}
