@@ -2,22 +2,22 @@ using System.Text.Json.Serialization;
 
 namespace LsOpenApi.Models;
 /// <summary>
-/// 선물/옵션챠트(일주월)(t8416)
+/// 선물/옵션챠트(일주월)(t8466)
 /// </summary>
-internal class T8416 : LsResponseCore
+internal class T8466 : LsResponseCore
 {
-	[JsonPropertyName("t8416InBlock")]
-	public T8416InBlock T8416InBlock { get; set; } = new();
-	[JsonPropertyName("t8416OutBlock")]
-	public T8416OutBlock T8416OutBlock { get; set; } = new();
-	[JsonPropertyName("t8416OutBlock1")]
-	public List<T8416OutBlock1> T8416OutBlock1 { get; set; } = [];
+	[JsonPropertyName("t8466InBlock")]
+	public T8466InBlock T8466InBlock { get; set; } = new();
+	[JsonPropertyName("t8466OutBlock")]
+	public T8466OutBlock T8466OutBlock { get; set; } = new();
+	[JsonPropertyName("t8466OutBlock1")]
+	public List<T8466OutBlock1> T8466OutBlock1 { get; set; } = [];
 }
 
 /// <summary>
-/// 선물/옵션챠트(일주월)(t8416) - InBlock
+/// 선물/옵션챠트(일주월)(t8466) - InBlock
 /// </summary>
-internal class T8416InBlock
+internal class T8466InBlock
 {
 	/// <summary>단축코드</summary>
 	[JsonPropertyName("shcode")]
@@ -49,9 +49,9 @@ internal class T8416InBlock
 }
 
 /// <summary>
-/// 선물/옵션챠트(일주월)(t8416) - OutBlock
+/// 선물/옵션챠트(일주월)(t8466) - OutBlock
 /// </summary>
-internal class T8416OutBlock
+internal class T8466OutBlock
 {
 	/// <summary>단축코드</summary>
 	[JsonPropertyName("shcode")]
@@ -123,9 +123,9 @@ internal class T8416OutBlock
 }
 
 /// <summary>
-/// 선물/옵션챠트(일주월)(t8416) - OutBlock1
+/// 선물/옵션챠트(일주월)(t8466) - OutBlock1
 /// </summary>
-internal class T8416OutBlock1
+internal class T8466OutBlock1
 {
 	/// <summary>날짜</summary>
 	[JsonPropertyName("date")]
