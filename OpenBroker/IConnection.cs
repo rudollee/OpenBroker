@@ -73,6 +73,15 @@ public interface IConnection
     /// <returns></returns>
     Task<ResponseResult<KeyPack>> RequestAccessTokenAsync(string appkey, string appsecret);
 
+	/// <summary>
+	/// Access Token 폐기
+	/// </summary>
+	/// <param name="appkey"></param>
+	/// <param name="appsecret"></param>
+	/// <param name="accessToken"></param>
+	/// <returns></returns>
+	Task<ResponseCore> RevokeAccessTokenAsync(string appkey, string appsecret, string accessToken);
+
     /// <summary>
     /// Websocket 연결하기
     /// </summary>

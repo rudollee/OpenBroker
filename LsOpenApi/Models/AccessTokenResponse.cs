@@ -13,3 +13,12 @@ internal class AccessTokenResponse
 
 	public DateTime DateExpired => MarketZone.Utc.Now().AddSeconds(DateRemained);
 }
+
+internal class AccessTokenRevokeResponse
+{
+	[JsonPropertyName("code")]
+	public int Code { get; set; }
+
+	[JsonPropertyName("message")]
+	public string Message { get; set; } = string.Empty;
+}

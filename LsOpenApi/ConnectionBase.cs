@@ -103,6 +103,42 @@ public class ConnectionBase
 		}
 	}
 
+	public async Task<ResponseCore> RevokeAccessTokenAsync(string appkey, string appsecret, string accessToken)
+	{
+		var client = new RestClient($"{host}/oauth2/revoke");
+
+		var queryParameters = GenerateParameters(new
+		{
+			appkey,
+			appsecretkey = appsecret,
+			token_type_hint = "access_token",
+			token = accessToken
+		});
+		var request = new RestRequest()
+			.AddHeaders(new Dictionary<string, string>
+			{
+				{ "content-type", "application/x-www-form-urlencoded" },
+			});
+
+		foreach (var param in queryParameters)
+		{
+			request.AddQueryParameter(param.Key, param.Value);
+		}
+
+		try
+		{
+			var response = await client.PostAsync<AccessTokenRevokeResponse>(request);
+
+			if (response is null) return ReturnError("Token", "response is null");
+
+			return ReturnCore(response.Code.ToString(), response.Message);
+		}
+		catch (Exception ex)
+		{
+			return ReturnError("ACCESS-TOKEN", ex.Message, MessageSeverity.Critical, remark: "error catch");
+		}
+	}
+
 	#region Connect/disconnect Websocket
 	/// <summary>
 	/// Connect Websocket & subscribe Order/Execution

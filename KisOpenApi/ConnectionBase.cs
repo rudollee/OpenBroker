@@ -40,7 +40,7 @@ public class ConnectionBase
 
 	private readonly List<Request> Requests = [];
 
-	#region Request Access Token using appkey & secret
+	#region Request/Revoke Access Token using appkey & secret
 	/// <summary>
 	/// Request Access Token using appkey & secret
 	/// </summary>
@@ -86,6 +86,37 @@ public class ConnectionBase
 		catch (Exception ex)
 		{
 			return ReturnErrorResult<KeyPack>("TOKEN", $"error-catched: {ex.Message}", MessageSeverity.Critical);
+		}
+	}
+
+	public async Task<ResponseCore> RevokeAccessTokenAsync(string appkey, string appsecret, string accessToken)
+	{
+		var body = new
+		{
+			appkey,
+			appsecret,
+			token = accessToken
+		};
+
+		var client = new RestClient($"{host}/oauth2/revokeP");
+		var request = new RestRequest()
+			.AddHeaders(new Dictionary<string, string>
+			{
+					{ "Content-Type", "application/json; charset=UTF-8" },
+			})
+			.AddBody(body);
+
+		try
+		{
+			var response = await client.PostAsync<KisResponseBase>(request);
+
+			if (response is null) return ReturnError("TOKEN", "response is null");
+
+			return ReturnCore(response.MessageCode, response.Message);
+		}
+		catch (Exception ex)
+		{
+			return ReturnError("TOKEN", $"error-catched: {ex.Message}", MessageSeverity.Critical);
 		}
 	}
 	#endregion
