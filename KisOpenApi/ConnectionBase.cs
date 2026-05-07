@@ -383,10 +383,12 @@ public class ConnectionBase
 		Connected(this, new()
 		{
 			Broker = Brkr.KI,
-			Typ= MessageType.CONNECTION,
+			Typ = MessageType.CONNECTION,
 			Code = $"{info.Type}",
-			Message = $"Disconnected : {info.Type}"
+			Message = $"Disconnected : {info.Exception?.Message ?? "Unknown error"}"
 		});
+
+		await DisconnectAsync();
 	}
 
 	#region Parse Callback Message / Response Data
