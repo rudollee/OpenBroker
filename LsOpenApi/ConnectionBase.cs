@@ -345,7 +345,7 @@ public class ConnectionBase
 			Message = $"Reconnected : {info.Type}"
 		});
 
-		foreach (var subscription in _subscriptions.ToArray())
+		foreach (var subscription in _subscriptions)
 		{
 			var response = await SubscribeAsync("RECONNECTION", subscription.Value.TrCode, subscription.Value.Key);
 			if (response.StatusCode != Status.SUCCESS)
