@@ -4,6 +4,7 @@ using RestSharp;
 using Websocket.Client;
 using LsOpenApi.Models;
 using OpenBroker.Models;
+using System.Collections.Concurrent;
 
 namespace LsOpenApi;
 public class ConnectionBase
@@ -345,7 +346,7 @@ public class ConnectionBase
 			Message = $"Reconnected : {info.Type}"
 		});
 
-		foreach (var subscription in _subscriptions)
+		foreach (var subscription in _subscriptions.ToArray())
 		{
 			var response = await SubscribeAsync("RECONNECTION", subscription.Value.TrCode, subscription.Value.Key);
 			if (response.StatusCode != Status.SUCCESS)
