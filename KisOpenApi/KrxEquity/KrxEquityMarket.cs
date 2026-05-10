@@ -78,42 +78,49 @@ public partial class KisKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			FID_ORG_ADJ_PRC = "1",
 		});
 
-		var response = await RequestStandardAsync<FHKST03010100>(EndpointRef.EndpointDic[TrId.FHKST03010100], parameters);
-		if (response is null) return new ResponseResult<QuotePack<T>>
+		try
 		{
-			StatusCode = Status.ERROR_OPEN_API,
-			Info = new QuotePack<T> { PrimaryList = [] },
-			Message = "response is null"
-		};
-
-		var quotes = new List<Quote>();
-		response.Output2.ForEach(f =>
-		{
-			var close = Convert.ToDecimal(f.stck_clpr);
-			var datetime = f.stck_bsop_date.ToDateTime();
-			if (datetime >= request.DateTimeBegin && datetime <= request.DateTimeEnd )
+			var response = await RequestStandardAsync<FHKST03010100>(EndpointRef.EndpointDic[TrId.FHKST03010100], parameters);
+			if (response is null) return new ResponseResult<QuotePack<T>>
 			{
-				quotes.Add(new Quote
-				{
-					T = f.stck_bsop_date.ToDateTime(),
-					C = close,
-					H = Convert.ToDecimal(f.stck_hgpr),
-					L = Convert.ToDecimal(f.stck_lwpr),
-					O = Convert.ToDecimal(f.stck_oprc),
-					V = Convert.ToDecimal(f.acml_vol),
-					BasePrice = close - Convert.ToDecimal(f.prdy_vrss),
-					Turnover = Convert.ToDecimal(f.acml_tr_pbmn) / 1_000_000,
-				});
-			}
-		});
+				StatusCode = Status.ERROR_OPEN_API,
+				Info = new QuotePack<T> { PrimaryList = [] },
+				Message = "response is null"
+			};
 
-		return ReturnResult<QuotePack<T>>(new()
+			var quotes = new List<Quote>();
+			response.Output2.ForEach(f =>
+			{
+				var close = Convert.ToDecimal(f.stck_clpr);
+				var datetime = f.stck_bsop_date.ToDateTime();
+				if (datetime >= request.DateTimeBegin && datetime <= request.DateTimeEnd)
+				{
+					quotes.Add(new Quote
+					{
+						T = f.stck_bsop_date.ToDateTime(),
+						C = close,
+						H = Convert.ToDecimal(f.stck_hgpr),
+						L = Convert.ToDecimal(f.stck_lwpr),
+						O = Convert.ToDecimal(f.stck_oprc),
+						V = Convert.ToDecimal(f.acml_vol),
+						BasePrice = close - Convert.ToDecimal(f.prdy_vrss),
+						Turnover = Convert.ToDecimal(f.acml_tr_pbmn) / 1_000_000,
+					});
+				}
+			});
+
+			return ReturnResult<QuotePack<T>>(new()
+			{
+				Symbol = request.Symbol,
+				TimeIntervalUnit = request.TimeIntervalUnit,
+				TimeInterval = request.TimeInterval,
+				PrimaryList = quotes as List<T> ?? [],
+			});
+		}
+		catch (Exception ex)
 		{
-			Symbol = request.Symbol,
-			TimeIntervalUnit = request.TimeIntervalUnit,
-			TimeInterval = request.TimeInterval,
-			PrimaryList = quotes as List<T> ?? [],
-		});
+			return ReturnErrorResult<QuotePack<T>>(nameof(T), ex.Message);
+		}
 	} 
 	#endregion
 
