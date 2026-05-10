@@ -359,14 +359,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			Message(this, new ResponseCore
-			{
-				Broker = Brkr.LS,
-				StatusCode = Status.ERROR_OPEN_API,
-				Severity = MessageSeverity.Critical,
-				Code = trCode,
-				Message = ex.Message
-			});
+			SendErrorMessage(trCode, ex.Message, MessageSeverity.Critical);
 			return false;
 		}
 	}
