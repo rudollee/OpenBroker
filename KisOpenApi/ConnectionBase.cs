@@ -214,12 +214,12 @@ public class ConnectionBase
 
     public async Task<ResponseCore> DisconnectAsync()
 	{
-		if (Client is null) return ReturnError("DISCONNECTION", "no connection to disconnect or already disconnected", typ: MessageType.CONNECTION);
+		if (Client is null) return ReturnCore("DISCONNECTION", "no connection to disconnect or already disconnected", MessageSeverity.Critical, MessageType.CONNECTION);
 		if (Client.IsRunning) await Client.Stop(WebSocketCloseStatus.NormalClosure, "");
 
 		SetConnect(false);
 
-		return ReturnCore("DISCONNECTION", "Disconnected", typ: MessageType.CONNECTION);
+		return ReturnCore("DISCONNECTION", "Disconnected", MessageSeverity.Critical, MessageType.CONNECTION);
 	}
 	#endregion
 
@@ -388,7 +388,9 @@ public class ConnectionBase
 			Message = $"Disconnected : {info.Exception?.Message ?? "Unknown error"}"
 		});
 
-		await DisconnectAsync();
+		var response = await DisconnectAsync();
+
+		Connected(this, response);
 	}
 
 	#region Parse Callback Message / Response Data
