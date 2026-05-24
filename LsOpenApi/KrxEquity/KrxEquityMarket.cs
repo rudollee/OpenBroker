@@ -6,6 +6,8 @@ using OpenBroker.Extensions;
 namespace LsOpenApi.KrxEquity;
 public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 {
+	private readonly List<SearchFilter> _searchFilters = [];
+
 	public bool AvailableToSubscribe
 	{
 		get
@@ -887,8 +889,10 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#endregion
 
 	#region request search filters & filtered equities by t1866, t1859
-	public async Task<ResponseResults<SearchFilter>> RequestSearchFilters()
+	public async Task<ResponseResults<SearchFilter>> RequestSearchFilters(bool forceToRefresh = false)
 	{
+		if (!forceToRefresh && _searchFilters.Count != 0) return ReturnResults(_searchFilters, nameof(T1866));
+
 		try
 		{
 			if (AccountInfo is null || string.IsNullOrWhiteSpace(AccountInfo.ID)) return new ResponseResults<SearchFilter>
@@ -908,15 +912,15 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 			if (response.T1866OutBlock1.Count == 0) return ReturnResults<SearchFilter>([], nameof(T1866), response.Message);
 
-			var filters = new List<SearchFilter>();
-			response.T1866OutBlock1.ForEach(filter => filters.Add(new SearchFilter
+			_searchFilters.Clear();
+			response.T1866OutBlock1.ForEach(filter => _searchFilters.Add(new SearchFilter
 			{
 				Group = filter.GroupName,
 				ID = filter.QueryIndex,
 				Query = filter.QueryName
 			}));
 
-			return ReturnResults(filters, nameof(T1866));
+			return ReturnResults(_searchFilters, nameof(T1866));
 		}
 		catch (Exception ex)
 		{
