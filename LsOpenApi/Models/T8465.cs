@@ -61,7 +61,7 @@ internal class T8465InBlock
 
 	/// <summary>압축여부(Y:압축N:비압축)</summary>
 	[JsonPropertyName("comp_yn")]
-	public string CompYn { get; set; } = string.Empty;
+	public string CompYn { get; set; } = "N";
 }
 
 /// <summary>
