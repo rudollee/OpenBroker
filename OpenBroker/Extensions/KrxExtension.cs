@@ -11,7 +11,7 @@ public static class KrxExtension
 	};
 
 	public static string ToKrxFrontMonthFuturesSymbol(this string instrumentCode, bool isLegacy = false) =>
-		$"{(isLegacy ? "1" : "A")}{instrumentCode}{MarketZone.Seoul.Now().ToKrxExpiryCode()}000";
+		$"{(isLegacy ? "1" : "A")}{instrumentCode}{MarketZone.Seoul.Now().ToKrxExpiryCode(instrumentCode)}000";
 
 	public static decimal ToUpTick(this decimal price)
 		=> price switch
@@ -120,7 +120,7 @@ public static class KrxExtension
 
 	public static string ToKrxExpiryCode(this DateOnly date, string instrumentCode)
 	{
-		if (instrumentCode != "75") return date.ToKrxExpiryCode();
+		if (instrumentCode != "75") return date.ToKrxExpiryCode(instrumentCode == "01");
 
 		int minValue = new DateOnly(1995, 12, 18).DayNumber;
 		int maxValue = new DateOnly(2025, 12, 15).DayNumber;
