@@ -58,6 +58,8 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			//nameof(H01) => CallbackH01(message.Text),
 			nameof(C01) => CallbackC0X(message.Text, trCode),
 			nameof(C02) => CallbackC0X(message.Text, trCode),
+			nameof(FX9) => CallbackMarketLimitStatus(message.Text, trCode),
+			nameof(JX0) => CallbackMarketLimitStatus(message.Text, trCode),
 			_ => false
 		};
 	}
@@ -324,4 +326,58 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 		}
 	}
 	#endregion
+
+	private bool CallbackMarketLimitStatus(string message, string trCode)
+	{
+		if (MarketPaused is null) return false;
+
+		try
+		{
+			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<FX9OutBlock>>(message);
+			if (response is null || response.Body is null) return false;
+
+			Message(this, new()
+			{
+				Typ = MessageType.MKTS,
+				Code = $"{trCode}:{response.Header.Code}",
+				Severity = MessageSeverity.High,
+				Message = $"Market Limit Extended: {response.Body.Futcode}",
+				Broker = Brkr.LS
+			});
+
+			MarketPaused(this, new ResponseResult<MarketPause>
+			{
+				Typ = MessageType.MKT,
+				Code = $"{trCode}:{response.Header.Code}",
+				Info = new()
+				{
+					Symbol = response.Body.Futcode,
+				},
+				ExtraData = new Dictionary<string, decimal>
+				{
+					{ "HIGHLIMIT", Convert.ToDecimal(response.Body.Uplmtprice) },
+					{ "LOWLIMIT", Convert.ToDecimal(response.Body.Dnlmtprice) },
+					{ "HSTEP", Convert.ToDecimal(response.Body.Upstep) },
+					{ "LSTEP", Convert.ToDecimal(response.Body.Dnstep) }
+				},
+				Broker = Brkr.LS,
+			});
+
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Message(this, new ResponseCore
+			{
+				StatusCode = Status.ERROR_OPEN_API,
+				Typ = MessageType.MKTS,
+				Severity = MessageSeverity.Critical,
+				Code = trCode,
+				Message = ex.Message,
+				Broker = Brkr.LS
+			});
+
+			return false;
+		}
+	}
 }

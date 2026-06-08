@@ -772,7 +772,17 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		}
 		else trCode = "OC0";
 
-		if (trCode == nameof(FH9)) await SubscribeAsync(subscriber, nameof(DH0), symbol, connecting); // KRX야간파생 호가
+		string[] trCodesAdditional = trCode switch
+		{
+			nameof(FH9) => [nameof(DH0), nameof(FX9)], // KRX야간파생 호가, KOSPI200선물가격제한폭확대
+			nameof(JH0) => [nameof(JX0)], // 주식선물가격제한폭확대
+			_ => []
+		};
+
+		foreach (var trCodeAdditional in trCodesAdditional)
+		{
+			await SubscribeAsync(subscriber, trCodeAdditional, symbol, connecting);
+		}
 
 		return await SubscribeAsync(subscriber, trCode, symbol, connecting);
 	}
