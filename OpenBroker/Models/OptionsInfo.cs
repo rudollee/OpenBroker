@@ -12,8 +12,7 @@ public class OptionPack
 {
 	public int ExpiryLeft { get; set; }
 
-	public List<OptionsInfo> Calls { get; set; } = new();
+	public List<OptionsInfo> Calls { get; set; } = [];
 
-	public List<OptionsInfo> Puts { get; set; } = new();
-
+	public List<OptionsInfo> Puts { get; set; } = [];
 }

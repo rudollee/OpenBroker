@@ -58,6 +58,8 @@ public class QuoteExt : Quote
 /// </summary>
 public class QuoteOption : Quote
 {
+	public string StrikeCode { get; set; } = string.Empty;
+
 	public string Strike { get; set; } = string.Empty;
 
 	public decimal OI { get; set; }
