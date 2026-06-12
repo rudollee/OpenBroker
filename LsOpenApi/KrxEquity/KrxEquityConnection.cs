@@ -580,9 +580,14 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				{
 					Time = response.Body.time.ToTime(),
 					Symbol = response.Body.ref_shcode,
-					PauseType = response.Body.vi_gubun == "0"
-						? MarketPauseType.VI0
-						: (response.Body.vi_gubun == "1" ? MarketPauseType.VIS : MarketPauseType.VID),
+					PauseType = response.Body.vi_gubun switch
+					{
+						"0" => MarketPauseType.VI0,
+						"1" => MarketPauseType.VIS,
+						"2" => MarketPauseType.VID,
+						"3" => MarketPauseType.VIB,
+						_ => MarketPauseType.VI0
+					},
 					BasePrice = Convert.ToDecimal(response.Body.vi_gubun == "1" ? response.Body.svi_recprice : response.Body.dvi_recprice),
 					TriggerPrice = Convert.ToDecimal(response.Body.vi_trgprice),
 					Remark = response.Body.shcode,
