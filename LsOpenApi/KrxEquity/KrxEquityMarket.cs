@@ -150,12 +150,12 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		{
 			foreach (var code in new string[] { "1", "2" })
 			{
-				var response = await RequestStandardAsync<t9945>(LsEndpoint.EquityMarketData.ToDescription(), new
+				var response = await RequestStandardAsync<T9945>(LsEndpoint.EquityMarketData.ToDescription(), new
 				{
-					t9945InBlock = new t9945InBlock { gubun = code }
+					t9945InBlock = new T9945InBlock { Gubun = code }
 				});
 
-				if (response.t9945OutBlock.Count == 0) return new ResponseDictionary<string, Equity>
+				if (response.T9945OutBlock.Count == 0) return new ResponseDictionary<string, Equity>
 				{
 					StatusCode = Status.ERROR_OPEN_API,
 					Message = "no data",
@@ -163,19 +163,19 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 					Dic = []
 				};
 
-				foreach (var instrument in response.t9945OutBlock.Where(w => w.etfchk == "0"))
+				foreach (var instrument in response.T9945OutBlock.Where(w => w.Etfchk == "0"))
 				{
 					var equity = new Equity
 					{
-						Symbol = instrument.shcode,
+						Symbol = instrument.Shcode,
 						Section = code == "1" ? ExchangeSection.KOSPI : ExchangeSection.KOSDAQ,
-						NameOfficial = instrument.hname,
+						NameOfficial = instrument.Hname,
 					};
 
 					equity.Exchanges.Add(Exchange.KRX);
-					if (instrument.nxt_chk == "1") equity.Exchanges.Add(Exchange.NXT);
+					if (instrument.NxtChk == "1") equity.Exchanges.Add(Exchange.NXT);
 
-					Equities.Add(instrument.shcode, equity);
+					Equities.Add(instrument.Shcode, equity);
 				}
 			}
 
