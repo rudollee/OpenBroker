@@ -281,18 +281,26 @@ public enum MarketPauseType
     /// <summary>
     /// VI Normalized
     /// </summary>
+    [Description("VI Normalized")]
     VI0 = 8210,
-    
+
     /// <summary>
     /// VI Static
     /// </summary>
+    [Description("VI Static")]
     VIS = 8211,
 
     /// <summary>
     /// VI Dynamic
     /// </summary>
+    [Description("VI Dynamic")]
     VID = 8212,
 
+	/// <summary>
+	/// VI Static & Dynamic
+	/// </summary>
+	[Description("VI Static & Dynamic")]
+	VIB = 8214
 }
 
 public enum MessageType
