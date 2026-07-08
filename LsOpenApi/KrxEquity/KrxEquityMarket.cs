@@ -41,9 +41,19 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		else if (symbol == "JPYUSD") return await SubscribeAsync(subscriber, "CUR", symbol.PadRight(6, ' '), connecting);
 		else if (symbol.Contains('@')) return await SubscribeAsync(subscriber, "MK2", symbol.PadRight(16, ' '), connecting);
 
-		if (!Equities.ContainsKey(symbol)) return ReturnError("NOT-FOUND", "A requested Symbol has not found", typ: MessageType.MISC, statusCode: Status.BAD_REQUEST); 
+		string trCode = string.Empty;
+		if (symbol.Length == 7)
+		{
+			trCode = symbol.StartsWith('U') ? "US3" : "NS3";
+			symbol = symbol.PadRight(10);
+		}
+		else
+		{
+			if (!Equities.ContainsKey(symbol)) return ReturnError("NOT-FOUND", "A requested Symbol has not found", typ: MessageType.MISC, statusCode: Status.BAD_REQUEST);
+			trCode = Equities[symbol].Section == ExchangeSection.KOSPI ? "S3_" : "K3_";
+		}
 
-		return await SubscribeAsync(subscriber, Equities[symbol].Section == ExchangeSection.KOSPI ? "S3_" : "K3_", symbol, connecting);
+		return await SubscribeAsync(subscriber, trCode, symbol, connecting);
 	}
 
 	public async Task<ResponseCore> SubscribeMarketDepth(string symbol, bool connecting = true, string subscriber = "")

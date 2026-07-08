@@ -36,8 +36,10 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		{
 			nameof(NWS) => CallbackNWS(message.Text), // NWS 뉴스
 			nameof(JIF) => CallbackJIF(message.Text), // JIF 장운영정보
-			nameof(S3_) => CallbackX3(message.Text, trCode), // S3_ 시장 체결
-			nameof(K3_) => CallbackX3(message.Text, trCode), // K3_ 시장 체결
+			nameof(S3_) => CallbackX3(message.Text, trCode), // S3_ KRX KOSPI 시장 체결
+			nameof(K3_) => CallbackX3(message.Text, trCode), // K3_ KRX KOSDAQ 시장 체결
+			nameof(NS3) => CallbackX3(message.Text, trCode), // NS3 KRX KOSPI 시장 체결
+			nameof(US3) => CallbackX3(message.Text, trCode), // US3 KRX+NXT 시장 체결
 			nameof(YS3) => CallbackYX3(message.Text, trCode), // YS3 예상체결
 			nameof(YK3) => CallbackYX3(message.Text, trCode), // YK3 예상체결
 			nameof(CUR) => CallbackCUR(message.Text), // CUR 현물정보USD
@@ -117,8 +119,8 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				Code = trCode,
 				Info = new MarketExecution
 				{
-					Exchange = response.Body.exchname == "KRX" ? Exchange.KRX : Exchange.NXT,
-					MarketSessionInfo = response.Body.status switch
+					Exchange = response.Body.Exchname == "KRX" ? Exchange.KRX : Exchange.NXT,
+					MarketSessionInfo = response.Body.Status switch
 					{
 						"00" => MarketSession.REGULAR,
 						"3" => MarketSession.CLOSED,
@@ -126,20 +128,20 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 						"10" => MarketSession.PRE,
 						_ => MarketSession.REGULAR,
 					},
-					Symbol = response.Body.shcode,
-					TimeExecuted = response.Body.chetime.ToDateTime(),
-					C = Convert.ToDecimal(response.Body.price),
-					VolumeExecuted = Convert.ToDecimal(response.Body.cvolume),
-					ExecutionSide = response.Body.cgubun == "+" ? ExecutionSide.ASK : ExecutionSide.BID,
-					BasePrice = Convert.ToDecimal(response.Body.price) - Convert.ToDecimal((DeclineCodes.Contains(response.Body.sign) ? "-" : "") + response.Body.change),
+					Symbol = response.Body.Shcode,
+					TimeExecuted = response.Body.Chetime.ToDateTime(),
+					C = Convert.ToDecimal(response.Body.Price),
+					VolumeExecuted = Convert.ToDecimal(response.Body.Cvolume),
+					ExecutionSide = response.Body.Cgubun == "+" ? ExecutionSide.ASK : ExecutionSide.BID,
+					BasePrice = Convert.ToDecimal(response.Body.Price) - Convert.ToDecimal((DeclineCodes.Contains(response.Body.Sign) ? "-" : "") + response.Body.Change),
 					QuoteDaily = new Quote
 					{
-						C = Convert.ToDecimal(response.Body.price),
-						O = Convert.ToDecimal(response.Body.open),
-						H = Convert.ToDecimal(response.Body.high),
-						L = Convert.ToDecimal(response.Body.low),
-						V = Convert.ToDecimal(response.Body.volume),
-						Turnover = Convert.ToDecimal(response.Body.value)
+						C = Convert.ToDecimal(response.Body.Price),
+						O = Convert.ToDecimal(response.Body.Open),
+						H = Convert.ToDecimal(response.Body.High),
+						L = Convert.ToDecimal(response.Body.Low),
+						V = Convert.ToDecimal(response.Body.Volume),
+						Turnover = Convert.ToDecimal(response.Body.Value)
 					},
 				},
 				Remark = message,

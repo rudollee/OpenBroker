@@ -1,9 +1,12 @@
-﻿namespace LsOpenApi.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace LsOpenApi.Models;
 /// <summary>
 /// KOSPI체결(S3)
 /// </summary>
 internal class S3_
 {
+	public S3_InBlock S3InBlock { get; set; } = new();
 	public S3_OutBlock S3_OutBlock { get; set; } = new();
 }
 
@@ -13,8 +16,8 @@ internal class S3_
 internal class S3_InBlock
 {
 	/// <summary>단축코드</summary>
-	public string shcode { get; set; } = string.Empty;
-
+	[JsonPropertyName("shcode")]
+	public string Shcode { get; set; } = string.Empty;
 }
 
 /// <summary>
@@ -23,85 +26,112 @@ internal class S3_InBlock
 internal class S3_OutBlock
 {
 	/// <summary>체결시간</summary>
-	public string chetime { get; set; } = string.Empty;
+	[JsonPropertyName("chetime")]
+	public string Chetime { get; set; } = string.Empty;
 
 	/// <summary>전일대비구분</summary>
-	public string sign { get; set; } = string.Empty;
+	[JsonPropertyName("sign")]
+	public string Sign { get; set; } = string.Empty;
 
 	/// <summary>전일대비</summary>
-	public string change { get; set; } = string.Empty;
+	[JsonPropertyName("change")]
+	public string Change { get; set; } = string.Empty;
 
 	/// <summary>등락율</summary>
-	public string drate { get; set; } = string.Empty;
+	[JsonPropertyName("drate")]
+	public string Drate { get; set; } = string.Empty;
 
 	/// <summary>현재가</summary>
-	public string price { get; set; } = string.Empty;
+	[JsonPropertyName("price")]
+	public string Price { get; set; } = string.Empty;
 
 	/// <summary>시가시간</summary>
-	public string opentime { get; set; } = string.Empty;
+	[JsonPropertyName("opentime")]
+	public string Opentime { get; set; } = string.Empty;
 
 	/// <summary>시가</summary>
-	public string open { get; set; } = string.Empty;
+	[JsonPropertyName("open")]
+	public string Open { get; set; } = string.Empty;
 
 	/// <summary>고가시간</summary>
-	public string hightime { get; set; } = string.Empty;
+	[JsonPropertyName("hightime")]
+	public string Hightime { get; set; } = string.Empty;
 
 	/// <summary>고가</summary>
-	public string high { get; set; } = string.Empty;
+	[JsonPropertyName("high")]
+	public string High { get; set; } = string.Empty;
 
 	/// <summary>저가시간</summary>
-	public string lowtime { get; set; } = string.Empty;
+	[JsonPropertyName("lowtime")]
+	public string Lowtime { get; set; } = string.Empty;
 
 	/// <summary>저가</summary>
-	public string low { get; set; } = string.Empty;
+	[JsonPropertyName("low")]
+	public string Low { get; set; } = string.Empty;
 
 	/// <summary>체결구분</summary>
-	public string cgubun { get; set; } = string.Empty;
+	[JsonPropertyName("cgubun")]
+	public string Cgubun { get; set; } = string.Empty;
 
 	/// <summary>체결량</summary>
-	public string cvolume { get; set; } = string.Empty;
+	[JsonPropertyName("cvolume")]
+	public string Cvolume { get; set; } = string.Empty;
 
 	/// <summary>누적거래량</summary>
-	public string volume { get; set; } = string.Empty;
+	[JsonPropertyName("volume")]
+	public string Volume { get; set; } = string.Empty;
 
 	/// <summary>누적거래대금</summary>
-	public string value { get; set; } = string.Empty;
+	[JsonPropertyName("value")]
+	public string Value { get; set; } = string.Empty;
 
 	/// <summary>매도누적체결량</summary>
-	public string mdvolume { get; set; } = string.Empty;
+	[JsonPropertyName("mdvolume")]
+	public string Mdvolume { get; set; } = string.Empty;
 
 	/// <summary>매도누적체결건수</summary>
-	public string mdchecnt { get; set; } = string.Empty;
+	[JsonPropertyName("mdchecnt")]
+	public string Mdchecnt { get; set; } = string.Empty;
 
 	/// <summary>매수누적체결량</summary>
-	public string msvolume { get; set; } = string.Empty;
+	[JsonPropertyName("msvolume")]
+	public string Msvolume { get; set; } = string.Empty;
 
 	/// <summary>매수누적체결건수</summary>
-	public string mschecnt { get; set; } = string.Empty;
+	[JsonPropertyName("mschecnt")]
+	public string Mschecnt { get; set; } = string.Empty;
 
 	/// <summary>체결강도</summary>
-	public string cpower { get; set; } = string.Empty;
+	[JsonPropertyName("cpower")]
+	public string Cpower { get; set; } = string.Empty;
 
 	/// <summary>가중평균가</summary>
-	public string w_avrg { get; set; } = string.Empty;
+	[JsonPropertyName("w_avrg")]
+	public string WAvrg { get; set; } = string.Empty;
 
 	/// <summary>매도호가</summary>
-	public string offerho { get; set; }	= string.Empty;
+	[JsonPropertyName("offerho")]
+	public string Offerho { get; set; } = string.Empty;
 
 	/// <summary>매수호가</summary>
-	public string bidho { get; set; } = string.Empty;
+	[JsonPropertyName("bidho")]
+	public string Bidho { get; set; } = string.Empty;
 
 	/// <summary>장정보</summary>
-	public string status { get; set; } = string.Empty;
+	[JsonPropertyName("status")]
+	public string Status { get; set; } = string.Empty;
 
 	/// <summary>전일동시간대거래량</summary>
-	public string jnilvolume { get; set; } = string.Empty;
+	[JsonPropertyName("jnilvolume")]
+	public string Jnilvolume { get; set; } = string.Empty;
 
 	/// <summary>단축코드</summary>
-	public string shcode { get; set; } = string.Empty;
+	[JsonPropertyName("shcode")]
+	public string Shcode { get; set; } = string.Empty;
 
 	/// <summary>거래소명</summary>
-	public string exchname { get; set; } = string.Empty;
+	[JsonPropertyName("exchname")]
+	public string Exchname { get; set; } = string.Empty;
 }
 
 /// <summary>
@@ -121,3 +151,61 @@ internal class K3_InBlock : S3_InBlock { }
 /// KOSDAQ체결(K3) - OutBlock
 /// </summary>
 internal class K3_OutBlock : S3_OutBlock { }
+
+/// <summary>
+/// NXT KOSPI + KOSDAQ 체결(NS3)
+/// </summary>
+internal class NS3
+{
+	//public NS3InBlock NS3InBlock { get; set; } = new();
+	public NS3OutBlock NS3OutBlock { get; set; } = new();
+}
+
+/// <summary>
+/// NXT KOSPI + KOSDAQ 체결(NS3) - InBlock
+/// </summary>
+internal class NS3InBlock
+{
+	/// <summary>거래소별단축코드</summary>
+	[JsonPropertyName("ex_shcode")]
+	public string ExShcode { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// NXT KOSPI + KOSDAQ 체결(NS3) - OutBlock
+/// </summary>
+internal class NS3OutBlock : S3_OutBlock
+{
+	/// <summary>거래소별단축코드</summary>
+	[JsonPropertyName("ex_shcode")]
+	public string ExShcode { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// KRX+NXT 통합 체결(US3)
+/// </summary>
+internal class US3
+{
+	//public US3InBlock US3InBlock { get; set; } = new();
+	public US3OutBlock US3OutBlock { get; set; } = new();
+}
+
+/// <summary>
+/// KRX+NXT 통합 체결(US3) - InBlock
+/// </summary>
+internal class US3InBlock
+{
+	/// <summary>거래소별단축코드</summary>
+	[JsonPropertyName("ex_shcode")]
+	public string ExShcode { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// KRX+NXT 통합 체결(US3) - OutBlock
+/// </summary>
+internal class US3OutBlock : S3_OutBlock
+{
+	/// <summary>거래소별단축코드</summary>
+	[JsonPropertyName("ex_shcode")]
+	public string ExShcode { get; set; } = string.Empty;
+}
