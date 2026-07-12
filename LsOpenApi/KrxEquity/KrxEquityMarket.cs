@@ -718,43 +718,43 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 	private async Task<ResponseResult<QuotePack<T>>> RequestPricePackTick<T>(QuoteRequest request) where T : Quote
 	{
-		var response = await RequestStandardAsync<t8411>(LsEndpoint.EquityChart.ToDescription(), new
+		var response = await RequestStandardAsync<T8411>(LsEndpoint.EquityChart.ToDescription(), new
 		{
-			t8411InBlock = new t841XInBlock
+			t8411InBlock = new T841XInBlock
 			{
-				shcode = request.Symbol,
-				ncnt = request.TimeInterval,
-				qrycnt = 500,
-				sdate = request.DateTimeBegin.ToString("yyyyMMdd"),
-				edate = request.DateTimeEnd.ToString("yyyyMMdd"),
+				Shcode = request.Symbol,
+				Ncnt = request.TimeInterval,
+				QryCnt = 500,
+				Sdate = request.DateTimeBegin.ToString("yyyyMMdd"),
+				Edate = request.DateTimeEnd.ToString("yyyyMMdd"),
 			}
 		});
 
-		if (typeof(T) != typeof(Quote)) return ReturnErrorResult<QuotePack<T>>(nameof(t8411), "Invalid type parameter for RequestPricePackTick", remark: "type mismatch");
+		if (typeof(T) != typeof(Quote)) return ReturnErrorResult<QuotePack<T>>(nameof(T8411), "Invalid type parameter for RequestPricePackTick", remark: "type mismatch");
 
-		if (response.t8411OutBlock1.Count == 0) return ReturnResult<QuotePack<T>>(new() { PrimaryList = [] }, nameof(T8410), response.Message);
+		if (response.T8411OutBlock1.Count == 0) return ReturnResult<QuotePack<T>>(new() { PrimaryList = [] }, nameof(T8410), response.Message);
 
 		var priceInfo = new QuoteRate
 		{
 			T = DateTime.UtcNow.AddHours(9),
-			BasePrice = response.t8411OutBlock.jiclose,
-			C = response.t8411OutBlock.diclose,
-			O = response.t8411OutBlock.disiga,
-			H = response.t8411OutBlock.dihigh,
-			L = response.t8411OutBlock.dilow,
-			HighLimit = response.t8411OutBlock.highend,
-			LowLimit = response.t8411OutBlock.lowend,
+			BasePrice = response.T8411OutBlock.Jiclose,
+			C = response.T8411OutBlock.Diclose,
+			O = response.T8411OutBlock.Disiga,
+			H = response.T8411OutBlock.Dihigh,
+			L = response.T8411OutBlock.Dilow,
+			HighLimit = response.T8411OutBlock.Highend,
+			LowLimit = response.T8411OutBlock.Lowend,
 		};
 
 		var prices = new List<Quote>();
-		response.t8411OutBlock1.ForEach(price => prices.Add(new Quote
+		response.T8411OutBlock1.ForEach(price => prices.Add(new Quote
 		{
-			T = (price.date + price.time).ToDateTime(),
-			O = Convert.ToDecimal(price.open),
-			C = Convert.ToDecimal(price.close),
-			H = Convert.ToDecimal(price.high),
-			L = Convert.ToDecimal(price.low),
-			V = Convert.ToDecimal(price.jdiff_vol),
+			T = (price.Date + price.Time).ToDateTime(),
+			O = Convert.ToDecimal(price.Open),
+			C = Convert.ToDecimal(price.Close),
+			H = Convert.ToDecimal(price.High),
+			L = Convert.ToDecimal(price.Low),
+			V = Convert.ToDecimal(price.JdiffVol),
 			BasePrice = priceInfo.BasePrice,
 		}));
 
@@ -776,41 +776,41 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 	private async Task<ResponseResult<QuotePack<T>>> RequestPricePackMinute<T>(QuoteRequest request) where T : Quote
 	{
-		var response = await RequestStandardAsync<t8412>(LsEndpoint.EquityChart.ToDescription(), new
+		var response = await RequestStandardAsync<T8412>(LsEndpoint.EquityChart.ToDescription(), new
 		{
-			t8412InBlock = new t841XInBlock
+			T8412InBlock = new T841XInBlock
 			{
-				shcode = request.Symbol,
-				ncnt = request.TimeInterval,
-				qrycnt = 500,
-				sdate = request.DateTimeBegin.ToString("yyyyMMdd"),
-				edate = request.DateTimeEnd.ToString("yyyyMMdd"),
+				Shcode = request.Symbol,
+				Ncnt = request.TimeInterval,
+				QryCnt = 500,
+				Sdate = request.DateTimeBegin.ToString("yyyyMMdd"),
+				Edate = request.DateTimeEnd.ToString("yyyyMMdd"),
 			}
 		});
 
-		if (response.t8412OutBlock1.Count == 0) return ReturnResult<QuotePack<T>>(new() { PrimaryList = [] }, nameof(t8412), response.Message);
+		if (response.T8412OutBlock1.Count == 0) return ReturnResult<QuotePack<T>>(new() { PrimaryList = [] }, nameof(T8412), response.Message);
 
 		var priceInfo = new QuoteRate
 		{
 			T = DateTime.UtcNow.AddHours(9),
-			BasePrice = response.t8412OutBlock.jiclose,
-			C = response.t8412OutBlock.diclose,
-			O = response.t8412OutBlock.disiga,
-			H = response.t8412OutBlock.dihigh,
-			L = response.t8412OutBlock.dilow,
-			HighLimit = response.t8412OutBlock.highend,
-			LowLimit = response.t8412OutBlock.lowend,
+			BasePrice = response.T8412OutBlock.Jiclose,
+			C = response.T8412OutBlock.Diclose,
+			O = response.T8412OutBlock.Disiga,
+			H = response.T8412OutBlock.Dihigh,
+			L = response.T8412OutBlock.Dilow,
+			HighLimit = response.T8412OutBlock.Highend,
+			LowLimit = response.T8412OutBlock.Lowend,
 		};
 
 		var prices = new List<Quote>();
-		response.t8412OutBlock1.ForEach(price => prices.Add(new Quote
+		response.T8412OutBlock1.ForEach(price => prices.Add(new Quote
 		{
-			T = (price.date + price.time).ToDateTime(),
-			O = Convert.ToDecimal(price.open),
-			C = Convert.ToDecimal(price.close),
-			H = Convert.ToDecimal(price.high),
-			L = Convert.ToDecimal(price.low),
-			V = Convert.ToDecimal(price.jdiff_vol),
+			T = (price.Date + price.Time).ToDateTime(),
+			O = Convert.ToDecimal(price.Open),
+			C = Convert.ToDecimal(price.Close),
+			H = Convert.ToDecimal(price.High),
+			L = Convert.ToDecimal(price.Low),
+			V = Convert.ToDecimal(price.JdiffVol),
 			BasePrice = priceInfo.BasePrice,
 		}));
 

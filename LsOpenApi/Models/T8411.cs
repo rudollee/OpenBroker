@@ -1,146 +1,189 @@
-﻿namespace LsOpenApi.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace LsOpenApi.Models;
 /// <summary>
 /// 주식챠트(틱/n틱)(t8411)
 /// </summary>
-internal class t8411 : LsResponseCore
+internal class T8411 : LsResponseCore
 {
-	public t841XInBlock t8411InBlock { get; set; } = new();
-	public t841XOutBlock t8411OutBlock { get; set; } = new();
-	public List<t8411OutBlock1> t8411OutBlock1 { get; set; } = new();
+	[JsonPropertyName("t8411InBlock")]
+	public T841XInBlock T8411InBlock { get; set; } = new();
+	[JsonPropertyName("t8411OutBlock")]
+	public T841XOutBlock T8411OutBlock { get; set; } = new();
+	[JsonPropertyName("t8411OutBlock1")]
+	public List<T8411OutBlock1> T8411OutBlock1 { get; set; } = [];
 }
 
 /// <summary>
 /// 주식챠트(틱 / 분)(t8411 or t8412) - InBlock
 /// </summary>
-internal class t841XInBlock
+internal class T841XInBlock
 {
 	/// <summary>단축코드</summary>
-	public string shcode { get; set; } = string.Empty;
+	[JsonPropertyName("shcode")]
+	public string Shcode { get; set; } = string.Empty;
 
 	/// <summary>단위(n틱)</summary>
-	public long ncnt { get; set; }
+	[JsonPropertyName("ncnt")]
+	public long Ncnt { get; set; }
 
 	/// <summary>요청건수(최대-압축:2000비압축:500)</summary>
-	public long qrycnt { get; set; } = 500;
+	[JsonPropertyName("qrycnt")]
+	public long QryCnt { get; set; } = 500;
 
 	/// <summary>조회영업일수(0:미사용1>=사용)</summary>
-	public string nday { get; set; } = "0";
+	[JsonPropertyName("nday")]
+	public string Nday { get; set; } = "0";
 
 	/// <summary>시작일자</summary>
-	public string sdate { get; set; } = string.Empty;
+	[JsonPropertyName("sdate")]
+	public string Sdate { get; set; } = string.Empty;
 
 	/// <summary>시작시간(현재미사용)</summary>
-	public string stime { get; set; } = " ";
+	[JsonPropertyName("stime")]
+	public string Stime { get; set; } = " ";
 
 	/// <summary>종료일자</summary>
-	public string edate { get; set; } = " ";
+	[JsonPropertyName("edate")]
+	public string Edate { get; set; } = " ";
 
 	/// <summary>종료시간(현재미사용)</summary>
-	public string etime { get; set; } = string.Empty;
+	[JsonPropertyName("etime")]
+	public string Etime { get; set; } = string.Empty;
 
 	/// <summary>연속일자</summary>
-	public string cts_date { get; set; } = " ";
+	[JsonPropertyName("cts_date")]
+	public string CtsDate { get; set; } = " ";
 
 	/// <summary>연속시간</summary>
-	public string cts_time { get; set; } = " ";
+	[JsonPropertyName("cts_time")]
+	public string CtsTime { get; set; } = " ";
 
 	/// <summary>압축여부(Y:압축N:비압축)</summary>
-	public string comp_yn { get; set; } = "N";
-
+	[JsonPropertyName("comp_yn")]
+	public string CompYn { get; set; } = "N";
 }
 
 /// <summary>
 /// 주식챠트(틱 / 분)(t8411 or t8412) - OutBlock
 /// </summary>
-internal class t841XOutBlock
+internal class T841XOutBlock
 {
 	/// <summary>단축코드</summary>
-	public string shcode { get; set; } = string.Empty;
+	[JsonPropertyName("shcode")]
+	public string Shcode { get; set; } = string.Empty;
 
 	/// <summary>전일시가</summary>
-	public long jisiga { get; set; }
+	[JsonPropertyName("jisiga")]
+	public long Jisiga { get; set; }
 
 	/// <summary>전일고가</summary>
-	public long jihigh { get; set; }
+	[JsonPropertyName("jihigh")]
+	public long Jihigh { get; set; }
 
 	/// <summary>전일저가</summary>
-	public long jilow { get; set; }
+	[JsonPropertyName("jilow")]
+	public long Jilow { get; set; }
 
 	/// <summary>전일종가</summary>
-	public long jiclose { get; set; }
+	[JsonPropertyName("jiclose")]
+	public long Jiclose { get; set; }
 
 	/// <summary>전일거래량</summary>
-	public long jivolume { get; set; }
+	[JsonPropertyName("jivolume")]
+	public long Jivolume { get; set; }
 
 	/// <summary>당일시가</summary>
-	public long disiga { get; set; }
+	[JsonPropertyName("disiga")]
+	public long Disiga { get; set; }
 
 	/// <summary>당일고가</summary>
-	public long dihigh { get; set; }
+	[JsonPropertyName("dihigh")]
+	public long Dihigh { get; set; }
 
 	/// <summary>당일저가</summary>
-	public long dilow { get; set; }
+	[JsonPropertyName("dilow")]
+	public long Dilow { get; set; }
 
 	/// <summary>당일종가</summary>
-	public long diclose { get; set; }
+	[JsonPropertyName("diclose")]
+	public long Diclose { get; set; }
 
 	/// <summary>상한가</summary>
-	public long highend { get; set; }
+	[JsonPropertyName("highend")]
+	public long Highend { get; set; }
 
 	/// <summary>하한가</summary>
-	public long lowend { get; set; }
+	[JsonPropertyName("lowend")]
+	public long Lowend { get; set; }
 
 	/// <summary>연속일자</summary>
-	public string cts_date { get; set; } = string.Empty;
+	[JsonPropertyName("cts_date")]
+	public string CtsDate { get; set; } = string.Empty;
 
 	/// <summary>연속시간</summary>
-	public string cts_time { get; set; } = string.Empty;
+	[JsonPropertyName("cts_time")]
+	public string CtsTime { get; set; } = string.Empty;
 
 	/// <summary>장시작시간(HHMMSS)</summary>
-	public string s_time { get; set; } = string.Empty;
+	[JsonPropertyName("s_time")]
+	public string STime { get; set; } = string.Empty;
 
 	/// <summary>장종료시간(HHMMSS)</summary>
-	public string e_time { get; set; } = string.Empty;
+	[JsonPropertyName("e_time")]
+	public string ETime { get; set; } = string.Empty;
 
 	/// <summary>동시호가처리시간(MM:분)</summary>
-	public string dshmin { get; set; } = string.Empty;
+	[JsonPropertyName("dshmin")]
+	public string Dshmin { get; set; } = string.Empty;
 
 	/// <summary>레코드카운트</summary>
-	public long rec_count { get; set; }
+	[JsonPropertyName("rec_count")]
+	public long RecCount { get; set; }
 }
 
 /// <summary>
 /// 주식챠트(틱/n틱)(t8411) - OutBlock1
 /// </summary>
-internal class t8411OutBlock1
+internal class T8411OutBlock1
 {
 	/// <summary>날짜</summary>
-	public string date { get; set; } = string.Empty;
+	[JsonPropertyName("date")]
+	public string Date { get; set; } = string.Empty;
 
 	/// <summary>시간</summary>
-	public string time { get; set; } = string.Empty;
+	[JsonPropertyName("time")]
+	public string Time { get; set; } = string.Empty;
 
 	/// <summary>시가</summary>
-	public long open { get; set; }
+	[JsonPropertyName("open")]
+	public long Open { get; set; }
 
 	/// <summary>고가</summary>
-	public long high { get; set; }
+	[JsonPropertyName("high")]
+	public long High { get; set; }
 
 	/// <summary>저가</summary>
-	public long low { get; set; }
+	[JsonPropertyName("low")]
+	public long Low { get; set; }
 
 	/// <summary>종가</summary>
-	public long close { get; set; }
+	[JsonPropertyName("close")]
+	public long Close { get; set; }
 
 	/// <summary>거래량</summary>
-	public long jdiff_vol { get; set; }
+	[JsonPropertyName("jdiff_vol")]
+	public long JdiffVol { get; set; }
 
 	/// <summary>수정구분</summary>
-	public long jongchk { get; set; }
+	[JsonPropertyName("jongchk")]
+	public long Jongchk { get; set; }
 
 	/// <summary>수정비율</summary>
-	public decimal rate { get; set; }
+	[JsonPropertyName("rate")]
+	public decimal Rate { get; set; }
 
 	/// <summary>수정주가반영항목</summary>
-	public long pricechk { get; set; }
+	[JsonPropertyName("pricechk")]
+	public long Pricechk { get; set; }
 }

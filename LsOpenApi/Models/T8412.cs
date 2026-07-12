@@ -1,49 +1,65 @@
-﻿namespace LsOpenApi.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace LsOpenApi.Models;
 /// <summary>
 /// 주식챠트(N분)(t8412)
 /// </summary>
-internal class t8412 : LsResponseCore
+internal class T8412 : LsResponseCore
 {
-	public t841XInBlock t8412InBlock { get; set; } = new();
-	public t841XOutBlock t8412OutBlock { get; set; } = new();
-	public List<t8412OutBlock1> t8412OutBlock1 { get; set; } = new();
+	[JsonPropertyName("t8412InBlock")]
+	public T841XInBlock T8412InBlock { get; set; } = new();
+	[JsonPropertyName("t8412OutBlock")]
+	public T841XOutBlock T8412OutBlock { get; set; } = new();
+	[JsonPropertyName("t8412OutBlock1")]
+	public List<T8412OutBlock1> T8412OutBlock1 { get; set; } = [];
 }
 
 /// <summary>
 /// 주식챠트(N분)(t8412) - OutBlock1
 /// </summary>
-internal class t8412OutBlock1
+internal class T8412OutBlock1
 {
 	/// <summary>날짜</summary>
-	public string date { get; set; } = string.Empty;
+	[JsonPropertyName("date")]
+	public string Date { get; set; } = string.Empty;
 
 	/// <summary>시간</summary>
-	public string time { get; set; } = string.Empty;
+	[JsonPropertyName("time")]
+	public string Time { get; set; } = string.Empty;
 
 	/// <summary>시가</summary>
-	public long open { get; set; }
+	[JsonPropertyName("open")]
+	public long Open { get; set; }
 
 	/// <summary>고가</summary>
-	public long high { get; set; }
+	[JsonPropertyName("high")]
+	public long High { get; set; }
 
 	/// <summary>저가</summary>
-	public long low { get; set; }
+	[JsonPropertyName("low")]
+	public long Low { get; set; }
 
 	/// <summary>종가</summary>
-	public long close { get; set; }
+	[JsonPropertyName("close")]
+	public long Close { get; set; }
 
 	/// <summary>거래량</summary>
-	public long jdiff_vol { get; set; }
+	[JsonPropertyName("jdiff_vol")]
+	public long JdiffVol { get; set; }
 
 	/// <summary>거래대금</summary>
-	public long value { get; set; }
+	[JsonPropertyName("value")]
+	public long Value { get; set; }
 
 	/// <summary>수정구분</summary>
-	public long jongchk { get; set; }
+	[JsonPropertyName("jongchk")]
+	public long Jongchk { get; set; }
 
 	/// <summary>수정비율</summary>
-	public decimal rate { get; set; }
+	[JsonPropertyName("rate")]
+	public decimal Rate { get; set; }
 
 	/// <summary>종가등락구분(1:상한2:상승3:보합4:하한5:하락)</summary>
-	public string sign { get; set; } = string.Empty;
+	[JsonPropertyName("sign")]
+	public string Sign { get; set; } = string.Empty;
 }
