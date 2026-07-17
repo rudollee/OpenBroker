@@ -778,7 +778,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	{
 		var response = await RequestStandardAsync<T8412>(LsEndpoint.EquityChart.ToDescription(), new
 		{
-			T8412InBlock = new T841XInBlock
+			t8412InBlock = new T841XInBlock
 			{
 				Shcode = request.Symbol,
 				Ncnt = request.TimeInterval,
