@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Diagnostics.CodeAnalysis;
-using LsOpenApi.Models;
+﻿using LsOpenApi.Models;
 using OpenBroker;
 using OpenBroker.Extensions;
 using OpenBroker.Models;
@@ -221,20 +218,21 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		{
 			return ReturnErrorResults<MarketExecution>("ERR-CATch", ex.Message, MessageSeverity.Critical);
 		}
-	} 
+	}
 	#endregion
 
+	#region market execution history - t2212
 	public async Task<ResponseResults<MarketExecution>> RequestMarketExecutionHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0)
 	{
 		try
 		{
-			var response = await RequestStandardAsync<T2212>(LsEndpoint.EquityMarketData.ToDescription(), new
+			var response = await RequestStandardAsync<T2212>(LsEndpoint.FuturesMarketData.ToDescription(), new
 			{
-				t2212InBlock = new T2212InBlock	
+				t2212InBlock = new T2212InBlock
 				{
 					Focode = symbol,
-					SartTime = begin,
-					EendTime = end,
+					StartTime = begin,
+					EndTime = end,
 					Cvolume = Convert.ToInt64(baseVolume)
 				}
 			});
@@ -266,7 +264,8 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		{
 			return ReturnErrorResults<MarketExecution>(nameof(T2212), ex.Message, MessageSeverity.Critical);
 		}
-	}
+	} 
+	#endregion
 
 	#region request orderbook - t2112(t8457)/t8403
 	public async Task<ResponseResult<OrderBook>> RequestOrderbook(string symbol)

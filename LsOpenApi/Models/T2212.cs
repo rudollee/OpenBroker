@@ -29,11 +29,11 @@ internal class T2212InBlock
 
 	/// <summary>시작시간</summary>
 	[JsonPropertyName("stime")]
-	public string SartTime { get; set; } = string.Empty;
+	public string StartTime { get; set; } = string.Empty;
 
 	/// <summary>종료시간</summary>
 	[JsonPropertyName("etime")]
-	public string EendTime { get; set; } = string.Empty;
+	public string EndTime { get; set; } = string.Empty;
 
 	/// <summary>시간CTS</summary>
 	[JsonPropertyName("cts_time")]
