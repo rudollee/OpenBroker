@@ -199,4 +199,19 @@ public static class KrxExtension
 		"78" => 10_0000,
 		_ => 10
 	};
+
+	/// <summary>
+	/// Returns the scale of the instrument based on its symbol.
+	/// </summary>
+	/// <param name="symbol"></param>
+	/// <returns></returns>
+	public static int ToKrxScale(this string symbol) => symbol.ToKrxInstrumentCode() switch
+	{
+		"01" => 2,
+		"05" => 2,
+		"09" => 2,
+		"75" => 2,
+		"AF" => 2,
+		_ => 0
+	};
 }
