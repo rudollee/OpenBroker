@@ -92,7 +92,8 @@ public enum ExecutionSide
 {
     ASK = 1,
     NONE = 0,
-    BID = -1
+    BID = -1,
+	Bid = 2
 }
 
 /// <summary>

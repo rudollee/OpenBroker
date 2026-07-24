@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Design;
+using System.Diagnostics.CodeAnalysis;
 using LsOpenApi.Models;
 using OpenBroker;
 using OpenBroker.Extensions;
@@ -222,7 +224,49 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	} 
 	#endregion
 
-	public Task<ResponseResults<MarketExecution>> RequestMarketExecutionHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
+	public async Task<ResponseResults<MarketExecution>> RequestMarketExecutionHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0)
+	{
+		try
+		{
+			var response = await RequestStandardAsync<T2212>(LsEndpoint.EquityMarketData.ToDescription(), new
+			{
+				t2212InBlock = new T2212InBlock	
+				{
+					Focode = symbol,
+					SartTime = begin,
+					EendTime = end,
+					Cvolume = Convert.ToInt64(baseVolume)
+				}
+			});
+
+			if (response.T2212OutBlock1.Count == 0) return ReturnResults<MarketExecution>([], nameof(T2212), response.Message);
+
+			var marketExecutions = new List<MarketExecution>();
+			response.T2212OutBlock1.ForEach(execution => marketExecutions.Add(new MarketExecution
+			{
+				TimeExecuted = execution.Chetime.ToDateTime(),
+				C = execution.Price,
+				BasePrice = execution.Price + execution.Change * (Convert.ToInt32(execution.Sign) > 3 ? 1 : -1),
+				VolumeExecuted = execution.Cvolume,
+				QuoteDaily = new Quote
+				{
+					V = execution.Volume,
+				},
+				ExecutionSide = execution.Price switch
+				{
+					var price when price == execution.Bidho => ExecutionSide.Bid,
+					var price when price == execution.Offerho => ExecutionSide.ASK,
+					_ => ExecutionSide.NONE,
+				}
+			}));
+
+			return ReturnResults(marketExecutions, nameof(T2212));
+		}
+		catch (Exception ex)
+		{
+			return ReturnErrorResults<MarketExecution>(nameof(T2212), ex.Message, MessageSeverity.Critical);
+		}
+	}
 
 	#region request orderbook - t2112(t8457)/t8403
 	public async Task<ResponseResult<OrderBook>> RequestOrderbook(string symbol)
