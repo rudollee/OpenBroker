@@ -239,11 +239,12 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 
 			if (response.T2212OutBlock1.Count == 0) return ReturnResults<MarketExecution>([], nameof(T2212), response.Message);
 
+			var scale = symbol.ToKrxScale();
 			var marketExecutions = new List<MarketExecution>();
 			response.T2212OutBlock1.ForEach(execution => marketExecutions.Add(new MarketExecution
 			{
 				TimeExecuted = execution.Chetime.ToDateTime(),
-				C = execution.Price,
+				C = execution.Price.ScaleTo(scale),
 				BasePrice = execution.Price + execution.Change * (Convert.ToInt32(execution.Sign) > 3 ? 1 : -1),
 				VolumeExecuted = execution.Cvolume,
 				QuoteDaily = new Quote
