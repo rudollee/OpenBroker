@@ -8,9 +8,9 @@ using RestSharp;
 namespace KisOpenApi;
 public partial class KisGlobalFutures : ConnectionBase, IExecution
 {
-	public required EventHandler<ResponseResult<Execution>> Executed { get; set; }
-	public required EventHandler<ResponseResult<Execution>> OrderReceived { get; set; }
-	public EventHandler<ResponseResult<Balance>>? BalanceAggregated { get; set; }
+	public event EventHandler<ResponseResult<Execution>>? Executed;
+	public event EventHandler<ResponseResult<Execution>>? OrderReceived;
+	public event EventHandler<ResponseResult<Balance>>? BalanceAggregated;
 
 	#region 해외선물 주문가능조회 - OTFM3304R
 	public async Task<ResponseCore> RequestOrderableAsync(Order order)

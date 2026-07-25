@@ -21,11 +21,11 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
         }
     }
 
-	public EventHandler<ResponseResult<MarketExecution>>? MarketExecuted { get; set; }
-	public EventHandler<ResponseResult<OrderBook>>? OrderBookTaken { get; set; }
+	public event EventHandler<ResponseResult<MarketExecution>>? MarketExecuted;
+	public event EventHandler<ResponseResult<OrderBook>>? OrderBookTaken;
 
-	public EventHandler<ResponseResult<News>>? NewsPosted { get; set; }
-	public EventHandler<ResponseResult<MarketPause>>? MarketPaused { get; set; }
+	public event EventHandler<ResponseResult<News>>? NewsPosted;
+	public event EventHandler<ResponseResult<MarketPause>>? MarketPaused;
 
 	public Dictionary<string, Equity> Equities { get; set; } = [];
 

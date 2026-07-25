@@ -9,10 +9,10 @@ public partial class KisKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 {
 	public Dictionary<string, Instrument> Instruments { get; set; } = new();
 
-	public required EventHandler<ResponseResult<MarketExecution>>? MarketExecuted { get; set; }
-	public required EventHandler<ResponseResult<OrderBook>>? OrderBookTaken { get; set; }
-	public EventHandler<ResponseResult<News>>? NewsPosted { get; set; }
-	public EventHandler<ResponseResult<MarketPause>>? MarketPaused { get; set; }
+	public event EventHandler<ResponseResult<MarketExecution>>? MarketExecuted;
+	public event EventHandler<ResponseResult<OrderBook>>? OrderBookTaken;
+	public event EventHandler<ResponseResult<News>>? NewsPosted;
+	public event EventHandler<ResponseResult<MarketPause>>? MarketPaused;
 	public Dictionary<string, Equity> Equities { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
 	public bool AvailableToSubscribe => throw new NotImplementedException();

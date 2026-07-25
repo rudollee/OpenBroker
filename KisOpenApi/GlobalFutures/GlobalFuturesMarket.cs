@@ -12,10 +12,10 @@ public partial class KisGlobalFutures : ConnectionBase, IMarket
 {
 	public Dictionary<string, Instrument> Instruments { get; set; } = new();
 
-	public required EventHandler<ResponseResult<OrderBook>>? OrderBookTaken { get; set; }
-	public EventHandler<ResponseResult<News>>? NewsPosted { get; set; }
-	public required EventHandler<ResponseResult<MarketExecution>>? MarketExecuted { get; set; }
-	public EventHandler<ResponseResult<MarketPause>>? MarketPaused { get; set; }
+	public event EventHandler<ResponseResult<OrderBook>>? OrderBookTaken;
+	public event EventHandler<ResponseResult<News>>? NewsPosted;
+	public event EventHandler<ResponseResult<MarketExecution>>? MarketExecuted;
+	public event EventHandler<ResponseResult<MarketPause>>? MarketPaused;
 
 	public async Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol)
 	{

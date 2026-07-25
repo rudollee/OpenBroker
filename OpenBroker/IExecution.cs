@@ -15,17 +15,17 @@ public interface IExecution
     /// <summary>
     /// 체결 내역
     /// </summary>
-    EventHandler<ResponseResult<Execution>> Executed { get; set; }
+    event EventHandler<ResponseResult<Execution>>? Executed;
 
     /// <summary>
     /// 체결/미체결 내역
     /// </summary>
-    EventHandler<ResponseResult<Execution>> OrderReceived { get; set; }
+    event EventHandler<ResponseResult<Execution>>? OrderReceived;
 
     /// <summary>
     /// 잔고
     /// </summary>
-    EventHandler<ResponseResult<Balance>>? BalanceAggregated { get; set; }
+    event EventHandler<ResponseResult<Balance>>? BalanceAggregated;
 
     /// <summary>
     /// 주문가능금액

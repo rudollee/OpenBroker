@@ -97,7 +97,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 			#endregion
 			#region 실시간 주문 HDFFF1C0
 			case nameof(HDFFF1C0):
-				OrderReceived(this, new ResponseResult<Execution>
+				OrderReceived?.Invoke(this, new ResponseResult<Execution>
 				{
 					Broker = Brkr.KI,
                     Typ = MessageType.ORDER,
@@ -130,7 +130,7 @@ public partial class KisGlobalFutures : ConnectionBase, IConnection
 			#endregion
 			#region 실시간 체결 HDFFF2C0
 			case nameof(HDFFF2C0):
-				Executed(this, new ResponseResult<Execution>
+				Executed?.Invoke(this, new ResponseResult<Execution>
 				{
 					Typ = MessageType.EXECUTION,
 					StatusCode = Status.SUCCESS,

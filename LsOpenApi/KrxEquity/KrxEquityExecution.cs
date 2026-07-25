@@ -8,9 +8,9 @@ using RestSharp;
 namespace LsOpenApi.KrxEquity;
 public partial class LsKrxEquity : ConnectionBase, IExecution, IExecutionKrxEquity
 {
-	public required EventHandler<ResponseResult<Execution>> Executed { get; set; }
-	public required EventHandler<ResponseResult<Execution>> OrderReceived { get; set; }
-	public EventHandler<ResponseResult<Balance>>? BalanceAggregated { get; set; }
+	public event EventHandler<ResponseResult<Execution>>? Executed;
+	public event EventHandler<ResponseResult<Execution>>? OrderReceived;
+	public event EventHandler<ResponseResult<Balance>>? BalanceAggregated;
 
 	#region 주문/정정/취소 - CSPAT00601/CSPAT00701/CSPAT00801
 	public async Task<ResponseCore> PlaceOrderAsync(OrderCore order) =>

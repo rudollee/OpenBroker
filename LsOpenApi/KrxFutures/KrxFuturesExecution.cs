@@ -6,9 +6,9 @@ using OpenBroker.Models;
 namespace LsOpenApi.KrxFutures;
 public partial class LsKrxFutures : ConnectionBase, IExecution
 {
-	public required EventHandler<ResponseResult<Execution>> Executed { get; set; }
-	public required EventHandler<ResponseResult<Execution>> OrderReceived { get; set; }
-	public EventHandler<ResponseResult<Balance>>? BalanceAggregated { get; set; }
+	public event EventHandler<ResponseResult<Execution>>? Executed;
+	public event EventHandler<ResponseResult<Execution>>? OrderReceived;
+	public event EventHandler<ResponseResult<Balance>>? BalanceAggregated;
 
 	public Task<ResponseCore> PlaceOrderAsync(OrderCore order) => throw new NotImplementedException();
 	public Task<ResponseCore> CancelOrderAsync(OrderCore order) => throw new NotImplementedException();

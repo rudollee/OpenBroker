@@ -9,10 +9,10 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	private readonly string _date8txt = "yyyyMMdd";
 	public Dictionary<string, Instrument> Instruments { get; set; } = [];
 
-	public EventHandler<ResponseResult<MarketExecution>>? MarketExecuted { get; set; }
-	public EventHandler<ResponseResult<OrderBook>>? OrderBookTaken { get; set; }
-	public EventHandler<ResponseResult<News>>? NewsPosted { get; set; }
-	public EventHandler<ResponseResult<MarketPause>>? MarketPaused { get; set; }
+	public event EventHandler<ResponseResult<MarketExecution>>? MarketExecuted;
+	public event EventHandler<ResponseResult<OrderBook>>? OrderBookTaken;
+	public event EventHandler<ResponseResult<News>>? NewsPosted;
+	public event EventHandler<ResponseResult<MarketPause>>? MarketPaused;
 
 	public Task<ResponseResult<Instrument>> RequestInstrumentInfo(string symbol) => throw new NotImplementedException();
 

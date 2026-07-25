@@ -15,22 +15,22 @@ public interface IMarket
 	/// <summary>
 	/// Marekt Executed callback
 	/// </summary>
-	EventHandler<ResponseResult<MarketExecution>>? MarketExecuted { get; set; }
+	event EventHandler<ResponseResult<MarketExecution>>? MarketExecuted;
 
 	/// <summary>
 	/// Order Book callback
 	/// </summary>
-	EventHandler<ResponseResult<OrderBook>>? OrderBookTaken { get; set; }
+	event EventHandler<ResponseResult<OrderBook>>? OrderBookTaken;
 
 	/// <summary>
 	/// News callback
 	/// </summary>
-	EventHandler<ResponseResult<News>>? NewsPosted { get; set; }
+	event EventHandler<ResponseResult<News>>? NewsPosted;
 
 	/// <summary>
 	/// Market Paused callback
 	/// </summary>
-	EventHandler<ResponseResult<MarketPause>>? MarketPaused { get; set; }
+	event EventHandler<ResponseResult<MarketPause>>? MarketPaused;
 
 	/// <summary>
 	/// 거래 종목 리스트
