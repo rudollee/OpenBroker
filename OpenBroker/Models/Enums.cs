@@ -151,6 +151,7 @@ public enum Exchange
     CBOT = 12,
     COMEX = 14,
     NYMEX = 15,
+    MGE = 16,
 	ICE = 19,
 	EUREX = 20,
     BMF = 550,
