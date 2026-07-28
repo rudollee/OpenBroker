@@ -603,7 +603,18 @@ public class ConnectionBase
 		{
 			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<JIFOutBlock>>(message);
 			if (response is null || response.Body is null) return false;
-			SendMessage($"{response.Body.jangubun}.{response.Body.jstatus}", $"{CodeRef.MarketSectionDic[response.Body.jangubun]} {CodeRef.MarketStatusDic[response.Body.jstatus]}", MessageType.MKTS);
+
+			var statusDescription = string.Empty;
+			if (response.Body.jangubun == "5")
+			{
+				CodeRef.MarketDerivativesStatusDic.TryGetValue(response.Body.jstatus, out statusDescription);
+			}
+			else
+			{
+				statusDescription = CodeRef.MarketStatusDic[response.Body.jstatus];
+			}
+
+			SendMessage($"{response.Body.jangubun}.{response.Body.jstatus}", $"{CodeRef.MarketSectionDic[response.Body.jangubun]} {statusDescription}", MessageType.MKTS);
 			return true;
 		}
 		catch (Exception ex)
