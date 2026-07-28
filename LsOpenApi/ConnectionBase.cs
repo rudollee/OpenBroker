@@ -608,10 +608,11 @@ public class ConnectionBase
 			if (response.Body.jangubun == "5")
 			{
 				CodeRef.MarketDerivativesStatusDic.TryGetValue(response.Body.jstatus, out statusDescription);
+				if (string.IsNullOrEmpty(statusDescription)) CodeRef.MarketStatusDic.TryGetValue(response.Body.jstatus, out statusDescription);
 			}
 			else
 			{
-				statusDescription = CodeRef.MarketStatusDic[response.Body.jstatus];
+				CodeRef.MarketStatusDic.TryGetValue(response.Body.jstatus, out statusDescription);
 			}
 
 			SendMessage($"{response.Body.jangubun}.{response.Body.jstatus}", $"{CodeRef.MarketSectionDic[response.Body.jangubun]} {statusDescription}", MessageType.MKTS);
