@@ -19,7 +19,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 	{
 		if (message is null || message.MessageType != WebSocketMessageType.Text)
 		{
-			Message(this, new ResponseCore
+			Message?.Invoke(this, new ResponseCore
 			{
 				Broker = Brkr.LS,
 				Code = "BINARY",
@@ -30,7 +30,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 
 		if (message.Text is null)
 		{
-			Message(this, new ResponseCore
+			Message?.Invoke(this, new ResponseCore
 			{
 				Broker = Brkr.LS,
 				Code = "TEXTNULL",
@@ -125,7 +125,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			Message(this, new ResponseCore
+			Message?.Invoke(this, new ResponseCore
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Typ = MessageType.MKTS,
@@ -336,7 +336,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<FX9OutBlock>>(message);
 			if (response is null || response.Body is null) return false;
 
-			Message(this, new()
+			Message?.Invoke(this, new()
 			{
 				Typ = MessageType.MKTS,
 				Code = $"{trCode}:{response.Header.Code}",
@@ -367,7 +367,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			Message(this, new ResponseCore
+			Message?.Invoke(this, new ResponseCore
 			{
 				StatusCode = Status.ERROR_OPEN_API,
 				Typ = MessageType.MKTS,

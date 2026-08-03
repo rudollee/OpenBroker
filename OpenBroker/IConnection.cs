@@ -50,7 +50,7 @@ public interface IConnection
 	/// <summary>
 	/// 일반 메시지 Callback
 	/// </summary>
-	EventHandler<ResponseCore> Message { get; set; }
+	EventHandler<ResponseCore>? Message { get; set; }
 
     /// <summary>
     /// 연결 Callback

@@ -27,7 +27,28 @@ public class ConnectionBase
 	public bool IsConnected { get; private set; } = false;
 	protected void SetConnect(bool connecting = true) => IsConnected = connecting;
 
-	public required EventHandler<ResponseCore> Message { get; set; }
+	private EventHandler<ResponseCore>? _messageHandlers;
+
+	public EventHandler<ResponseCore>? Message
+	{
+		get => _messageHandlers;
+		set 
+		{
+			if (_messageHandlers is null && value is not null)
+			{
+				_messageHandlers = value;
+			}
+			else if (value is null)
+			{
+				_messageHandlers = null;
+			}
+			else if (_messageHandlers != value)
+			{
+				_messageHandlers += value;
+			}
+		}
+	}
+
 
 	public event EventHandler<ResponseCore>? Connected;
 
@@ -507,7 +528,7 @@ public class ConnectionBase
 		var delaying = DelayRequest(typeof(T).Name);
 		if (!delaying)
 		{
-			Message(this, new ResponseCore
+			Message?.Invoke(this, new ResponseCore
 			{
 				StatusCode = Status.INTERNALSERVERERROR,
 				Message = "delaying calculation failed"
@@ -549,7 +570,7 @@ public class ConnectionBase
 		var delaying = DelayRequest(typeof(T).Name, false);
 		if (!delaying)
 		{
-			Message(this, new ResponseCore
+			Message?.Invoke(this, new ResponseCore
 			{
 				StatusCode = Status.INTERNALSERVERERROR,
 				Message = "delaying calculation failed"
@@ -627,7 +648,7 @@ public class ConnectionBase
 	#endregion
 
 	#region simple response callback or return
-	protected void SendMessage(string code, string message, MessageType typ = MessageType.SYS, MessageSeverity severity = MessageSeverity.Medium, string remark = "") => Message(this, new ResponseCore
+	protected void SendMessage(string code, string message, MessageType typ = MessageType.SYS, MessageSeverity severity = MessageSeverity.Medium, string remark = "") => Message?.Invoke(this, new ResponseCore
 	{
 		Broker = Brkr.LS,
 		Typ = typ,
@@ -637,7 +658,7 @@ public class ConnectionBase
 		Remark = remark
 	});
 
-	protected void SendErrorMessage(string code, string message, MessageSeverity severity = MessageSeverity.High, string remark = "") => Message(this, new ResponseCore
+	protected void SendErrorMessage(string code, string message, MessageSeverity severity = MessageSeverity.High, string remark = "") => Message?.Invoke(this, new ResponseCore
 	{
 		StatusCode = Status.ERROR_OPEN_API,
 		Broker = Brkr.LS,

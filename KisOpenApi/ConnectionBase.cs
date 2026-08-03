@@ -27,7 +27,7 @@ public class ConnectionBase
 	public bool IsConnected { get; private set; }
     protected void SetConnect(bool connecting = true) => IsConnected = connecting;
 
-	public required EventHandler<ResponseCore> Message { get; set; }
+	public EventHandler<ResponseCore>? Message { get; set; }
 
 	public event EventHandler<ResponseCore>? Connected;
 
@@ -628,7 +628,7 @@ public class ConnectionBase
 	#endregion
 
 	#region simple response callback or return
-	protected void SendMessage(string code, string message, MessageSeverity severity = MessageSeverity.Medium, MessageType typ = MessageType.SYS, string remark = "") => Message(this, new ResponseCore
+	protected void SendMessage(string code, string message, MessageSeverity severity = MessageSeverity.Medium, MessageType typ = MessageType.SYS, string remark = "") => Message?.Invoke(this, new ResponseCore
 	{
 		Broker = Brkr.KI,
 		Typ = typ,
@@ -638,7 +638,7 @@ public class ConnectionBase
 		Remark = remark
 	});
 
-	protected void SendErrorMessage(string code, string message, MessageSeverity severity = MessageSeverity.High, string remark = "", MessageType typ = MessageType.SYSERR) => Message(this, new ResponseCore
+	protected void SendErrorMessage(string code, string message, MessageSeverity severity = MessageSeverity.High, string remark = "", MessageType typ = MessageType.SYSERR) => Message?.Invoke(this, new ResponseCore
 	{
 		StatusCode = Status.ERROR_OPEN_API,
 		Broker = Brkr.KI,
