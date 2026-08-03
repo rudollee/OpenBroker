@@ -55,7 +55,7 @@ public interface IConnection
     /// <summary>
     /// 연결 Callback
     /// </summary>
-    EventHandler<ResponseCore> Connected { get; set; }
+    event EventHandler<ResponseCore>? Connected;
 
 	/// <summary>
 	/// WebsocketCode 요청

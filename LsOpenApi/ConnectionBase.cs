@@ -29,7 +29,7 @@ public class ConnectionBase
 
 	public required EventHandler<ResponseCore> Message { get; set; }
 
-	public required EventHandler<ResponseCore> Connected { get; set; }
+	public event EventHandler<ResponseCore>? Connected;
 
 	protected IWebsocketClient? Client;
 
@@ -332,13 +332,13 @@ public class ConnectionBase
 		{
 			var response = await DisconnectAsync();
 			response.Code = $"REPEAT-RECONNECTION";
-			Connected(this, response);
+			Connected?.Invoke(this, response);
 			return;
 		}
 
 		Reconnections.Add(DateTime.UtcNow);
 
-		Connected(this, new()
+		Connected?.Invoke(this, new()
 		{
 			Broker = Brkr.LS,
 			Typ = MessageType.CONNECTION,
@@ -361,7 +361,7 @@ public class ConnectionBase
 	{
 		if (info.Type == DisconnectionType.ByServer && Client is not null) await DisconnectAsync();
 
-		Connected(this, new()
+		Connected?.Invoke(this, new()
 		{
 			Broker = Brkr.LS,
 			Typ = MessageType.CONNECTION,
