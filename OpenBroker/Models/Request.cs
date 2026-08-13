@@ -1,5 +1,6 @@
-﻿namespace KisOpenApi.Models;
-internal class Request
+﻿namespace OpenBroker.Models;
+
+public class Request
 {
 	public string TrCode { get; set; } = string.Empty;
 
