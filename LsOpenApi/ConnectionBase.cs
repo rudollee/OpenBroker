@@ -602,8 +602,9 @@ public class ConnectionBase
 		var continueOption = responseRest.Headers?.FirstOrDefault(f => f.Name == "tr_cont");
 		if (continueOption is not null && continueOption.Value == "Y")
 		{
-			response.NextKey = responseRest.Headers?.First(f => f.Name == "tr_cont_key").Value ?? "";
-			response.TrCode = nameof(T);
+			var nextKeyHeader = responseRest.Headers?.FirstOrDefault(f => f.Name == "tr_cont_key");
+			response.NextKey = nextKeyHeader?.Value ?? "";
+			response.TrCode = typeof(T).Name;
 		}
 
 		return response;
