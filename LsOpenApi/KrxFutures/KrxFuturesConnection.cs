@@ -257,7 +257,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 					IdOrigin = idOrigin,
 					EID = Convert.ToInt64(response.Body.Yakseq),
 					Symbol = response.Body.Expcode.Substring(3, 8),
-					Price = Convert.ToDecimal(response.Body.ChePrice),
+					Price = Math.Round(Convert.ToDecimal(response.Body.ChePrice), response.Body.Expcode.ToKrxScale()),
 					QtyExecuted = Convert.ToDecimal(response.Body.CheVol),
 					DateBiz = response.Body.CheDate.ToDate(),
 					IsLong = response.Body.DosuGb == "2",
@@ -290,6 +290,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 				return false;
 			}
 
+			var symbol = response.Body.Isuno.Substring(3, 8);
 			OrderReceived(this, new ResponseResult<Execution>
 			{
 				Typ = MessageType.ORDER,
@@ -300,10 +301,10 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 					TimeOrdered = response.Body.Trxtime.ToDateTimeM(),
 					OID = Convert.ToInt64(response.Body.Ordno),
 					IdOrigin = Convert.ToInt64(response.Body.Orgordno),
-					Symbol = response.Body.Isuno.Substring(3, 8),
+					Symbol = symbol,
 					IsLong = response.Body.Bnstp == "2",
 					QtyOrdered = Convert.ToDecimal(response.Body.Ordqty),
-					PriceOrdered = Convert.ToDecimal(response.Body.Ordprc),
+					PriceOrdered = Math.Round(Convert.ToDecimal(response.Body.Ordprc), symbol.ToKrxScale()),
 					Mode = response.Body.Mrctp switch
 					{
 						"0" => OrderMode.PLACE,
