@@ -143,6 +143,8 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 					continue;
 				}
 
+				if (string.IsNullOrWhiteSpace(execution.FnoIsuNo) || execution.FnoIsuNo.Length < 3) continue;
+
 				executions.Add(new Execution
 				{ 
 					DateBiz = execution.OrdDt.ToDate(),
