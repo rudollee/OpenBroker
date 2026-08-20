@@ -304,6 +304,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 					Symbol = symbol,
 					IsLong = response.Body.Bnstp == "2",
 					QtyOrdered = Convert.ToDecimal(response.Body.Ordqty),
+					QtyLeft = Convert.ToDecimal(response.Body.Unercqty),
 					PriceOrdered = Math.Round(Convert.ToDecimal(response.Body.Ordprc), symbol.ToKrxScale()),
 					Mode = response.Body.Mrctp switch
 					{
