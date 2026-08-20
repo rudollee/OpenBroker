@@ -152,10 +152,13 @@ public static class KrxExtension
 		return c.ToString();
 	}
 
-	public static InstrumentType ToKrxInstrumentTypeCode(this string symbol) =>
-		symbol[..1] switch
+	public static InstrumentType ToKrxInstrumentTypeCode(this string? symbol) 
+	{
+		if (string.IsNullOrWhiteSpace(symbol)) return InstrumentType.Spot;
+
+		return symbol[..1] switch
 		{
-			"A"  => InstrumentType.Futures,
+			"A" => InstrumentType.Futures,
 			"B" => InstrumentType.Call,
 			"C" => InstrumentType.Put,
 			"D" => InstrumentType.FuturesSpread,
@@ -165,6 +168,7 @@ public static class KrxExtension
 			"4" => InstrumentType.FuturesSpread,
 			_ => InstrumentType.Spot,
 		};
+	}
 
 	public static string ToKrxInstrumentTypeCode(this DateOnly date, string instrumentCode = "01", InstrumentType typ = InstrumentType.Futures)
 	{
