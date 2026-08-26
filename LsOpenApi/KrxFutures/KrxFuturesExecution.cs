@@ -59,6 +59,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 					IsLong = f.Medosu.Contains("매수"),
 					QtyOrdered = f.Qty,
 					QtyExecuted = f.Cheqty,
+					QtyLeft = f.Ordrem,
 					QtyUpdatable = f.Ordrem,
 					QtyOrderable = f.Ordrem,
 					QtyCancelable = f.Ordrem,
@@ -74,7 +75,6 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 					TimeOrdered = $"{DateTime.UtcNow.AddHours(9):yyyyMMdd}{f.OrdTime.PadRight(9, '0')}".ToDateTimeM(),
 					Channel = OrderChannel.API,
 					Currency = Currency.KRW,
-
 				});
 			});
 
