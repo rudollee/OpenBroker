@@ -12,7 +12,45 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 
 	public Task<ResponseCore> PlaceOrderAsync(OrderCore order) => throw new NotImplementedException();
 	public Task<ResponseCore> CancelOrderAsync(OrderCore order) => throw new NotImplementedException();
-	public Task<ResponseResult<Balance>> RequestBalancesAsync(DateTime? date = null, Currency currency = Currency.TUS) => throw new NotImplementedException();
+
+	#region request balance - CFOEQ11100
+	public async Task<ResponseResult<Balance>> RequestBalancesAsync(DateTime? date = null, Currency currency = Currency.TUS)
+	{
+		var responsePositions = await RequestPositionsAsync();
+		if (!validStatuses.Contains(responsePositions.StatusCode)) return ReturnErrorResult<Balance>(nameof(T0441), responsePositions.Message);
+
+		try
+		{
+			var x = DateTime.UtcNow.ToMarketTime(MarketZone.Seoul).ToDate8Txt();
+
+			var response = await RequestStandardAsync<CFOEQ11100>(LsEndpoint.FuturesAccount.ToDescription(), new
+			{
+				CFOEQ11100InBlock1 = new CFOEQ11100InBlock1()
+			});
+
+			Balance balance = new()
+			{
+				BID = Brkr.LS,
+				CurBased = Currency.KRW,
+				ProfitLiquidated = response.CFOEQ11100OutBlock2.FutsAdjstDfamt + response.CFOEQ11100OutBlock2.OptBnsplAmt - response.CFOEQ11100OutBlock2.FutsEvalPnlAmt - response.CFOEQ11100OutBlock2.OptEvalPnlAmt,
+				ProfitEst = response.CFOEQ11100OutBlock2.FutsEvalPnlAmt + response.CFOEQ11100OutBlock2.OptEvalPnlAmt,
+				DepositEst = response.CFOEQ11100OutBlock2.EvalDpsamtTotamt,
+				DepositInit = response.CFOEQ11100OutBlock2.OpnmkDpsamtTotamt,
+				CashTradable = response.CFOEQ11100OutBlock2.OrdAbleAmt,
+				MarginInitial = response.CFOEQ11100OutBlock2.CsgnMgn,
+				Margin = response.CFOEQ11100OutBlock2.MaintMgn,
+				CommissionAgg = response.CFOEQ11100OutBlock2.CmsnAmt,
+				Positions = [.. responsePositions.List]
+			};
+
+			return ReturnResult(balance, nameof(CFOEQ11100));
+		}
+		catch (Exception ex)
+		{
+			return ReturnErrorResult<Balance>(nameof(CFOEQ11100), ex.Message, MessageSeverity.Critical);
+		}
+	}
+	#endregion
 
 	#region request executions - T0434 / CFOAQ00600
 	public async Task<ResponseResults<Execution>> RequestExecutionsAsync(ExecutionStatus status = ExecutionStatus.ExecutedOnly, string symbol = "")

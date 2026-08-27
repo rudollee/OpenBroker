@@ -4,7 +4,6 @@ using RestSharp;
 using Websocket.Client;
 using LsOpenApi.Models;
 using OpenBroker.Models;
-using System.Collections.Concurrent;
 
 namespace LsOpenApi;
 public class ConnectionBase
@@ -12,6 +11,7 @@ public class ConnectionBase
 	internal readonly string host = "https://openapi.ls-sec.co.kr:8080";
 	internal readonly string hostSocket = "wss://openapi.ls-sec.co.kr:9443/websocket";
 	internal readonly string grant_type = "client_credentials";
+	protected readonly Status[] validStatuses = [Status.SUCCESS, Status.NODATA];
 
 	public KeyPack KeyInfo { get; private set; } = new();
 	public void SetKeyPack(KeyPack keyInfo) => KeyInfo = keyInfo;
@@ -48,7 +48,6 @@ public class ConnectionBase
 			}
 		}
 	}
-
 
 	public event EventHandler<ResponseCore>? Connected;
 
