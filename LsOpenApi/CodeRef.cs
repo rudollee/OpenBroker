@@ -155,7 +155,7 @@ internal static class CodeRef
 		{ nameof(T2301), 2 },
 		{ nameof(T9945), 2 },
 		{ nameof(T8450), 10 },
-		{ nameof(T0434), 1 },
+		{ nameof(T0434), 2 },
 		{ nameof(CFOAQ00600), 1 },
 		{ nameof(CFOAQ50600), 1 },
 		{ nameof(CFOEQ82600), 1 },
@@ -170,7 +170,7 @@ internal static class CodeRef
 		{ nameof(T8403), 10 },
 		{ nameof(T8457), 10 },
 		{ nameof(T8456), 2 },
-		{ nameof(T0441), 1 },
+		{ nameof(T0441), 2 },
 		{ nameof(T2522), 2 },
 		{ nameof(T2212), 2 }
 	};
