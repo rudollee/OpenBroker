@@ -249,7 +249,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			Executed(this, new ResponseResult<Execution>
 			{
 				Typ = MessageType.EXECUTION,
-				Code = $"{tr}:{response.Header.TrCode}",
+				Code = response.Header.TrCode,
 				Info = new Execution
 				{
 					TimeExecuted = $"{response.Body.CheDate}{response.Body.CheTime}".ToDateTimeM(),
@@ -294,7 +294,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			OrderReceived(this, new ResponseResult<Execution>
 			{
 				Typ = MessageType.ORDER,
-				Code = $"{tr}:{response.Header.TrCode}",
+				Code = response.Header.TrCode,
 				Info = new Execution
 				{
 					DateBiz = DateTime.Now.ToKrxTradingDay(),
@@ -329,6 +329,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 	}
 	#endregion
 
+	#region FX9 callback
 	private bool CallbackMarketLimitStatus(string message, string trCode)
 	{
 		if (MarketPaused is null) return false;
@@ -338,19 +339,20 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<FX9OutBlock>>(message);
 			if (response is null || response.Body is null) return false;
 
+			Instruments.TryGetValue(response.Body.Futcode.Substring(1, 2), out var instrument);
 			Message?.Invoke(this, new()
 			{
 				Typ = MessageType.MKTS,
-				Code = $"{trCode}:{response.Header.Code}",
+				Code = $"{response.Header.Code}:{response.Body.Futcode}",
 				Severity = MessageSeverity.High,
-				Message = $"Market Limit Extended: {response.Body.Futcode}",
+				Message = $"{instrument?.InstrumentName ?? response.Body.Futcode}, Market Limit Extended",
 				Broker = Brkr.LS
 			});
 
 			MarketPaused(this, new ResponseResult<MarketPause>
 			{
 				Typ = MessageType.MKT,
-				Code = $"{trCode}:{response.Header.Code}",
+				Code = response.Header.Code,
 				Info = new()
 				{
 					Symbol = response.Body.Futcode,
@@ -381,5 +383,6 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 
 			return false;
 		}
-	}
+	} 
+	#endregion
 }
