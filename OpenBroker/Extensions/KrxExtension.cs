@@ -90,7 +90,7 @@ public static class KrxExtension
 				_ => 0
 			};
 
-			return 1996 + seq - cycle * 30; ;
+			return 1996 + seq + cycle * 30; ;
 		}
 
 		int month = expiryCode[1..] switch
@@ -101,7 +101,7 @@ public static class KrxExtension
 			_ => int.Parse(expiryCode[1..])
 		};
 
-		return DateOnly.ParseExact($"{getYear(expiryCode[..1])}{month.ToString().PadLeft(2, '0')}01", "yyyyMMdd");
+		return DateOnly.ParseExact($"{getYear(expiryCode[..1])}{month.ToString().PadLeft(2, '0')}01", "yyyyMMdd").ToKrxExpiry();
 	}
 
 	public static string ToKrxExpiryCode(this DateOnly date, bool quarterly = false)
