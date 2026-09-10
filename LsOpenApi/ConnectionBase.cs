@@ -518,7 +518,7 @@ public class ConnectionBase
 		return true;
 	}
 
-	internal async Task<T> RequestStandardAsync<T>(string endpoint, object parameter) where T : LsResponseCore
+	internal async Task<T> RequestStandardAsync<T>(string endpoint, object parameter) where T : LsResponseCore, new()
 	{
 		var client = new RestClient($"{host}/{endpoint}");
 		var request = new RestRequest().AddHeaders(GenerateHeaders(typeof(T).Name));
@@ -533,35 +533,35 @@ public class ConnectionBase
 				Message = "delaying calculation failed"
 			});
 
-			return (T)new LsResponseCore
+			return new T()
 			{
 				Code = "ERR",
 				Message = "delaying calculation failed",
-				TrCode = nameof(T)
+				TrCode = typeof(T).Name
 			};
 		}
 
 		var responseRest = await client.ExecuteAsync(request, Method.Post);
-		if (responseRest is null || !responseRest.IsSuccessful) return (T)new LsResponseCore
+		if (responseRest is null || !responseRest.IsSuccessful) return new T()
 		{
 			Code = $"ERR",
 			Message = responseRest?.ErrorMessage ?? "failed to response",
-			TrCode = nameof(T),
+			TrCode = typeof(T).Name,
 		};
 
 		var response = client.Serializers.DeserializeContent<T>(responseRest);
-		if (response is null) return (T)new LsResponseCore
+		if (response is null) return new T()
 		{
 			Code = "ERR",
 			Message = "failed to deserialize",
-			TrCode= nameof(T)
+			TrCode= typeof(T).Name
 		};
 
 		response.TrCode = nameof(T);
 		return response;
 	}
 	
-	internal async Task<T> RequestContinuousAsync<T>(string endpoint, object parameter, string nextKey) where T : LsResponseCore
+	internal async Task<T> RequestContinuousAsync<T>(string endpoint, object parameter, string nextKey) where T : LsResponseCore, new()
 	{
 		var client = new RestClient($"{host}/{endpoint}");
 		var request = new RestRequest().AddHeaders(GenerateHeaders(typeof(T).Name, nextKey));
@@ -574,28 +574,29 @@ public class ConnectionBase
 				StatusCode = Status.INTERNALSERVERERROR,
 				Message = "delaying calculation failed"
 			});
-			return (T)new LsResponseCore
+
+			return new T()
 			{
 				Code = "ERR",
 				Message = "delaying calculation failed",
-				TrCode = nameof(T)
+				TrCode = typeof(T).Name
 			};
 		}
 
 		var responseRest = await client.ExecuteAsync(request, Method.Post);
-		if (responseRest is null || !responseRest.IsSuccessful) return (T)new LsResponseCore
+		if (responseRest is null || !responseRest.IsSuccessful) return new T()
 		{
 			Code = "ERR",
 			Message = responseRest?.ErrorMessage ?? "failed to response",
-			TrCode = nameof(T),
+			TrCode = typeof(T).Name,
 		};
 
 		var response = client.Serializers.DeserializeContent<T>(responseRest);
-		if (response is null) return (T)new LsResponseCore
+		if (response is null) return new T()
 		{
 			Code = "ERR",
 			Message = "failed to response",
-			TrCode = nameof(T),
+			TrCode = typeof(T).Name,
 		};
 
 		var continueOption = responseRest.Headers?.FirstOrDefault(f => f.Name == "tr_cont");
