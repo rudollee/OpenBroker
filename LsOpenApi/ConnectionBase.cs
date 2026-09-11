@@ -1,9 +1,10 @@
-﻿using System.Net.WebSockets;
-using System.Text.Json;
-using RestSharp;
-using Websocket.Client;
-using LsOpenApi.Models;
+﻿using LsOpenApi.Models;
 using OpenBroker.Models;
+using RestSharp;
+using System.Collections.Concurrent;
+using System.Net.WebSockets;
+using System.Text.Json;
+using Websocket.Client;
 
 namespace LsOpenApi;
 public class ConnectionBase
@@ -53,7 +54,7 @@ public class ConnectionBase
 
 	protected IWebsocketClient? Client;
 
-	private readonly List<Request> Requests = [];
+	public List<Request> Requests { get; protected set; } = [];
 
 	private readonly List<DateTime> Reconnections = [];
 
@@ -482,40 +483,32 @@ public class ConnectionBase
 	#endregion
 
 	#region Request Standard & Continue Option
+	private static readonly ConcurrentDictionary<string, Lock> _trLocks = [];
+
 	internal bool DelayRequest(string trCode, bool needsMessage = true)
 	{
-		var requestsOld = Requests.Where(w => w.TrCode == trCode && w.RequestTime < DateTime.UtcNow.AddSeconds(-1)).ToList();
-		try
-		{
-			foreach (var request in requestsOld)
-			{
-				Requests.Remove(request);
-			}
-		}
-		catch (Exception ex)
-		{
-			SendErrorMessage(trCode, ex.Message, MessageSeverity.Critical);
-			return false;
-		}
+		var trSpecificLock = _trLocks.GetOrAdd(trCode, _ => new Lock());
 
-		var requests = Requests.Where(request => request.TrCode == trCode).OrderByDescending(o => o.RequestTime).ToList();
-		if (requests.Count < CodeRef.RequestIntervals[trCode])
+		lock (trSpecificLock)
 		{
+			var requests = Requests.Where(request => request.TrCode == trCode && request.RequestTime > DateTime.UtcNow.AddSeconds(-1)).OrderByDescending(o => o.RequestTime).ToList();
+			if (requests.Count < CodeRef.RequestIntervals[trCode])
+			{
+				Requests.Add(new Request { TrCode = trCode });
+				return true;
+			}
+
+			var delaying = requests[0].RequestTime.Subtract(DateTime.UtcNow.AddSeconds(-1));
+			if (needsMessage && delaying.TotalMilliseconds > 250)
+			{
+				SendMessage(trCode, $"request forcely delayed {delaying.TotalMilliseconds * 0.001:N3} sec.", severity: MessageSeverity.Low);
+			}
+
+			Thread.Sleep(delaying);
 			Requests.Add(new Request { TrCode = trCode });
+
 			return true;
 		}
-
-		var delaying = requests[0].RequestTime.Subtract(DateTime.UtcNow.AddSeconds(-1));
-
-		if (needsMessage && delaying.TotalMilliseconds > 250)
-		{
-			SendMessage(trCode, $"request forcely delayed {delaying.TotalMilliseconds * 0.001:N3} sec.", severity: MessageSeverity.Low);
-		}
-
-		Thread.Sleep(delaying);
-		Requests.Add(new Request { TrCode = trCode });
-
-		return true;
 	}
 
 	internal async Task<T> RequestStandardAsync<T>(string endpoint, object parameter) where T : LsResponseCore, new()
