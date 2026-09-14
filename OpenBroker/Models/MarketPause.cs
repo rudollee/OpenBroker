@@ -17,4 +17,5 @@ public class MarketPause
 
 	public string Remark { get; set; } = string.Empty;
 
+	public Exchange Exchange { get; set; } = Exchange.KRX;
 }

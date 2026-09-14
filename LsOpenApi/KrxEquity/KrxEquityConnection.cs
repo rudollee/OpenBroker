@@ -47,7 +47,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 			nameof(H1_) => CallbackHX(message.Text, trCode), // H1_ 전체 호가
 			nameof(HA_) => CallbackHX(message.Text, trCode), // HA_ 전체 호가
 			nameof(UH1) => CallbackUH1(message.Text), // UH1 전체 호가(장전장후)
-			nameof(VI_) => CallbackVI(message.Text), // VI_ 주식 VI 발동/해제
+			nameof(VI_) => CallbackVI(message.Text), // VI 주식 VI 발동/해제
 			nameof(SC0) => CallbackSC0(message.Text), // SC0 주식주문접수
 			nameof(SC2) => CallbackSCX(message.Text, trCode), // SC2 주문 정정
 			nameof(SC3) => CallbackSCX(message.Text, trCode), // SC3 주문 취소
@@ -580,9 +580,15 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 				Code = nameof(VI_),
 				Info = new MarketPause
 				{
-					Time = response.Body.time.ToTime(),
-					Symbol = response.Body.ref_shcode,
-					PauseType = response.Body.vi_gubun switch
+					Time = response.Body.Time.ToTime(),
+					Exchange = response.Body.Exchname switch
+					{
+						"KRX" => Exchange.KRX,
+						"NXT" => Exchange.NXT,
+						_ => Exchange.NONE
+					},
+					Symbol = response.Body.RefShcode,
+					PauseType = response.Body.ViGubun switch
 					{
 						"0" => MarketPauseType.VI0,
 						"1" => MarketPauseType.VIS,
@@ -590,9 +596,9 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 						"3" => MarketPauseType.VIB,
 						_ => MarketPauseType.VI0
 					},
-					BasePrice = Convert.ToDecimal(response.Body.vi_gubun == "1" ? response.Body.svi_recprice : response.Body.dvi_recprice),
-					TriggerPrice = Convert.ToDecimal(response.Body.vi_trgprice),
-					Remark = response.Body.shcode,
+					BasePrice = Convert.ToDecimal(response.Body.ViGubun == "1" ? response.Body.SviRecprice : response.Body.DviRecprice),
+					TriggerPrice = Convert.ToDecimal(response.Body.ViTrgprice),
+					Remark = response.Body.Shcode,
 				},
 				Broker = Brkr.LS
 			});
