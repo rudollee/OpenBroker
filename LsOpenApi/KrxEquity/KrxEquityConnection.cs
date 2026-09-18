@@ -361,7 +361,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		}
 		catch (Exception ex)
 		{
-			SendErrorMessage(trCode, ex.Message, MessageSeverity.Critical);
+			SendErrorMessage(trCode, ex.Message, MessageSeverity.Critical, message);
 			return false;
 		}
 	}
