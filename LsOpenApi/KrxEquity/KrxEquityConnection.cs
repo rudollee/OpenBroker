@@ -295,6 +295,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 		{
 			var response = JsonSerializer.Deserialize<LsSubscriptionCallback<H1_OutBlock>>(message);
 			if (response is null || response.Body is null) return false;
+			if (string.IsNullOrWhiteSpace(response.Body.hotime)) return false;
 
 			var asks = new List<MarketOrder>();
 			Dictionary<decimal, MarketOrder> asksx = [];
