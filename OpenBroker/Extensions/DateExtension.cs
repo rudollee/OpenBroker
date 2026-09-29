@@ -90,6 +90,8 @@ public static class DateExtension
 	/// <returns></returns>
 	public static TimeOnly ToTime(this string timeTxt)
 	{
+		if (timeTxt.Length < 6) return TimeOnly.FromDateTime(MarketZone.Utc.Now());
+
 		var hour = Convert.ToInt32(timeTxt.Substring(0, 2));
 		var minute = Convert.ToInt32(timeTxt.Substring(2, 2));
 		var second = Convert.ToInt32(timeTxt.Substring(4, 2));
