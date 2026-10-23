@@ -34,4 +34,5 @@ public class QuoteRequest
 	public DateTime DateTimeBegin { get; set; }
 	public DateTime DateTimeEnd { get; set; } = DateTime.Today;
 	public Exchange Exchange { get; set; } = Exchange.NONE;
+	public bool IsRegularSessionOnly { get; set; } = true;
 }

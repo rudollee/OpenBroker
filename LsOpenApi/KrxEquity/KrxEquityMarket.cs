@@ -778,13 +778,14 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	{
 		var response = await RequestStandardAsync<T8412>(LsEndpoint.EquityChart.ToDescription(), new
 		{
-			t8412InBlock = new T841XInBlock
+			t8412InBlock = new T8412InBlock
 			{
 				Shcode = request.Symbol,
 				Ncnt = request.TimeInterval,
 				QryCnt = 500,
 				Sdate = request.DateTimeBegin.ToString("yyyyMMdd"),
 				Edate = request.DateTimeEnd.ToString("yyyyMMdd"),
+				KrxMmkGubun = request.IsRegularSessionOnly ? "Y" : "N"
 			}
 		});
 
