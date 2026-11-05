@@ -104,6 +104,8 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			var result = ReturnResult(quote);
 			result.ExtraData = new()
 			{
+				{ "HighLimit", response.T8456OutBlock.NdvUplmtprice },
+				{ "LowLimit", response.T8456OutBlock.NdvDnlmtprice },
 				{ "OI", response.T8456OutBlock.Mgjv }, // open interest
 				{ "UNDERLYINGPRICE", response.T8456OutBlock.Price - response.T8456OutBlock.Sbasis }, // Underlying Asset Price
 			};

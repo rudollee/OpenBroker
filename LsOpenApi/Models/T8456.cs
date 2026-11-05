@@ -22,10 +22,6 @@ internal class T8456InBlock : T2111InBlock { }
 /// </summary>
 internal class T8456OutBlock : T2111OutBlock
 {
-	/// <summary>시간가치</summary>
-	[JsonPropertyName("timevl")]
-	public decimal Timevl { get; set; }
-
 	/// <summary>야간선물최근월현재가</summary>
 	[JsonPropertyName("cmeprice")]
 	public decimal Cmeprice { get; set; }
@@ -65,4 +61,20 @@ internal class T8456OutBlock : T2111OutBlock
 	/// <summary>전일거래대금</summary>
 	[JsonPropertyName("jnilvalue")]
 	public long Jnilvalue { get; set; }
+
+	/// <summary>야간장_적용상한가</summary>
+	[JsonPropertyName("ndv_uplmtprice")]
+	public decimal NdvUplmtprice { get; set; }
+
+	/// <summary>야간장_적용하한가</summary>
+	[JsonPropertyName("ndv_dnlmtprice")]
+	public decimal NdvDnlmtprice { get; set; }
+
+	/// <summary>야간장_실시간상한가</summary>
+	[JsonPropertyName("ndv_rt_uplmtprice")]
+	public decimal NdvRtUplmtprice { get; set; }
+
+	/// <summary>야간장_실시간하한가</summary>
+	[JsonPropertyName("ndv_rt_dnlmtprice")]
+	public decimal NdvRtDnlmtprice { get; set; }
 }
