@@ -228,18 +228,29 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	{
 		try
 		{
-			var response = await RequestStandardAsync<T2212>(LsEndpoint.FuturesMarketData.ToDescription(), new
+			var inBlockParameters = new T2212InBlock
 			{
-				t2212InBlock = new T2212InBlock
-				{
-					Focode = symbol,
-					StartTime = begin,
-					EndTime = end,
-					Cvolume = Convert.ToInt64(baseVolume)
-				}
-			});
+				Focode = symbol[..8],
+				StartTime = begin,
+				EndTime = end,
+				Cvolume = Convert.ToInt64(baseVolume)
+			};
 
-			if (response.T2212OutBlock1.Count == 0) return ReturnResults<MarketExecution>([], nameof(T2212), response.Message);
+			object inBlock = symbol.Length == 9 ? new { t8458InBlock = inBlockParameters } : new { t2212InBlock = inBlockParameters };
+
+			T2212 response = new();
+			if (symbol.Length == 8) 
+			{
+				response = await RequestStandardAsync<T2212>(LsEndpoint.FuturesMarketData.ToDescription(), inBlock);
+				if (response.T2212OutBlock1.Count == 0) return ReturnResults<MarketExecution>([], nameof(T2212), response.Message);
+			}
+			else
+			{
+				var extendedResponse = await RequestStandardAsync<T8458>(LsEndpoint.FuturesMarketData.ToDescription(), inBlock);
+				if (extendedResponse.T8458OutBlock1.Count == 0) return ReturnResults<MarketExecution>([], nameof(T8458), response.Message);
+
+				response.T2212OutBlock1 = extendedResponse.T8458OutBlock1;
+			}
 
 			var scale = symbol.ToKrxScale();
 			var marketExecutions = new List<MarketExecution>();

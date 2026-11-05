@@ -15,6 +15,19 @@ internal class T2212 : LsResponseCore
 }
 
 /// <summary>
+/// KRX야간파생 시간대별체결(API용)(t8458)
+/// </summary>
+internal class T8458 : LsResponseCore
+{
+	[JsonPropertyName("t8458InBlock")]
+	public T2212InBlock T8458InBlock { get; set; } = new();
+	[JsonPropertyName("t8458OutBlock")]
+	public T2212OutBlock T8458OutBlock { get; set; } = new();
+	[JsonPropertyName("t8458OutBlock1")]
+	public List<T2212OutBlock1> T8458OutBlock1 { get; set; } = [];
+}
+
+/// <summary>
 /// 선물옵션시간대별체결조회_9자리(t2212) - InBlock
 /// </summary>
 internal class T2212InBlock
