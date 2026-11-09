@@ -650,7 +650,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			{
 				var id = instrument.BscAstsId[1..]; //instrument.ShCode.ToKrxInstrumentCode();
 				var marginInfo = margins.FirstOrDefault(f => $"{f.IsuSmclssCode[1..]}" == id);
-				Instruments.Add(instrument.NmcIsShrtCd, new Instrument
+				Instruments.Add(id, new Instrument
 				{
 					Symbol = instrument.NmcIsShrtCd,
 					Inst = id,
