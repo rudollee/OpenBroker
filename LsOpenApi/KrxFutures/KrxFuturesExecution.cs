@@ -183,13 +183,14 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 
 				if (string.IsNullOrWhiteSpace(execution.FnoIsuNo) || execution.FnoIsuNo.Length < 3) continue;
 
-				executions.Add(new Execution
+				executions.Add(new()
 				{ 
 					DateBiz = execution.OrdDt.ToDate(),
                     Broker = Brkr.LS,
                     OID = execution.OrdNo,
 					IdOrigin = execution.OrgOrdNo,
 					EID = execution.CtrctNo,
+					Inst = execution.FnoIsuNo.Substring(1, 2),
 					Symbol = execution.FnoIsuNo,
 					InstrumentName = execution.IsuNm,
 					IsLong = execution.BnsTpNm == "매수",
@@ -303,7 +304,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 			List<Order> orders = new() { Capacity = response.T0434OutBlock1.Count };
 			response.T0434OutBlock1.ForEach(f =>
 			{
-				orders.Add(new Order
+				orders.Add(new()
 				{
 					DateBiz = DateOnly.FromDateTime(DateTime.UtcNow.AddHours(9)),
                     Broker = Brkr.LS,
@@ -315,6 +316,7 @@ public partial class LsKrxFutures : ConnectionBase, IExecution
 						"취소" => OrderMode.CANCEL,
 						_ => OrderMode.PLACE
 					},
+					Inst = f.Expcode.Substring(1, 2),
 					Symbol = f.Expcode,
 					IsLong = f.Medosu.Contains("매수"),
 					QtyOrdered = f.Qty,
