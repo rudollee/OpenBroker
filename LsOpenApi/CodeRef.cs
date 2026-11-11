@@ -29,7 +29,9 @@ internal static class CodeRef
 	/// </summary>
 	internal static Dictionary<string, string> MarketStatusDic { get; set; } = new()
 	{
+		{"00", "장상태 초기화" },
 		{"11", "장전동시호가개시"},
+		{"12", "시가 단일가매매개시" },
 		{"21", "장시작"},
 		{"22", "장개시10초전"},
 		{"23", "장개시1분전"},
