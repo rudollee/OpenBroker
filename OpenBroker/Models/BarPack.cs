@@ -3,23 +3,23 @@
 /// <summary>
 /// Price package
 /// </summary>
-public class QuotePack
+public class BarPack
 {
 	public string Symbol { get; set; } = string.Empty;
 	public IntervalUnit TimeIntervalUnit { get; set; } = IntervalUnit.Day;
 	public int TimeInterval { get; set; } = 1;
-	public required List<Quote> PrimaryList { get; set; } = [];
-	public QuoteRate SecondaryInfo { get; set; } = new();
+	public required List<Bar> PrimaryList { get; set; } = [];
+	public BarRate SecondaryInfo { get; set; } = new();
 }
 
-public class QuotePack<T> where T : Quote 
+public class BarPack<T> where T : Bar 
 {
 	public Exchange ExchangeCode { get; set; } = Exchange.CME;
 	public string Symbol { get; set; } = string.Empty;
 	public IntervalUnit TimeIntervalUnit { get; set; } = IntervalUnit.Day;
 	public int TimeInterval { get; set; } = 1;
 	public required List<T> PrimaryList { get; set; } = [];
-	public QuoteRate SecondaryInfo { get; set; } = new();
+	public BarRate SecondaryInfo { get; set; } = new();
 }
 
 /// <summary>

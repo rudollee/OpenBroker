@@ -39,7 +39,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			{
 				Symbol = symbol,
 				C = response.T2111OutBlock.Price,
-				QuoteDaily = new Quote
+				QuoteDaily = new Bar
 				{
 					T = DateTime.Now,
 					BasePrice = response.T2111OutBlock.Jnilclose,
@@ -86,7 +86,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			{
 				Symbol = symbol,
 				C = response.T8456OutBlock.Price,
-				QuoteDaily = new Quote
+				QuoteDaily = new Bar
 				{
 					T = DateTime.Now,
 					BasePrice = response.T8456OutBlock.Jnilclose,
@@ -133,7 +133,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			{
 				TimeExecuted = DateTime.Now,
 				C = response.T8402OutBlock.Price,
-				QuoteDaily = new Quote
+				QuoteDaily = new Bar
 				{
 					O = response.T8402OutBlock.Open,
 					H = response.T8402OutBlock.High,
@@ -206,7 +206,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 					C = execution.price,
 					VolumeExecuted = execution.checnt,
 					BasePrice = execution.price - execution.change * (DeclineCodes.Contains(execution.sign) ? -1 : 1),
-					QuoteDaily = new Quote
+					QuoteDaily = new Bar
 					{
 						C = execution.price,
 						V = execution.volume,
@@ -260,7 +260,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				C = execution.Price.ScaleTo(scale),
 				BasePrice = execution.Price + execution.Change * (Convert.ToInt32(execution.Sign) > 3 ? 1 : -1),
 				VolumeExecuted = execution.Cvolume,
-				QuoteDaily = new Quote
+				QuoteDaily = new Bar
 				{
 					V = execution.Volume,
 				},
@@ -462,9 +462,9 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	public Task<ResponseResult<News>> RequestNews(string id) => throw new NotImplementedException();
 
 	#region request Price Pack using t8465/t8466
-	public async Task<ResponseResult<QuotePack<T>>> RequestPricePack<T>(QuoteRequest request) where T : Quote
+	public async Task<ResponseResult<BarPack<T>>> RequestPricePack<T>(QuoteRequest request) where T : Bar
 	{
-		if (request.DateTimeBegin > request.DateTimeEnd) return new ResponseResult<QuotePack<T>>
+		if (request.DateTimeBegin > request.DateTimeEnd) return new ResponseResult<BarPack<T>>
 		{
 			Broker = Brkr.LS,
 			StatusCode = Status.BAD_REQUEST,
@@ -479,7 +479,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			}
 			catch (Exception ex)
 			{
-				return new ResponseResult<QuotePack<T>>
+				return new ResponseResult<BarPack<T>>
 				{
 					Broker = Brkr.LS,
 					StatusCode = Status.INTERNALSERVERERROR,
@@ -489,7 +489,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			}
 		}
 
-		List<QuoteExt> quotes = [];
+		List<BarExt> quotes = [];
 		try
 		{
 			List<T8466OutBlock1> list = [];
@@ -526,7 +526,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			quotes.Capacity = list.Count;
 			list.ForEach(f =>
 			{
-				quotes.Add(new QuoteExt
+				quotes.Add(new BarExt
 				{
 					T = $"{f.Date}000000".ToDateTime(),
 					O = f.Open,
@@ -538,9 +538,9 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 				});
 			});
 
-			return new ResponseResult<QuotePack<T>>
+			return new ResponseResult<BarPack<T>>
 			{
-				Info = new QuotePack<T>
+				Info = new BarPack<T>
 				{
 					Symbol = request.Symbol,
 					PrimaryList = quotes as List<T> ?? [],
@@ -551,7 +551,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		}
 		catch (Exception ex)
 		{
-			return new ResponseResult<QuotePack<T>>
+			return new ResponseResult<BarPack<T>>
 			{
 				StatusCode = Status.INTERNALSERVERERROR,
 				Message = ex.Message,
@@ -560,9 +560,9 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		}
 	}
 
-	private async Task<ResponseResult<QuotePack<T>>> RequestPricePackMinutes<T>(QuoteRequest request) where T : Quote
+	private async Task<ResponseResult<BarPack<T>>> RequestPricePackMinutes<T>(QuoteRequest request) where T : Bar
 	{
-		List<Quote> quotes = [];
+		List<Bar> quotes = [];
 		List<T8465OutBlock1> list = [];
 		var nextKey = string.Empty;
 		var ctsDate = string.Empty;
@@ -590,7 +590,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		quotes.Capacity = list.Count;
 		list.ForEach(f =>
 		{
-			quotes.Add(new Quote
+			quotes.Add(new Bar
 			{
 				T = $"{f.Date}{f.Time}".ToDateTime(),
 				O = f.Open,
@@ -601,9 +601,9 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 			});
 		});
 
-		return new ResponseResult<QuotePack<T>>
+		return new ResponseResult<BarPack<T>>
 		{
-			Info = new QuotePack<T>
+			Info = new BarPack<T>
 			{
 				Symbol = request.Symbol,
 				PrimaryList = quotes as List<T> ?? [],

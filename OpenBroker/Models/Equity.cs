@@ -17,7 +17,7 @@ public class Equity
 
 public class EquityPack : Equity
 {
-	public QuoteRate PriceInfo { get; set; } = new();
+	public BarRate PriceInfo { get; set; } = new();
 	public OrderBook OrderBook { get; set; } = new();
 	public TradingData TradingInfo { get; set; } = new();
 

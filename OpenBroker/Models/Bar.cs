@@ -3,7 +3,7 @@
 /// <summary>
 /// 시고저종
 /// </summary>
-public class Quote
+public class Bar
 {
 	public DateTime T { get; set; }
 	public decimal BasePrice { get; set; }
@@ -18,7 +18,7 @@ public class Quote
 /// <summary>
 /// 시고저종 + 비율 + 상한가/하한가
 /// </summary>
-public class QuoteRate : Quote
+public class BarRate : Bar
 {
 	public decimal ORate { get => BasePrice == 0 ? 0 : (O - BasePrice) / BasePrice; }
 
@@ -40,7 +40,7 @@ public class QuoteRate : Quote
 /// <summary>
 /// 시고저종, 거래량, 미결제약정, 기초자산종가
 /// </summary>
-public class QuoteExt : Quote
+public class BarExt : Bar
 {
 	/// <summary>
 	/// Open Interest
@@ -56,7 +56,7 @@ public class QuoteExt : Quote
 /// <summary>
 /// 시고저종, 거래량, 미결제약정, 행사가
 /// </summary>
-public class QuoteOption : Quote
+public class QuoteOption : Bar
 {
 	public string StrikeCode { get; set; } = string.Empty;
 

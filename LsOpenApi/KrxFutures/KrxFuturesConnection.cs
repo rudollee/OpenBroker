@@ -100,7 +100,7 @@ public partial class LsKrxFutures : ConnectionBase, IConnection
 					VolumeExecuted = Convert.ToDecimal(response.Body.Cvolume),
 					ExecutionSide = response.Body.Cgubun == "+" ? ExecutionSide.ASK : ExecutionSide.BID,
 					BasePrice = Convert.ToDecimal(response.Body.Price) - Convert.ToDecimal((DeclineCodes.Contains(response.Body.Sign) ? "-" : "") + response.Body.Change),
-					QuoteDaily = new Quote
+					QuoteDaily = new Bar
 					{
 						BasePrice = basePrice,
 						C = close,

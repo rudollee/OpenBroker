@@ -1,7 +1,6 @@
 ﻿using OpenBroker.Models;
 
 namespace OpenBroker;
-
 /// <summary>
 /// Market Data
 /// </summary>
@@ -82,7 +81,7 @@ public interface IMarket
 	/// </summary>
 	/// <param name="request"></param>
 	/// <returns></returns>
-	Task<ResponseResult<QuotePack<T>>> RequestPricePack<T>(QuoteRequest request) where T : Quote;
+	Task<ResponseResult<BarPack<T>>> RequestPricePack<T>(QuoteRequest request) where T : Bar;
 	
 	/// <summary>
 	/// 뉴스 상세 정보
@@ -122,5 +121,4 @@ public interface IMarket
 	/// <param name="subscriber"></param>
 	/// <returns></returns>
 	Task<ResponseCore> SubscribeMarketDepth(string symbol, bool connecting = true, string subscriber = "");
-
 }

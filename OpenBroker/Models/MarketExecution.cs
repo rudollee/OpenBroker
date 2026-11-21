@@ -1,5 +1,4 @@
 ﻿namespace OpenBroker.Models;
-
 /// <summary>
 /// 시장 체결
 /// </summary>
@@ -63,5 +62,5 @@ public class MarketExecution
     /// <summary>
     /// 일간 데이터
     /// </summary>
-    public Quote QuoteDaily { get; set; } = new();
+    public Bar QuoteDaily { get; set; } = new();
 }

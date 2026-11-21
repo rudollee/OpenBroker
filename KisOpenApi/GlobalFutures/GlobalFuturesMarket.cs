@@ -1,5 +1,4 @@
 ﻿using System.IO.Compression;
-using System.Net;
 using KisOpenApi.Models;
 using KisOpenApi.Models.GlobalFutures;
 using OpenBroker;
@@ -162,7 +161,7 @@ public partial class KisGlobalFutures : ConnectionBase, IMarket
 	public Task<ResponseResults<MarketExecution>> RequestMarketExecutionHistory(string symbol, string begin = "", string end = "", decimal baseVolume = 0) => throw new NotImplementedException();
 	public Task<ResponseResult<OrderBook>> RequestOrderbook(string symbol) => throw new NotImplementedException();
 	public Task<ResponseResult<News>> RequestNews(string id) => throw new NotImplementedException();
-	public Task<ResponseResult<QuotePack<T>>> RequestPricePack<T>(QuoteRequest request) where T : Quote => throw new NotImplementedException();
+	public Task<ResponseResult<BarPack<T>>> RequestPricePack<T>(QuoteRequest request) where T : Bar => throw new NotImplementedException();
 	public Task<ResponseCore> SubscribeNews(bool connecting = true) => throw new NotImplementedException();
 	public Task<ResponseCore> SubscribeMarketPause(string symbol = "000000") => throw new NotImplementedException();
 }

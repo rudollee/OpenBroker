@@ -60,7 +60,7 @@ public partial class KisKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#endregion
 
 	#region 국내주식기간별시세(일,주,월,년) - FHKST03010100
-	public async Task<ResponseResult<QuotePack<T>>> RequestPricePack<T>(QuoteRequest request) where T : Quote
+	public async Task<ResponseResult<BarPack<T>>> RequestPricePack<T>(QuoteRequest request) where T : Bar
 	{
 		var parameters = GenerateParameters(new
 		{
@@ -81,21 +81,21 @@ public partial class KisKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		try
 		{
 			var response = await RequestStandardAsync<FHKST03010100>(EndpointRef.EndpointDic[TrId.FHKST03010100], parameters);
-			if (response is null) return new ResponseResult<QuotePack<T>>
+			if (response is null) return new ResponseResult<BarPack<T>>
 			{
 				StatusCode = Status.ERROR_OPEN_API,
-				Info = new QuotePack<T> { PrimaryList = [] },
+				Info = new BarPack<T> { PrimaryList = [] },
 				Message = "response is null"
 			};
 
-			var quotes = new List<Quote>();
+			var quotes = new List<Bar>();
 			response.Output2.ForEach(f =>
 			{
 				var close = Convert.ToDecimal(f.stck_clpr);
 				var datetime = f.stck_bsop_date.ToDateTime();
 				if (datetime >= request.DateTimeBegin && datetime <= request.DateTimeEnd)
 				{
-					quotes.Add(new Quote
+					quotes.Add(new Bar
 					{
 						T = f.stck_bsop_date.ToDateTime(),
 						C = close,
@@ -109,7 +109,7 @@ public partial class KisKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				}
 			});
 
-			return ReturnResult<QuotePack<T>>(new()
+			return ReturnResult<BarPack<T>>(new()
 			{
 				Symbol = request.Symbol,
 				TimeIntervalUnit = request.TimeIntervalUnit,
@@ -119,7 +119,7 @@ public partial class KisKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResult<QuotePack<T>>(nameof(T), ex.Message);
+			return ReturnErrorResult<BarPack<T>>(nameof(T), ex.Message);
 		}
 	} 
 	#endregion

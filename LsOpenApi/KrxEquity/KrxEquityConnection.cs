@@ -134,7 +134,7 @@ public partial class LsKrxEquity : ConnectionBase, IConnection
 					VolumeExecuted = Convert.ToDecimal(response.Body.Cvolume),
 					ExecutionSide = response.Body.Cgubun == "+" ? ExecutionSide.ASK : ExecutionSide.BID,
 					BasePrice = Convert.ToDecimal(response.Body.Price) - Convert.ToDecimal((DeclineCodes.Contains(response.Body.Sign) ? "-" : "") + response.Body.Change),
-					QuoteDaily = new Quote
+					QuoteDaily = new Bar
 					{
 						C = Convert.ToDecimal(response.Body.Price),
 						O = Convert.ToDecimal(response.Body.Open),

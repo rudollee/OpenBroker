@@ -267,7 +267,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				Symbol = response.T1102OutBlock.Shcode,
 				NameOfficial = response.T1102OutBlock.Hname,
 				Section = response.T1102OutBlock.Janginfo.Contains("KOSPI") ? ExchangeSection.KOSPI : ExchangeSection.KOSDAQ,
-				PriceInfo = new QuoteRate
+				PriceInfo = new BarRate
 				{
 					T = DateTime.Now,
 					BasePrice = response.T1102OutBlock.Recprice,
@@ -486,7 +486,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 						Symbol = response.T1102OutBlock.Shcode,
 						C = response.T1102OutBlock.Price,
 						BasePrice = response.T1102OutBlock.Price + (response.T1102OutBlock.Change * (response.T1102OutBlock.Diff < 0 ? 1 : -1)),
-						QuoteDaily = new Quote
+						QuoteDaily = new Bar
 						{
 							C = response.T1102OutBlock.Price,
 							O = response.T1102OutBlock.Open,
@@ -530,7 +530,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 					Symbol = f.Shcode,
 					C = f.Price,
 					BasePrice = f.Jnilclose,
-					QuoteDaily = new Quote
+					QuoteDaily = new Bar
 					{
 						C = f.Price,
 						O = f.Open,
@@ -577,7 +577,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 				C = execution.Price,
 				BasePrice = execution.Price + execution.Change * (Convert.ToInt32(execution.Sign) > 3 ? 1 : -1),
 				VolumeExecuted = execution.Cvolume,
-				QuoteDaily = new Quote
+				QuoteDaily = new Bar
 				{
 					V = execution.Volume,
 				},
@@ -676,7 +676,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			response.T1537OutBlock1.ForEach(equity => equities.Add(new MarketExecution
 			{
 				Symbol = equity.Shcode,
-				QuoteDaily = new Quote
+				QuoteDaily = new Bar
 				{
 					O = Convert.ToDecimal(equity.Open),
 					C = Convert.ToDecimal(equity.Price),
@@ -699,7 +699,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#endregion
 
 	#region request chart data by t8410, t8411, t8412
-	public async Task<ResponseResult<QuotePack<T>>> RequestPricePack<T>(QuoteRequest request) where T : Quote
+	public async Task<ResponseResult<BarPack<T>>> RequestPricePack<T>(QuoteRequest request) where T : Bar
 	{
 		try
 		{
@@ -712,11 +712,11 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 		catch (Exception ex)
 		{
-			return ReturnErrorResult<QuotePack<T>>("QUOTE", ex.Message, MessageSeverity.Critical);
+			return ReturnErrorResult<BarPack<T>>("QUOTE", ex.Message, MessageSeverity.Critical);
 		}
 	}
 
-	private async Task<ResponseResult<QuotePack<T>>> RequestPricePackTick<T>(QuoteRequest request) where T : Quote
+	private async Task<ResponseResult<BarPack<T>>> RequestPricePackTick<T>(QuoteRequest request) where T : Bar
 	{
 		var response = await RequestStandardAsync<T8411>(LsEndpoint.EquityChart.ToDescription(), new
 		{
@@ -730,11 +730,11 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			}
 		});
 
-		if (typeof(T) != typeof(Quote)) return ReturnErrorResult<QuotePack<T>>(nameof(T8411), "Invalid type parameter for RequestPricePackTick", remark: "type mismatch");
+		if (typeof(T) != typeof(Bar)) return ReturnErrorResult<BarPack<T>>(nameof(T8411), "Invalid type parameter for RequestPricePackTick", remark: "type mismatch");
 
-		if (response.T8411OutBlock1.Count == 0) return ReturnResult<QuotePack<T>>(new() { PrimaryList = [] }, nameof(T8410), response.Message);
+		if (response.T8411OutBlock1.Count == 0) return ReturnResult<BarPack<T>>(new() { PrimaryList = [] }, nameof(T8410), response.Message);
 
-		var priceInfo = new QuoteRate
+		var priceInfo = new BarRate
 		{
 			T = DateTime.UtcNow.AddHours(9),
 			BasePrice = response.T8411OutBlock.Jiclose,
@@ -746,8 +746,8 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			LowLimit = response.T8411OutBlock.Lowend,
 		};
 
-		var prices = new List<Quote>();
-		response.T8411OutBlock1.ForEach(price => prices.Add(new Quote
+		var prices = new List<Bar>();
+		response.T8411OutBlock1.ForEach(price => prices.Add(new Bar
 		{
 			T = (price.Date + price.Time).ToDateTime(),
 			O = Convert.ToDecimal(price.Open),
@@ -760,10 +760,10 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 		// TODO : 수정주가 적용 여부
 
-		return new ResponseResult<QuotePack<T>>
+		return new ResponseResult<BarPack<T>>
 		{
 			Broker = Brkr.LS,
-			Info = new QuotePack<T>
+			Info = new BarPack<T>
 			{
 				Symbol = request.Symbol,
 				TimeIntervalUnit = request.TimeIntervalUnit,
@@ -774,7 +774,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		};
 	}
 
-	private async Task<ResponseResult<QuotePack<T>>> RequestPricePackMinute<T>(QuoteRequest request) where T : Quote
+	private async Task<ResponseResult<BarPack<T>>> RequestPricePackMinute<T>(QuoteRequest request) where T : Bar
 	{
 		var response = await RequestStandardAsync<T8412>(LsEndpoint.EquityChart.ToDescription(), new
 		{
@@ -789,9 +789,9 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			}
 		});
 
-		if (response.T8412OutBlock1.Count == 0) return ReturnResult<QuotePack<T>>(new() { PrimaryList = [] }, nameof(T8412), response.Message);
+		if (response.T8412OutBlock1.Count == 0) return ReturnResult<BarPack<T>>(new() { PrimaryList = [] }, nameof(T8412), response.Message);
 
-		var priceInfo = new QuoteRate
+		var priceInfo = new BarRate
 		{
 			T = DateTime.UtcNow.AddHours(9),
 			BasePrice = response.T8412OutBlock.Jiclose,
@@ -803,8 +803,8 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 			LowLimit = response.T8412OutBlock.Lowend,
 		};
 
-		var prices = new List<Quote>();
-		response.T8412OutBlock1.ForEach(price => prices.Add(new Quote
+		var prices = new List<Bar>();
+		response.T8412OutBlock1.ForEach(price => prices.Add(new Bar
 		{
 			T = (price.Date + price.Time).ToDateTime(),
 			O = Convert.ToDecimal(price.Open),
@@ -817,10 +817,10 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 		// TODO : 수정주가 적용 여부
 
-		return new ResponseResult<QuotePack<T>>
+		return new ResponseResult<BarPack<T>>
 		{
 			Broker = Brkr.LS,
-			Info = new QuotePack<T>
+			Info = new BarPack<T>
 			{
 				Symbol = request.Symbol,
 				TimeIntervalUnit = request.TimeIntervalUnit,
@@ -831,9 +831,9 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		};
 	}
 
-	private async Task<ResponseResult<QuotePack<T>>> RequestPricePackX<T>(QuoteRequest request) where T : Quote
+	private async Task<ResponseResult<BarPack<T>>> RequestPricePackX<T>(QuoteRequest request) where T : Bar
 	{
-		List<Quote> quotes = [];
+		List<Bar> quotes = [];
 		List<T8410OutBlock1> list = [];
 		var nextKey = string.Empty;
 		var ctsDate = string.Empty;
@@ -872,7 +872,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		quotes.Capacity = list.Count;
 		list.ForEach(f =>
 		{
-			quotes.Add(new Quote
+			quotes.Add(new Bar
 			{
 				T = $"{f.Date}".ToDateTime(),
 				O = f.Open,
@@ -885,10 +885,10 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 
 		// TODO : 수정주가 적용 여부
 
-		return new ResponseResult<QuotePack<T>>
+		return new ResponseResult<BarPack<T>>
 		{
 			Broker = Brkr.LS,
-			Info = new QuotePack<T>
+			Info = new BarPack<T>
 			{
 				Symbol = request.Symbol,
 				PrimaryList = quotes as List<T> ?? [],
