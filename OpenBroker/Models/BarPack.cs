@@ -25,7 +25,7 @@ public class BarPack<T> where T : Bar
 /// <summary>
 /// Price Package Request
 /// </summary>
-public class QuoteRequest
+public class BarRequest
 {
 	public string Symbol { get; set; } = string.Empty;
 	public IntervalUnit TimeIntervalUnit { get; set; } = IntervalUnit.Day;

@@ -462,7 +462,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 	public Task<ResponseResult<News>> RequestNews(string id) => throw new NotImplementedException();
 
 	#region request Price Pack using t8465/t8466
-	public async Task<ResponseResult<BarPack<T>>> RequestPricePack<T>(QuoteRequest request) where T : Bar
+	public async Task<ResponseResult<BarPack<T>>> RequestPricePack<T>(BarRequest request) where T : Bar
 	{
 		if (request.DateTimeBegin > request.DateTimeEnd) return new ResponseResult<BarPack<T>>
 		{
@@ -560,7 +560,7 @@ public partial class LsKrxFutures : ConnectionBase, IMarket, IMarketKrx
 		}
 	}
 
-	private async Task<ResponseResult<BarPack<T>>> RequestPricePackMinutes<T>(QuoteRequest request) where T : Bar
+	private async Task<ResponseResult<BarPack<T>>> RequestPricePackMinutes<T>(BarRequest request) where T : Bar
 	{
 		List<Bar> quotes = [];
 		List<T8465OutBlock1> list = [];

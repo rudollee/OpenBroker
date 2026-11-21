@@ -81,7 +81,7 @@ public interface IMarket
 	/// </summary>
 	/// <param name="request"></param>
 	/// <returns></returns>
-	Task<ResponseResult<BarPack<T>>> RequestPricePack<T>(QuoteRequest request) where T : Bar;
+	Task<ResponseResult<BarPack<T>>> RequestPricePack<T>(BarRequest request) where T : Bar;
 	
 	/// <summary>
 	/// 뉴스 상세 정보

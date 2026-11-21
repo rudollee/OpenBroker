@@ -60,7 +60,7 @@ public partial class KisKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#endregion
 
 	#region 국내주식기간별시세(일,주,월,년) - FHKST03010100
-	public async Task<ResponseResult<BarPack<T>>> RequestPricePack<T>(QuoteRequest request) where T : Bar
+	public async Task<ResponseResult<BarPack<T>>> RequestPricePack<T>(BarRequest request) where T : Bar
 	{
 		var parameters = GenerateParameters(new
 		{

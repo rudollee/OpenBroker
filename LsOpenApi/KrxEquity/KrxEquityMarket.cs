@@ -699,7 +699,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 	#endregion
 
 	#region request chart data by t8410, t8411, t8412
-	public async Task<ResponseResult<BarPack<T>>> RequestPricePack<T>(QuoteRequest request) where T : Bar
+	public async Task<ResponseResult<BarPack<T>>> RequestPricePack<T>(BarRequest request) where T : Bar
 	{
 		try
 		{
@@ -716,7 +716,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		}
 	}
 
-	private async Task<ResponseResult<BarPack<T>>> RequestPricePackTick<T>(QuoteRequest request) where T : Bar
+	private async Task<ResponseResult<BarPack<T>>> RequestPricePackTick<T>(BarRequest request) where T : Bar
 	{
 		var response = await RequestStandardAsync<T8411>(LsEndpoint.EquityChart.ToDescription(), new
 		{
@@ -774,7 +774,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		};
 	}
 
-	private async Task<ResponseResult<BarPack<T>>> RequestPricePackMinute<T>(QuoteRequest request) where T : Bar
+	private async Task<ResponseResult<BarPack<T>>> RequestPricePackMinute<T>(BarRequest request) where T : Bar
 	{
 		var response = await RequestStandardAsync<T8412>(LsEndpoint.EquityChart.ToDescription(), new
 		{
@@ -831,7 +831,7 @@ public partial class LsKrxEquity : ConnectionBase, IMarket, IMarketKrxEquity
 		};
 	}
 
-	private async Task<ResponseResult<BarPack<T>>> RequestPricePackX<T>(QuoteRequest request) where T : Bar
+	private async Task<ResponseResult<BarPack<T>>> RequestPricePackX<T>(BarRequest request) where T : Bar
 	{
 		List<Bar> quotes = [];
 		List<T8410OutBlock1> list = [];

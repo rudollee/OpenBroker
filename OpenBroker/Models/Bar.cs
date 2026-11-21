@@ -56,7 +56,7 @@ public class BarExt : Bar
 /// <summary>
 /// 시고저종, 거래량, 미결제약정, 행사가
 /// </summary>
-public class QuoteOption : Bar
+public class BarOptions : Bar
 {
 	public string StrikeCode { get; set; } = string.Empty;
 
